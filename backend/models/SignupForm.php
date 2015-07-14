@@ -66,13 +66,13 @@ class SignupForm extends Model
         /*if ($this->hasErrors())
             return;
          Needed?*/
-        /*$ecollege_emails = array('ulrick.sutherland@svgcc.vc', 'melissia.charles@svgcc.vc', 'silkie.prescott@svgcc.vc',
+        $ecollege_emails = array('ulrick.sutherland@svgcc.vc', 'melissia.charles@svgcc.vc', 'silkie.prescott@svgcc.vc',
             'bevan.lewis@svgcc.vc', 'kadauna.wilkes@svgcc.vc', 'john.defreitas@svgcc.vc', 'dwayne.defreitas@svgcc.vc',
             'laurence.charles@svgcc.vc', 'krislin.gouldbourne@svgcc.vc',
             'gamal.crichton@svgcc.vc');
         if (!in_array($this->$attribute, $ecollege_emails))
         {
             $this->addError($attribute, 'Only members of E-College can sign up');
-        }*/
+        }
     }
 }
