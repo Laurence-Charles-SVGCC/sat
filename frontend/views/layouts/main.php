@@ -60,7 +60,7 @@ else
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <!-- Messages: style can be found in dropdown.less-->
-              <li class="dropdown messages-menu">
+              <!--<li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
                   <span class="label label-success">4</span>
@@ -68,9 +68,9 @@ else
                 <ul class="dropdown-menu">
                   <li class="header">You have 4 messages</li>
                   <li>
-                    <!-- inner menu: contains the actual data -->
+                    <!-- inner menu: contains the actual data ->
                     <ul class="menu">
-                      <li><!-- start message -->
+                      <li><!-- start message ->
                         <a href="#">
                           <div class="pull-left">
                             <img src="css/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
@@ -81,12 +81,12 @@ else
                           </h4>
                           <p>Why not buy a new awesome theme?</p>
                         </a>
-                      </li><!-- end message -->
+                      </li><!-- end message ->
                     </ul>
                   </li>
                   <li class="footer"><a href="#">See All Messages</a></li>
                 </ul>
-              </li>
+              </li>-->
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -120,9 +120,10 @@ else
                 </ul>
               </li>
               <!-- Control Sidebar Toggle Button -->
+              <!--
               <li>
                 <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-              </li>
+              </li>-->
             </ul>
           </div>
         </nav>
@@ -153,13 +154,11 @@ else
                 <span class="label label-primary pull-right">4</span>
               </a>
               <ul class="treeview-menu">
-                <li><a href="<?= Url::toRoute(['/subcomponents/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/general/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/general/division'])?>"><i class="fa fa-circle-o"></i>Divisions</a></li>
-                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
               </ul>
             </li>
-            <li>
+            <!--<li>
               <a href="pages/widgets.html">
                 <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
               </a>
@@ -191,7 +190,7 @@ else
             <li class="header">LABELS</li>
             <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
             <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
-            <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>
+            <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>-->
           </ul>
         </section>
         <!-- /.sidebar -->
