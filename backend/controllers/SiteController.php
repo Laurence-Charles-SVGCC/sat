@@ -131,7 +131,7 @@ class SiteController extends Controller
     private function createUsername()
     {
         $last_user = User::find()->orderBy('personid DESC', 'desc')->one();
-        $num = strval($last_user->personid + 1);
+        $num = $last_user ? strval($last_user->personid + 1) : 1;
         while (strlen($num) < 4)
         {
             $num = '0' . $num;
