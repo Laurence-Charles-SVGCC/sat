@@ -26,10 +26,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['login', 'logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup', 'login'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -43,7 +43,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['post', 'get'],
                 ],
             ],
         ];
@@ -72,7 +72,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        //echo "Is guest is: " . \Yii::$app->user->isGuest;
         if (\Yii::$app->user->isGuest) {
             return $this->actionLogin();
         }
@@ -87,6 +86,8 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $this->layout = 'loginlayout';
+        
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }

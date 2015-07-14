@@ -50,6 +50,16 @@ class User extends ActiveRecord implements IdentityInterface
                 ]
         ];
     }
+    
+    public function beforeSave($insert)
+    {
+        $return = parent::beforeSave($insert);
+        if ($this->isAttributeChanged('pword'))
+        {
+            $this->pword = Yii::$app->security->generatePasswordHash($this->pword);
+        }
+        return $return;
+    }
 
     /**
      * @inheritdoc
@@ -129,7 +139,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->username;
+        return $this->getPrimaryKey();
     }
 
     /**

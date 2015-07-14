@@ -7,6 +7,9 @@ use yii\web\Controller;
 use common\models\LoginForm;
 use yii\filters\VerbFilter;
 use backend\models\SignupForm;
+use frontend\models\Employee;
+use frontend\models\ContactInfo;
+use common\models\User;
 
 /**
  * Site controller
@@ -36,7 +39,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['post', 'get'],
                 ],
             ],
         ];
@@ -61,6 +64,8 @@ class SiteController extends Controller
 
     public function actionLogin()
     {
+        $this->layout = 'loginlayout';
+        
         if (!\Yii::$app->user->isGuest){ 
             return $this->goHome();
         }
@@ -84,21 +89,53 @@ class SiteController extends Controller
     
     /**
      * Signs user up.
-     *
+     * Created: -- by Gii
+     * Last Modified: 14/07/2015 by Gamal Crichton
      * @return mixed
      */
     public function actionSignup()
     {
+        $this->layout = 'loginlayout';
+        
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }   
-            }   
+        $employee_model = new Employee();
+        
+        if ($model->load(Yii::$app->request->post()) && $employee_model->load(Yii::$app->request->post())) {
+            $username = $this->createUsername();
+            if ($user = $model->signup($username)) {
+                $contact = new ContactInfo();
+                $contact->email = $model->email;
+                
+                if ($contact->save())
+                {
+                    $employee_model->personid = $user->username;
+                    $employee_model->contactinfoid = $contact->getPrimaryKey();
+                    if ($employee_model->save() && Yii::$app->getUser()->login($user)) {
+                        return $this->goHome();
+                    }
+                }
+            }
+            
         }
         return $this->render('signup', [
             'model' => $model,
+            'employee_model' => $employee_model,
         ]);
+    }
+    
+    /*
+    * Purpose: Creates username for new user
+    * Created: 13/07/2015 by Gamal Crichton
+    * Last Modified: 14/07/2015 by Gamal Crichton
+    */
+    private function createUsername()
+    {
+        $last_user = User::find()->orderBy('personid DESC', 'desc')->one();
+        $num = strval($last_user->personid + 1);
+        while (strlen($num) < 4)
+        {
+            $num = '0' . $num;
+        }
+        return '1401' . $num;
     }
 }
