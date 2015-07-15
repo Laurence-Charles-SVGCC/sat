@@ -50,16 +50,6 @@ class User extends ActiveRecord implements IdentityInterface
                 ]
         ];
     }
-    
-    public function beforeSave($insert)
-    {
-        $return = parent::beforeSave($insert);
-        if ($this->isAttributeChanged('pword'))
-        {
-            $this->pword = Yii::$app->security->generatePasswordHash($this->pword);
-        }
-        return $return;
-    }
 
     /**
      * @inheritdoc
@@ -96,7 +86,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'isactive' => self::STATUS_ACTIVE]);
+        return self::findOne(['username' => $username, 'isactive' => self::STATUS_ACTIVE]);
     }
 
     /**
