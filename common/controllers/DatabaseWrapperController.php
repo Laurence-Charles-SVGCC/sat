@@ -26,11 +26,11 @@ class DatabaseWrapperController extends Controller
     public static function getCurrentCentres()
     {
         $centres = CsecCentre::find()
-                    ->join('inner', 'csec_qualification', '`cseccentreid` = `cseccentreid`')
-                    ->join('inner', 'application', '`personid` = `personid`')
-                    ->join('inner', 'academic_offering', '`academicofferingid` = `academicofferingid`')
-                    ->join('inner', 'application_period', '`applicationperiodid` = `applicationperiodid`')
-                    ->where(['`application_period`.`isactive`' => 1])->all();
+                    ->leftjoin('csec_qualification', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['application_period.isactive' => 1])->all();
         
         return $centres;
     }
@@ -40,15 +40,15 @@ class DatabaseWrapperController extends Controller
     * Created: 15/07/2015 by Gamal Crichton
     * Last Modified: 15/07/2015 by Gamal Crichton
     */
-    public static function getCentreApplicantsReceived($cseccentreid)
+    public static function centreApplicantsReceived($cseccentreid)
     {
         $applicants = Application::find()
-                    ->join('inner', 'csec_qualification', '`personid` = `personid`')
-                    ->join('inner', 'csec_centre', 'cseccentreid = cseccentreid')
-                    ->join('inner', 'academic_offering', 'academicofferingid = academicofferingid')
-                    ->join('inner', 'application_period', 'applicationperiodid = applicationperiodid')
-                    ->where("cseccentreid = $cseccentreid and application_period.isactive = 1")
-                    ->groupby('personid')->all();
+                    ->leftjoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1])
+                    ->groupby('application.personid')->all();
         return $applicants;
     }
     
@@ -61,12 +61,68 @@ class DatabaseWrapperController extends Controller
     public static function centreApplicantsVerified($cseccentreid)
     {
         $applicants = Application::find()
-                    ->join('inner', 'csec_qualification', 'personid = personid')
-                    ->join('inner', 'csec_centre', 'cseccentreid = cseccentreid')
-                    ->join('inner', 'academic_offering', 'academicofferingid = academicofferingid')
-                    ->join('inner', 'application_period', 'applicationperiodid = applicationperiodid')
-                    ->where("cseccentreid = $cseccentreid and isverified = 1 and application_period.isactive = 1")
-                    ->groupby('personid')->all();
+                    ->leftjoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isverified' => 1, 'application_period.isactive' => 1])
+                    ->groupby('application.personid')->all();
+        return $applicants;
+    }
+    
+    
+    
+    
+    /*
+    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+    * Created: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
+    public static function centreApplicantsReceivedCount($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->leftjoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1])
+                    ->groupby('application.personid')->count();
+        return $applicants;
+    }
+    
+    /*
+    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     *          who have already been fully verified
+    * Created: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
+    public static function centreApplicantsVerifiedCount($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->leftjoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isverified' => 1, 'application_period.isactive' => 1])
+                    ->groupby('application.personid')->count();
+        return $applicants;
+    }
+    
+    /*
+    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     *          who have a certificate flagged as to be queried
+    * Created: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
+    public static function centreApplicantsQueriedCount($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->leftjoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 1, 'application_period.isactive' => 1])
+                    ->groupby('application.personid')->count();
         return $applicants;
     }
 
