@@ -8,6 +8,8 @@ use yii\widgets\ActiveForm;
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
+use yii\helpers\ArrayHelper;
+use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -17,110 +19,114 @@ $this->title = ' Applicant: ';
 /*$this->params['breadcrumbs'][] = ['label' => $centrename, 
     'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];*/
 $this->params['breadcrumbs'][] = $this->title;
-?>
-<div class="verify-applicants-index">
 
+
+?>
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    
+    <div class="view-applicant-qualifications">
+        <?php $form = ActiveForm::begin(); ?>
+              <table id="certificate_table" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Examining Body</th>
+                    <th>Subject</th>
+                    <th>Proficiency</th>
+                    <th>Grade</th>
+                    <th>Year</th>
+                    <th>Verified</th>
+                    <th>Queried</th>
+                  </tr>
+                </thead>
+                    
+                    <tbody>
+                    <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
+                      <tr>
+                          <td>
+                              <?= $form->field($model, "examinationbodyid", ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->dropDownList(
+                                           ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))?>
+                          </td>
+                          <td> 
+                              <?= $form->field($model, 'subjectid', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->dropDownList(
+                                           ArrayHelper::map(Subject::find()->all(), 'subjectid', 'name')) ?>
+                          </td>
+                          <td>
+                              <?= $form->field($model, 'examinationproficiencytypeid', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->dropDownList(
+                                           ArrayHelper::map(ExaminationProficiencyType::find()->all(), 'examinationproficiencytypeid', 'name')) ?>
+                          </td>
+                        <td> 
+                            <?= $form->field($model, 'grade', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->textInput(); ?>
+                        </td>
+                        <td>
+                            <?= $form->field($model, 'year', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->textInput(); ?>
+                        </td>
+                        <td>
+                            <?= $form->field($model, 'isverified', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->checkbox(['label' => NULL]); ?>
+                        </td>
+                        <td>
+                            <?= $form->field($model, 'isqueried', ['options' => [
+                                        'tag'=>'div',
+                                        'class' => 'form-group field-loginform-username has-feedback required',
+                                        ],
+                                        'template' => '{input}{error}'
+                                    ])->checkbox(['label' => NULL]); ?>
+                        </td>
+                      </tr>
+                      <?php endforeach; ?>
+                </tbody>
+              </table>
+            <div class="form-group">
+                <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+            </div>
+                <button onclick="addRow()">Try it</button>
 
-    <?php $form = ActiveForm::begin(); ?>
-    <div class="box-body">
-      <table id="example1" class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th>Rendering engine</th>
-            <th>Browser</th>
-            <th>Platform(s)</th>
-            <th>Engine version</th>
-            <th>CSS grade</th>
-          </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($dataProvider->getModels() as $model): ?>
-              <tr>
-                  <td>
-                      <?= $form->field($model, 'examinationbodyid')->textInput() ?>
-                  </td>
-                  <td>
-                     <?php $subject = Subject::findOne($model->subjectid); ?>
-                       <?= $subject ? $subject->name : 'Undefined subject ID: ' . $model->subjectid; ?>
-                  </td>
-                <td>Win 95+</td>
-                <td> 4</td>
-                <td>X</td>
-              </tr>
-              <?php endforeach; ?>
-        </tbody>
-      </table>
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php ActiveForm::end(); ?>
+
     </div>
-
-    <?php ActiveForm::end(); ?>
+    <script>
+        function addRow() {
+            //alert('cell1 is ' +  document.getElementsByClassName("field-csecqualification-examinationbodyid-0")[0].innerHTML);
+            var table = document.getElementById("certificate_table");
+            var row = table.insertRow(2);
+            
+            //var cell1 = row.insertCell(0);
+            //cell1.innerHTML =  "test";//document.getElementsByClassName("field-csecqualification-examinationbodyid-0")[0].innerHTML;
+        }
+</script>
     
     
-    <!--<?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            [
-                'attribute' => 'examinationbodyid',
-                'format' => 'text',
-                'label' => 'Examining Body',
-                'value' => function($model)
-                    {
-                       $body = ExaminationBody::findOne($model->examinationbodyid);
-                       return $body ? $body->name : 'Undefined Examination Body ID: ' . $model->examinationbodyid;
-                    }
-            ],
-            [
-                'attribute' => 'subjectid',
-                'format' => 'text',
-                'label' => 'Subject',
-                'value' => function($model)
-                    {
-                       $body = Subject::findOne($model->subjectid);
-                       return $body ? $body->name : 'Undefined subject ID: ' . $model->subjectid;
-                    }
-            ],
-            [
-                'attribute' => 'examinationproficiencytypeid',
-                'format' => 'text',
-                'label' => 'Proficiency',
-                'value' => function($model)
-                    {
-                       $body = ExaminationProficiencyType::findOne($model->examinationproficiencytypeid);
-                       return $body ? $body->name : 'Undefined proficiency ID: ' . $model->examinationproficiencytypeid;
-                    }
-            ],
-            [
-                'attribute' => 'grade',
-                'format' => 'text',
-                'label' => 'Grade'
-            ],
-            [
-                'attribute' => 'year',
-                'format' => 'text',
-                'label' => 'Year'
-            ],
-            [
-                'attribute' => 'isverified',
-                'format' => 'boolean',
-                'label' => 'Verified',
-            ],
-            [
-                'attribute' => 'isqueried',
-                'format' => 'boolean',
-                'label' => 'Queried',
-            ],
-            ['class' => 'yii\grid\ActionColumn'],
-            /*[
-                'attribute' => 'gender',
-                'format' => 'text',
-                'label' => 'Gender'
-            ],  */        
-        ],
-    ]); ?>-->
-
-</div>
+    
+    
+    
+    

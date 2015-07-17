@@ -193,8 +193,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
             ],
         ]);
+        
+        $certificates = CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all();
         return $this->render('view-applicant-qualifications',
                 [
+                    /*'certificates' => $certificates,*/
                     'dataProvider' => $dataProvider,
                     /*'centrename' => $centrename,
                     'centreid' => $cseccentreid,
