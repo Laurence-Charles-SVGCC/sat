@@ -1,27 +1,33 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-//use yii\helpers\Url;
 
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
 use yii\helpers\ArrayHelper;
-use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = ' Applicant: ';
-/*$this->params['breadcrumbs'][] = ['label' => $centrename, 
-    'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];*/
+$applicant_name = 'Undefined';
+if ($applicant)
+{
+    $applicant_name = $applicant->firstname . ' ' . $applicant->middlename . ' ' . $applicant->lastname;
+}
+
+$this->title = ' Applicant: ' . $applicant_name;
+$this->params['breadcrumbs'][] = ['label' => $centrename, 
+    'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
 $this->params['breadcrumbs'][] = $this->title;
 
 
 ?>
+    <?= Yii::$app->session->getFlash('error'); ?>
+
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
     
@@ -37,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Year</th>
                     <th>Verified</th>
                     <th>Queried</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                     
@@ -44,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
                       <tr>
                           <td>
-                              <?= $form->field($model, "examinationbodyid", ['options' => [
+                              <?= $form->field($model, "[$key]examinationbodyid", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group',
                                         ],
@@ -53,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                            ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))?>
                           </td>
                           <td> 
-                              <?= $form->field($model, 'subjectid', ['options' => [
+                              <?= $form->field($model, "[$key]subjectid", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
@@ -62,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                            ArrayHelper::map(Subject::find()->all(), 'subjectid', 'name')) ?>
                           </td>
                           <td>
-                              <?= $form->field($model, 'examinationproficiencytypeid', ['options' => [
+                              <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
@@ -71,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                            ArrayHelper::map(ExaminationProficiencyType::find()->all(), 'examinationproficiencytypeid', 'name')) ?>
                           </td>
                         <td> 
-                            <?= $form->field($model, 'grade', ['options' => [
+                            <?= $form->field($model, "[$key]grade", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
@@ -79,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->textInput(); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, 'year', ['options' => [
+                            <?= $form->field($model, "[$key]year", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
@@ -87,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->textInput(); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, 'isverified', ['options' => [
+                            <?= $form->field($model, "[$key]isverified", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
@@ -95,12 +102,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->checkbox(['label' => NULL]); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, 'isqueried', ['options' => [
+                            <?= $form->field($model, "[$key]isqueried", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->checkbox(['label' => NULL]); ?>
+                        </td>
+                        <td>
+                            <a class="btn" href="<?= Url::to(['delete-certificate',
+                                'certificate_id' => $model->csecqualificationid])?>">
+                                <i class="fa fa-remove"></i>
+                            </a>
                         </td>
                       </tr>
                       <?php endforeach; ?>
@@ -108,22 +121,14 @@ $this->params['breadcrumbs'][] = $this->title;
               </table>
             <div class="form-group">
                 <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
+                <?= Html::submitButton('Add Subjects', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
+                <?= Html::dropDownList('add_more_value', 1, 
+                        array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
             </div>
-                <button onclick="addRow()">Try it</button>
-
         <?php ActiveForm::end(); ?>
 
     </div>
-    <script>
-        function addRow() {
-            //alert('cell1 is ' +  document.getElementsByClassName("field-csecqualification-examinationbodyid-0")[0].innerHTML);
-            var table = document.getElementById("certificate_table");
-            var row = table.insertRow(2);
-            
-            //var cell1 = row.insertCell(0);
-            //cell1.innerHTML =  "test";//document.getElementsByClassName("field-csecqualification-examinationbodyid-0")[0].innerHTML;
-        }
-</script>
     
     
     

@@ -28,11 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'personid',
                 'format' => 'html',
                 'label' => 'Applicant ID',
-                'value' => function($model)
+                'value' => function($model) use($centrename, $centreid, $type)
                     {
                        return Html::a($model->personid, 
                                Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
-                                   /*'centrename' => $centrename, 'cseccentreid' => $centreid, 'type' => $type*/]));
+                                   'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
                     }
             ],
             [

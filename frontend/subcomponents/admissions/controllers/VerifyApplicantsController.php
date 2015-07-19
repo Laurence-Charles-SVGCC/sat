@@ -2,11 +2,9 @@
 
 namespace app\subcomponents\admissions\controllers;
 
+use Yii;
 use yii\data\ArrayDataProvider;
-//use yii\data\ActiveDataProvider;
 use common\controllers\DatabaseWrapperController;
-//use frontend\models\CsecCentre;
-//use yii\helpers\ArrayHelper;
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 
@@ -74,6 +72,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
+    /*
+    * Purpose: Displays all applicants from a given centre
+    * Created: 15/07/2015 by Gii
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
     public function actionViewAll($cseccentreid, $centrename)
     {
         $data = array();
@@ -100,6 +103,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
+    /*
+    * Purpose: Displays pending applicants from a given centre
+    * Created: 15/07/2015 by Gii
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
     public function actionViewPending($cseccentreid, $centrename)
     {
         $data = array();
@@ -125,6 +133,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
+    /*
+    * Purpose: Displays verified applicants from a given centre
+    * Created: 15/07/2015 by Gii
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
     public function actionViewVerified($cseccentreid, $centrename)
     {
         $data = array();
@@ -150,6 +163,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
     
+    /*
+    * Purpose: Displays queried applicants from a given centre
+    * Created: 15/07/2015 by Gii
+    * Last Modified: 16/07/2015 by Gamal Crichton
+    */
     public function actionViewQueried($cseccentreid, $centrename)
     {
         $data = array();
@@ -176,14 +194,89 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
     
-    public function actionViewApplicantQualifications($applicantid/*, $centrename, $cseccentreid, $type*/)
+    /*
+    * Purpose: Displays all certificates for a given applicant from a given centre.
+     * Handles actions from the display: add more certificates, save all as verified
+     * and save changes.
+    * Created: 15/07/2015 by Gamal Crichton
+    * Last Modified: 18/07/2015 by Gamal Crichton
+    */
+    public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
-        /*$data = array();
-        foreach(self::centreApplicantsQueried($cseccentreid) as $application)
+        if (Yii::$app->request->post())
         {
-            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-        }*/
-        
+            $qualifications = CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all();
+            $request = Yii::$app->request;
+            if ($request->post('add_more') === '')
+            {
+                $add_amt = $request->post('add_more_value');
+                $qmodel = $qualifications[0];
+                for ($i = 0; $i < $add_amt; $i++)
+                {
+                    $qualification = new CsecQualification();
+                    $qualification->personid = $applicantid;
+                    $qualification->cseccentreid = $cseccentreid;
+                    $qualification->examinationbodyid = $qmodel ? $qmodel->examinationbodyid : 1;
+                    $qualification->subjectid = 1;
+                    $qualification->examinationproficiencytypeid = $qmodel ? $qmodel->examinationproficiencytypeid : 1;
+                    if (!$qualification->save())
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Could not add more certificates.');
+                        break;
+                    }
+                }
+            }
+            else 
+            {
+                if ($request->post('CsecQualification'))
+                {
+                    $verify_all = $request->post('verified') === '' ? True : False;
+                    $qualifications = $request->post('CsecQualification');
+                    foreach ($qualifications as $qual)
+                    {
+                        $cert = CsecQualification::find()->where(['csecqualificationid' => $qual->csecqualificationid])->one();
+                        $cert->examiningbodyid = $qual->examiningbodyid;
+                        $cert->year = $qual->year;
+                        $cert->proficiencytypeid = $qual->proficiencytypeid;
+                        $cert->subjectid = $qual->subjectid;
+                        $cert->grade = $qual->grade;
+                        if ($verify_all)
+                        {
+                            //Save as verified submit button
+                            $cert->isverified = 1;
+                            $cert->isqueried = 0;
+                        }
+                        else
+                        {
+                            //Update submit button
+                            $cert->isverified = $qual->isverified;
+                            $cert->isqueried = $qual->isqueried;
+                        }
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No Certificates data.');
+                }
+                //redirect
+                if (strcasecmp($type, "pending"))
+                {
+                    self::actionViewPending($cseccentreid, $centrename);
+                }
+                if (strcasecmp($type, "queried"))
+                {
+                    self::actionViewQueried($cseccentreid, $centrename);
+                }
+                if (strcasecmp($type, "all"))
+                {
+                    self::actionViewAll($cseccentreid, $centrename);
+                }
+                if (strcasecmp($type, "verified"))
+                {
+                    self::actionViewVerified($cseccentreid, $centrename);
+                }
+            }
+        }
         $dataProvider = new ArrayDataProvider([
             'allModels' => CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all(),
             'pagination' => [
@@ -193,16 +286,32 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
             ],
         ]);
-        
-        $certificates = CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all();
+        $applicant_model = Applicant::find()->where(['personid' => $applicantid])->one();
         return $this->render('view-applicant-qualifications',
                 [
-                    /*'certificates' => $certificates,*/
                     'dataProvider' => $dataProvider,
-                    /*'centrename' => $centrename,
+                    'applicant' => $applicant_model,
+                    'centrename' => $centrename,
                     'centreid' => $cseccentreid,
-                    'type' => $type,*/
+                    'type' => $type,
                 ]);
+    }
+    
+    /*
+    * Purpose: Soft deletes a given certificate.
+    * Created: 18/07/2015 by Gamal Crichton
+    * Last Modified: 18/07/2015 by Gamal Crichton
+    */
+    public function actionDeleteCertificate($certificate_id)
+    {
+        $cert = CsecQualification::find()->where(['csecqualificationid' => $certificate_id])->one();
+        $cert->isdeleted = 1;
+        $cert->isactive = 0;
+        if (!$cert->save())
+        {
+            Yii::$app->session->setFlash('error', 'Certificate could not be deleted');
+        }
+        return $this->redirect(\Yii::$app->request->getReferrer());
     }
     
     /*
@@ -267,5 +376,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         return DatabaseWrapperController::centreApplicantsVerifiedCount($cseccentreid);
     }
+    
+    
 
 }
