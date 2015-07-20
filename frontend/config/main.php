@@ -41,7 +41,10 @@ return [
                  ],
                 'general' => [
                     'class' => 'app\subcomponents\general\General'
-                 ]
+                 ],
+                'payments' => [
+                    'class' => 'app\subcomponents\payments\PaymentsModule',
+                ],
               ]
           ]
     ]

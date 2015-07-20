@@ -24,7 +24,7 @@ if ($person)
 }
 else
 {
-    $emp_firstname = $emp_firstname = $emp_username = 'Undefined'; 
+    $emp_firstname = $emp_lastname = $emp_username = 'Undefined'; 
     $job_title = 'Job Title';
 }
 ?>
@@ -107,7 +107,7 @@ else
           <ul class="sidebar-menu">
             <li class="active treeview">
               <a href="">
-                <i class="fa fa-dashboard"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
+                <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
@@ -116,9 +116,20 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
               </ul>
             </li>
-            <li class="treeview">
+            <li class="active treeview">
+              <a href="">
+                <i class="fa fa-money"></i> <span>Payments</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/payments/payments/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
+                <!--<li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>-->
+              </ul>
+            </li>
+            <li class="active treeview">
               <a href="#">
-                <i class="fa fa-files-o"></i>
+                <i class="fa fa-cogs"></i>
                 <span>General</span>
                 <span class="label label-primary pull-right">4</span>
               </a>
