@@ -146,7 +146,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
         $dataProvider = new ArrayDataProvider([
-            'allModels' => self::centreApplicantsVerified($cseccentreid),
+            'allModels' => $data,
             'pagination' => [
                 'pageSize' => 20,
             ],
@@ -234,12 +234,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $qualifications = $request->post('CsecQualification');
                     foreach ($qualifications as $qual)
                     {
-                        $cert = CsecQualification::find()->where(['csecqualificationid' => $qual->csecqualificationid])->one();
-                        $cert->examiningbodyid = $qual->examiningbodyid;
-                        $cert->year = $qual->year;
-                        $cert->proficiencytypeid = $qual->proficiencytypeid;
-                        $cert->subjectid = $qual->subjectid;
-                        $cert->grade = $qual->grade;
+                        $cert = CsecQualification::find()->where(['csecqualificationid' => $qual['csecqualificationid']])->one();
+                        $cert->examinationbodyid = $qual['examinationbodyid'];
+                        $cert->year = $qual['year'];
+                        $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
+                        $cert->subjectid = $qual['subjectid'];
+                        $cert->grade = $qual['grade'];
                         if ($verify_all)
                         {
                             //Save as verified submit button
@@ -249,8 +249,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                         else
                         {
                             //Update submit button
-                            $cert->isverified = $qual->isverified;
-                            $cert->isqueried = $qual->isqueried;
+                            $cert->isverified = $qual['isverified'];
+                            $cert->isqueried = $qual['isqueried'];
+                        }
+                        if (!$cert->save())
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'Could not add Certificate: ' . $qual['subjectid'] . ' ' . $qual['grade']);
                         }
                     }
                 }
@@ -345,6 +349,17 @@ class VerifyApplicantsController extends \yii\web\Controller
         return DatabaseWrapperController::centreApplicantsVerified($cseccentreid);
     }
     
+     /*
+    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     *          who have already been fully verified
+    * Created: 15/07/2015 by Gamal Crichton
+    * Last Modified: 15/07/2015 by Gamal Crichton
+    */
+    private function centreApplicantsQueried($cseccentreid)
+    {
+        return DatabaseWrapperController::centreApplicantsQueried($cseccentreid);
+    }
+    
     /*
     * Purpose: Gets count of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
     * Created: 16/07/2015 by Gamal Crichton
@@ -374,7 +389,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     private function centreApplicantsQueriedCount($cseccentreid)
     {
-        return DatabaseWrapperController::centreApplicantsVerifiedCount($cseccentreid);
+        return DatabaseWrapperController::centreApplicantsQueriedCount($cseccentreid);
     }
     
     

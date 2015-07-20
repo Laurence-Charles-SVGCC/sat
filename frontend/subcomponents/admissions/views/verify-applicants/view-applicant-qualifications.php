@@ -50,6 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tbody>
                     <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
                       <tr>
+                          <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
                           <td>
                               <?= $form->field($model, "[$key]examinationbodyid", ['options' => [
                                         'tag'=>'div',
