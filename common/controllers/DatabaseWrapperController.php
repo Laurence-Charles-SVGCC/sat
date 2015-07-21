@@ -6,6 +6,8 @@ use yii\web\Controller;
 use frontend\models\CsecCentre;
 use frontend\models\Application;
 
+use backend\models\PersonType;
+
 
 /**
  * Site controller
@@ -15,7 +17,8 @@ class DatabaseWrapperController extends Controller
     
     public static function getPersonTypeID($person_name)
     {
-        return 0;
+        $person_type = PersonType::find()->where(['persontype' => $person_name])->one();
+        return $person_type ? $person_type->persontypeid : 3;
     }
     
     /*

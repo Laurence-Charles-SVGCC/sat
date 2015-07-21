@@ -10,6 +10,7 @@ use yii\helpers\Url;
 
 ?>
 <div class="verify-applicants-index">
+    <h3><?= "Search results for: " . $info_string ?></h3>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
@@ -17,45 +18,47 @@ use yii\helpers\Url;
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'format' => 'html',
-                'label' => 'Centre Name',
+                'label' => 'Transaction Group ID',
                 'value' => function($row)
                     {
-                       return Html::a($row['centre_name'], 
-                               Url::to(['verify-applicants/centre-details', 'centre_id' => $row['centre_id'], 'centre_name' => $row['centre_name']]));
+                       return Html::a($row['transaction_group_id'], 
+                               Url::to(['payments/view-transaction-group', 'transaction_summary_id' => $row['transaction_group_id']]));
                     }
             ],
             [
-                'attribute' => 'status',
+                'attribute' => 'academic_year',
                 'format' => 'text',
-                'label' => 'Status'
+                'label' => 'Academic Year'
             ],
             [
-                'attribute' => 'applicants_verified',
+                'attribute' => 'academic_semster',
                 'format' => 'text',
-                'label' => 'Applicants Verified'
+                'label' => 'Academic Semester'
             ],
             [
-                'attribute' => 'total_received',
+                'attribute' => 'fee_purpose',
                 'format' => 'text',
-                'label' => 'Total Received Applicants'
+                'label' => 'Purpose'
             ],
             [
-                'format' => 'html',
-                'label' => 'Percentage Completed',
-                'value' => function($row)
-                    {
-                            $value = $row['percentage_completed'];
-                           return 
-                            "<small class='pull-right'>$value%</small>
-                             <div class='progress xs'>
-                              <div class='progress-bar progress-bar-green' style='width: $value%' role='progressbar' aria-valuenow='$value' aria-valuemin='0' aria-valuemax='100'>
-                                <span class='sr-only'>$value%</span>
-                              </div>
-                             </div>
-                            ";
-                    }
+                'attribute' => 'total_paid',
+                'format' => 'text',
+                'label' => 'Total Paid'
+            ],
+            [
+                'attribute' => 'balance',
+                'format' => 'text',
+                'label' => 'Balance'
             ],
         ],
     ]); ?>
+    
+    <p>
+        
+        <?= Html::a('New Payment Group', ['payments/new-payment'], ['class' => 'btn btn-success']) ?>
+        <?= Html::label('Select User', 'select_user') ?>
+        <?= Html::dropDownList('select_user', 0, $result_users) ?>
+        
+    </p>
 
 </div>

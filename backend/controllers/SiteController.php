@@ -105,7 +105,7 @@ class SiteController extends Controller
             if ($user = $model->signup($username)) {
                 $contact = new ContactInfo();
                 $contact->email = $model->email;
-                
+                $contact->personid = $user->username;
                 if ($contact->save())
                 {
                     $employee_model->personid = $user->username;

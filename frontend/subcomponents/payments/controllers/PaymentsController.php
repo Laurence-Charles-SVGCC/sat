@@ -20,9 +20,15 @@ class PaymentsController extends Controller
         return $this->render('manage-payments');
     }
     
+    /*
+    * Purpose: Provides for to collect search parameters and display results.
+    * Created: 21/07/2015 by Gamal Crichton
+    * Last Modified: 21/07/2015 by Gamal Crichton
+    */
     public function actionSearchApplicant()
     {
-        $dataProvider = NULL;
+        $dataProvider = $app_ids = NULL;
+        $info_string = "";
         if (Yii::$app->request->post())
         {
             $request = Yii::$app->request;
@@ -33,14 +39,17 @@ class PaymentsController extends Controller
             if ($app_id)
             {
                  $cond_arr['personid'] = $app_id;
+                 $info_string = $info_string .  " Applicant ID: " . $app_id;
             }
             if ($firstname)
             {
                 $cond_arr['firstname'] = $firstname;
+                $info_string = $info_string .  " First Name: " . $firstname; 
             }
             if ($lastname)
             {
                 $cond_arr['lastname'] = $lastname;
+                $info_string = $info_string .  " Last Name: " . $lastname;
             }
             
             if (empty($cond_arr))
@@ -64,9 +73,23 @@ class PaymentsController extends Controller
                         $app_ids[] = $applicant['personid']; 
                     }
 
-                    $transactions = $app_ids ? Transaction::find()->where(['persionid' => $app_ids])->all()->groupby('transactionsummaryid') : array();
+                    $transactions = !empty($app_ids) ? Transaction::find()->where(['personid' => $app_ids])->groupby('transactionsummaryid')->all() : array();
+                    $data = array();
+                    foreach ($transactions as $transaction)
+                    {
+                        $trans = array();
+                        $semester = $transaction->getSemester();
+                        
+                        $trans['transaction_group_id'] = $transaction->transactionsummaryid;
+                        $trans['academic_year'] = $semester ? $semester->getAcademicyear()->name : '';
+                        $trans['academic_semester'] = $semester ? $semester->name : '';
+                        $trans['fee_purpose'] = $transaction->getTransactionpurpose();
+                        $trans['total_paid'] = $transaction->getTransactionsummary()->total_paid;
+                        $trans['balance'] = $transaction->getTransactionsummary()->balance;
+                        $data[] = $trans;
+                    }
                     $dataProvider = new ArrayDataProvider([
-                        'allModels' => $transactions,
+                        'allModels' => $data,
                         'pagination' => [
                             'pageSize' => 20,
                         ],
@@ -75,9 +98,36 @@ class PaymentsController extends Controller
         }
     }
     return $this->render('search', 
-    [
-        'type' => 'applicant',
-        'results' => $dataProvider,
-    ]);
+        [
+            'type' => 'applicant',
+            'results' => $dataProvider,
+            'result_users' => $app_ids,
+            'info_string' => $info_string,
+        ]);
+  }
+  
+  /*
+    * Purpose: Provides for to collect search parameters and display results.
+    * Created: 21/07/2015 by Gamal Crichton
+    * Last Modified: 21/07/2015 by Gamal Crichton
+    */
+    public function actionNewPayment()
+    {
+        $model = new Transaction();
+        var_dump(Yii::$app->request);
+        if ($model->load(Yii::$app->request->post()))
+        {
+            var_dump(Yii::$app->request);
+            /*$request = Yii::$app->request;
+            $model->personid = ;
+            $model->recepientid = Yii::$app->user->username;
+            $model->transactionsummaryid = ;
+            $model->receiptnumber = ;*/
+        }
+        
+        return $this->render('new-payment',
+                [
+                    'model' => $model,
+                ]);
     }
 }

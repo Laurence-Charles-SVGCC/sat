@@ -3,13 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-use yii\helpers\Url;
-use yii\helpers\ArrayHelper;
-use dosamigos\datepicker\DatePicker;
-use frontend\models\Division;
-use frontend\models\AcademicYear;
-use frontend\models\ProgrammeCatalog;
-
 $type = ucfirst($type);
 $this->title = $type . ' Search';
 $this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
@@ -43,6 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php if ($results) : ?>
         <?= $this->render('_results', [
             'dataProvider' => $results,
+            'result_users' => $result_users,
+            'info_string' => $info_string,
         ]) ?>
     <?php endif; ?>
 

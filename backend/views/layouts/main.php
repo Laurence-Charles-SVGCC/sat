@@ -6,6 +6,7 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
 use frontend\models\Employee;
+use common\models\User;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -24,7 +25,7 @@ if ($person)
 }
 else
 {
-    $emp_firstname = $emp_firstname = $emp_username = 'Undefined'; 
+    $emp_firstname = $emp_lastname = $emp_username = 'Undefined'; 
     $job_title = 'Job Title';
 }
 ?>
