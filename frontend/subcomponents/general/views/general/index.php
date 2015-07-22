@@ -17,5 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <p>
        <?= Html::a('Manage Divisions', ['division/index'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Manage Academic Years', ['academic-year/index'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Manage Academic Semesters', ['semester/index'], ['class' => 'btn btn-success']) ?>
     </p>
 </div>

@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use common\models\User;
+
 /**
  * This is the model class for table "transaction".
  *
@@ -50,7 +52,7 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'verifyingofficerid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
+            [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
             [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'verifyingofficerid'], 'integer'],
             [['paydate'], 'safe'],
             [['paymentamount', 'totaldue'], 'number'],
@@ -99,7 +101,7 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getPerson()
     {
-        return $this->hasOne(Person::className(), ['personid' => 'personid']);
+        return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
 
     /**
@@ -115,7 +117,7 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getRecepient()
     {
-        return $this->hasOne(Person::className(), ['personid' => 'recepientid']);
+        return $this->hasOne(User::className(), ['personid' => 'recepientid']);
     }
 
     /**
@@ -147,6 +149,6 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getVerifyingofficer()
     {
-        return $this->hasOne(Person::className(), ['personid' => 'verifyingofficerid']);
+        return $this->hasOne(User::className(), ['personid' => 'verifyingofficerid']);
     }
 }

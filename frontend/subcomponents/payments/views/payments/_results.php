@@ -1,12 +1,15 @@
 <?php
 
+use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
+
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
 ?>
 <div class="verify-applicants-index">
-    <h3><?= "Search results for: " . $info_string ?></h3>
+    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
@@ -18,7 +21,7 @@ use yii\helpers\Url;
                 'value' => function($row)
                     {
                        return Html::a($row['transaction_group_id'], 
-                               Url::to(['payments/view-transaction-group', 'transaction_summary_id' => $row['transaction_group_id']]));
+                               Url::to(['payments/view-transactions', 'transactionsummaryid' => $row['transaction_group_id']]));
                     }
             ],
             [
@@ -27,7 +30,7 @@ use yii\helpers\Url;
                 'label' => 'Academic Year'
             ],
             [
-                'attribute' => 'academic_semster',
+                'attribute' => 'academic_semester',
                 'format' => 'text',
                 'label' => 'Academic Semester'
             ],
@@ -51,12 +54,12 @@ use yii\helpers\Url;
     
     <p>
         <?php $form = ActiveForm::begin(
-                ['action' => Url(['payments/new-payment']),]
+                ['action' => Url::to(['payments/new-payment']),]
                 ); ?>
         <?= Html::submitButton('New Payment Group', ['class' => 'btn btn-success']) ?>
         <?= Html::label('Select User', 'select_user') ?>
-        <?= Html::dropDownList('select_user', 0, $result_users) ?>
-        <?php $form = ActiveForm::end(); ?>
+        <?= Html::dropDownList('select_user', 0, array_combine($result_users, $result_users)) ?>
+        <?php ActiveForm::end(); ?>
     </p>
 
 </div>

@@ -41,7 +41,7 @@ class Semester extends \yii\db\ActiveRecord
             [['academicyearid'], 'integer'],
             [['startdate', 'enddate'], 'safe'],
             [['iscurrent', 'isactive', 'isdeleted'], 'boolean'],
-            [['title'], 'string', 'max' => 3]
+            [['title'], 'string', 'max' => 15]
         ];
     }
 

@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use dosamigos\datepicker\DatePicker;
 use frontend\models\TransactionType;
@@ -17,6 +16,7 @@ use frontend\models\Semester;
 
     <?php $form = ActiveForm::begin(); ?>
         <div class="body-content">
+            <?= Html::hiddenInput('payee_id', $payee_id); ?>
             <div class="row">
                 <div class="col-lg-4">
                     <?= $form->field($model, 'transactiontypeid')->dropDownList(
@@ -35,7 +35,7 @@ use frontend\models\Semester;
         <div class="row">              
                 <div class="col-lg-4">
                     <?= $form->field($model, 'semesterid')->dropDownList(
-                            ArrayHelper::map(Semester::find()->all(), 'semesterid', 'name'), 
+                            ArrayHelper::map(Semester::find()->all(), 'semesterid', 'title'), 
                         ['prompt'=>'Select Semester' ]) ?>
                 </div>
                <div class="col-lg-4">     

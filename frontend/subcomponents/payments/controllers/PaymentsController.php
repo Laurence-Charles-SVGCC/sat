@@ -4,9 +4,13 @@ namespace app\subcomponents\payments\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\helpers\Url;
 use frontend\models\Transaction;
+use frontend\models\TransactionSearch;
+use frontend\models\TransactionSummary;
 use frontend\models\Applicant;
 use yii\data\ArrayDataProvider;
+
 
 class PaymentsController extends Controller
 {
@@ -78,14 +82,15 @@ class PaymentsController extends Controller
                     foreach ($transactions as $transaction)
                     {
                         $trans = array();
-                        $semester = $transaction->getSemester();
+                        $semester = $transaction->getSemester()->one();
+                        $summary = $transaction->getTransactionsummary()->one();
                         
                         $trans['transaction_group_id'] = $transaction->transactionsummaryid;
-                        $trans['academic_year'] = $semester ? $semester->getAcademicyear()->name : '';
-                        $trans['academic_semester'] = $semester ? $semester->name : '';
-                        $trans['fee_purpose'] = $transaction->getTransactionpurpose();
-                        $trans['total_paid'] = $transaction->getTransactionsummary()->total_paid;
-                        $trans['balance'] = $transaction->getTransactionsummary()->balance;
+                        $trans['academic_year'] = $semester ? $semester->getAcademicyear()->one()->title : '';
+                        $trans['academic_semester'] = $semester ? $semester->title : '';
+                        $trans['fee_purpose'] = $transaction->getTransactionpurpose()->one()->name;
+                        $trans['total_paid'] = $summary->total_paid;
+                        $trans['balance'] = $summary->balance;
                         $data[] = $trans;
                     }
                     $dataProvider = new ArrayDataProvider([
@@ -106,32 +111,112 @@ class PaymentsController extends Controller
         ]);
   }
   
-  /*
+    /*
     * Purpose: Provides for to collect search parameters and display results.
     * Created: 21/07/2015 by Gamal Crichton
-    * Last Modified: 21/07/2015 by Gamal Crichton
+    * Last Modified: 22/07/2015 by Gamal Crichton
     */
     public function actionNewPayment()
     {
         $model = new Transaction();
-        var_dump(Yii::$app->request);
         if ($model->load(Yii::$app->request->post()))
         {
             $request = Yii::$app->request;
-            $summary = new transactionSummary();
-            var_dump(Yii::$app->request);
-            /*if ($summary->save())
+            $total_due = $model->totaldue;
+            $trans_amt = $model->paymentamount;
+            $summary = new TransactionSummary();
+            if ($total_due && $trans_amt)
             {
-                $model->personid = $request->post('select_user');
-                $model->recepientid = Yii::$app->user->username;
+                $summary->balance = $total_due - $trans_amt;
+                $summary->total_paid = $trans_amt;
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Total Paid ans Total Due are required.');
+            }
+            if ($summary->save())
+            {
+                $model->personid = $request->post('payee_id');
+                $model->recepientid = Yii::$app->user->getId();
                 $model->transactionsummaryid = $summary->transactionsummaryid;
-                $model->receiptnumber = ;
-            }*/
+                $model->receiptnumber = self::getReceiptNumber();
+                
+                if ($model->save())
+                {
+                    $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
+                }
+                var_dump($model);
+                
+            }
+            Yii::$app->session->setFlash('error', 'Transaction could not be added');
         }
-        
         return $this->render('new-payment',
                 [
                     'model' => $model,
+                    'payee_id' => Yii::$app->request->post('payee_id'),
                 ]);
+    }
+    
+    /*
+    * Purpose: Views all transactions based on query parameters
+    * Created: 22/07/2015 by Gii
+    * Last Modified: 22/07/2015 by Gamal Crichton
+    */
+    public function actionViewTransactions($transactionsummaryid = '')
+    {
+        //var_dump(Yii::$app->request->queryParams);
+        $searchModel = new TransactionSearch();
+        $searchparams = $transactionsummaryid ? ['transactionsummaryid' => $transactionsummaryid] : array();
+        //$dataProvider = $searchModel->search($searchparams);
+        
+        $data = Transaction::find()->where($searchparams)->all();
+        $dataProvider = new ArrayDataProvider(
+            [
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => [
+                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+            ],
+        ]);
+
+        return $this->render('view-transactions', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'transactionsummaryid' => $transactionsummaryid,
+        ]);
+    }
+    
+    public function actionTransactionTypes()
+    {
+        $this->redirect(['transaction-type/index']);
+    }
+    
+    public function actionTransactionPurposes()
+    {
+        $this->redirect(['transaction-purpose/index']);
+    }
+    
+    public function actionPaymentMethods()
+    {
+        $this->redirect(['payment-method/index']);
+    }
+    
+    
+    /*
+    * Purpose: Creates receipt number for new transaction
+    * Created: 22/07/2015 by Gamal Crichton
+    * Last Modified: 22/07/2015 by Gamal Crichton
+    */
+    private function getReceiptNumber()
+    {
+        $last_transaction = Transaction::find()->orderBy('transactionid DESC', 'desc')->one();
+        $num = $last_transaction ? strval($last_transaction->receiptnumber + 1) : 1;
+        while (strlen($num) < 6)
+        {
+            $num = '0' . $num;
+        }
+        return '15' . $num;
     }
 }

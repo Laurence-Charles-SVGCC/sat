@@ -123,8 +123,8 @@ else
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/payments/payments/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
-                <!--<li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>-->
+                <!--<li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-transaction-types'])?>"><i class="fa fa-circle-o"></i>Manage Transaction Types</a></li>
+                <!--<li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>-->
               </ul>
             </li>
             <li class="active treeview">

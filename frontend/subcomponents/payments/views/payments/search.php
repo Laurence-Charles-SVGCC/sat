@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <?php ActiveForm::end(); ?>
     <?php if ($results) : ?>
+        <h3><?= "Search results for: " . $info_string ?></h3>
         <?= $this->render('_results', [
             'dataProvider' => $results,
             'result_users' => $result_users,

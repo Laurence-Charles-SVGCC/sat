@@ -5,23 +5,23 @@ namespace frontend\models;
 use Yii;
 
 /**
- * This is the model class for table "transaction_type".
+ * This is the model class for table "transaction_summary".
  *
- * @property string $transactiontypeid
- * @property string $name
+ * @property string $transactionsummaryid
+ * @property string $balance
  * @property boolean $isactive
  * @property boolean $isdeleted
  *
  * @property Transaction[] $transactions
  */
-class TransactionType extends \yii\db\ActiveRecord
+class TransactionSummary extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'transaction_type';
+        return 'transaction_summary';
     }
 
     /**
@@ -30,9 +30,9 @@ class TransactionType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['isactive', 'isdeleted'], 'boolean'],
-            [['name'], 'string', 'max' => 45]
+            [['balance'], 'required'],
+            [['balance'], 'number'],
+            [['isactive', 'isdeleted'], 'boolean']
         ];
     }
 
@@ -42,8 +42,8 @@ class TransactionType extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'transactiontypeid' => 'Transactiontypeid',
-            'name' => 'Transaction Type Name',
+            'transactionsummaryid' => 'Transactionsummaryid',
+            'balance' => 'Balance',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
@@ -54,6 +54,6 @@ class TransactionType extends \yii\db\ActiveRecord
      */
     public function getTransactions()
     {
-        return $this->hasMany(Transaction::className(), ['transactiontypeid' => 'transactiontypeid']);
+        return $this->hasMany(Transaction::className(), ['transactionsummaryid' => 'transactionsummaryid']);
     }
 }
