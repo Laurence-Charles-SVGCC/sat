@@ -117,12 +117,16 @@ class PaymentsController extends Controller
         var_dump(Yii::$app->request);
         if ($model->load(Yii::$app->request->post()))
         {
+            $request = Yii::$app->request;
+            $summary = new transactionSummary();
             var_dump(Yii::$app->request);
-            /*$request = Yii::$app->request;
-            $model->personid = ;
-            $model->recepientid = Yii::$app->user->username;
-            $model->transactionsummaryid = ;
-            $model->receiptnumber = ;*/
+            /*if ($summary->save())
+            {
+                $model->personid = $request->post('select_user');
+                $model->recepientid = Yii::$app->user->username;
+                $model->transactionsummaryid = $summary->transactionsummaryid;
+                $model->receiptnumber = ;
+            }*/
         }
         
         return $this->render('new-payment',

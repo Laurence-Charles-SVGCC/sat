@@ -4,10 +4,6 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
-/* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
 ?>
 <div class="verify-applicants-index">
     <h3><?= "Search results for: " . $info_string ?></h3>
@@ -54,11 +50,13 @@ use yii\helpers\Url;
     ]); ?>
     
     <p>
-        
-        <?= Html::a('New Payment Group', ['payments/new-payment'], ['class' => 'btn btn-success']) ?>
+        <?php $form = ActiveForm::begin(
+                ['action' => Url(['payments/new-payment']),]
+                ); ?>
+        <?= Html::submitButton('New Payment Group', ['class' => 'btn btn-success']) ?>
         <?= Html::label('Select User', 'select_user') ?>
         <?= Html::dropDownList('select_user', 0, $result_users) ?>
-        
+        <?php $form = ActiveForm::end(); ?>
     </p>
 
 </div>
