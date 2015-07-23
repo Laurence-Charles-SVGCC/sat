@@ -145,7 +145,7 @@ class PaymentsController extends Controller
                 {
                     $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
                 }
-                var_dump($model);
+                //var_dump($model);
                 
             }
             Yii::$app->session->setFlash('error', 'Transaction could not be added');
@@ -206,10 +206,11 @@ class PaymentsController extends Controller
     
     /*
     * Purpose: Creates receipt number for new transaction
+     * TODO: Make private static. Not able to because it is used in TransactionController::create()
     * Created: 22/07/2015 by Gamal Crichton
     * Last Modified: 22/07/2015 by Gamal Crichton
     */
-    private function getReceiptNumber()
+    public static function getReceiptNumber()
     {
         $last_transaction = Transaction::find()->orderBy('transactionid DESC', 'desc')->one();
         $num = $last_transaction ? strval($last_transaction->receiptnumber + 1) : 1;
@@ -217,6 +218,7 @@ class PaymentsController extends Controller
         {
             $num = '0' . $num;
         }
-        return '15' . $num;
+        
+        return strlen($num) > 6 ? $num : '15' . $num;
     }
 }

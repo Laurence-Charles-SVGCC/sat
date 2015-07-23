@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'payee_id' => Yii::$app->request->post('select_user'),
+        'payee_id' => $payee_id,
     ]) ?>
 
 </div>

@@ -3,6 +3,7 @@
 namespace app\subcomponents\payments\controllers;
 
 use Yii;
+use yii\helpers\Url;
 use frontend\models\Transaction;
 use frontend\models\TransactionSearch;
 use yii\web\Controller;
@@ -62,16 +63,29 @@ class TransactionController extends Controller
     {
         $model = new Transaction();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transactionid]);
+        if ($model->load(Yii::$app->request->post()) ) 
+        {
+            $request = Yii::$app->request;
+            $model->personid = $request->post('payee_id');
+            $model->recepientid = Yii::$app->user->getId();
+            $model->transactionsummaryid = $request->post('transactionsummaryid');
+            $model->receiptnumber = PaymentsController::getReceiptNumber();
+
+            if ($model->save())
+            {
+                return $this->redirect('payments/view-transactions', [
+                    'transactionsummaryid' => $model->transactionsummaryid,
+                ]);
+            }
         }
         
-        $this->render('create', [
+        return $this->render('create', [
             'model' => $model,
             'payee_id' => $payee_id,
             'transactionsummaryid' => $transactionsummaryid,
         ]); 
     }
+    
 
     /**
      * Updates an existing Transaction model.
