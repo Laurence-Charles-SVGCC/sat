@@ -148,6 +148,21 @@ class DatabaseWrapperController extends Controller
                     ->groupby('application.personid')->count();
         return $applicants;
     }
+    
+    /*
+    * Purpose: Gets counts of the Applications to a particular Division relevant to active application periods
+     *          who have already been fully verified
+    * Created: 23/07/2015 by Gamal Crichton
+    * Last Modified: 23/07/2015 by Gamal Crichton
+    */
+    public static function divisionApplicationsReceivedCount($division_id, $order)
+    {
+        return Application::find()
+                ->joinWith('academic_offering')
+                ->joinwith('application_period')
+                ->where(['application_period.divisionid' => $division_id, 'application.ordering' => $order])
+                ->count();
+    }
 
 }
 

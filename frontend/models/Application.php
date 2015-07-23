@@ -16,6 +16,10 @@ use Yii;
  * @property string $browseragent
  * @property boolean $isactive
  * @property boolean $isdeleted
+ *
+ * @property Person $person
+ * @property AcademicOffering $academicoffering
+ * @property Offer[] $offers
  */
 class Application extends \yii\db\ActiveRecord
 {
@@ -48,7 +52,7 @@ class Application extends \yii\db\ActiveRecord
     {
         return [
             'applicationid' => 'Applicationid',
-            'personid' => 'Personid',
+            'personid' => 'Person',
             'academicofferingid' => 'Academicofferingid',
             'applicationdate' => 'Applicationdate',
             'ordering' => 'Ordering',
@@ -57,5 +61,29 @@ class Application extends \yii\db\ActiveRecord
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPerson()
+    {
+        return $this->hasOne(Person::className(), ['username' => 'personid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAcademicoffering()
+    {
+        return $this->hasOne(AcademicOffering::className(), ['academicofferingid' => 'academicofferingid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOffers()
+    {
+        return $this->hasMany(Offer::className(), ['applicationid' => 'applicationid']);
     }
 }

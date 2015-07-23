@@ -44,7 +44,7 @@ else
     <div class="wrap">
         <header class="main-header">
         <!-- Logo -->
-        <a href="<?= Url::to('site/index'); ?>" class="logo">
+        <a href="<?= Url::to(['/site/index']); ?>" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini">SAT</span>
           <!-- logo for regular state and mobile devices -->
@@ -114,6 +114,7 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
               </ul>
             </li>
             <li class="active treeview">
