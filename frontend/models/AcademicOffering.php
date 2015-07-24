@@ -15,7 +15,14 @@ use Yii;
  * @property boolean $appliable
  * @property boolean $isactive
  * @property boolean $isdeleted
- */
+ * @property ProgrammeCatalog $programmecatalog 
+  * @property AcademicYear $academicyear 
+  * @property ApplicationPeriod $applicationperiod 
+  * @property Application[] $applications 
+  * @property CapeSubject[] $capeSubjects 
+  * @property CourseOffering[] $courseOfferings 
+  * @property StudentRegistration[] $studentRegistrations 
+  */
 class AcademicOffering extends \yii\db\ActiveRecord
 {
     /**
@@ -54,4 +61,60 @@ class AcademicOffering extends \yii\db\ActiveRecord
             'isdeleted' => 'Isdeleted',
         ];
     }
+     
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getProgrammecatalog() 
+       { 
+           return $this->hasOne(ProgrammeCatalog::className(), ['programmecatalogid' => 'programmecatalogid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getAcademicyear() 
+       { 
+           return $this->hasOne(AcademicYear::className(), ['academicyearid' => 'academicyearid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getApplicationperiod() 
+       { 
+           return $this->hasOne(ApplicationPeriod::className(), ['applicationperiodid' => 'applicationperiodid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getApplications() 
+       { 
+           return $this->hasMany(Application::className(), ['academicofferingid' => 'academicofferingid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getCapeSubjects() 
+       { 
+           return $this->hasMany(CapeSubject::className(), ['academicofferingid' => 'academicofferingid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getCourseOfferings() 
+       { 
+           return $this->hasMany(CourseOffering::className(), ['academicofferingid' => 'academicofferingid']); 
+       } 
+
+       /** 
+        * @return \yii\db\ActiveQuery 
+        */ 
+       public function getStudentRegistrations() 
+       { 
+           return $this->hasMany(StudentRegistration::className(), ['academicofferingid' => 'academicofferingid']); 
+       } 
 }

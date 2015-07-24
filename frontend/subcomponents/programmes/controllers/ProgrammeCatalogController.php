@@ -1,21 +1,18 @@
 <?php
 
-namespace app\subcomponents\admissions\controllers;
+namespace app\subcomponents\programmes\controllers;
 
 use Yii;
-use frontend\models\ApplicationPeriod;
-use frontend\models\ApplicationPeriodSearch;
-use frontend\models\AcademicOffering;
 use frontend\models\ProgrammeCatalog;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use common\models\User;
 
 /**
- * ApplicationPeriodController implements the CRUD actions for ApplicationPeriod model.
+ * ProgrammeCatalogController implements the CRUD actions for ProgrammeCatalog model.
  */
-class ApplicationPeriodController extends Controller
+class ProgrammeCatalogController extends Controller
 {
     public function behaviors()
     {
@@ -30,22 +27,22 @@ class ApplicationPeriodController extends Controller
     }
 
     /**
-     * Lists all ApplicationPeriod models.
+     * Lists all ProgrammeCatalog models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new ApplicationPeriodSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = new ActiveDataProvider([
+            'query' => ProgrammeCatalog::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Displays a single ApplicationPeriod model.
+     * Displays a single ProgrammeCatalog model.
      * @param string $id
      * @return mixed
      */
@@ -57,25 +54,16 @@ class ApplicationPeriodController extends Controller
     }
 
     /**
-     * Creates a new ApplicationPeriod model.
+     * Creates a new ProgrammeCatalog model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new ApplicationPeriod();
+        $model = new ProgrammeCatalog();
 
-        if ($model->load(Yii::$app->request->post()))
-        {
-            //Corretc way for when database is synced up
-            //$model->personid = Yii::$app->user->getID();
-            //Hack until then
-            $model->personid = User::find()->where([ 'personid' => Yii::$app->user->getID()])->one()->username;
-            if ($model->save())
-            {
-                return $this->redirect(['view', 'id' => $model->applicationperiodid]);
-            }
-            //Throw Error
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->programmecatalogid]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -84,7 +72,7 @@ class ApplicationPeriodController extends Controller
     }
 
     /**
-     * Updates an existing ApplicationPeriod model.
+     * Updates an existing ProgrammeCatalog model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
@@ -94,7 +82,7 @@ class ApplicationPeriodController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->applicationperiodid]);
+            return $this->redirect(['view', 'id' => $model->programmecatalogid]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -103,7 +91,7 @@ class ApplicationPeriodController extends Controller
     }
 
     /**
-     * Deletes an existing ApplicationPeriod model.
+     * Deletes an existing ProgrammeCatalog model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -116,19 +104,18 @@ class ApplicationPeriodController extends Controller
     }
 
     /**
-     * Finds the ApplicationPeriod model based on its primary key value.
+     * Finds the ProgrammeCatalog model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
-     * @return ApplicationPeriod the loaded model
+     * @return ProgrammeCatalog the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ApplicationPeriod::findOne($id)) !== null) {
+        if (($model = ProgrammeCatalog::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
 }

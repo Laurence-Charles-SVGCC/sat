@@ -129,6 +129,15 @@ else
               </ul>
             </li>
             <li class="active treeview">
+              <a href="">
+                <i class="fa fa-mortar-board"></i> <span>Programmes</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programme-catalog/index'])?>"><i class="fa fa-circle-o"></i>Programme Catalog</a></li>
+              </ul>
+            </li>
+            <li class="active treeview">
               <a href="#">
                 <i class="fa fa-cogs"></i>
                 <span>General</span>

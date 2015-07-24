@@ -45,6 +45,9 @@ return [
                 'payments' => [
                     'class' => 'app\subcomponents\payments\PaymentsModule',
                 ],
+                'programmes' => [
+                    'class' => 'app\subcomponents\programmes\ProgrammesModule',
+                ],
               ]
           ]
     ]

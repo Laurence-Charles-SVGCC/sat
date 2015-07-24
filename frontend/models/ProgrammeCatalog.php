@@ -12,11 +12,16 @@ use Yii;
  * @property string $qualificationtypeid
  * @property string $departmentid
  * @property string $creationdate
- * @property string $speciialisation
+ * @property string $specialisation
  * @property integer $duration
  * @property string $name
  * @property boolean $isactive
  * @property boolean $isdeleted
+ *
+ * @property AcademicOffering[] $academicOfferings
+ * @property ExaminationBody $examinationbody
+ * @property QualificationType $qualificationtype
+ * @property Department $department
  */
 class ProgrammeCatalog extends \yii\db\ActiveRecord
 {
@@ -34,11 +39,11 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['examinationbodyid', 'qualificationtypeid', 'departmentid', 'creationdate', 'speciialisation', 'duration', 'name'], 'required'],
+            [['examinationbodyid', 'qualificationtypeid', 'departmentid', 'creationdate', 'duration', 'name'], 'required'],
             [['examinationbodyid', 'qualificationtypeid', 'departmentid', 'duration'], 'integer'],
             [['creationdate'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['speciialisation', 'name'], 'string', 'max' => 45]
+            [['specialisation', 'name'], 'string', 'max' => 45]
         ];
     }
 
@@ -49,15 +54,47 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     {
         return [
             'programmecatalogid' => 'Programmecatalogid',
-            'examinationbodyid' => 'Examinationbodyid',
-            'qualificationtypeid' => 'Qualificationtypeid',
-            'departmentid' => 'Departmentid',
-            'creationdate' => 'Creationdate',
-            'speciialisation' => 'Speciialisation',
-            'duration' => 'Duration',
+            'examinationbodyid' => 'Examination Body',
+            'qualificationtypeid' => 'Qualification Type',
+            'departmentid' => 'Department',
+            'creationdate' => 'Date Created',
+            'specialisation' => 'Specialisation',
+            'duration' => 'Duration (Years)',
             'name' => 'Name',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAcademicOfferings()
+    {
+        return $this->hasMany(AcademicOffering::className(), ['programmecatalogid' => 'programmecatalogid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getExaminationbody()
+    {
+        return $this->hasOne(ExaminationBody::className(), ['examinationbodyid' => 'examinationbodyid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQualificationtype()
+    {
+        return $this->hasOne(QualificationType::className(), ['qualificationtypeid' => 'qualificationtypeid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDepartment()
+    {
+        return $this->hasOne(Department::className(), ['departmentid' => 'departmentid']);
     }
 }

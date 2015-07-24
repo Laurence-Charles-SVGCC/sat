@@ -17,6 +17,7 @@ $this->title = 'SVGCC Administrative Terminal';
                 <h2>Registrar</h2>
                 <?= Html::a('Manage Application Periods', ['application-period/index'], ['class' => 'btn btn-success']) ?>
                 <?= Html::a('Manage Academic Offerings', ['academic-offering/index'], ['class' => 'btn btn-success']) ?>
+                <?= Html::a('Manage Academic Status', ['application-status/index'], ['class' => 'btn btn-success']) ?>
             </div>
             
             <div class="col-lg-4">
