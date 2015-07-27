@@ -3,17 +3,14 @@
 namespace frontend\models;
 
 use Yii;
+use common\models\User;
 
 /**
  * This is the model class for table "applicant".
  *
  * @property string $applicantid
- * @property string $contactinfoid
  * @property string $applicantstatustypeid
  * @property string $personid
- * @property string $nationalityid
- * @property string $placeofbirthid
- * @property string $religionid
  * @property string $potentialstudentid
  * @property string $title
  * @property string $firstname
@@ -28,6 +25,13 @@ use Yii;
  * @property string $otherinterests
  * @property boolean $isactive
  * @property boolean $isdeleted
+ * @property string $maritalstatus
+ * @property string $nationality
+ * @property string $religion
+ * @property string $placeofbirth
+ *
+ * @property ApplicantStatusType $applicantstatustype
+ * @property Person $person
  */
 class Applicant extends \yii\db\ActiveRecord
 {
@@ -45,15 +49,15 @@ class Applicant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contactinfoid', 'personid', 'nationalityid', 'placeofbirthid', 'religionid', 'potentialstudentid', 'title', 'firstname', 'middlename', 'lastname', 'gender', 'dateofbirth', 'photopath', 'sponsorname', 'clubs'], 'required'],
-            [['contactinfoid', 'applicantstatustypeid', 'personid', 'nationalityid', 'placeofbirthid', 'religionid', 'potentialstudentid'], 'integer'],
+            [['applicantstatustypeid', 'personid', 'potentialstudentid'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['bursarystatus', 'isactive', 'isdeleted'], 'boolean'],
             [['clubs', 'otherinterests'], 'string'],
             [['title'], 'string', 'max' => 3],
-            [['firstname', 'middlename', 'lastname', 'sponsorname'], 'string', 'max' => 45],
+            [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],
             [['gender'], 'string', 'max' => 6],
-            [['photopath'], 'string', 'max' => 100]
+            [['photopath'], 'string', 'max' => 100],
+            [['maritalstatus'], 'string', 'max' => 15]
         ];
     }
 
@@ -64,12 +68,8 @@ class Applicant extends \yii\db\ActiveRecord
     {
         return [
             'applicantid' => 'Applicantid',
-            'contactinfoid' => 'Contactinfoid',
             'applicantstatustypeid' => 'Applicantstatustypeid',
             'personid' => 'Personid',
-            'nationalityid' => 'Nationalityid',
-            'placeofbirthid' => 'Placeofbirthid',
-            'religionid' => 'Religionid',
             'potentialstudentid' => 'Potentialstudentid',
             'title' => 'Title',
             'firstname' => 'Firstname',
@@ -84,6 +84,26 @@ class Applicant extends \yii\db\ActiveRecord
             'otherinterests' => 'Otherinterests',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
+            'maritalstatus' => 'Maritalstatus',
+            'nationality' => 'Nationality',
+            'religion' => 'Religion',
+            'placeofbirth' => 'Placeofbirth',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplicantstatustype()
+    {
+        return $this->hasOne(ApplicantStatusType::className(), ['applicantstatustypeid' => 'applicantstatustypeid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPerson()
+    {
+        return $this->hasOne(User::className(), ['username' => 'personid']);
     }
 }
