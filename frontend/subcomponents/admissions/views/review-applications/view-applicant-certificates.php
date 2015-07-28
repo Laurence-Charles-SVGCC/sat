@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if ($status_name != "referred"): ?>
             <?= Html::submitButton('Refer', ['class' => 'btn btn-primary', 'name'=>'refer']) ?>
         <?php endif; ?>
-        <?= Html::submitButton('Offer to Other Programme', ['class' => 'btn btn-primary', 'name'=>'other_offer']) ?>
+
         <?php ActiveForm::end(); ?>
     </p>
 
