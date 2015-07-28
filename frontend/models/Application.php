@@ -37,7 +37,7 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'academicofferingid', 'applicationdate', 'ordering', 'ipaddress', 'browseragent'], 'required'],
+            [['personid', 'academicofferingid', 'applicationdate', 'ordering'], 'required'],
             [['personid', 'academicofferingid', 'ordering'], 'integer'],
             [['applicationdate'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],

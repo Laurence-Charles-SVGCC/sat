@@ -72,31 +72,40 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     
     <p>
-        <?php ActiveForm::begin(); ?>
+        <?php ActiveForm::begin(
+                [
+                    'action' => Url::to(['review-applications/process-application']),
+                ]
+          ); ?>
         <?= Html::hiddenInput('applicationid', $applicationid); ?>
         <?= Html::hiddenInput('application_status', $application_status); ?>
+        <?= Html::hiddenInput('firstname', $firstname); ?>
+        <?= Html::hiddenInput('middlename', $middlename); ?>
+        <?= Html::hiddenInput('lastname', $lastname); ?>
+        <?= Html::hiddenInput('programme', $programme); ?>
+        <?= Html::hiddenInput('applicantid', $applicantid); ?>
         <?php $app_status = ApplicationStatus::find()->where(['applicationstatusid' => $application_status])->one();
                 $status_name = $app_status ? $app_status->name : ''; ?>
         <?php //Implement change in way the offer button shows, i.e interview offer if programme is such ?>
-        <?php if ($status_name != "offer"): ?>
+        <?php if (strcasecmp($status_name, "offer")): ?>
             <?= Html::submitButton('Make Offer', ['class' => 'btn btn-success', 'name'=>'make_offer']) ?>
         <?php endif; ?>
-        <?php if ($status_name != "interviewOffer"): ?>
+        <?php if (strcasecmp($status_name, "interviewOffer")): ?>
             <?= Html::submitButton('Interview', ['class' => 'btn btn-success', 'name'=>'interview']) ?>
         <?php endif; ?>
-        <?php if ($status_name != "shortlist"): ?>
+        <?php if (strcasecmp($status_name, "shortlist")): ?>
             <?= Html::submitButton('Shortlist', ['class' => 'btn btn-primary', 'name'=>'shortlist']) ?>
         <?php endif; ?>
-        <?php if ($status_name != "borderline"): ?>
+        <?php if (strcasecmp($status_name, "borderline")): ?>
             <?= Html::submitButton('Borderline', ['class' => 'btn btn-primary', 'name'=>'borderline']) ?>
         <?php endif; ?>
-        <?php if ($status_name != "rejected"): ?>
+        <?php if (strcasecmp($status_name, "rejected")): ?>
             <?= Html::submitButton('Reject', ['class' => 'btn btn-primary', 'name'=>'reject']) ?>
         <?php endif; ?>
-        <?php if ($status_name != "referred"): ?>
+        <?php if (strcasecmp($status_name, "referred")): ?>
             <?= Html::submitButton('Refer', ['class' => 'btn btn-primary', 'name'=>'refer']) ?>
         <?php endif; ?>
-
+        <?= Html::submitButton('Alternate Offer', ['class' => 'btn btn-primary', 'name'=>'alternate_offer']) ?>
         <?php ActiveForm::end(); ?>
     </p>
 

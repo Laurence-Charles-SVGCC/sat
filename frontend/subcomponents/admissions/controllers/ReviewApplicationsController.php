@@ -13,6 +13,10 @@ use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 use frontend\models\Offer;
 use frontend\models\ApplicationStatus;
+use frontend\models\ApplicationCapesubject;
+use frontend\models\Department;
+use frontend\models\CapeSubjectGroup;
+use frontend\models\CapeGroup;
 
 
 class ReviewApplicationsController extends \yii\web\Controller
@@ -74,10 +78,9 @@ class ReviewApplicationsController extends \yii\web\Controller
             
             $app_details['subjects_no'] = self::getSubjectsCount($application->personid);
             $app_details['ones_no'] = self::getSubjectGradesCount($application->personid, 1);
-            $app_details['twos_no'] = self::getSubjectGradesCount($application->personid, 2);;
-            $app_details['threes_no'] = self::getSubjectGradesCount($application->personid, 3);;
-            
-            
+            $app_details['twos_no'] = self::getSubjectGradesCount($application->personid, 2);
+            $app_details['threes_no'] = self::getSubjectGradesCount($application->personid, 3);
+           
             $data[] = $app_details;
         }
         $dataProvider = new ArrayDataProvider([
@@ -212,7 +215,8 @@ class ReviewApplicationsController extends \yii\web\Controller
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton
     */
-    public function actionViewApplicantCertificates($applicantid, $firstname, $middlename, $lastname, $programme, $application_status)
+    public function actionViewApplicantCertificates($applicantid, $firstname, $middlename, $lastname, 
+            $programme, $application_status, $applicationid)
     {
         $certificates = self::getSubjects($applicantid);
         $dataProvider = new ArrayDataProvider([
@@ -232,6 +236,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                     'lastname' => $lastname,
                     'programme' => $programme,
                     'application_status' => $application_status,
+                    'applicationid' => $applicationid,
                     'dataProvider' => $dataProvider,
                 ]);
     }
@@ -245,14 +250,24 @@ class ReviewApplicationsController extends \yii\web\Controller
     {
         if (Yii::$app->request->post())
         {
+            //Get user's division_id from session
+            $division_id = 4;
+            
             $request = Yii::$app->request;
+            //Hidden variables needed for redirection
+            $applicantid = $request->post('applicantid');
+            $firstname = $request->post('firstname');
+            $middlename = $request->post('middlename'); 
+            $lastname = $request->post('lastname'); 
+            $programme = $request->post('programme');  
+            $applicationid = $request->post('applicationid');
+            
             $application_status = $request->post('application_status');
-            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
+            $application = Application::findOne(['applicationid' => $applicationid]);
             if ($request->post('make_offer') === '')
             {
-                $offer = new Offer();
-                $offer->applicationid = $request->post('applicationid');
-                $offer->offerstatusid = 1; //What is this?
+                /*$offer = new Offer();
+                $offer->applicationid = $applicationid;
                 $offer->issuedby = Yii::$app->user->getId();
                 $offer->issuedate = date("Y-m-d");
                 if ($offer->save())
@@ -265,6 +280,11 @@ class ReviewApplicationsController extends \yii\web\Controller
                         return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                             'application_status' => $application_status]));
                     }
+                }*/
+                if (self::actionMakeOffer($applicationid, False))
+                {
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                            'application_status' => $application_status]));
                 }
                 Yii::$app->session->setFlash('error', 'Offer could not be added');
             }
@@ -278,7 +298,6 @@ class ReviewApplicationsController extends \yii\web\Controller
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Application could not be updated');
             }
             if ($request->post('shortlist') === '')
             {
@@ -290,7 +309,6 @@ class ReviewApplicationsController extends \yii\web\Controller
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Application could not be updated');
             }
             if ($request->post('borderline') === '')
             {
@@ -302,7 +320,6 @@ class ReviewApplicationsController extends \yii\web\Controller
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Application could not be updated');
             }
             if ($request->post('reject') === '')
             {
@@ -314,7 +331,6 @@ class ReviewApplicationsController extends \yii\web\Controller
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Application could not be updated');
             }
             if ($request->post('refer') === '')
             {
@@ -326,19 +342,161 @@ class ReviewApplicationsController extends \yii\web\Controller
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Application could not be updated');
+            }
+            if ($request->post('alternate_offer') === '')
+            {
+                //Personid will need to be changed when db changes take effect
+                $applications = Application::find()->where(['personid' => $applicantid])->all();
+                $data = array();
+                foreach($applications as $application)
+                {
+                    $app_details = array();
+                    $programme = ProgrammeCatalog::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                        ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->where(['application.applicationid' => $application->applicationid])->one();
+                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                    
+                    $programme_division = $programme->getDepartment()->one()->divisionid;
+
+                    $app_details['order'] = $application->ordering;
+                    $app_details['applicationid'] = $application->applicationid;
+                    $app_details['programme_name'] = $programme->name;
+                    $app_details['subjects'] = implode(' ,', $cape_subjects);
+                    $app_details['offerable'] = $programme_division == $division_id;
+
+                    $data[] = $app_details;
+                }
+                $dataProvider = new ArrayDataProvider([
+                    'allModels' => $data,
+                    'pagination' => [
+                        'pageSize' => 5,
+                    ],
+                ]);
+                $programmes = ProgrammeCatalog::find()
+                    ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['application_period.isactive' => 1, 'application_period.divisionid' => $division_id])
+                    ->all();
+                
+                //Cape group information
+                $cape_data = array();
+                $cape_grps = CapeGroup::findall(['cape_group.isactive' => 1]);
+                foreach ($cape_grps as $grp)
+                {
+                    $cape_data[$grp->name] = CapeSubjectGroup::findAll(['capegroupid' => $grp->capegroupid]);
+                }
+                return $this->render('alternate-offer', 
+                       [        
+                            'dataProvider' => $dataProvider, 
+                            'programmes' => $programmes,
+                           'cape_data' => $cape_data,
+                           'division_id' => $division_id,
+                           'application_status' => $application_status,
+                           'firstname' => $firstname,
+                           'middlename' => $middlename,
+                           'lastname' => $lastname,
+                           'applicantid' => $applicantid,
+                       ]
+                    );
+            }
+            Yii::$app->session->setFlash('error', 'Application status could not be updated');
+            return $this->redirect(Url::to(['review-applications/view-applicant-certificates', 'applicantid'=> $applicantid, 
+                    'firstname' => $firstname, 'middlename' => $middlename, 'lastname'=> $lastname, 
+                    'programme' => $programme, 'application_status' => $application_status, 'applicationid' => $applicationid
+                ]));
+        }
+        return $this->redirect(Url::to(['review-applications/index']));
+    }
+
+    public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='')
+    {
+        $application = Application::findOne(['applicationid' => $applicationid]);
+        $offer = new Offer();
+        $offer->applicationid = $applicationid;
+        $offer->issuedby = Yii::$app->user->getId();
+        $offer->issuedate = date("Y-m-d");
+        if ($offer->save())
+        {
+            $app_status = ApplicationStatus::findOne(['name' => 'offer']);
+            $application->applicationstatusid = $app_status->applicationstatusid;
+            if ($application->save())
+            {
+                Yii::$app->session->setFlash('success', 'Offer Added');
+                if ($redirect && $application_status && $division_id)
+                {
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                        'application_status' => $application_status]));
+                }
+                else
+                {
+                    return True;
+                }
             }
         }
+        return False;
     }
 
-    public function actionViewPending()
+    public function actionAlternateOffer()
     {
-        return $this->render('view-pending');
-    }
-
-    public function actionViewRejected()
-    {
-        return $this->render('view-rejected');
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $applicantid = $request->post('applicantid');
+            $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+            $applicant_personid =  $applicant ? $applicant->personid : Yii::$app->session->setFlash('error', 'Applicant not found');
+            $app_count = Application::find()->where(['personid' => $applicant_personid])->count();
+            
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $request->post('programme')]);
+            $prog_name = $programme ? $programme->name : Yii::$app->session->setFlash('error', 'Programme not found');   
+            $application = new Application();
+            $application->personid =  $applicantid; // Correct Way: $applicant_personid
+            $application->academicofferingid = AcademicOffering::findOne(['programmecatalogid' => $request->post('programme'), 'isactive' =>1])
+                    ->academicofferingid;
+            $application->applicationstatusid = ApplicationStatus::findOne(['name' => 'offer'])->applicationstatusid;
+            $application->applicationdate = date("Y-m-d");
+            $application->ordering =  $app_count >= 3 ? $app_count + 1 : 3;
+            $application->ipaddress = $request->getUserIP() ;
+            $application->browseragent = $request->getUserAgent();
+            if ($application->save())
+            {
+                $cape_success = True;
+                if (strcasecmp($prog_name, "cape"))
+                {
+                    //Deal with Cape Subjects
+                    $groups_used = array();
+                    foreach($request->post('cape_subject') as $key=>$value)
+                    {
+                        $groupid = CapeSubjectGroup::findOne(['capesubjectid' => $key])->capegroupid;
+                        if (!in_array($groupid, $groups_used))
+                        {
+                            array_push($groups_used, $groupid);
+                            $application_cape = new ApplicationCapesubject();
+                            $application_cape->applicationid = $application->applicationid;
+                            $application_cape->capesubjectid = $key;
+                            if (!$application_cape->save())
+                            {
+                                Yii::$app->session->setFlash('error', 'Cape Subject could not be added');
+                                $cape_success = False;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            Yii::$app->session->setFlash('error', 'Subjects from the same group selected');
+                            $cape_success = False;
+                            break;
+                        }
+                    }
+                }
+                if ($cape_success)
+                {
+                    return self::actionMakeOffer($application->applicationid, $redirect = True, $request->post('division_id'),
+                            $request->post('application_status'));
+                }
+            }
+        }
+        return $this->redirect(Url::to(['review-applications/index']));
     }
 
     public function actionViewShortlist()

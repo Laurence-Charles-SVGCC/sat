@@ -5,28 +5,25 @@ namespace frontend\models;
 use Yii;
 
 /**
- * This is the model class for table "offer".
+ * This is the model class for table "application_capesubject".
  *
- * @property string $offerid
+ * @property string $applicationcapesubjectid
  * @property string $applicationid
- * @property string $issuedby
- * @property string $issuedate
- * @property string $revokedby
- * @property string $revokedate
- * @property boolean $ispublished
+ * @property string $capesubjectid
  * @property boolean $isactive
  * @property boolean $isdeleted
  *
  * @property Application $application
+ * @property CapeSubject $capesubject
  */
-class Offer extends \yii\db\ActiveRecord
+class ApplicationCapesubject extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'offer';
+        return 'application_capesubject';
     }
 
     /**
@@ -35,10 +32,9 @@ class Offer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['applicationid', 'issuedby', 'issuedate'], 'required'],
-            [['applicationid', 'issuedby', 'revokedby'], 'integer'],
-            [['issuedate', 'revokedate'], 'safe'],
-            [['ispublished', 'isactive', 'isdeleted'], 'boolean']
+            [['applicationid', 'capesubjectid'], 'required'],
+            [['applicationid', 'capesubjectid'], 'integer'],
+            [['isactive', 'isdeleted'], 'boolean']
         ];
     }
 
@@ -48,13 +44,9 @@ class Offer extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'offerid' => 'Offerid',
+            'applicationcapesubjectid' => 'Applicationcapesubjectid',
             'applicationid' => 'Applicationid',
-            'issuedby' => 'Issuedby',
-            'issuedate' => 'Issuedate',
-            'revokedby' => 'Revokedby',
-            'revokedate' => 'Revokedate',
-            'ispublished' => 'Ispublished',
+            'capesubjectid' => 'Capesubjectid',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
@@ -66,5 +58,13 @@ class Offer extends \yii\db\ActiveRecord
     public function getApplication()
     {
         return $this->hasOne(Application::className(), ['applicationid' => 'applicationid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCapesubject()
+    {
+        return $this->hasOne(CapeSubject::className(), ['capesubjectid' => 'capesubjectid']);
     }
 }
