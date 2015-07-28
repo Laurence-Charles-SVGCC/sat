@@ -12,6 +12,7 @@ use frontend\models\AcademicOffering;
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 use frontend\models\Offer;
+use frontend\models\ApplicationStatus;
 
 
 class ReviewApplicationsController extends \yii\web\Controller
@@ -246,6 +247,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         {
             $request = Yii::$app->request;
             $application_status = $request->post('application_status');
+            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
             if ($request->post('make_offer') === '')
             {
                 $offer = new Offer();
@@ -255,11 +257,76 @@ class ReviewApplicationsController extends \yii\web\Controller
                 $offer->issuedate = date("Y-m-d");
                 if ($offer->save())
                 {
-                    Yii::$app->session->setFlash('success', 'Offer Added');
+                    $app_status = ApplicationStatus::findOne(['name' => 'offer']);
+                    $application->applicationstatusid = $app_status->applicationstatusid;
+                    if ($application->save())
+                    {
+                        Yii::$app->session->setFlash('success', 'Offer Added');
+                        return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                            'application_status' => $application_status]));
+                    }
+                }
+                Yii::$app->session->setFlash('error', 'Offer could not be added');
+            }
+            if ($request->post('interview') === '')
+            {
+                $app_status = ApplicationStatus::findOne(['name' => 'interview']);
+                $application->applicationstatusid = $app_status->applicationstatusid;
+                if ($application->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Application Updated');
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
                 }
-                Yii::$app->session->setFlash('error', 'Offer could not be added');
+                Yii::$app->session->setFlash('error', 'Application could not be updated');
+            }
+            if ($request->post('shortlist') === '')
+            {
+                $app_status = ApplicationStatus::findOne(['name' => 'shortlist']);
+                $application->applicationstatusid = $app_status->applicationstatusid;
+                if ($application->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Application Updated');
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                        'application_status' => $application_status]));
+                }
+                Yii::$app->session->setFlash('error', 'Application could not be updated');
+            }
+            if ($request->post('borderline') === '')
+            {
+                $app_status = ApplicationStatus::findOne(['name' => 'borderline']);
+                $application->applicationstatusid = $app_status->applicationstatusid;
+                if ($application->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Application Updated');
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                        'application_status' => $application_status]));
+                }
+                Yii::$app->session->setFlash('error', 'Application could not be updated');
+            }
+            if ($request->post('reject') === '')
+            {
+                $app_status = ApplicationStatus::findOne(['name' => 'reject']);
+                $application->applicationstatusid = $app_status->applicationstatusid;
+                if ($application->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Application Updated');
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                        'application_status' => $application_status]));
+                }
+                Yii::$app->session->setFlash('error', 'Application could not be updated');
+            }
+            if ($request->post('refer') === '')
+            {
+                $app_status = ApplicationStatus::findOne(['name' => 'referred']);
+                $application->applicationstatusid = $app_status->applicationstatusid;
+                if ($application->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Application Updated');
+                    return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                        'application_status' => $application_status]));
+                }
+                Yii::$app->session->setFlash('error', 'Application could not be updated');
             }
         }
     }
