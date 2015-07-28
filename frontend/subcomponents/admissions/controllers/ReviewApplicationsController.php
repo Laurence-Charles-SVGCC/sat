@@ -21,6 +21,11 @@ use frontend\models\CapeGroup;
 
 class ReviewApplicationsController extends \yii\web\Controller
 {   
+    /*
+    * Purpose: Displays dashboard for reviewing offers
+    * Created: 24/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
     public function actionIndex()
     {
         //Determine user's division_id
@@ -244,7 +249,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     /*
     * Purpose: Implements various decisions to be done to application 
     * Created: 27/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
+    * Last Modified: 28/07/2015 by Gamal Crichton
     */
     public function actionProcessApplication()
     {
@@ -266,6 +271,7 @@ class ReviewApplicationsController extends \yii\web\Controller
             $application = Application::findOne(['applicationid' => $applicationid]);
             if ($request->post('make_offer') === '')
             {
+                //Remove once calling function to o this is tested and debugged
                 /*$offer = new Offer();
                 $offer->applicationid = $applicationid;
                 $offer->issuedby = Yii::$app->user->getId();
@@ -409,6 +415,11 @@ class ReviewApplicationsController extends \yii\web\Controller
         return $this->redirect(Url::to(['review-applications/index']));
     }
 
+    /*
+    * Purpose: Make an offer to an applicant for a given application
+    * Created: 28/07/2015 by Gamal Crichton
+    * Last Modified: 28/07/2015 by Gamal Crichton
+    */
     public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='')
     {
         $application = Application::findOne(['applicationid' => $applicationid]);
@@ -437,6 +448,11 @@ class ReviewApplicationsController extends \yii\web\Controller
         return False;
     }
 
+    /*
+    * Purpose: Allows an offer to be made to a programme which applicant did not apply for.
+    * Created: 28/07/2015 by Gamal Crichton
+    * Last Modified: 28/07/2015 by Gamal Crichton
+    */
     public function actionAlternateOffer()
     {
         if (Yii::$app->request->post())
