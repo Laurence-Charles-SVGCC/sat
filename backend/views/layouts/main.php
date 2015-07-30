@@ -6,7 +6,7 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
 use frontend\models\Employee;
-use common\models\User;
+use frontend\models\EmployeeTitle;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -14,19 +14,19 @@ use common\models\User;
 AppAsset::register($this);
 
 //Get User information
-$person = Employee::find()->where(['personid' => Yii::$app->user->identity->username])->one();
-if ($person)
+$employee = Employee::find()->where(['personid' => Yii::$app->user->getId()])->one();
+if ($employee)
 {
-    $emp_firstname = $person->firstname; 
-    $emp_lastname = $person->lastname;
-    $emp_username = $person->personid;
-    //TODO: Get Job description from Database
-    $job_title = 'Job Title';
+    $emp_firstname = $employee->firstname; 
+    $emp_lastname = $employee->lastname;
+    $emp_username = Yii::$app->user->identity->username;
+    $emp_title = EmployeeTitle::findOne(['employeetitleid' => $employee->employeetitleid]);
+    $job_title = $emp_title ? $emp_title->name : 'Undefined Job Title';
 }
 else
 {
     $emp_firstname = $emp_lastname = $emp_username = 'Undefined'; 
-    $job_title = 'Job Title';
+    $job_title = 'Undefined Job Title';
 }
 ?>
 
@@ -154,22 +154,22 @@ else
                 <li><a href="<?= Url::toRoute(['/auth-item/index'])?>"><i class="fa fa-circle-o"></i>Manage Roles and Permissions</a></li>
                 <li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
                 <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
+                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Assign Roles and Permissions</a></li>
               </ul>
             </li>
-            <!--<li class="active treeview">
+            <li class="active treeview">
               <a href="">
                 <i class="fa fa-dashboard"></i> <span>Users</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li class="active"><a href="<?= Url::toRoute(['/rbac/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-item/index'])?>"><i class="fa fa-circle-o"></i>Manage Roles and Permissions</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
+                <li class="active"><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create User</a></li>
+                <!--<li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
                 <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
+                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
               </ul>
             </li>
-            <li class="treeview">
+            <!--<li class="treeview">
               <a href="#">
                 <i class="fa fa-files-o"></i>
                 <span>Miscellaneous</span>

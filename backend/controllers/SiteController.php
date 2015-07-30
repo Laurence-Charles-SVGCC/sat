@@ -8,7 +8,7 @@ use common\models\LoginForm;
 use yii\filters\VerbFilter;
 use backend\models\SignupForm;
 use frontend\models\Employee;
-use frontend\models\ContactInfo;
+use frontend\models\Email;
 use common\models\User;
 
 /**
@@ -103,13 +103,13 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $employee_model->load(Yii::$app->request->post())) {
             $username = $this->createUsername();
             if ($user = $model->signup($username)) {
-                $contact = new ContactInfo();
-                $contact->email = $model->email;
-                $contact->personid = $user->username;
-                if ($contact->save())
+                $email = new Email();
+                $email->emailaddress = $model->email;
+                $email->personid = $user->personid;
+                $email->priority = 1;
+                if ($email->save())
                 {
-                    $employee_model->personid = $user->username;
-                    $employee_model->contactinfoid = $contact->getPrimaryKey();
+                    $employee_model->personid = $user->personid;
                     if ($employee_model->save() && Yii::$app->getUser()->login($user)) {
                         return $this->goHome();
                     }
@@ -128,7 +128,7 @@ class SiteController extends Controller
     * Created: 13/07/2015 by Gamal Crichton
     * Last Modified: 14/07/2015 by Gamal Crichton
     */
-    private function createUsername()
+    public static function createUsername()
     {
         $last_user = User::find()->orderBy('personid DESC', 'desc')->one();
         $num = $last_user ? strval($last_user->personid + 1) : 1;

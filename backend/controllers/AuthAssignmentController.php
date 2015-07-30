@@ -65,11 +65,20 @@ class AuthAssignmentController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
         }
+        
+        $employees = \frontend\models\Employee::find()->all();
+        $data = array();
+        foreach ($employees as $employee)
+        {
+            $data[$employee->personid] = $employee->firstname . " " . $employee->lastname;
+        }
+        
+        return $this->render('create', [
+            'model' => $model,
+            'employees' => $data,
+        ]);
+        
     }
 
     /**

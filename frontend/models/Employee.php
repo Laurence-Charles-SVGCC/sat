@@ -9,18 +9,17 @@ use Yii;
  *
  * @property string $employeeid
  * @property string $personid
- * @property string $contactinfoid
- * @property string $maritalstatusid
  * @property string $employeetitleid
- * @property string $religionid
- * @property string $placeofbirthid
- * @property string $nationalityid
  * @property string $title
  * @property string $firstname
  * @property string $middlename
  * @property string $lastname
  * @property string $gender
  * @property string $dateofbirth
+ * @property string $maritalstatus
+ * @property string $nationality
+ * @property string $religion
+ * @property string $placeofbirth
  * @property string $photopath
  * @property string $nationalidnumber
  * @property string $nationalinsurancenumber
@@ -28,6 +27,9 @@ use Yii;
  * @property string $signaturepath
  * @property boolean $isactive
  * @property boolean $isdeleted
+ *
+ * @property EmployeeTitle $employeetitle
+ * @property Person $person
  */
 class Employee extends \yii\db\ActiveRecord
 {
@@ -45,13 +47,12 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'contactinfoid', 'firstname', 'lastname'], 'required'],
-            [['firstname', 'lastname'], 'string', 'min' => 2, 'max' => 255],
-            [['personid', 'contactinfoid', 'maritalstatusid', 'employeetitleid', 'religionid', 'placeofbirthid', 'nationalityid'], 'integer'],
+            [['personid', 'firstname', 'lastname'], 'required'],
+            [['personid', 'employeetitleid'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
             [['title'], 'string', 'max' => 3],
-            [['firstname', 'middlename', 'lastname', 'nationalidnumber', 'nationalinsurancenumber', 'inlandrevenuenumber'], 'string', 'max' => 45],
+            [['firstname', 'middlename', 'lastname', 'maritalstatus', 'nationality', 'religion', 'placeofbirth', 'nationalidnumber', 'nationalinsurancenumber', 'inlandrevenuenumber'], 'string', 'max' => 45],
             [['gender'], 'string', 'max' => 6],
             [['photopath', 'signaturepath'], 'string', 'max' => 100]
         ];
@@ -65,25 +66,40 @@ class Employee extends \yii\db\ActiveRecord
         return [
             'employeeid' => 'Employeeid',
             'personid' => 'Personid',
-            'contactinfoid' => 'Contactinfoid',
-            'maritalstatusid' => 'Maritalstatusid',
-            'employeetitleid' => 'Employeetitleid',
-            'religionid' => 'Religionid',
-            'placeofbirthid' => 'Placeofbirthid',
-            'nationalityid' => 'Nationalityid',
+            'employeetitleid' => 'Job Title',
             'title' => 'Title',
-            'firstname' => 'Firstname',
-            'middlename' => 'Middlename',
-            'lastname' => 'Lastname',
+            'firstname' => 'First Name',
+            'middlename' => 'Middle Name(s)',
+            'lastname' => 'Last Name',
             'gender' => 'Gender',
-            'dateofbirth' => 'Dateofbirth',
-            'photopath' => 'Photopath',
-            'nationalidnumber' => 'Nationalidnumber',
-            'nationalinsurancenumber' => 'Nationalinsurancenumber',
-            'inlandrevenuenumber' => 'Inlandrevenuenumber',
-            'signaturepath' => 'Signaturepath',
-            'isactive' => 'Isactive',
-            'isdeleted' => 'Isdeleted',
+            'dateofbirth' => 'Date of Birth',
+            'maritalstatus' => 'Marital Status',
+            'nationality' => 'Nationality',
+            'religion' => 'Religion',
+            'placeofbirth' => 'Place of Birth',
+            'photopath' => 'Photo Path',
+            'nationalidnumber' => 'National ID Number',
+            'nationalinsurancenumber' => 'National Insurance Number',
+            'inlandrevenuenumber' => 'Inland Revenue Number',
+            'signaturepath' => 'Signature Path',
+            'isactive' => 'Active',
+            'isdeleted' => 'Deleted',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEmployeetitle()
+    {
+        return $this->hasOne(EmployeeTitle::className(), ['employeetitleid' => 'employeetitleid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPerson()
+    {
+        return $this->hasOne(Person::className(), ['personid' => 'personid']);
     }
 }
