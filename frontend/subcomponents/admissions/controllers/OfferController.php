@@ -8,11 +8,16 @@ use yii\data\ArrayDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use frontend\models\ApplicationPeriod;
 use frontend\models\Division;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\Applicant;
 use frontend\models\Employee;
+use frontend\models\ApplicationCapesubject;
+use frontend\models\Application;
+use frontend\models\ContactInfo;
+use frontend\models\ApplicationStatus;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -197,6 +202,7 @@ class OfferController extends Controller
         //Get Division ID
         $division_id = 4;
         
+        $mail_error = False;
         $offers = Offer::find()
                 ->joinWith('application')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -211,52 +217,83 @@ class OfferController extends Controller
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
             $division = Division::findOne(['divisionid' => $application->divisionid]);
+            $contact = ContactInfo::findOne(['personid' => $applicant->personid, 'isdeleted' => 0]);
             
             $divisioname = $division->name;
             $firstname = $applicant->firstname;
             $lastname = $applicant->lastname;
             $programme_name = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects);
-            $email = $applicant->email;
+            $email = $contact ? $contact->email : '';
             
-            if (self::publishOffer($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application'))
+            if (!empty($email))
             {
-                $offer->ispublished = 1;
-                $offer->save();
+                if (self::publishOffer($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application'))
+                {
+                    $offer->ispublished = 1;
+                    $offer->save();
+                }
+                else
+                {
+                    $mail_error = True;
+                }
             }
         }
+        if ($mail_error)
+        {
+            sleep(Yii::$app->params['admissionsEmailInterval']);
+            Yii::$app->session->setFlash('error', 'There were mail errors.');
+        }
+        $this->redirect(Url::to(['offer/index']));
     }
     
     /*
     * Purpose: Publishs all Rejects for a particular division for active application periods
     * Created: 29/07/2015 by Gamal Crichton
-    * Last Modified: 29/07/2015 by Gamal Crichton
+    * Last Modified: 30/07/2015 by Gamal Crichton
     */
     public function actionPublishRejects()
     {
         //Get Division ID
         $division_id = 4;
+        $mail_error = False;
+        $app_status = ApplicationStatus::findOne(['name' => 'rejected']);
+        if (!$app_status)
+        {
+            Yii::$app->session->setFlash('error', 'Application status not found');
+            return;
+        }
         
-        $applications = \frontend\models\Application::find()
+        $applications = Application::find()
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['application_period.divisionid' => $division_id, 'application_period.isactive' => 1])
+                ->where(['application_period.divisionid' => $division_id, 'application_period.isactive' => 1,
+                    'applicationstatusid' => $app_status->applicationstatusid])
                 ->all();
         
         foreach ($applications as $application)
         {
             $applicant = Applicant::findOne(['personid' => $application->personid]);
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-            $division = Division::findOne(['divisionid' => $application->divisionid]);
+            $contact = ContactInfo::findOne(['personid' => $applicant->personid, 'isdeleted' => 0]);
             
-            $divisioname = $division->name;
             $firstname = $applicant->firstname;
             $lastname = $applicant->lastname;
-            $programme_name = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects);
-            $email = $applicant->email;
+            $email = $contact ? $contact->email : '';
             
-            self::publishReject($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application');
+            if (!empty($email))
+            {
+                sleep(Yii::$app->params['admissionsEmailInterval']);
+                self::publishReject($firstname, $lastname, $email, 'Your SVGCC Application');
+            }
+            else
+            {
+                $mail_error = True;
+            }
         }
+        if ($mail_error)
+        {
+            Yii::$app->session->setFlash('error', 'There were mail errors.');
+        }
+        $this->redirect(Url::to(['offer/index']));
     }
     
     /*
@@ -268,7 +305,21 @@ class OfferController extends Controller
     {
        return Yii::$app->mailer->compose('@common/mail/publish-offer', ['first_name' => $firstname, 'last_name' => $lastname, 
            'programme' => $programme, 'division_name' => $divisioname])
-                ->setFrom('test@test.com')
+                ->setFrom(Yii::$app->params['admissionsEmail'])
+                ->setTo($email)
+                ->setSubject($subject)
+                ->send();
+    }
+    
+    /*
+    * Purpose: Publishes (email) a single rejection
+    * Created: 30/07/2015 by Gamal Crichton
+    * Last Modified: 30/07/2015 by Gamal Crichton
+    */
+    private function publishReject($firstname, $lastname, $email, $subject)
+    {
+       return Yii::$app->mailer->compose('@common/mail/publish-reject', ['first_name' => $firstname, 'last_name' => $lastname])
+                ->setFrom(Yii::$app->params['admissionsEmail'])
                 ->setTo($email)
                 ->setSubject($subject)
                 ->send();
