@@ -39,7 +39,7 @@ class UserController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => User::find(),
         ]);
-
+        
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);

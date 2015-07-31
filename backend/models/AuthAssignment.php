@@ -2,7 +2,6 @@
 
 namespace backend\models;
 
-use Yii;
 
 /**
  * This is the model class for table "auth_assignment".
@@ -22,6 +21,7 @@ class AuthAssignment extends \yii\db\ActiveRecord
     {
         return 'auth_assignment';
     }
+    
 
     /**
      * @inheritdoc

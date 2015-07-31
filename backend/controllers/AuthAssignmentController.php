@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use frontend\models\Employee;
 
 /**
  * AuthAssignmentController implements the CRUD actions for AuthAssignment model.
@@ -22,7 +23,7 @@ class AuthAssignmentController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
-            ],
+            ]
         ];
     }
 
@@ -63,11 +64,17 @@ class AuthAssignmentController extends Controller
     {
         $model = new AuthAssignment();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
+        if ($model->load(Yii::$app->request->post())) 
+        {
+            $model->created_at =  time();
+            if ($model->save())
+            {
+                return $this->redirect(['view', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
+            }
+            Yii::$app->session->setFlash('error', 'Permission or Role could not be assigned');
         }
         
-        $employees = \frontend\models\Employee::find()->all();
+        $employees = Employee::find()->all();
         $data = array();
         foreach ($employees as $employee)
         {

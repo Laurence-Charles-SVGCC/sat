@@ -3,10 +3,12 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+use frontend\models\Employee;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Auth Assignments';
+$this->title = 'Authorization Assignments';
 $this->params['breadcrumbs'][] = ['label' => 'RBAC', 'url' => ['rbac/index'] ];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -15,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Auth Assignment', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Assign Role or Permission', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -24,8 +26,26 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'item_name',
-            'user_id',
-            'created_at',
+            
+            [
+                'attribute' => 'user_id',
+                'label' => "User",
+                'format' => 'text',
+                'value' => function($model)
+                {
+                    $employee = Employee::findOne(['personid' => $model->user_id]);
+                    return $employee ? $employee->firstname . " " . $employee->lastname : $model->user_id; 
+                }
+            ],
+            [
+                'attribute' => 'created_at',
+                'label' => 'Date Created',
+                'format' => 'text',
+                'value' => function($model)
+                {
+                    return $model->created_at ? date('Y-m-d', $model->created_at) : 'Not Set'; 
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
