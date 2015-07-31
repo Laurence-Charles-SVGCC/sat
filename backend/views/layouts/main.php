@@ -157,16 +157,16 @@ else
                 <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Assign Roles and Permissions</a></li>
               </ul>
             </li>
-            <li class="active treeview">
+            <li class="treeview">
               <a href="">
                 <i class="fa fa-dashboard"></i> <span>Users</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create User</a></li>
-                <!--<li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
+                <li><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>Employees</a></li>
+                <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>Departments</a></li>
+                <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
               </ul>
             </li>
             <!--<li class="treeview">

@@ -29,7 +29,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     public function actionIndex()
     {
         //Determine user's division_id
-        $division_id = 4;
+        $division_id = Yii::$app->session->get('divisionid');
         
         if (Yii::$app->request->post())
         {
@@ -46,7 +46,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton
     */
-    public function actionViewByStatus($division_id, $application_status)
+    public function actionViewByStatus($application_status, $division_id)
     {
         $applications = Application::find()->where(['applicationstatusid' => $application_status])->all();
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
@@ -97,11 +97,15 @@ class ReviewApplicationsController extends \yii\web\Controller
                 'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no'],
                 ]
         ]);
-        
+        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        if ($division_id && $division_id == 1)
+        {
+            $prog_cond = array('application_period.isactive' => 1);
+        }
         $programmes = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application_period.isactive' => 1, 'application_period.divisionid' => $division_id])
+                ->where($prog_cond)
                 ->all();
         return $this->render('view-application-applicant',
             [
@@ -256,7 +260,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         if (Yii::$app->request->post())
         {
             //Get user's division_id from session
-            $division_id = 4;
+            $division_id = Yii::$app->session->get('divisionid');
             
             $request = Yii::$app->request;
             //Hidden variables needed for redirection
@@ -369,7 +373,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                     $app_details['applicationid'] = $application->applicationid;
                     $app_details['programme_name'] = $programme->name;
                     $app_details['subjects'] = implode(' ,', $cape_subjects);
-                    $app_details['offerable'] = $programme_division == $division_id;
+                    $app_details['offerable'] = ($programme_division == $division_id || $division_id == 1);
 
                     $data[] = $app_details;
                 }
@@ -379,10 +383,15 @@ class ReviewApplicationsController extends \yii\web\Controller
                         'pageSize' => 5,
                     ],
                 ]);
+                $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+                if ($division_id && $division_id == 1)
+                {
+                    $prog_cond = array('application_period.isactive' => 1);
+                }
                 $programmes = ProgrammeCatalog::find()
                     ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                    ->where(['application_period.isactive' => 1, 'application_period.divisionid' => $division_id])
+                    ->where($prog_cond)
                     ->all();
                 
                 //Cape group information

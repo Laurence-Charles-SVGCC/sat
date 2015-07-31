@@ -4,6 +4,8 @@ namespace common\models;
 use Yii;
 use yii\base\Model;
 
+use frontend\models\EmployeeDepartment;
+
 /**
  * Login form
  */
@@ -56,7 +58,19 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), 0);
+        {
+            //Set divisionID
+            $emp_department = EmployeeDepartment::findOne(['personid' => Yii::$app->user->getId()]);
+            $department = $emp_department ? $emp_department->getDepartment()->one() : NULL;
+            $division_id = $department ? $department->divisionid : NULL;
+            
+            if ($division_id)
+            {
+                Yii::$app->session->set('divisionid', $division_id);
+                return Yii::$app->user->login($this->getUser(), 60 * 60 * 5);
+            }
+            Yii::$app->session->setFlash('error', 'User not assigned a valid department');
+        }
         } else {
             return false;
         }

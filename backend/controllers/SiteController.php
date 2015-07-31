@@ -10,6 +10,7 @@ use backend\models\SignupForm;
 use frontend\models\Employee;
 use frontend\models\Email;
 use common\models\User;
+use frontend\models\Department;
 
 /**
  * Site controller
@@ -100,7 +101,7 @@ class SiteController extends Controller
         $model = new SignupForm();
         $employee_model = new Employee();
         
-        if ($model->load(Yii::$app->request->post()) && $employee_model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())) {
             $username = $this->createUsername();
             if ($user = $model->signup($username)) {
                 $email = new Email();
@@ -109,13 +110,27 @@ class SiteController extends Controller
                 $email->priority = 1;
                 if ($email->save())
                 {
+                    $employee_model = new Employee();
                     $employee_model->personid = $user->personid;
-                    if ($employee_model->save() && Yii::$app->getUser()->login($user)) {
-                        return $this->goHome();
+                    $employee_model->firstname = ucfirst($model->firstname);
+                    $employee_model->lastname = ucfirst($model->lastname);
+                    if ($employee_model->save()) 
+                    {
+                        $dep = Department::findone(['name' => 'e-college']);
+                        $department = new EmployeeDepartment();
+                        $department->departmentid = $dep ? $dep->departmentid : NULL;
+                        $department->personid = $user->personid;
+                        if ($dep && $department->save())
+                        {
+                            if (Yii::$app->getUser()->login($user)) 
+                            {
+                                return $this->goHome();
+                            }
+                        }
                     }
+                    Yii::$app->session->setFlash('error', 'Employee could not be saved.');
                 }
             }
-            
         }
         return $this->render('signup', [
             'model' => $model,

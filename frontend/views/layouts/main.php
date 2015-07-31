@@ -109,6 +109,7 @@ else
               <a href="">
                 <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
+             <?php if (Yii::$app->user->can('viewAdmissions')): ?>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
@@ -117,6 +118,7 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
               </ul>
+              <?php endif; ?>
             </li>
             <li class="active treeview">
               <a href="">

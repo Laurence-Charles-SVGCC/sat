@@ -12,6 +12,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use frontend\models\Employee;
 use frontend\models\Email;
+use frontend\models\EmployeeDepartment;
+use \backend\models\PersonType;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -36,8 +38,10 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        $persontype = PersonType::findOne(['persontype' => 'employee']);
+        $query = $persontype ? User::find()->where(['persontypeid' => $persontype->persontypeid]) : User::find();
         $dataProvider = new ActiveDataProvider([
-            'query' => User::find(),
+            'query' => $query,
         ]);
         
         return $this->render('index', [
@@ -70,7 +74,6 @@ class UserController extends Controller
         
         if ($model->load(Yii::$app->request->post())) 
         {   
-            //var_dump($model);
             $username = SiteController::createUsername();
             if ($user = $model->signup($username)) 
             {
@@ -86,9 +89,14 @@ class UserController extends Controller
                     $employee_model->lastname = ucfirst($model->lastname);
                     if ($employee_model->save()) 
                     {
-                        return $this->redirect(Url::to(['employee/update', 'id' => $employee_model->employeeid ]));   
+                        $department = new EmployeeDepartment();
+                        $department->departmentid = $model->department;
+                        $department->personid = $user->personid;
+                        if ($department->save())
+                        {
+                            return $this->redirect(Url::to(['employee/update', 'id' => $employee_model->employeeid ])); 
+                        }
                     }
-                    var_dump($employee_model);
                     Yii::$app->session->setFlash('error', 'Employee could not be saved.');
                 }
             }

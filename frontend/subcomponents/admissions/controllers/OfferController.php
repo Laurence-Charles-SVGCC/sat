@@ -43,19 +43,26 @@ class OfferController extends Controller
     */
     public function actionIndex()
     {
-        //Get Division
-        $division_id = 4;
+        $division_id = Yii::$app->session->get('divisionid');
         
-        $division = Division::findOne(['divisionid' => $division_id]);
+        
+        $division = Division::findOne(['divisionid' => $division_id ]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        
+        if ($division_id && $division_id == 1)
+        {
+            $app_period_name = "All Active Application Periods";
+            $offer_cond = array('application_period.isactive' => 1);
+        }
         
         $offers = Offer::find()
                 ->joinWith('application')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['application_period.divisionid' => $division_id, 'application_period.isactive' => 1])
+                ->where($offer_cond)
                 ->all();
         $data = array();
         foreach ($offers as $offer)
@@ -200,14 +207,20 @@ class OfferController extends Controller
     public function actionPublishAll()
     {
         //Get Division ID
-        $division_id = 4;
+        $division_id = Yii::$app->session->get('divisionid');
+        
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        if ($division_id && $division_id == 1)
+        {
+            $offer_cond = array('application_period.isactive' => 1);
+        }
         
         $mail_error = False;
         $offers = Offer::find()
                 ->joinWith('application')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['application_period.divisionid' => $division_id, 'application_period.isactive' => 1])
+                ->where($offer_cond)
                 ->all();
         
         foreach ($offers as $offer)
@@ -254,15 +267,22 @@ class OfferController extends Controller
     public function actionPublishRejects()
     {
         //Get Division ID
-        $division_id = 4;
+        $division_id = Yii::$app->session->get('divisionid');
         $mail_error = False;
         $app_status = ApplicationStatus::findOne(['name' => 'rejected']);
+        
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1,
+            'applicationstatusid' => $app_status->applicationstatusid);
+        if ($division_id && $division_id == 1)
+        {
+            $offer_cond = array('application_period.isactive' => 1, 'applicationstatusid' => $app_status->applicationstatusid);
+        }
+        
         if (!$app_status)
         {
             Yii::$app->session->setFlash('error', 'Application status not found');
             return;
         }
-        
         $applications = Application::find()
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')

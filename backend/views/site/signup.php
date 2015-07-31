@@ -21,14 +21,14 @@ LoginAsset::register($this);
     <div class="register-box-body">
         <p class="register-box-msg">Welcome to SAT Administrators Console. Create an account to begin</p>
             <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
-                <?= $form->field($employee_model, 'firstname', ['options' => [
+                <?= $form->field($model, 'firstname', ['options' => [
                     'tag'=>'div',
                     'class' => 'form-group field-signupform-firstname has-feedback required'
                     ],
                     'template' => '{input}<span class="glyphicon glyphicon-user form-control-feedback"></span>
                     {error}{hint}'
                 ])->textInput(['placeholder' => 'Firstname']) ?>
-                <?= $form->field($employee_model, 'lastname', ['options' => [
+                <?= $form->field($model, 'lastname', ['options' => [
                     'tag'=>'div',
                     'class' => 'form-group field-signupform-lastname has-feedback required'
                     ],

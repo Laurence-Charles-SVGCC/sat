@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+use backend\models\PersonType;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -23,11 +25,19 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             'personid',
             'username',
-            'persontypeid',
+            [
+                'attribute' => 'persontypeid',
+                'label' => 'User Type',
+                'format' => 'text',
+                'value' => function($model)
+                {
+                    $type = PersonType::findOne(['persontypeid' => $model->persontypeid]);
+                    return $type ? $type->persontype : 'Undefined'; 
+                }
+            ],
             'datecreated',
             'dateupdated',
             'isactive:boolean',
-            'isdeleted:boolean',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

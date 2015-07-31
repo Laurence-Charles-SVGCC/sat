@@ -15,6 +15,7 @@ class SignupUserForm extends Model
     public $confirm_password;
     public $email;
     public $persontypeid;
+    public $department;
 
     /**
      * @inheritdoc
@@ -22,7 +23,7 @@ class SignupUserForm extends Model
     public function rules()
     {
         return [
-            [['password', 'confirm_password'], 'required'],
+            [['password', 'confirm_password', 'department'], 'required'],
             [['password', 'confirm_password'], 'string', 'min' => 6],
             ['confirm_password', 'compare', 'compareAttribute' => 'password'],
             
