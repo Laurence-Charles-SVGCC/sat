@@ -105,7 +105,7 @@ class SiteController extends Controller
             $username = $this->createUsername();
             if ($user = $model->signup($username)) {
                 $email = new Email();
-                $email->emailaddress = $model->email;
+                $email->email = $model->email;
                 $email->personid = $user->personid;
                 $email->priority = 1;
                 if ($email->save())

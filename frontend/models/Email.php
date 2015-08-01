@@ -9,7 +9,7 @@ use Yii;
  *
  * @property string $emailid
  * @property string $personid
- * @property string $emailaddress
+ * @property string $email
  * @property string $priority
  * @property boolean $isactive
  * @property boolean $isdeleted
@@ -32,10 +32,10 @@ class Email extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'emailaddress'], 'required'],
+            [['personid', 'email'], 'required'],
             [['personid', 'priority'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['emailaddress'], 'string', 'max' => 45]
+            [['email'], 'string', 'max' => 45]
         ];
     }
 
@@ -47,7 +47,7 @@ class Email extends \yii\db\ActiveRecord
         return [
             'emailid' => 'Emailid',
             'personid' => 'Personid',
-            'emailaddress' => 'Emailaddress',
+            'email' => 'Email',
             'priority' => 'Priority',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
