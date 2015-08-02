@@ -355,8 +355,9 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             if ($request->post('alternate_offer') === '')
             {
-                //Personid will need to be changed when db changes take effect
-                $applications = Application::find()->where(['personid' => $applicantid])->all();
+                $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+                $personid = $applicant->getPerson()->one() ? $applicant->getPerson()->one()->personid : NULL;
+                $applications = $personid ? Applications::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
                 $data = array();
                 foreach($applications as $application)
                 {

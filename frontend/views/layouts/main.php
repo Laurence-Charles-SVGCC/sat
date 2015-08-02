@@ -117,6 +117,7 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
+                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
               </ul>
               <?php endif; ?>
             </li>
