@@ -4,6 +4,7 @@ use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
+use frontend\models\EmployeeTitle;
 
 use frontend\models\Employee;
 
@@ -11,21 +12,20 @@ use frontend\models\Employee;
 /* @var $content string */
 
 AppAsset::register($this);
-
 //Get User information
-$person = Employee::find()->where(['personid' => Yii::$app->user->identity->username])->one();
-if ($person)
+$employee = Employee::find()->where(['personid' => Yii::$app->user->getId()])->one();
+if ($employee)
 {
-    $emp_firstname = $person->firstname; 
-    $emp_lastname = $person->lastname;
-    $emp_username = $person->personid;
-    //TODO: Get Job description from Database
-    $job_title = 'Job Title';
+    $emp_firstname = $employee->firstname; 
+    $emp_lastname = $employee->lastname;
+    $emp_username = Yii::$app->user->identity->username;
+    $emp_title = EmployeeTitle::findOne(['employeetitleid' => $employee->employeetitleid]);
+    $job_title = $emp_title ? $emp_title->name : 'Undefined Job Title';
 }
 else
 {
     $emp_firstname = $emp_lastname = $emp_username = 'Undefined'; 
-    $job_title = 'Job Title';
+    $job_title = 'Undefined Job Title';
 }
 ?>
 <?php $this->beginPage() ?>
@@ -109,7 +109,7 @@ else
               <a href="">
                 <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
-             <?php if (Yii::$app->user->can('viewAdmissions')): ?>
+             <?php //if (Yii::$app->user->can('viewAdmissions')): ?>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
@@ -119,7 +119,7 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
               </ul>
-              <?php endif; ?>
+              <?php //endif; ?>
             </li>
             <li class="active treeview">
               <a href="">

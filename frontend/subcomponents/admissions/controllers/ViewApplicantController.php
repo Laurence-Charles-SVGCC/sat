@@ -1,14 +1,21 @@
 <?php
 
-namespace frontend\subcomponents\admissions\controllers;
+namespace app\subcomponents\admissions\controllers;
 
+use Yii;
 use common\models\User;
+use frontend\models\Applicant;
 
 class ViewApplicantController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index',
+            [
+                'results' => Null,
+                'result_users' => Null,
+                'info_string' => '',
+            ]);
     }
     
     /*

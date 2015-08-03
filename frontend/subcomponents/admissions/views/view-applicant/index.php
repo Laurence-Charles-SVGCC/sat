@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 $this->title = 'Applicant Search';
 $this->params['breadcrumbs'][] = ['label' => 'Applicant Search', 'url' => ['index']];
