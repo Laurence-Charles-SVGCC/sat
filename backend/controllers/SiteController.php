@@ -11,6 +11,7 @@ use frontend\models\Employee;
 use frontend\models\Email;
 use common\models\User;
 use frontend\models\Department;
+use frontend\models\EmployeeDepartment;
 
 /**
  * Site controller

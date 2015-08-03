@@ -29,6 +29,8 @@ class SignupForm extends Model
             ['email', 'email'],
             ['email', 'required'],
             ['email', 'canSignUp'],
+            
+            [['firstname', 'lastname'], 'string', 'max' => 45]
         ];
     }
 
