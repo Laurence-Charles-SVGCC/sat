@@ -9,16 +9,22 @@ use Yii;
  *
  * @property string $applicationid
  * @property string $personid
+ * @property string $divisionid
  * @property string $academicofferingid
- * @property string $applicationdate
+ * @property string $applicationstatusid
+ * @property string $applicationtimestamp
  * @property integer $ordering
  * @property string $ipaddress
  * @property string $browseragent
  * @property boolean $isactive
  * @property boolean $isdeleted
  *
+ * @property ApplicationStatus $applicationstatus
  * @property Person $person
  * @property AcademicOffering $academicoffering
+ * @property Division $division
+ * @property ApplicationCapesubject[] $applicationCapesubjects
+ * @property ApplicationHistory[] $applicationHistories
  * @property Offer[] $offers
  */
 class Application extends \yii\db\ActiveRecord
@@ -37,9 +43,9 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'academicofferingid', 'applicationdate', 'ordering'], 'required'],
-            [['personid', 'academicofferingid', 'ordering'], 'integer'],
-            [['applicationdate'], 'safe'],
+            [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'applicationtimestamp', 'ordering', 'ipaddress', 'browseragent'], 'required'],
+            [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'ordering'], 'integer'],
+            [['applicationtimestamp'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
             [['ipaddress', 'browseragent'], 'string', 'max' => 100]
         ];
@@ -52,9 +58,11 @@ class Application extends \yii\db\ActiveRecord
     {
         return [
             'applicationid' => 'Applicationid',
-            'personid' => 'Person',
+            'personid' => 'Personid',
+            'divisionid' => 'Divisionid',
             'academicofferingid' => 'Academicofferingid',
-            'applicationdate' => 'Applicationdate',
+            'applicationstatusid' => 'Applicationstatusid',
+            'applicationtimestamp' => 'Applicationtimestamp',
             'ordering' => 'Ordering',
             'ipaddress' => 'Ipaddress',
             'browseragent' => 'Browseragent',
@@ -66,9 +74,17 @@ class Application extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getApplicationstatus()
+    {
+        return $this->hasOne(ApplicationStatus::className(), ['applicationstatusid' => 'applicationstatusid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getPerson()
     {
-        return $this->hasOne(Person::className(), ['username' => 'personid']);
+        return $this->hasOne(Person::className(), ['personid' => 'personid']);
     }
 
     /**
@@ -77,6 +93,30 @@ class Application extends \yii\db\ActiveRecord
     public function getAcademicoffering()
     {
         return $this->hasOne(AcademicOffering::className(), ['academicofferingid' => 'academicofferingid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDivision()
+    {
+        return $this->hasOne(Division::className(), ['divisionid' => 'divisionid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplicationCapesubjects()
+    {
+        return $this->hasMany(ApplicationCapesubject::className(), ['applicationid' => 'applicationid']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplicationHistories()
+    {
+        return $this->hasMany(ApplicationHistory::className(), ['applicationid' => 'applicationid']);
     }
 
     /**

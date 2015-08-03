@@ -5,6 +5,12 @@ namespace app\subcomponents\admissions\controllers;
 use Yii;
 use common\models\User;
 use frontend\models\Applicant;
+use frontend\models\Application;
+use yii\data\ArrayDataProvider;
+use frontend\models\ProgrammeCatalog;
+use frontend\models\ApplicationCapesubject;
+use frontend\models\Offer;
+use yii\helpers\Url;
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -36,7 +42,7 @@ class ViewApplicantController extends \yii\web\Controller
             
             if ($app_id)
             {
-                $user = User::findOne(['username' => $app_id]);
+                $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
                  $cond_arr['personid'] = $user ? $user->personid : NULL;
                  $info_string = $info_string .  " Applicant ID: " . $app_id;
             }
@@ -72,7 +78,7 @@ class ViewApplicantController extends \yii\web\Controller
                         $app = array();
                         $user = $applicant->getPerson()->one();
                         
-                        $app['username'] = $user->username;
+                        $app['username'] = $user ? $user->username : '';
                         $app['applicantid'] = $applicant->applicantid;
                         $app['firstname'] = $applicant->firstname;
                         $app['middlename'] = $applicant->middlename;
@@ -87,6 +93,10 @@ class ViewApplicantController extends \yii\web\Controller
                             'pageSize' => 20,
                         ],
                     ]);
+                    if (!$user)
+                    {
+                        Yii::$app->session->setFlash('error', 'User not found');
+                    }
                 }
         }
     }
@@ -98,11 +108,16 @@ class ViewApplicantController extends \yii\web\Controller
         ]);
   }
   
+  /*
+    * Purpose: Retrieve information necessary to display results of an applicant search.
+    * Created: 1/08/2015 by Gamal Crichton
+    * Last Modified: 1/08/2015 by Gamal Crichton
+    */
   public function actionViewApplicant($applicantid, $username = '')
   {
       $applicant = Applicant::findOne(['applicantid' => $applicantid]);
       $personid = $applicant->getPerson()->one() ? $applicant->getPerson()->one()->personid : NULL;
-      $applications = $personid ? Applications::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
+      $applications = $personid ? Application::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
       $data = array();
         foreach($applications as $application)
         {
@@ -112,13 +127,14 @@ class ViewApplicantController extends \yii\web\Controller
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->where(['application.applicationid' => $application->applicationid])->one();
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-            $offer = Offers::findOne(['applicationid' => $application->applicationid, 'isdeleted' => 0]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            $offer = Offer::findOne(['applicationid' => $application->applicationid, 'isdeleted' => 0]);
 
             $app_details['order'] = $application->ordering;
             $app_details['applicationid'] = $application->applicationid;
             $app_details['programme_name'] = $programme->name;
-            $app_details['subjects'] = implode(' ,', $cape_subjects);
-            $app_details['offer'] = $offer ? $offer->offerid : Null;
+            $app_details['subjects'] = implode(' ,', $cape_subjects_names);
+            $app_details['offerid'] = $offer ? $offer->offerid : Null;
 
             $data[] = $app_details;
         }
@@ -133,7 +149,26 @@ class ViewApplicantController extends \yii\web\Controller
               [
                   'applicant' => $applicant,
                   'dataProvider' => $dataProvider,
+                  'username' => $username,
               ]);
+  }
+  
+  /*
+    * Purpose: Junction for various action to eb done to an applicant after an applicant search.
+    * Created: 3/08/2015 by Gamal Crichton
+    * Last Modified: 3/08/2015 by Gamal Crichton
+    */
+  public function actionApplicantActions()
+  {
+      if (Yii::$app->request->post())
+      {
+          $request = Yii::$app->request;
+          $applicantusername = $request->post('applicantusername');
+          if ($request->post('register') === '')
+          {
+              return $this->redirect(Url::to(['register-student/register-applicant', 'applicantusername' => $applicantusername]));
+          }
+      }
   }
 
 }

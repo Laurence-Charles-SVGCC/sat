@@ -2,7 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\widgets\GridView;
+use yii\grid\GridView;
+use yii\helpers\Url;
 
 $this->title = 'Applicant View';
 $this->params['breadcrumbs'][] = ['label' => 'Applicant View', 'url' => ['index']];
@@ -46,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'format' => 'html',
-                'label' => 'Offer',
+                'label' => 'Offer ID',
                 'value' => function($row)
                     {
                         if ($row['offerid'])
@@ -62,8 +63,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-    <?php ActiveForm::begin(); ?>
-    
+    <?php ActiveForm::begin(
+    [
+        'action' => Url::to(['view-applicant/applicant-actions'])
+    ]); ?>
+        <?= Html::hiddenInput('applicantusername', $username); ?>
+        <?= Html::submitButton('Register as Student', ['class' => 'btn btn-success', 'name' => 'register']); ?>
     <?php ActiveForm::end(); ?>
     
 </div>

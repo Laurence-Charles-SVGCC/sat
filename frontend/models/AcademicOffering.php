@@ -41,7 +41,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
         return [
             [['programmecatalogid', 'academicyearid', 'applicationperiodid'], 'required'],
             [['programmecatalogid', 'academicyearid', 'applicationperiodid', 'spaces'], 'integer'],
-            [['appliable', 'isactive', 'isdeleted'], 'boolean']
+            [['interviewneeded', 'isactive', 'isdeleted'], 'boolean']
         ];
     }
 
@@ -56,7 +56,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
             'academicyearid' => 'Academic Year',
             'applicationperiodid' => 'Application Period',
             'spaces' => 'Spaces',
-            'appliable' => 'Appliable',
+            'interviewneeded' => 'Interview Needed',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];

@@ -55,8 +55,8 @@ if (count($dataProvider->getModels()) > 0)
                 'label' => 'Recepient',
                 'value' => function($model)
                     {
-                        $recepient = Employee::find()->where(['personid' => $model->getRecepient()->one()->username])->one();
-                       return $recepient->firstname . " " . $recepient->lastname;
+                        $recepient = Employee::find()->where(['personid' => $model->getRecepient()->one()->personid])->one();
+                       return $recepient ? $recepient->firstname . " " . $recepient->lastname : 'Recepient Undefined';
                     }
             ],
              [

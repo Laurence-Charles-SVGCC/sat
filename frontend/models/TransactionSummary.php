@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $transactionsummaryid
  * @property string $balance
+ * @property string $totalpaid
  * @property boolean $isactive
  * @property boolean $isdeleted
  *
@@ -30,9 +31,10 @@ class TransactionSummary extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['balance'], 'required'],
+            [['balance', 'totalpaid'], 'required'],
             [['balance'], 'number'],
-            [['isactive', 'isdeleted'], 'boolean']
+            [['isactive', 'isdeleted'], 'boolean'],
+            [['totalpaid'], 'string', 'max' => 45]
         ];
     }
 
@@ -44,6 +46,7 @@ class TransactionSummary extends \yii\db\ActiveRecord
         return [
             'transactionsummaryid' => 'Transactionsummaryid',
             'balance' => 'Balance',
+            'totalpaid' => 'Totalpaid',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];

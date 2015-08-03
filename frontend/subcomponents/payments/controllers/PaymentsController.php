@@ -10,6 +10,7 @@ use frontend\models\TransactionSearch;
 use frontend\models\TransactionSummary;
 use frontend\models\Applicant;
 use yii\data\ArrayDataProvider;
+use common\models\User;
 
 
 class PaymentsController extends Controller
@@ -31,7 +32,7 @@ class PaymentsController extends Controller
     */
     public function actionSearchApplicant()
     {
-        $dataProvider = $app_ids = NULL;
+        $dataProvider = $usernames = NULL;
         $info_string = "";
         if (Yii::$app->request->post())
         {
@@ -42,7 +43,8 @@ class PaymentsController extends Controller
             
             if ($app_id)
             {
-                 $cond_arr['personid'] = $app_id;
+                $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
+                 $cond_arr['personid'] = $user ? $user->personid : Null;
                  $info_string = $info_string .  " Applicant ID: " . $app_id;
             }
             if ($firstname)
@@ -72,8 +74,11 @@ class PaymentsController extends Controller
                 else
                 {
                     $app_ids = array();
+                    $usernames = array();
                     foreach($applicants as $applicant)
                     {
+                        $user = User::findOne(['personid' => $applicant->personid]);
+                        $usernames[$applicant->personid] = $user ? $user->username : NULL;
                         $app_ids[] = $applicant['personid']; 
                     }
 
@@ -89,7 +94,7 @@ class PaymentsController extends Controller
                         $trans['academic_year'] = $semester ? $semester->getAcademicyear()->one()->title : '';
                         $trans['academic_semester'] = $semester ? $semester->title : '';
                         $trans['fee_purpose'] = $transaction->getTransactionpurpose()->one()->name;
-                        $trans['total_paid'] = $summary->total_paid;
+                        $trans['total_paid'] = $summary->totalpaid;
                         $trans['balance'] = $summary->balance;
                         $data[] = $trans;
                     }
@@ -106,7 +111,7 @@ class PaymentsController extends Controller
         [
             'type' => 'applicant',
             'results' => $dataProvider,
-            'result_users' => $app_ids,
+            'result_users' => $usernames,
             'info_string' => $info_string,
         ]);
   }
@@ -122,38 +127,38 @@ class PaymentsController extends Controller
         if ($model->load(Yii::$app->request->post()))
         {
             $request = Yii::$app->request;
+            //var_dump($request);
             $total_due = $model->totaldue;
             $trans_amt = $model->paymentamount;
             $summary = new TransactionSummary();
             if ($total_due && $trans_amt)
             {
                 $summary->balance = $total_due - $trans_amt;
-                $summary->total_paid = $trans_amt;
+                $summary->totalpaid = $trans_amt;
+                
+                if ($summary->save())
+                {
+                    $model->personid = $request->post('payee_id');
+                    $model->recepientid = Yii::$app->user->getId();
+                    $model->transactionsummaryid = $summary->transactionsummaryid;
+                    $model->receiptnumber = self::getReceiptNumber();
+
+                    if ($model->save())
+                    {
+                        $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
+                    }
+                }
             }
             else
             {
-                Yii::$app->session->setFlash('error', 'Total Paid ans Total Due are required.');
-            }
-            if ($summary->save())
-            {
-                $model->personid = $request->post('payee_id');
-                $model->recepientid = Yii::$app->user->getId();
-                $model->transactionsummaryid = $summary->transactionsummaryid;
-                $model->receiptnumber = self::getReceiptNumber();
-                
-                if ($model->save())
-                {
-                    $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
-                }
-                //var_dump($model);
-                
+                Yii::$app->session->setFlash('error', 'Total Paid and Total Due are required.');
             }
             Yii::$app->session->setFlash('error', 'Transaction could not be added');
         }
         return $this->render('new-payment',
                 [
                     'model' => $model,
-                    'payee_id' => Yii::$app->request->post('payee_id'),
+                    'payee_id' => Yii::$app->request->post('select_user'),
                 ]);
     }
     

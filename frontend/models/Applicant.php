@@ -9,7 +9,7 @@ use common\models\User;
  * This is the model class for table "applicant".
  *
  * @property string $applicantid
- * @property string $applicantstatustypeid
+ * @property string $applicanttypeid
  * @property string $personid
  * @property string $potentialstudentid
  * @property string $title
@@ -30,7 +30,7 @@ use common\models\User;
  * @property string $religion
  * @property string $placeofbirth
  *
- * @property ApplicantStatusType $applicantstatustype
+* @property ApplicantStatusType $applicanttype
  * @property Person $person
  */
 class Applicant extends \yii\db\ActiveRecord
@@ -49,7 +49,7 @@ class Applicant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['applicantstatustypeid', 'personid', 'potentialstudentid'], 'integer'],
+            [['applicanttypeid', 'personid', 'potentialstudentid'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['bursarystatus', 'isactive', 'isdeleted'], 'boolean'],
             [['clubs', 'otherinterests'], 'string'],
@@ -68,35 +68,35 @@ class Applicant extends \yii\db\ActiveRecord
     {
         return [
             'applicantid' => 'Applicantid',
-            'applicantstatustypeid' => 'Applicantstatustypeid',
+            'applicanttypeid' => 'Applicanttypeid',
             'personid' => 'Personid',
             'potentialstudentid' => 'Potentialstudentid',
             'title' => 'Title',
-            'firstname' => 'Firstname',
-            'middlename' => 'Middlename',
-            'lastname' => 'Lastname',
+            'firstname' => 'First Name',
+            'middlename' => 'Middle Name',
+            'lastname' => 'Last Name',
             'gender' => 'Gender',
-            'dateofbirth' => 'Dateofbirth',
-            'photopath' => 'Photopath',
-            'bursarystatus' => 'Bursarystatus',
-            'sponsorname' => 'Sponsorname',
+            'dateofbirth' => 'Date of Birth',
+            'photopath' => 'Photo Path',
+            'bursarystatus' => 'Bursary Status',
+            'sponsorname' => 'Sponsor',
             'clubs' => 'Clubs',
-            'otherinterests' => 'Otherinterests',
+            'otherinterests' => 'Other Interests',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
-            'maritalstatus' => 'Maritalstatus',
+            'maritalstatus' => 'Marital Status',
             'nationality' => 'Nationality',
             'religion' => 'Religion',
-            'placeofbirth' => 'Placeofbirth',
+            'placeofbirth' => 'Place of Birth',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getApplicantstatustype()
+    public function getApplicanttype()
     {
-        return $this->hasOne(ApplicantStatusType::className(), ['applicantstatustypeid' => 'applicantstatustypeid']);
+        return $this->hasOne(ApplicantStatusType::className(), ['applicantstatustypeid' => 'applicanttypeid']);
     }
 
     /**
@@ -104,6 +104,6 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public function getPerson()
     {
-        return $this->hasOne(User::className(), ['username' => 'personid']);
+        return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
 }

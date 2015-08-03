@@ -19,7 +19,7 @@ class AcademicOfferingSearch extends AcademicOffering
     {
         return [
             [['academicofferingid', 'programmecatalogid', 'academicyearid', 'applicationperiodid', 'spaces'], 'integer'],
-            [['appliable', 'isactive', 'isdeleted'], 'boolean'],
+            [['interviewneeded', 'isactive', 'isdeleted'], 'boolean'],
         ];
     }
 
@@ -61,7 +61,7 @@ class AcademicOfferingSearch extends AcademicOffering
             'academicyearid' => $this->academicyearid,
             'applicationperiodid' => $this->applicationperiodid,
             'spaces' => $this->spaces,
-            'appliable' => $this->appliable,
+            'interviewneeded' => $this->interviewneeded,
             'isactive' => $this->isactive,
             'isdeleted' => $this->isdeleted,
         ]);

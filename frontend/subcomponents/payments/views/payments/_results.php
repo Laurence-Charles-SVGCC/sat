@@ -1,7 +1,6 @@
 <?php
 
 use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
 
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -58,7 +57,7 @@ use yii\helpers\Url;
                 ); ?>
         <?= Html::submitButton('New Payment Group', ['class' => 'btn btn-success']) ?>
         <?= Html::label('Select User', 'select_user') ?>
-        <?= Html::dropDownList('select_user', 0, array_combine($result_users, $result_users)) ?>
+        <?= Html::dropDownList('select_user', 0, $result_users) ?>
         <?php ActiveForm::end(); ?>
     </p>
 

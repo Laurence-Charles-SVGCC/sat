@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
              ],
             'spaces',
-            'appliable:boolean',
+            'interviewneeded:boolean',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

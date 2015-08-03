@@ -60,6 +60,7 @@ class LoginForm extends Model
         if ($this->validate()) {
         {
             //Set divisionID
+            Yii::$app->user->login($this->getUser(), 60 * 60 * 5);
             $emp_department = EmployeeDepartment::findOne(['personid' => Yii::$app->user->getId()]);
             $department = $emp_department ? $emp_department->getDepartment()->one() : NULL;
             $division_id = $department ? $department->divisionid : NULL;
@@ -67,7 +68,7 @@ class LoginForm extends Model
             if ($division_id)
             {
                 Yii::$app->session->set('divisionid', $division_id);
-                return Yii::$app->user->login($this->getUser(), 60 * 60 * 5);
+                return true;
             }
             Yii::$app->session->setFlash('error', 'User not assigned a valid department');
         }
