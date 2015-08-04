@@ -181,6 +181,7 @@ class RegisterStudentController extends \yii\web\Controller
                                }
                            }
                        }
+                       Yii::$app->session->setFlash('success', 'Student registered successfully');
                        return $this->redirect(Url::to(['view-applicant/index']));
                    }
                    else
