@@ -105,35 +105,57 @@ else
           <!-- Sidebar user panel -->
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
+           <?php if (Yii::$app->user->can('admissions')): ?>
             <li class="active treeview">
               <a href="">
                 <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
-             <?php //if (Yii::$app->user->can('viewAdmissions')): ?>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Register Student</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
+                <?php if (Yii::$app->user->can('viewApplicationPeriod')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewAcademicOffering')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('reviewApplications')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewOffer')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('searchApplicant')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('registerStudent')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Register Student</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('studentCard')): ?>    
+                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
+                <?php endif; ?>
               </ul>
-              <?php //endif; ?>
+              <?php endif; ?>
             </li>
+            <?php if (Yii::$app->user->can('payments')): ?>
             <li class="active treeview">
               <a href="">
                 <i class="fa fa-money"></i> <span>Payments</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/payments/payments/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
-                <!--<li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-transaction-types'])?>"><i class="fa fa-circle-o"></i>Manage Transaction Types</a></li>
-                <!--<li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>-->
+                <?php if (Yii::$app->user->can('managePayments')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
+                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
+                <?php endif; ?>        
               </ul>
             </li>
+            <?php endif; ?>
+            <?php if (Yii::$app->user->can('programmes')): ?>
             <li class="active treeview">
               <a href="">
                 <i class="fa fa-mortar-board"></i> <span>Programmes</span> <i class="fa fa-angle-left pull-right"></i>
@@ -143,6 +165,7 @@ else
                 <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programme-catalog/index'])?>"><i class="fa fa-circle-o"></i>Programme Catalog</a></li>
               </ul>
             </li>
+            <?php endif; ?>
             <li class="active treeview">
               <a href="#">
                 <i class="fa fa-cogs"></i>
