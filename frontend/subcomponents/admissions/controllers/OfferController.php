@@ -75,13 +75,14 @@ class OfferController extends Controller
             $revoker = Employee::findOne(['personid' => $offer->issuedby]);
             $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
             
             $offer_data = array();
             $offer_data['offerid'] = $offer->offerid;
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects);
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;

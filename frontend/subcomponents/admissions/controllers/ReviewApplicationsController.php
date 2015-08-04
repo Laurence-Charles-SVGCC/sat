@@ -42,7 +42,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     }
     
     /*
-    * Purpose: Allows viewing of applications based ont heir current status. 
+    * Purpose: Allows viewing of applications based on their current status. 
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton
     */
