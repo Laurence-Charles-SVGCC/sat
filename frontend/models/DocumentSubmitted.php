@@ -37,7 +37,7 @@ class DocumentSubmitted extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['documentintentid', 'documenttypeid', 'personid', 'recepientid', 'documentpath'], 'required'],
+            [['documentintentid', 'documenttypeid', 'personid', 'recepientid'], 'required'],
             [['documentintentid', 'documenttypeid', 'personid', 'recepientid'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
             [['documentpath'], 'string', 'max' => 100]

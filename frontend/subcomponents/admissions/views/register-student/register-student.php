@@ -19,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
     <div class="row">
         <?= Html::hiddenInput('applicantid', $applicant->applicantid); ?>
+        <?= Html::hiddenInput('offerid', $offerid); ?>
+        <?= Html::hiddenInput('applicationid', $applicationid); ?>
         <div class="col-lg-4">
             <?= $form->field($applicant, 'title')->textInput(['maxlength' => true]) ?>
         </div>
