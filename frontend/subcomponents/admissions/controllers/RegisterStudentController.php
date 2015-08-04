@@ -132,6 +132,16 @@ class RegisterStudentController extends \yii\web\Controller
                $student->admissiondate = date('Y-m-d');
                if ($student->save())
                {
+                   //Update User
+                   if ($applicant->potentialstudentid)
+                   {
+                       $user->username = $applicant->potentialstudentid;
+                   }
+                   else
+                   {
+                       Yii::$app->session->setFlash('error', 'No Student Number assigned.');
+                   }
+                   
                    if ($new_student)
                    {
                        //Capture student registration
@@ -146,7 +156,7 @@ class RegisterStudentController extends \yii\web\Controller
                    }
                    
                    if (($new_student == False) || $reg->save())
-                   {
+                   {   
                        //Update document submission
                        $submitted = $request->post('documents');
                        $docs = DocumentSubmitted::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]);

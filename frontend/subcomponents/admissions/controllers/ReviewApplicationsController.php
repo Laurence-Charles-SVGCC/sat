@@ -6,7 +6,7 @@ use Yii;
 use yii\helpers\Url;
 use yii\data\ArrayDataProvider;
 use frontend\models\Application;
-use frontend\models\Division;
+//use frontend\models\Division;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\AcademicOffering;
 use frontend\models\Applicant;
@@ -14,10 +14,10 @@ use frontend\models\CsecQualification;
 use frontend\models\Offer;
 use frontend\models\ApplicationStatus;
 use frontend\models\ApplicationCapesubject;
-use frontend\models\Department;
+//use frontend\models\Department;
 use frontend\models\CapeSubjectGroup;
 use frontend\models\CapeGroup;
-
+use frontend\models\AcademicYear;
 
 class ReviewApplicationsController extends \yii\web\Controller
 {   
@@ -428,7 +428,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     /*
     * Purpose: Make an offer to an applicant for a given application
     * Created: 28/07/2015 by Gamal Crichton
-    * Last Modified: 28/07/2015 by Gamal Crichton
+    * Last Modified: 4/08/2015 by Gamal Crichton
     */
     public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='')
     {
@@ -443,6 +443,8 @@ class ReviewApplicationsController extends \yii\web\Controller
             $application->applicationstatusid = $app_status->applicationstatusid;
             if ($application->save())
             {
+                $applicant = Applicant::findOne(['personid' => $application->personid]);
+                if ($applicant){ $applicant->potentialstudentid = self::getPotentialStudentID($application->divisionid, $applicant->applicantid); }
                 Yii::$app->session->setFlash('success', 'Offer Added');
                 if ($redirect && $application_status && $division_id)
                 {
@@ -524,10 +526,19 @@ class ReviewApplicationsController extends \yii\web\Controller
         }
         return $this->redirect(Url::to(['review-applications/index']));
     }
-
-    public function actionViewShortlist()
+    
+    /*
+    * Purpose: Creates potential Student number 
+    * Created: 4/08/2015 by Gamal Crichton
+    * Last Modified: 4/08/2015 by Gamal Crichton
+    */
+    public function getPotentialStudentID($divisionid, $base)
     {
-        return $this->render('view-shortlist');
+        $ay = AcademicYear::findOne(['iscurrent' => 1, 'isdeleted' => 0]);
+        $startyear = $ay ? substr($ay->startdate->format('Y'), -2) : substr(date('Y'), -2);
+        $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
+        $num = str_pad(strval($base), 4, '0', STR_PAD_LEFT);
+        return $startyear . $div . $num;         
     }
     
     /*

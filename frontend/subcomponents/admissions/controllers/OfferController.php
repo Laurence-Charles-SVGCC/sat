@@ -72,7 +72,7 @@ class OfferController extends Controller
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             $issuer = Employee::findOne(['personid' => $offer->issuedby]);
             $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
-            $revoker = Employee::findOne(['personid' => $offer->issuedby]);
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
             $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
             foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
@@ -172,6 +172,11 @@ class OfferController extends Controller
            $model->revokedate = date('Y-m-d');
            if ($model->save())
            {
+               //Remove Potential student ID
+               $application = $model->getApplication()->one();
+               $applicant = $application ? $application->getPerson()->one() : Null;
+               if ($applicant){ $applicant->potentialstudentid = Null; $applicant->save();}
+               
                Yii::$app->session->setFlash('success', 'Offer Revoked');
            }
            else
