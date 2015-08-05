@@ -15,8 +15,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Publish All Offers', ['publish-all'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Publish Rejects', ['publish-rejects'], ['class' => 'btn btn-danger']) ?>
+        <?php if (Yii::$app->user->can('publishOffer')): ?>
+            <?= Html::a('Publish All Offers', ['publish-all'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('Publish Rejects', ['publish-rejects'], ['class' => 'btn btn-danger']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([

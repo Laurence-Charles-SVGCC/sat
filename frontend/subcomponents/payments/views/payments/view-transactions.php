@@ -26,8 +26,10 @@ if (count($dataProvider->getModels()) > 0)
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Add Transaction', ['transaction/create', 'transactionsummaryid' => $transactionsummaryid, 'payee_id' => $payee_id], 
-            ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('CreateTransaction')): ?>
+            <?= Html::a('Add Transaction', ['transaction/create', 'transactionsummaryid' => $transactionsummaryid, 'payee_id' => $payee_id], 
+                ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([

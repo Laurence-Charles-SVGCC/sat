@@ -120,13 +120,19 @@ $this->params['breadcrumbs'][] = $this->title;
                       <?php endforeach; ?>
                 </tbody>
               </table>
+           
             <div class="form-group">
-                <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-                <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
-                <?= Html::submitButton('Add Subjects', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
-                <?= Html::dropDownList('add_more_value', 1, 
-                        array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
+                <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                    <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                    <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('addCertificate')): ?>
+                    <?= Html::submitButton('Add Subjects', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
+                    <?= Html::dropDownList('add_more_value', 1, 
+                            array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
+                <?php endif; ?>
             </div>
+          
         <?php ActiveForm::end(); ?>
 
     </div>

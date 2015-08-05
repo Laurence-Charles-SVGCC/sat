@@ -3,12 +3,10 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use dosamigos\datepicker\DatePicker;
 use frontend\models\Division;
 use frontend\models\AcademicYear;
-use frontend\models\ProgrammeCatalog;
 
 /* @var $this yii\web\View */
 /* @var $model frontend\models\ApplicationPeriod */
@@ -93,7 +91,9 @@ use frontend\models\ProgrammeCatalog;
     </div>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php if (Yii::$app->user->can('updateApplicationPeriod') || Yii::$app->user->can('createApplicationPeriod')): ?>
+            <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php endif; ?>
     </div>
 
     <?php ActiveForm::end(); ?>

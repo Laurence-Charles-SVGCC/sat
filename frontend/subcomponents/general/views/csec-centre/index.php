@@ -16,7 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create CSEC Centre', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createCsecCentre')): ?>
+            <?= Html::a('Create CSEC Centre', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([

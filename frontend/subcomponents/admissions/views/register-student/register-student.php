@@ -62,7 +62,9 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     
     <div class="form-group">
-        <?= Html::submitButton($applicant->isNewRecord ? 'Create' : 'Update', ['class' => $applicant->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php if (Yii::$app->user->can('registerStudent')): ?>
+            <?= Html::submitButton($applicant->isNewRecord ? 'Create' : 'Update', ['class' => $applicant->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php endif; ?>
     </div>
 
     <?php ActiveForm::end(); ?>

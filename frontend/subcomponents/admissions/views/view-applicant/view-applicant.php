@@ -68,7 +68,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'action' => Url::to(['view-applicant/applicant-actions'])
     ]); ?>
         <?= Html::hiddenInput('applicantusername', $username); ?>
-        <?= Html::submitButton('Register as Student', ['class' => 'btn btn-success', 'name' => 'register']); ?>
+        <?php if (Yii::$app->user->can('registerStudent')): ?>
+            <?= Html::submitButton('Register as Student', ['class' => 'btn btn-success', 'name' => 'register']); ?>
+        <?php endif; ?>
     <?php ActiveForm::end(); ?>
     
 </div>

@@ -16,7 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Semester', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createSemester')): ?>
+            <?= Html::a('Create Semester', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([
@@ -24,13 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'academicyearid',
             'title',
             'startdate',
             'enddate',
-             'iscurrent:boolean',
-
+            'iscurrent:boolean',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
