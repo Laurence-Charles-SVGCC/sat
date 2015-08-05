@@ -239,7 +239,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         $cert->year = $qual['year'];
                         $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
                         $cert->subjectid = $qual['subjectid'];
-                        $cert->grade = $qual['grade'];
+                        $cert->examinationgradeid = $qual['examinationgradeid'];
                         if ($verify_all)
                         {
                             //Save as verified submit button
