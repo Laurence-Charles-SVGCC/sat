@@ -25,7 +25,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('searchApplicant')): ?>
+            <?= Html::submitButton('Search', ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </div>
     <?php ActiveForm::end(); ?>
     <?php if ($results) : ?>

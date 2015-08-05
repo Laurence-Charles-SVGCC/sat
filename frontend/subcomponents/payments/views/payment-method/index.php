@@ -16,7 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Payment Method', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createPaymentMethod')): ?> 
+            <?= Html::a('Create Payment Method', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([
@@ -25,7 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'name',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

@@ -71,8 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
             
         ],
     ]); ?>
-    
-        <?= Html::submitButton('Update Card Data', ['class' => 'btn btn-success', 'name' => 'register']); ?>
+        <?php if (Yii::$app->user->can('updateStudentCard')): ?>
+            <?= Html::submitButton('Update Card Data', ['class' => 'btn btn-success', 'name' => 'register']); ?>
+        <?php endif; ?>    
     <?php ActiveForm::end(); ?>
 
 </div>

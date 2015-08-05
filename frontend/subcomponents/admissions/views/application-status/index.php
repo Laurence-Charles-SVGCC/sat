@@ -14,7 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Application Status', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createApplicationStatus')): ?>
+            <?= Html::a('Create Application Status', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([

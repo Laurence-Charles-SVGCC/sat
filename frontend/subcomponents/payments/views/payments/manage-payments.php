@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <!-- Dashboard buttons -->
       <div class="box">
-        
+       <?php if (Yii::$app->user->can('managePayments')): ?> 
         <div class="box-body">
             <a class="btn btn-app" href="<?= Url::to(['payments/search-applicant'])?>">
                 <i class="fa fa-cart-plus"></i> Applicants
@@ -27,5 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
              </a>
             
         </div>
+       <?php endif; ?>
       </div>
 </div>

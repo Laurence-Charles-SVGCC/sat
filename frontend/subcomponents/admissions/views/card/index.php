@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- Dashboard buttons -->
       <div class="box">
         
+       <?php if (Yii::$app->user->can('studentCard')): ?>
         <div class="box-body">
             <a class="btn btn-app" href="<?= Url::to(['card/view-applicants', 
                 'divisionid' => $dasgsid])?>">
@@ -33,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <i class="fa fa-users"></i> All
              </a>
         </div>
+       <?php endif; ?>
       </div>
     <!-- Button with count at top for future. add above i tag: <span class="badge bg-green">value</span>-->
 </div>

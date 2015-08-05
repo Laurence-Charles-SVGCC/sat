@@ -15,9 +15,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
+      <?php if (Yii::$app->user->can('updateOffer')): ?>  
         <?= Html::a('Update', ['update', 'id' => $model->offerid], ['class' => 'btn btn-primary']) ?>
+      <?php endif; ?>
+      <?php if (Yii::$app->user->can('deleteOffer')): ?>  
         <?= Html::a('Revoke', ['delete', 'id' => $model->offerid], [
             'class' => 'btn btn-danger']) ?>
+       <?php endif; ?>
     </p>
 
     <?= DetailView::widget([

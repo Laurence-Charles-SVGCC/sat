@@ -56,33 +56,35 @@ $this->params['breadcrumbs'][] = $this->title;
             ], 
         ],
     ]); ?>
-    <h3>Alternate Offer Details</h3>
-    <?php ActiveForm::begin(
-            [
-                'action' => Url::to(['review-applications/alternate-offer']),
-            ]
-            ); ?>
-            <?= Html::hiddenInput('division_id', $division_id); ?>
-            <?= Html::hiddenInput('application_status', $application_status); ?>
-            <div class="row">
-                <div class="col-lg-2">
-                    <?= Html::label( 'Choose Programme',  'programme'); ?>
-                    <?= Html::dropDownList('programme', null, 
-                        ArrayHelper::map($programmes, 'programmecatalogid', 'name' )); ?>
+    <?php if (Yii::$app->user->can('createOffer')): ?>
+        <h3>Alternate Offer Details</h3>
+        <?php ActiveForm::begin(
+                [
+                    'action' => Url::to(['review-applications/alternate-offer']),
+                ]
+                ); ?>
+                <?= Html::hiddenInput('division_id', $division_id); ?>
+                <?= Html::hiddenInput('application_status', $application_status); ?>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <?= Html::label( 'Choose Programme',  'programme'); ?>
+                        <?= Html::dropDownList('programme', null, 
+                            ArrayHelper::map($programmes, 'programmecatalogid', 'name' )); ?>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <h4>CAPE Groups</h4>
-                    <?php foreach($cape_data as $grp_name => $cd): ?>
-                        <div class="col-md-3">
-                            <strong><?= $grp_name ?></strong>
-                        <?php foreach($cd as $subject): ?>                           
-                            <br/><?= Html::checkbox("cape_subject[" . $subject->getCapesubject()->one()->capesubjectid . "]"); ?>
-                            <?= $subject->getCapesubject()->one()->subjectcode; ?>                        
-                         <?php endforeach; ?>
-                        </div>
-                    <?php endforeach; ?>
-            </div>
-            <?= Html::submitButton("Submit", ['class' => 'btn btn-success']); ?>
-    <?php ActiveForm::end() ?>
+                <div class="row">
+                    <h4>CAPE Groups</h4>
+                        <?php foreach($cape_data as $grp_name => $cd): ?>
+                            <div class="col-md-3">
+                                <strong><?= $grp_name ?></strong>
+                            <?php foreach($cd as $subject): ?>                           
+                                <br/><?= Html::checkbox("cape_subject[" . $subject->getCapesubject()->one()->capesubjectid . "]"); ?>
+                                <?= $subject->getCapesubject()->one()->subjectcode; ?>                        
+                             <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                </div>
+                <?= Html::submitButton("Submit", ['class' => 'btn btn-success']); ?>
+        <?php ActiveForm::end() ?>
+    <?php endif; ?>
 </div>

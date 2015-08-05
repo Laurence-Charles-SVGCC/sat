@@ -52,13 +52,15 @@ use yii\helpers\Url;
     ]); ?>
     
     <p>
-        <?php $form = ActiveForm::begin(
-                ['action' => Url::to(['payments/new-payment']),]
-                ); ?>
-        <?= Html::submitButton('New Payment Group', ['class' => 'btn btn-success']) ?>
-        <?= Html::label('Select User', 'select_user') ?>
-        <?= Html::dropDownList('select_user', 0, $result_users) ?>
-        <?php ActiveForm::end(); ?>
+        <?php if (Yii::$app->user->can('createTransaction')): ?>
+            <?php $form = ActiveForm::begin(
+                    ['action' => Url::to(['payments/new-payment']),]
+                    ); ?>
+            <?= Html::submitButton('New Payment Group', ['class' => 'btn btn-success']) ?>
+            <?= Html::label('Select User', 'select_user') ?>
+            <?= Html::dropDownList('select_user', 0, $result_users) ?>
+            <?php ActiveForm::end(); ?>
+        <?php endif; ?>
     </p>
 
 </div>

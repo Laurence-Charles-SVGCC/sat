@@ -21,7 +21,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php  //echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Academic Offering', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createAcademicOffering')): ?>
+            <?= Html::a('Create Academic Offering', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([

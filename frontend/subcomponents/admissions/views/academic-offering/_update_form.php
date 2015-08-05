@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-use yii\helpers\ArrayHelper;
 use frontend\models\AcademicYear;
 use frontend\models\ApplicationPeriod;
 use frontend\models\ProgrammeCatalog;
@@ -44,7 +43,9 @@ $ap_result = ApplicationPeriod::findOne(['applicationperiodid' => $model->applic
     </div>
 
     <div class="form-group">
+      <?php if (Yii::$app->user->can('updateAcademicOffering') || Yii::$app->user->can('createAcademicOffering')): ?>  
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+      <?php endif; ?>
     </div>
 
     <?php ActiveForm::end(); ?>

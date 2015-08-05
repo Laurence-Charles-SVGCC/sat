@@ -16,7 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Division', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (Yii::$app->user->can('createDivision')): ?>
+            <?= Html::a('Create Division', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
     </p>
 
     <?= GridView::widget([
@@ -30,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'abbreviation',
             'phone',
-            // 'email:email',
+            'email:email',
             // 'isactive:boolean',
             // 'isdeleted:boolean',
 
