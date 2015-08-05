@@ -219,7 +219,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $qualification->examinationbodyid = $qmodel ? $qmodel->examinationbodyid : 1;
                     $qualification->subjectid = 1;
                     $qualification->examinationproficiencytypeid = $qmodel ? $qmodel->examinationproficiencytypeid : 1;
-                    if (!$qualification->save())
+                    if (!$qualification->save()) 
                     {
                         Yii::$app->getSession()->setFlash('error', 'Could not add more certificates.');
                         break;
