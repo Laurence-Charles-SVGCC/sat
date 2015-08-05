@@ -42,7 +42,7 @@ use frontend\models\ProgrammeCatalog;
                 <?= $form->field($model, 'spaces['. $programme->programmecatalogid .']')->textInput() ?>
             </div>
             <div class="col-lg-4">
-                <?= $form->field($model, 'appliable['. $programme->programmecatalogid .']')->checkbox(['label' => 'Appliable']) ?>
+                <?= $form->field($model, 'interviewneeded['. $programme->programmecatalogid .']')->checkbox(['label' => 'Interview Needed']) ?>
             </div>
         </div>
     <?php endforeach; ?>

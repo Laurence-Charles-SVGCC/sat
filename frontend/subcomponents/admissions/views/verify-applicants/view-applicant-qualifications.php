@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                            ArrayHelper::map(ExaminationProficiencyType::find()->all(), 'examinationproficiencytypeid', 'name')) ?>
                           </td>
                         <td> 
-                            <?= $form->field($model, "[$key]grade", ['options' => [
+                            <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
                                         'tag'=>'div',
                                         'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
