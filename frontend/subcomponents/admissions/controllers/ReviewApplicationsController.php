@@ -430,7 +430,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     * Created: 28/07/2015 by Gamal Crichton
     * Last Modified: 4/08/2015 by Gamal Crichton
     */
-    public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='')
+    public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='', $redirectto = '')
     {
         $application = Application::findOne(['applicationid' => $applicationid]);
         $offer = new Offer();
@@ -444,12 +444,20 @@ class ReviewApplicationsController extends \yii\web\Controller
             if ($application->save())
             {
                 $applicant = Applicant::findOne(['personid' => $application->personid]);
-                if ($applicant){ $applicant->potentialstudentid = self::getPotentialStudentID($application->divisionid, $applicant->applicantid); }
+                if ($applicant)
+                { 
+                    $applicant->potentialstudentid = self::getPotentialStudentID($application->divisionid, $applicant->applicantid);
+                    $applicant->save();
+                }
                 Yii::$app->session->setFlash('success', 'Offer Added');
                 if ($redirect && $application_status && $division_id)
                 {
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                         'application_status' => $application_status]));
+                }
+                else if ($redirect && $redirectto)
+                {
+                    return $this->redirect(Url::to([$redirectto]));
                 }
                 else
                 {
@@ -535,9 +543,10 @@ class ReviewApplicationsController extends \yii\web\Controller
     public function getPotentialStudentID($divisionid, $base)
     {
         $ay = AcademicYear::findOne(['iscurrent' => 1, 'isdeleted' => 0]);
-        $startyear = $ay ? substr($ay->startdate->format('Y'), -2) : substr(date('Y'), -2);
+        $startyear = $ay ? substr(explode('-',$ay->startdate)[0], -2) : substr(date('Y'), -2);
         $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
         $num = str_pad(strval($base), 4, '0', STR_PAD_LEFT);
+        echo "number:'" .$startyear . $div . $num . "'";
         return $startyear . $div . $num;         
     }
     

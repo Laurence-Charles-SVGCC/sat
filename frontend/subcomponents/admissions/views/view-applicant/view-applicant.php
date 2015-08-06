@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'format' => 'html',
                 'label' => 'Offer ID',
-                'value' => function($row)
+                'value' => function($row)use ($applicant, $username)
                     {
                         if ($row['offerid'])
                         {
@@ -57,6 +57,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                         else
                         {
+                            if (Yii::$app->user->can('reviewApplications'))
+                            {
+                               return Html::a('Review', 
+                                            Url::to(['review-applications/view-applicant-certificates', 'applicationid' => $row['applicationid'],
+                                                'firstname'=>$applicant->firstname, 'middlename' => $applicant->middlename, 'lastname'=>$applicant->lastname,
+                                                'programme'=>$row['programme_name'], 'applicantid'=>$username, 'application_status'=>'pending']),
+                                                    ['class' => 'btn btn-success']);
+                            }
                             return 'N/A';
                         }
                     }
@@ -70,6 +78,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::hiddenInput('applicantusername', $username); ?>
         <?php if (Yii::$app->user->can('registerStudent')): ?>
             <?= Html::submitButton('Register as Student', ['class' => 'btn btn-success', 'name' => 'register']); ?>
+        <?php endif; ?>
+        <?php if (Yii::$app->user->can('viewApplicantPersonal')): ?>
+            <?= Html::submitButton('View Personal Details', ['class' => 'btn btn-success', 'name' => 'view_personal']); ?>
+        <?php endif; ?>
+        <?php if (Yii::$app->user->can('editApplicantPersonal')): ?>
+            <?= Html::submitButton('Edit Personal Details', ['class' => 'btn btn-success', 'name' => 'edit_personal']); ?>
         <?php endif; ?>
     <?php ActiveForm::end(); ?>
     

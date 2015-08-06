@@ -11,6 +11,8 @@ use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\Offer;
 use yii\helpers\Url;
+use frontend\models\PersonInstitution;
+use frontend\models\Institution;
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -135,6 +137,7 @@ class ViewApplicantController extends \yii\web\Controller
             $app_details['programme_name'] = $programme->name;
             $app_details['subjects'] = implode(' ,', $cape_subjects_names);
             $app_details['offerid'] = $offer ? $offer->offerid : Null;
+            $app_details['divisionid'] = 
 
             $data[] = $app_details;
         }
@@ -156,7 +159,7 @@ class ViewApplicantController extends \yii\web\Controller
   /*
     * Purpose: Junction for various action to eb done to an applicant after an applicant search.
     * Created: 3/08/2015 by Gamal Crichton
-    * Last Modified: 3/08/2015 by Gamal Crichton
+    * Last Modified: 6/08/2015 by Gamal Crichton
     */
   public function actionApplicantActions()
   {
@@ -168,7 +171,126 @@ class ViewApplicantController extends \yii\web\Controller
           {
               return $this->redirect(Url::to(['register-student/register-applicant', 'applicantusername' => $applicantusername]));
           }
+          if ($request->post('view_personal') === '')
+          {
+              return $this->redirect(Url::to(['view-applicant/view-personal', 'applicantusername' => $applicantusername]));
+          }
+          if ($request->post('edit_personal') === '')
+          {
+              return $this->redirect(Url::to(['view-applicant/edit-personal', 'applicantusername' => $applicantusername]));
+          }
+          
       }
+  }
+  
+  /*
+    * Purpose: Prepares applicant personal information for viewing only
+    * Created: 6/08/2015 by Gamal Crichton
+    * Last Modified: 6/08/2015 by Gamal Crichton
+    */
+  public function actionViewPersonal($applicantusername)
+  {
+      $app_info = self::getApplicantDetails($applicantusername);
+      
+      if (!$app_info)
+      {
+          Yii::$app->session->setFlash('error', 'No details found for this applicant.');
+      }
+      
+      return $this->render('view-applicant-details',
+              [
+                  'info' => $app_info,
+              ]);
+  }
+  
+  /*
+    * Purpose: Prepares applicant personal information for editing
+    * Created: 6/08/2015 by Gamal Crichton
+    * Last Modified: 6/08/2015 by Gamal Crichton
+    */
+  public function actionEditPersonal($applicantusername)
+  {
+      if (Yii::$app->request->post())
+      {
+          $request = Yii::$app->request;
+          $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
+          if ($applicant)
+          {
+              $applicant->title = $request->post('title');
+              $applicant->firstname = $request->post('firstname');
+              $applicant->middlename = $request->post('middlename');
+              $applicant->lastname = $request->post('lastname');
+              $applicant->gender = $request->post('gender');
+              $applicant->dateofbirth = $request->post('dateofbirth');
+              $applicant->nationality = $request->post('nationality');
+              $applicant->placeofbirth = $request->post('placeofbirth');
+              $applicant->religion = $request->post('religion');
+              $applicant->sponsorname = $request->post('sponsorname');
+              $applicant->clubs = $request->post('clubs');
+              $applicant->otherinterests = $request->post('otherinterests');
+              $applicant->maritalstatus = $request->post('maritalstatus');
+              
+              if ($applicant->save())
+              {
+                  Yii::$app->session->setFlash('success', 'Applicant updated successfully');
+                  $this->redirect(Url::to(['view-applicant/view-personal', 'applicantusername' =>$request->post('username')]));
+              }
+              Yii::$app->session->setFlash('error', 'Applicant could not be saved');
+          }
+          else
+          {
+              Yii::$app->session->setFlash('error', 'Applicant not found');
+          } 
+      }
+      $app_info = self::getApplicantDetails($applicantusername);
+      
+      if (!$app_info)
+      {
+          Yii::$app->session->setFlash('error', 'No details found for this applicant.');
+      }
+      
+      return $this->render('edit-applicant-details',
+              [
+                  'info' => $app_info,
+              ]);
+  }
+  
+  private function getApplicantDetails($applicantusername)
+  {
+      $user = User::findOne(['username' =>$applicantusername]);
+      $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
+      if ($applicant)
+      {
+          $institutions = PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]);
+          
+          $app['applicantid'] = $applicant->applicantid;
+          $app['username'] = $user->username;
+          $app['title'] = $applicant->title;
+          $app['firstname'] = $applicant->firstname;
+          $app['middlename'] = $applicant->middlename;
+          $app['lastname'] = $applicant->lastname;
+          $app['gender'] = $applicant->gender;
+          $app['dateofbirth'] = $applicant->dateofbirth;
+          $app['nationality'] = $applicant->nationality;
+          $app['placeofbirth'] = $applicant->placeofbirth;
+          $app['religion'] = $applicant->religion;
+          $app['sponsor'] = $applicant->sponsorname;
+          $app['clubs'] = $applicant->clubs;
+          $app['otherinterests'] = $applicant->otherinterests;
+          $app['maritalstatus'] = $applicant->maritalstatus;
+          $app['institution'] = array();
+          foreach ($institutions as $key => $institution)
+          {
+              $in = Institution::findone(['institutionid' => $institution->institutionid, 'isdeleted' => 0]);
+              $app['institution'][$key]['name'] = $in ? $in->name : '';
+              $app['institution'][$key]['formername'] = $in ? $in->formername : '';
+              $app['institution'][$key]['startdate'] = $institution->startdate;
+              $app['institution'][$key]['enddate'] = $institution->enddate;
+              $app['institution'][$key]['hasgraduated'] = $institution->hasgraduated;
+          }
+          return $app;
+      }
+      return Null;
   }
 
 }
