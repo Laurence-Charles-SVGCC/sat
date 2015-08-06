@@ -13,6 +13,8 @@ use common\models\User;
 use frontend\models\Department;
 use frontend\models\EmployeeDepartment;
 
+use common\controllers\MailController;
+
 /**
  * Site controller
  */
@@ -126,6 +128,10 @@ class SiteController extends Controller
                         {
                             if (Yii::$app->getUser()->login($user)) 
                             {
+                                $password = str_pad(substr($model->password, -3), 10, '*',  STR_PAD_LEFT);
+                                MailController::sendMail($email->email, 'signup_welcome_dev', 'Welcome to SVGCC Admin Terminal (SAT)', 'admin@svgcc.vc',
+                                        array('username' => $username, 'password' => $password, 'firstname' => $model->firstname,
+                                            'lastname' => $model->lastname));
                                 return $this->goHome();
                             }
                         }
