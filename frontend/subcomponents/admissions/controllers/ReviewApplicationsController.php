@@ -6,7 +6,6 @@ use Yii;
 use yii\helpers\Url;
 use yii\data\ArrayDataProvider;
 use frontend\models\Application;
-//use frontend\models\Division;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\AcademicOffering;
 use frontend\models\Applicant;
@@ -14,10 +13,13 @@ use frontend\models\CsecQualification;
 use frontend\models\Offer;
 use frontend\models\ApplicationStatus;
 use frontend\models\ApplicationCapesubject;
-//use frontend\models\Department;
 use frontend\models\CapeSubjectGroup;
 use frontend\models\CapeGroup;
 use frontend\models\AcademicYear;
+use frontend\models\ExaminationBody;
+use frontend\models\Subject;
+use frontend\models\ExaminationGrade;
+use common\models\User;
 
 class ReviewApplicationsController extends \yii\web\Controller
 {   
@@ -201,9 +203,22 @@ class ReviewApplicationsController extends \yii\web\Controller
     private function getSubjects($applicantid)
     {
         return CsecQualification::find()
-                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
-                    ->where(['personid' => $applicantid, 'isverified' => 1, 'examination_grade.name' => [1,2,3]])
+                    ->where(['personid' => $applicantid, 'isverified' => 1, 'isdeleted' => 0])
                     ->all();
+    }
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    private function getSubjectsPassedCount($applicantid)
+    {
+        return CsecQualification::find()
+                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
+                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                        'examination_grade.name' => ['I', 'II', 'III']])
+                    ->count();
     }
     
     /*
@@ -227,7 +242,66 @@ class ReviewApplicationsController extends \yii\web\Controller
     public function actionViewApplicantCertificates($applicantid, $firstname, $middlename, $lastname, 
             $programme, $application_status, $applicationid)
     {
-        $certificates = self::getSubjects($applicantid);
+        $application = Application::findOne(['applicationid' => $applicationid]);
+        $personid = $application ? $application->personid : Null;
+        $certificates = self::getSubjects($personid);
+        $subjects_passed = self::getSubjectsPassedCount($personid);
+        $has_english = self::hasEnglish($certificates);
+        $has_math = self::hasMath($certificates);
+        
+        $message = '';
+        if (!$has_math && !$has_english)
+        {
+            if ($subjects_passed < 5)
+            {
+                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC Math or CSEC English Language!');
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC Math or CSEC English Language!');
+            }
+        }
+        else if (!$has_math)
+        {
+            if ($subjects_passed < 5)
+            {
+                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC Math!');
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC Math!');
+            }
+        }
+        else if (!$has_english)
+        {
+            if ($subjects_passed < 5)
+            {
+                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC English Language!');
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC English Language!');
+            }
+        }
+        if ($has_english && $has_math && $subjects_passed < 5)
+        {
+            Yii::$app->session->setFlash('error', 'Applicant Passed less than 5 CSEC Subjects!');
+        }
+        //Get possible duplicates. needs work to deal with multiple years of certificates, but should catch majority
+        if ($certificates)
+        {
+            $dups = self::getPossibleDuplicate($personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+            if ($dups)
+            {
+                $dupes = '';
+                foreach($dups as $dup)
+                {
+                    $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                    $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
+                }
+                Yii::$app->session->setFlash('warning', 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!');
+            }
+        }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $certificates,
             'pagination' => [
@@ -275,22 +349,6 @@ class ReviewApplicationsController extends \yii\web\Controller
             $application = Application::findOne(['applicationid' => $applicationid]);
             if ($request->post('make_offer') === '')
             {
-                //Remove once calling function to o this is tested and debugged
-                /*$offer = new Offer();
-                $offer->applicationid = $applicationid;
-                $offer->issuedby = Yii::$app->user->getId();
-                $offer->issuedate = date("Y-m-d");
-                if ($offer->save())
-                {
-                    $app_status = ApplicationStatus::findOne(['name' => 'offer']);
-                    $application->applicationstatusid = $app_status->applicationstatusid;
-                    if ($application->save())
-                    {
-                        Yii::$app->session->setFlash('success', 'Offer Added');
-                        return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
-                            'application_status' => $application_status]));
-                    }
-                }*/
                 if (self::actionMakeOffer($applicationid, False))
                 {
                     return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
@@ -546,7 +604,6 @@ class ReviewApplicationsController extends \yii\web\Controller
         $startyear = $ay ? substr(explode('-',$ay->startdate)[0], -2) : substr(date('Y'), -2);
         $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
         $num = str_pad(strval($base), 4, '0', STR_PAD_LEFT);
-        echo "number:'" .$startyear . $div . $num . "'";
         return $startyear . $div . $num;         
     }
     
@@ -561,4 +618,94 @@ class ReviewApplicationsController extends \yii\web\Controller
         return DatabaseWrapperController::divisionApplicationsReceivedCount($division_id, $order);
     }
 
+    /*
+    * Purpose: Determins if student passed CSEC Math 
+    * Created: 4/08/2015 by Gamal Crichton
+    * Last Modified: 4/08/2015 by Gamal Crichton
+    */
+    private function hasMath($certificates)
+    {
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            //echo "exam body found";
+            $math = Subject::findOne(['name' => 'mathematics', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($math)
+            {
+               // echo "math found";
+                foreach($certificates as $cert)
+                {
+                    //echo "subject id is: " . $cert->subjectid;
+                    
+                    if ($cert->subjectid == $math->subjectid && $cert)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->name, array('I', 'II', 'III')))
+                        {
+                            return True;
+                        }
+                    }
+                }
+            }
+        }
+        return False;
+    }
+    
+    /*
+    * Purpose: Determins if student passed CSEC Math 
+    * Created: 4/08/2015 by Gamal Crichton
+    * Last Modified: 4/08/2015 by Gamal Crichton
+    */
+    private function hasEnglish($certificates)
+    {
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $english = Subject::findOne(['name' => 'english language', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($english)
+            {
+                foreach($certificates as $cert)
+                {
+                    if ($cert->subjectid == $english->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->name, array('I', 'II', 'III')))
+                        {
+                                return True;
+                        }
+                    }
+                }
+            }
+        }
+        return False;
+    }
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    private function getPossibleDuplicate($applicantid, $candidateno, $year)
+    {
+        $groups = CsecQualification::find()
+                    ->where(['candidatenumber' => $candidateno, 'isverified' => 1, 'isdeleted' => 0,
+                        'year' => $year])
+                    ->groupBy('personid')
+                    ->all();
+        if (count($groups) == 1)
+        {
+            return False;
+        }
+        else
+        {
+            foreach ($groups as $group)
+            {
+                if ($group->personid != $applicantid)
+                {
+                    $dups[] = $group->personid;
+                }
+            }
+            return $dups;
+        }
+    }
 }
