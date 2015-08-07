@@ -77,10 +77,10 @@ class AcademicOfferingController extends Controller
                     $ao_model->academicyearid = $model->academicyearid;
                     $ao_model->applicationperiodid = $model->applicationperiodid;
                     $ao_model->spaces = $model->spaces[$programme_id];
-                    $ao_model->appliable = $model->appliable[$programme_id];
+                    $ao_model->interviewneeded = $model->interviewneeded[$programme_id];
                     if (!$ao_model->save())
                     {
-                        Yii::$app->getSession()->setFlash('error', 'Academic Offerign was not saved.');
+                        Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
                         return $this->render('create', [
                                 'model' => $model,
                             ]);

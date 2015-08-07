@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
+use frontend\models\ExaminationGrade;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -54,7 +55,6 @@ $this->params['breadcrumbs'][] = $this->title;
                           <td>
                               <?= $form->field($model, "[$key]examinationbodyid", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
@@ -63,7 +63,6 @@ $this->params['breadcrumbs'][] = $this->title;
                           <td> 
                               <?= $form->field($model, "[$key]subjectid", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
@@ -72,7 +71,6 @@ $this->params['breadcrumbs'][] = $this->title;
                           <td>
                               <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
@@ -81,15 +79,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td> 
                             <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
-                                    ])->textInput(); ?>
+                                    ])->dropDownList(
+                                           ArrayHelper::map(ExaminationGrade::find()->all(), 'examinationgradeid', 'name')); ?>
                         </td>
                         <td>
                             <?= $form->field($model, "[$key]year", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->textInput(); ?>
@@ -97,7 +94,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>
                             <?= $form->field($model, "[$key]isverified", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->checkbox(['label' => NULL]); ?>
@@ -105,7 +101,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>
                             <?= $form->field($model, "[$key]isqueried", ['options' => [
                                         'tag'=>'div',
-                                        'class' => 'form-group field-loginform-username has-feedback required',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->checkbox(['label' => NULL]); ?>

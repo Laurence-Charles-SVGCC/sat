@@ -32,9 +32,8 @@ class TransactionSummary extends \yii\db\ActiveRecord
     {
         return [
             [['balance', 'totalpaid'], 'required'],
-            [['balance'], 'number'],
+            [['balance', 'totalpaid'], 'number'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['totalpaid'], 'string', 'max' => 45]
         ];
     }
 

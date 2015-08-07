@@ -127,33 +127,31 @@ class PaymentsController extends Controller
         if ($model->load(Yii::$app->request->post()))
         {
             $request = Yii::$app->request;
-            //var_dump($request);
-            $total_due = $model->totaldue;
-            $trans_amt = $model->paymentamount;
+            $total_due = floatval($model->totaldue);
+            $trans_amt = floatval($model->paymentamount);
             $summary = new TransactionSummary();
-            if ($total_due && $trans_amt)
+            if ($total_due >= 0 && $trans_amt >= 0)
             {
                 $summary->balance = $total_due - $trans_amt;
-                $summary->totalpaid = $trans_amt;
-                
+                $summary->totalpaid = floatval($trans_amt);
                 if ($summary->save())
                 {
                     $model->personid = $request->post('payee_id');
                     $model->recepientid = Yii::$app->user->getId();
                     $model->transactionsummaryid = $summary->transactionsummaryid;
                     $model->receiptnumber = self::getReceiptNumber();
-
                     if ($model->save())
                     {
                         $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
                     }
                 }
+                Yii::$app->session->setFlash('error', 'Transaction could not be added');
             }
             else
             {
                 Yii::$app->session->setFlash('error', 'Total Paid and Total Due are required.');
             }
-            Yii::$app->session->setFlash('error', 'Transaction could not be added');
+            
         }
         return $this->render('new-payment',
                 [
@@ -169,10 +167,8 @@ class PaymentsController extends Controller
     */
     public function actionViewTransactions($transactionsummaryid = '')
     {
-        //var_dump(Yii::$app->request->queryParams);
         $searchModel = new TransactionSearch();
         $searchparams = $transactionsummaryid ? ['transactionsummaryid' => $transactionsummaryid] : array();
-        //$dataProvider = $searchModel->search($searchparams);
         
         $data = Transaction::find()->where($searchparams)->all();
         $dataProvider = new ArrayDataProvider(
@@ -180,9 +176,6 @@ class PaymentsController extends Controller
             'allModels' => $data,
             'pagination' => [
                 'pageSize' => 20,
-            ],
-            'sort' => [
-                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
             ],
         ]);
 
@@ -206,6 +199,45 @@ class PaymentsController extends Controller
     public function actionPaymentMethods()
     {
         $this->redirect(['payment-method/index']);
+    }
+    
+    /*
+    * Purpose: Provides view to update an existing Transaction model.
+    * Created: 06/08/2015 by Gamal Crichton
+    * Last Modified: 06/08/2015 by Gamal Crichton
+    */
+    public function actionUpdateTransaction($receiptnumber)
+    {
+        if (Yii::$app->request->post())
+        {
+            $transactionid = Yii::$app->request->post('transactionid');
+            $model = Transaction::findOne(['transactionid' =>$transactionid]);
+            //Get old transaction attributes
+            $cur_paid = $model->paymentamount;
+            $summary = TransactionSummary::findOne(['transactionsummaryid' => $model->transactionsummaryid]);
+            if ($model->load(Yii::$app->request->post()) && $model->save() && $summary)
+            {
+                $diff_paid = floatval($model->paymentamount) - $cur_paid;
+                $newtotalpaid = $summary->totalpaid + $diff_paid;
+                $summary->totalpaid = $newtotalpaid;
+                $summary->balance = floatval($model->totaldue) - $newtotalpaid;
+                if ($summary->save())
+                {
+                    $this->redirect(['payments/view-transactions', 'personid' => $model->personid]);
+                }
+            }
+            Yii::$app->session->setFlash('error', 'Transaction could nto be updated');
+        }
+        
+        $model = Transaction::findOne(['receiptnumber' =>$receiptnumber]);
+
+        if ($model) {
+            return $this->render('update-transaction', [
+                'model' => $model,
+                'payee_id' => $model->personid,
+                    ]);
+        }
+        $this->redirect(['payments/index']);
     }
     
     

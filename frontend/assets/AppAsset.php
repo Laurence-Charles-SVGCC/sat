@@ -44,7 +44,7 @@ class AppAsset extends AssetBundle
         'css/plugins/slimScroll/jquery.slimscroll.min.js',
         'css/plugins/fastclick/fastclick.min.js',
         'css/dist/js/app.min.js',
-        'css/dist/js/pages/dashboard.js',
+        /*'css/dist/js/pages/dashboard.js', Clashes with DosAmigos Datepicker*/
         'css/dist/js/demo.js',
     ];
     public $depends = [

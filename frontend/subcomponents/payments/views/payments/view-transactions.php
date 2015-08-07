@@ -1,10 +1,12 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 use frontend\models\Employee;
-use frontend\models\TransactionSummary;
+//use frontend\models\TransactionSummary;
+use common\models\User;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\TransactionSearch */
@@ -37,7 +39,16 @@ if (count($dataProvider->getModels()) > 0)
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'receiptnumber',
+            [
+                'attribute' => 'receiptnumber',
+                'format' => 'html',
+                'label' => 'Receipt #',
+                'value' => function($model)
+                    {
+                       return Html::a($model->receiptnumber, 
+                               Url::to(['payments/update-transaction', 'receiptnumber' => $model->receiptnumber]));
+                    }
+            ],
             [
                 'label' => 'Type',
                 'value' => function($model)
@@ -45,7 +56,17 @@ if (count($dataProvider->getModels()) > 0)
                        return $model->getTransactiontype()->one()->name;
                     }
             ],
-            'personid',
+            [
+                'attribute' => 'personid',
+                'format' => 'html',
+                'label' => 'Applicant ID',
+                'value' => function($model)
+                    {
+                       $user = User::findOne(['personid' => $model->personid]);
+                       $username = $user ? $user->username : $model->personid;
+                       return $username;
+                    }
+            ],
             [
                 'label' => 'Purpose',
                 'value' => function($model)
@@ -72,8 +93,6 @@ if (count($dataProvider->getModels()) > 0)
             'paymentamount',
             'totaldue',
             'comments:ntext',
-            
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

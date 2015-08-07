@@ -17,6 +17,7 @@ use frontend\models\Semester;
     <?php $form = ActiveForm::begin(); ?>
         <div class="body-content">
             <?= Html::hiddenInput('payee_id', $payee_id); ?>
+            <?= Html::hiddenInput('transactionid', $model->transactionid); ?>
             <div class="row">
                 <div class="col-lg-4">
                     <?= $form->field($model, 'transactiontypeid')->dropDownList(

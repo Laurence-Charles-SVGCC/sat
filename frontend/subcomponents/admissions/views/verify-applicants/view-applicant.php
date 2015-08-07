@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
+use common\models\User;
+
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -30,7 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Applicant ID',
                 'value' => function($model) use($centrename, $centreid, $type)
                     {
-                       return Html::a($model->personid, 
+                        $user = User::findOne(['personid' => $model->personid]);
+                        $username = $user ? $user->username : $model->personid;
+                       return Html::a($username, 
                                Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
                                    'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
                     }

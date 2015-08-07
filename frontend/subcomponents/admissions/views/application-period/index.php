@@ -3,6 +3,9 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+use frontend\models\Division;
+use frontend\models\Employee;
+
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\ApplicationPeriodSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -26,14 +29,26 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'divisionid',
-            'personid',
+            [
+                'attribute' => 'divisionid',
+                'value' => function ($model)
+                    {
+                        $division = Division::findOne(['divisionid' => $model->divisionid]);
+                        return $division ? $division->abbreviation : $model->divisionid;
+                    }
+            ],
+            [
+                'attribute' => 'personid',
+                'label' => 'Creator',
+                'value' => function ($model)
+                    {
+                        $employee = Employee::findOne(['personid' => $model->personid]);
+                        return $employee ? $employee->firstname . ' ' . $employee->lastname : $model->personid;
+                    }
+            ],
             'academicyearid',
             'name',
-            [
-                'attribute' => 'onsitestartdate',
-                'format' => ['date', 'd-m-Y'],
-             ],
+            'onsitestartdate',
             'onsiteenddate',
             'offsitestartdate',
             'offsiteenddate',

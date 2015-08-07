@@ -67,15 +67,12 @@ class ApplicationPeriodController extends Controller
 
         if ($model->load(Yii::$app->request->post()))
         {
-            //Corretc way for when database is synced up
-            //$model->personid = Yii::$app->user->getID();
-            //Hack until then
-            $model->personid = User::find()->where([ 'personid' => Yii::$app->user->getID()])->one()->username;
+            $model->personid = Yii::$app->user->getID();
             if ($model->save())
             {
                 return $this->redirect(['view', 'id' => $model->applicationperiodid]);
             }
-            //Throw Error
+            Yii::$app->session->setFlash('error', 'Application Period not created');
         } else {
             return $this->render('create', [
                 'model' => $model,

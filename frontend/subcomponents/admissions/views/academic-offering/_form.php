@@ -28,6 +28,7 @@ use frontend\models\ProgrammeCatalog;
                     ArrayHelper::map(ApplicationPeriod::find()->all(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period']) ?>
         </div>
     </div>
+    
     <div class="row">
             <div class="col-lg-4">
                 <h3>Programmes</h3>
@@ -45,6 +46,7 @@ use frontend\models\ProgrammeCatalog;
                 <?= $form->field($model, 'interviewneeded['. $programme->programmecatalogid .']')->checkbox(['label' => 'Interview Needed']) ?>
             </div>
         </div>
+    <hr>
     <?php endforeach; ?>
 
     <div class="form-group">
