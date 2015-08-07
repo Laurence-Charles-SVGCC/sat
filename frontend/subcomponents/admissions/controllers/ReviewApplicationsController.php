@@ -75,15 +75,17 @@ class ReviewApplicationsController extends \yii\web\Controller
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->where(['application.applicationid' => $application->applicationid])->one();
             $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
             
             $app_details['applicationid'] = $application->applicationid;
             $app_details['applicantid'] = $applicant->getPerson()->one()->username;
             $app_details['firstname'] = $applicant->firstname;
             $app_details['middlename'] = $applicant->middlename;
             $app_details['lastname'] = $applicant->lastname;
-            $app_details['programme'] = $programme->name;
+            $app_details['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             
-            $app_details['subjects_no'] = self::getSubjectsCount($application->personid);
+            $app_details['subjects_no'] = self::getSubjectsPassedCount($application->personid);
             $app_details['ones_no'] = self::getSubjectGradesCount($application->personid, 1);
             $app_details['twos_no'] = self::getSubjectGradesCount($application->personid, 2);
             $app_details['threes_no'] = self::getSubjectGradesCount($application->personid, 3);
@@ -183,7 +185,8 @@ class ReviewApplicationsController extends \yii\web\Controller
     }
     
     /*
-    * Purpose: Gets counts of all csec_subjects an applicants has passed
+    * Purpose: Gets counts of all csec_subjects an applicants entered
+     * NOTE: Not to be confused with getSubjectsPassedCount which counts only those which passed.
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton
     */
@@ -191,7 +194,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     {
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
-                    ->where(['personid' => $applicantid, 'isverified' => 1, 'examination_grade.name' => [1,2,3]])
+                    ->where(['personid' => $applicantid, 'isverified' => 1])
                     ->count();
     }
     
@@ -217,7 +220,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
                     ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-                        'examination_grade.name' => ['I', 'II', 'III']])
+                        'examination_grade.ordering' => [1, 2, 3]])
                     ->count();
     }
     
@@ -230,7 +233,8 @@ class ReviewApplicationsController extends \yii\web\Controller
     {
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
-                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'examination_grade.name' => $grade])
+                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'examination_grade.ordering' => $grade,
+                        'csec_qualification.isdeleted' => 0])
                     ->count();
     }
 
@@ -249,7 +253,6 @@ class ReviewApplicationsController extends \yii\web\Controller
         $has_english = self::hasEnglish($certificates);
         $has_math = self::hasMath($certificates);
         
-        $message = '';
         if (!$has_math && !$has_english)
         {
             if ($subjects_passed < 5)
@@ -628,19 +631,15 @@ class ReviewApplicationsController extends \yii\web\Controller
         $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
         if ($exam_body)
         {
-            //echo "exam body found";
             $math = Subject::findOne(['name' => 'mathematics', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
             if ($math)
             {
-               // echo "math found";
                 foreach($certificates as $cert)
-                {
-                    //echo "subject id is: " . $cert->subjectid;
-                    
+                {                 
                     if ($cert->subjectid == $math->subjectid && $cert)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->name, array('I', 'II', 'III')))
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
                         {
                             return True;
                         }
@@ -669,7 +668,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                     if ($cert->subjectid == $english->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->name, array('I', 'II', 'III')))
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
                         {
                                 return True;
                         }

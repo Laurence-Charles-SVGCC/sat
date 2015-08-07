@@ -5,12 +5,12 @@ namespace app\subcomponents\admissions\controllers;
 use Yii;
 use frontend\models\ApplicationPeriod;
 use frontend\models\ApplicationPeriodSearch;
-use frontend\models\AcademicOffering;
-use frontend\models\ProgrammeCatalog;
+//use frontend\models\AcademicOffering;
+//use frontend\models\ProgrammeCatalog;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use common\models\User;
+//use common\models\User;
 
 /**
  * ApplicationPeriodController implements the CRUD actions for ApplicationPeriod model.

@@ -10,7 +10,7 @@ use Yii;
  * @property string $examinationgradeid
  * @property string $examinationbodyid
  * @property string $name
- * @property string $description
+ * @property integer $ordering
  * @property boolean $isactive
  * @property boolean $isdeleted
  *
@@ -33,9 +33,8 @@ class ExaminationGrade extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['examinationbodyid', 'name'], 'required'],
-            [['examinationbodyid'], 'integer'],
-            [['description'], 'string'],
+            [['examinationbodyid', 'name', 'ordering'], 'required'],
+            [['examinationbodyid', 'ordering'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
             [['name'], 'string', 'max' => 45]
         ];
@@ -50,7 +49,7 @@ class ExaminationGrade extends \yii\db\ActiveRecord
             'examinationgradeid' => 'Examinationgradeid',
             'examinationbodyid' => 'Examinationbodyid',
             'name' => 'Name',
-            'description' => 'Description',
+            'ordering' => 'Ordering',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];

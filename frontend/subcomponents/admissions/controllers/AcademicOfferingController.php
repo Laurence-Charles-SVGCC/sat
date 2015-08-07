@@ -112,7 +112,7 @@ class AcademicOfferingController extends Controller
         {
             $pc_result = ProgrammeCatalog::findOne(['programmecatalogid' => $model->programmecatalogid]);
             $ay_result = AcademicYear::findOne(['academicyearid' => $model->academicyearid]);
-            $academic_offering_name =  $pc_result->name . " " . $ay_result->title;
+            $academic_offering_name =  $pc_result && $ay_result ? $pc_result->name . " " . $ay_result->title : "Undefined Programme Catalog";
             return $this->render('update', [
                 'model' => $model,
                 'academic_offering_name' => $academic_offering_name,
@@ -128,7 +128,16 @@ class AcademicOfferingController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        if ($model)
+        {
+            $model->isdeleted = 0;
+            $model->isactive = 0;
+            if (!$model->save())
+            {
+                Yii::$app->session->setFlash('error', 'Academic Offering could not be deleted');
+            }
+        }
 
         return $this->redirect(['index']);
     }
