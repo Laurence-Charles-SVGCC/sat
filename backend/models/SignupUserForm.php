@@ -16,6 +16,7 @@ class SignupUserForm extends Model
     public $email;
     public $persontypeid;
     public $department;
+    public $username;
 
     /**
      * @inheritdoc
@@ -32,6 +33,7 @@ class SignupUserForm extends Model
             
             [['firstname', 'lastname'], 'string', 'max' => 45],
             [['persontypeid'], 'integer'],
+            [['username'], 'string', 'max' => 8],
         ];
     }
 

@@ -36,6 +36,9 @@ use frontend\models\Department;
     </div>
     <div class="row">
         <div class="col-lg-4">
+            <?= $form->field($model, 'username')->textInput()->label('Username (if assigned)'); ?>
+        </div>
+        <div class="col-lg-4">
             <?= $form->field($model, 'persontypeid')->dropDownList(
                     ArrayHelper::map(PersonType::findAll(['isactive' => 1]), 'persontypeid', 'persontype'))->label('Person Type') ?>
         </div>

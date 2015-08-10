@@ -16,8 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php if (Yii::$app->user->can('publishOffer')): ?>
-            <?= Html::a('Publish All Offers', ['publish-all'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Publish Rejects', ['publish-rejects'], ['class' => 'btn btn-danger']) ?>
+            <?= Html::a('Bulk Publish', ['bulk-publish'], ['class' => 'btn btn-primary']) ?>
         <?php endif; ?>
     </p>
 

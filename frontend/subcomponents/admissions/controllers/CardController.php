@@ -41,6 +41,7 @@ class CardController extends \yii\web\Controller
             $app_period_name = "All Active Application Periods";
             $offer_cond = array('application_period.isactive' => 1);
         }
+        $offer_cond['offer.isdeleted'] = 0;
         
         $offers = Offer::find()
                 ->joinWith('application')

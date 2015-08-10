@@ -109,7 +109,6 @@ class RegisterStudentController extends \yii\web\Controller
        if (Yii::$app->request->post())
        {
            $request = Yii::$app->request;
-           //var_dump($request);
            //Make applicant a student
            $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);

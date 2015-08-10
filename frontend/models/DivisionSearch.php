@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+//use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use frontend\models\Division;
@@ -18,8 +18,8 @@ class DivisionSearch extends Division
     public function rules()
     {
         return [
-            [['divisionid', 'locationid'], 'integer'],
-            [['name', 'abbreviation', 'phone', 'email'], 'safe'],
+            [['divisionid'], 'integer'],
+            [['name', 'abbreviation', 'phone', 'website', 'email', 'country', 'constituency', 'town', 'addressline'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
         ];
     }
@@ -58,7 +58,6 @@ class DivisionSearch extends Division
 
         $query->andFilterWhere([
             'divisionid' => $this->divisionid,
-            'locationid' => $this->locationid,
             'isactive' => $this->isactive,
             'isdeleted' => $this->isdeleted,
         ]);
@@ -66,7 +65,12 @@ class DivisionSearch extends Division
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'abbreviation', $this->abbreviation])
             ->andFilterWhere(['like', 'phone', $this->phone])
-            ->andFilterWhere(['like', 'email', $this->email]);
+            ->andFilterWhere(['like', 'website', $this->website])
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'country', $this->country])
+            ->andFilterWhere(['like', 'constituency', $this->constituency])
+            ->andFilterWhere(['like', 'town', $this->town])
+            ->andFilterWhere(['like', 'addressline', $this->addressline]);
 
         return $dataProvider;
     }

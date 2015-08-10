@@ -50,7 +50,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     */
     public function actionViewByStatus($application_status, $division_id)
     {
-        $applications = Application::find()->where(['applicationstatusid' => $application_status])->all();
+        $applications = Application::find()->where(['applicationstatusid' => $application_status, 'isdeleted' => 0])->all();
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
     }
     

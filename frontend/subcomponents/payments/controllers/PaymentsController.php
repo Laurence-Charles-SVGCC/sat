@@ -4,13 +4,18 @@ namespace app\subcomponents\payments\controllers;
 
 use Yii;
 use yii\web\Controller;
-use yii\helpers\Url;
+//use yii\helpers\Url;
 use frontend\models\Transaction;
 use frontend\models\TransactionSearch;
 use frontend\models\TransactionSummary;
 use frontend\models\Applicant;
 use yii\data\ArrayDataProvider;
 use common\models\User;
+use frontend\models\TransactionPurpose;
+use frontend\models\Application;
+use frontend\models\ApplicationPeriod;
+use frontend\models\ApplicationHistory;
+use frontend\models\Offer;
 
 
 class PaymentsController extends Controller
@@ -142,6 +147,11 @@ class PaymentsController extends Controller
                     $model->receiptnumber = self::getReceiptNumber();
                     if ($model->save())
                     {
+                        $remove_app = TransactionPurpose::findOne(['name' => 'application removal']);
+                        if ($remove_app && $model->transactionpurposeid == $remove_app->transactionpurposeid)
+                        {
+                            self::removeApplications($model->personid);
+                        }
                         $this->redirect(Url::to(['payments/view-transactions', 'personid' => $model->personid]));
                     }
                 }
@@ -257,5 +267,43 @@ class PaymentsController extends Controller
         }
         
         return strlen($num) > 6 ? $num : '15' . $num;
+    }
+    
+    /*
+    * Purpose: Deletes an applicant's applications for active application periods
+    * Created: 10/08/2015 by Gamal Crichton
+    * Last Modified: 10/08/2015 by Gamal Crichton
+    */
+    private function removeApplications($personid)
+    {
+        $app_periods = ApplicationPeriod::findAll(['isactive' => 1, 'isdeleted' => 0]);
+        foreach ($app_periods as $ap)
+        {
+            $applications = Application::findAll(['personid' => $personid, 'isdeleted' => 0]);
+            foreach ($applications as $app)
+            {
+                $ac_offering = $app->getAcademicOffering()->one();
+                if ($ac_offering && $ac_offering->applicationperiodid == $ap->applicationperiodid)
+                {
+                    $app->isdeleted = 1;
+                    $app->isactive = 0;
+                    $app_history = ApplicationHistory::findAll(['applicationid' => $app->applicationid]);
+                    foreach($app_history as $ah)
+                    {
+                        $ah->isdeleted = 1;
+                        $ah->isactive = 0;
+                        $ah->save();
+                    }
+                    $offers = Offer::findAll(['applicationid' => $app->applicationid]);
+                    foreach($offers as $offer)
+                    {
+                        $offer->isdeleted = 1;
+                        $offer->isactive = 0;
+                        $offer->save();
+                    }
+                    $app->save();
+                }
+            }
+        }
     }
 }

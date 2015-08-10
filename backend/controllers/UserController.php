@@ -74,7 +74,7 @@ class UserController extends Controller
         
         if ($model->load(Yii::$app->request->post())) 
         {   
-            $username = SiteController::createUsername();
+            $username = $model->username == '' ? SiteController::createUsername() : $model->username;
             if ($user = $model->signup($username)) 
             {
                 $email = new Email();
