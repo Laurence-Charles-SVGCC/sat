@@ -60,5 +60,33 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
+    
+    <h2>CAPE Offerings</h2>
+
+    <?= GridView::widget([
+        'dataProvider' => $capeDataProvider,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+            'subjectname',
+            [
+                'label' => 'Application Period',
+                'format' => 'text',
+                'value' => function($model){
+                    $af = $model->getAcademicoffering()->one();
+                    $ap = $af ? $af->getApplicationperiod()->one() : NULL;
+                    return $ap ? $ap->name : 'Undefined Application Period';
+                }
+             ],
+            [
+                'label' => 'Units',
+                'format' => 'text',
+                'value' => function($model){
+                    return $model->unitcount;
+                }
+             ],
+            'capacity',
+            ['class' => 'yii\grid\ActionColumn'],
+        ],
+    ]); ?>
 
 </div>

@@ -48,6 +48,23 @@ use frontend\models\ProgrammeCatalog;
         </div>
     <hr>
     <?php endforeach; ?>
+    
+    <div class="row">
+            <div class="col-lg-4">
+                <h3>Cape Subjects</h3>
+            </div>
+    </div>
+    <?php foreach($capesubjects as $csub): ?>
+        <div class="row">
+            <div class="col-lg-4">
+                <?= $form->field($capesubject, 'subjectname['. $csub->name .']')->checkbox(['label' => $csub->name]) ?>
+            </div>
+            <div class="col-lg-4">
+                <?= $form->field($capesubject, 'capacity['. $csub->name .']')->textInput() ?>
+            </div>
+        </div>
+    <hr>
+    <?php endforeach; ?>
 
     <div class="form-group">
         <?php if (Yii::$app->user->can('updateAcademicOffering') || Yii::$app->user->can('createAcademicOffering')): ?>

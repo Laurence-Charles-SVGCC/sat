@@ -11,6 +11,10 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
+use frontend\models\ExaminationBody;
+use frontend\models\Subject;
+use frontend\models\CapeSubject;
+use yii\data\ActiveDataProvider;
 
 /**
  * AcademicOfferingController implements the CRUD actions for AcademicOffering model.
@@ -36,11 +40,19 @@ class AcademicOfferingController extends Controller
     public function actionIndex()
     {
         $searchModel = new AcademicOfferingSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $dataProvider = new ActiveDataProvider([
+                'query' => AcademicOffering::find()->where(['isdeleted' => 0]),
+            ]);
+        $capeDataProvider = new ActiveDataProvider([
+                'query' => CapeSubject::find()->where(['isdeleted' => 0]),
+            ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'capeDataProvider' => $capeDataProvider,
         ]);
     }
 
@@ -64,8 +76,9 @@ class AcademicOfferingController extends Controller
     public function actionCreate()
     {
         $model = new AcademicOffering();
+        $capesubject = new CapeSubject();
 
-        if ($model->load(Yii::$app->request->post()))
+        if ($model->load(Yii::$app->request->post()) && $capesubject->load(Yii::$app->request->post()))
          {
             foreach ($model->programmecatalogid as $programme_id=>$programme)
             {
@@ -87,10 +100,59 @@ class AcademicOfferingController extends Controller
                     }
                 }
             }
+            $capeprogramme = ProgrammeCatalog::findOne(['name' => 'cape']);
+            if ($capeprogramme)
+            {
+                $capeoffering = AcademicOffering::findOne(['programmecatalogid' => $capeprogramme->programmecatalogid,
+                    'applicationperiodid' => $model->applicationperiodid, 'isdeleted' => 0]);
+                if ($capeoffering)
+                {
+                    //var_dump($capesubject);
+                    foreach ($capesubject->subjectname as $subjectname=>$subject)
+                    {
+                        if ($subject == 1)
+                        {
+                            //Checkbox for this subject is ticked
+                            $cs_model = new CapeSubject();
+                            $cs_model->academicofferingid = $capeoffering->academicofferingid;
+                            $cs_model->subjectname = $subjectname;
+                            $cs_model->capacity = $capesubject->capacity[$subjectname];
+                            if (!$cs_model->save())
+                            {
+                                Yii::$app->getSession()->setFlash('error', 'Academic Offering of CAPE Subject was not saved.');
+                                return $this->render('create', [
+                                        'model' => $model,
+                                        'capesubject' => $capesubject,
+                                        'capesubjects' => array(),
+                                    ]);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No academic offering of CAPE found for specified period.');
+                }
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'No Programme called CAPE found.');
+            }
             return $this->redirect(Url::toRoute('academic-offering/index'));
-        } else {
+        } 
+        else 
+        {
+            $subjects = array();
+            $exam_body = ExaminationBody::findOne(['abbreviation' => 'cape']);
+            if ($exam_body)
+            {
+                $subjects = Subject::findAll(['examinationbodyid' => $exam_body->examinationbodyid]);
+            }
+    
             return $this->render('create', [
                 'model' => $model,
+                'capesubjects' => $subjects,
+                'capesubject' => $capesubject,
             ]);
         }
     }
@@ -131,13 +193,14 @@ class AcademicOfferingController extends Controller
         $model = $this->findModel($id);
         if ($model)
         {
-            $model->isdeleted = 0;
+            $model->isdeleted = 1;
             $model->isactive = 0;
             if (!$model->save())
             {
                 Yii::$app->session->setFlash('error', 'Academic Offering could not be deleted');
             }
         }
+        
 
         return $this->redirect(['index']);
     }
@@ -153,7 +216,12 @@ class AcademicOfferingController extends Controller
     {
         if (($model = AcademicOffering::findOne($id)) !== null) {
             return $model;
-        } else {
+        } 
+        elseif (($model = CapeSubject::findOne(['capesubjectid' => $id])) !== null)
+        {
+            return $model;
+        }
+        else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }

@@ -159,7 +159,10 @@ else
                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                 <?php if (Yii::$app->user->can('viewProgramme')): ?>
                     <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programme-catalog/index'])?>"><i class="fa fa-circle-o"></i>Programme Catalog</a></li>
-                <?php endif; ?>    
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewCapeSubject')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/programmes/cape-subject/index'])?>"><i class="fa fa-circle-o"></i>CAPE Subject Catalog</a></li>
+                <?php endif; ?>
               </ul>
             </li>
             <?php endif; ?>

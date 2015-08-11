@@ -10,7 +10,7 @@ use Yii;
  * @property string $capesubjectid
  * @property string $cordinatorid
  * @property string $academicofferingid
- * @property string $subjectcode
+ * @property string $subjectname
  * @property integer $unitcount
  * @property integer $capacity
  * @property boolean $isactive
@@ -39,10 +39,10 @@ class CapeSubject extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cordinatorid', 'academicofferingid', 'subjectcode', 'unitcount', 'capacity'], 'required'],
+            [['academicofferingid', 'subjectname'], 'required'],
             [['cordinatorid', 'academicofferingid', 'unitcount', 'capacity'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['subjectcode'], 'string', 'max' => 45]
+            [['subjectname'], 'string', 'max' => 45]
         ];
     }
 
@@ -55,7 +55,7 @@ class CapeSubject extends \yii\db\ActiveRecord
             'capesubjectid' => 'Capesubjectid',
             'cordinatorid' => 'Cordinatorid',
             'academicofferingid' => 'Academicofferingid',
-            'subjectcode' => 'Subjectcode',
+            'subjectname' => 'Subjectname',
             'unitcount' => 'Unitcount',
             'capacity' => 'Capacity',
             'isactive' => 'Isactive',
