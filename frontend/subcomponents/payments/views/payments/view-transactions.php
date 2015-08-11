@@ -13,6 +13,7 @@ use common\models\User;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Transactions';
+$this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 //Get payee ID
@@ -92,7 +93,7 @@ if (count($dataProvider->getModels()) > 0)
             'paydate',
             'paymentamount',
             'totaldue',
-            'comments:ntext',
+            'comments:ntext',        
         ],
     ]); ?>
 

@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Transaction */
 
-$this->title = 'Update Transaction: ' . ' ' . $model->transactionid;
+$this->title = 'Update Transaction: ' . ' ' . $model->receiptnumber;
 $this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->transactionid, 'url' => ['view', 'id' => $model->transactionid]];
+$this->params['breadcrumbs'][] = ['label' => $model->receiptnumber, 'url' => ['view', 'id' => $model->transactionid]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="transaction-update">

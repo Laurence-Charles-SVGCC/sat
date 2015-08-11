@@ -20,17 +20,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
             'employeeid',
             'personid',
+            [
+                'label' => 'Username',
+                'format' => 'text',
+                'value' => function($model){
+                    $person = $model->getPerson()->one();
+                    return $person ? $person->username : 'Undefined User';
+                }  
+            ],
             'employeetitleid',
             'title',
             'firstname',
-            // 'middlename',
-            // 'lastname',
-            // 'gender',
-            // 'dateofbirth',
+             'middlename',
+             'lastname',
+             'gender',
+             'dateofbirth',
             // 'maritalstatus',
             // 'nationality',
             // 'religion',

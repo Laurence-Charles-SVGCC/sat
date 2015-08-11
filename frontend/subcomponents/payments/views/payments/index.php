@@ -18,18 +18,25 @@ $this->title = 'SVGCC Administrative Terminal';
                 <?php if (Yii::$app->user->can('managePayments')): ?>
                     <?= Html::a('Manage Payments', ['payments/manage-payments'], ['class' => 'btn btn-success']) ?>
                 <?php endif; ?>
+            </div>
+            <div class="col-lg-4">
                 <?php if (Yii::$app->user->can('viewTransactionType')): ?>
                     <?= Html::a('Manage Transaction Types', ['payments/transaction-types'], ['class' => 'btn btn-success']) ?>
                 <?php endif; ?>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-lg-4">    
                 <?php if (Yii::$app->user->can('viewTransactionPurpose')): ?>
                     <?= Html::a('Manage Transaction Purposes', ['payments/transaction-purposes'], ['class' => 'btn btn-success']) ?>
                 <?php endif; ?>
+            </div>
+            <div class="col-lg-4">
                 <?php if (Yii::$app->user->can('viewPaymentMethod')): ?>
                     <?= Html::a('Manage Payment Methods', ['payments/payment-methods'], ['class' => 'btn btn-success']) ?>
                 <?php endif; ?>
             </div>
-            
         </div>
-
     </div>
 </div>

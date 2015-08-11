@@ -145,8 +145,14 @@ else
                     <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
                 <?php endif; ?>
                 <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
-                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
-                <?php endif; ?>        
+                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewTransactionPurpose')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-purposes'])?>"><i class="fa fa-circle-o"></i>Transaction Purposes</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('viewPaymentMethod')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/payment-methods'])?>"><i class="fa fa-circle-o"></i>Payment Methods</a></li>
+                <?php endif; ?>
               </ul>
             </li>
             <?php endif; ?>
