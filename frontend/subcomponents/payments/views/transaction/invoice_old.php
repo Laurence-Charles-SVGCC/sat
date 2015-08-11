@@ -1,19 +1,30 @@
 <?php
 
-use yii\helpers\Url;
-use frontend\models\Employee;
+use yii\helpers\Html;
 
+$this->title = 'Invoice';
+//$this->params['breadcrumbs'][] = ['label' => 'Application Periods', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
+
+//$payee = Applicant::
 $invoice_total = 0.0;
 ?>
-<body onload="window.print();" >
+<div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            Invoice
+          </h1>
+        </section>
+
         <!-- Main content -->
         <section class="invoice">
           <!-- title row -->
           <div class="row">
             <div class="col-xs-12">
               <h2 class="page-header">
-                  <i class="fa"><img src="<?= Url::to('css/dist/img/logo.png')?>"/></i>
-                <small class="pull-right">Date: <?= date('Y-m-d');?></small>
+                <i class="fa fa-globe"></i>SVGCC
+                <small class="pull-right">Date: 2/10/2014</small>
               </h2>
             </div><!-- /.col -->
           </div>
@@ -23,7 +34,7 @@ $invoice_total = 0.0;
               From
               <address>
                 <strong>St. Vincent and the Grenadines Community College</strong><br>
-                Villa Flat <br>
+                VillaFlat <br>
                 St. Vincent W.I<br>
                 Phone: (784) 457-4503<br/>
                 Email: bursary@svgcc.vc
@@ -50,13 +61,10 @@ $invoice_total = 0.0;
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Balance</th>
-                    <th>Recepient</th>
                   </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($models as $model): ?>
-                    <?php $recepient = Employee::find()->where(['personid' => $model->getRecepient()->one()->personid])->one();
-                       $rname = $recepient ? $recepient->firstname . " " . $recepient->lastname : 'Recepient Undefined'; ?>
                   <tr>
                     <td><?= $model->receiptnumber ?></td>
                     <td><?= $model->getTransactiontype()->one()->name ?></td>
@@ -65,7 +73,6 @@ $invoice_total = 0.0;
                     <td><?= $model->paydate; ?></td>
                     <td>$<?= $model->paymentamount; ?></td>
                     <td>$<?= $model->totaldue; ?></td>
-                    <td><?= $rname; ?></td>
                     <?php $invoice_total += $model->paymentamount; ?>
                   </tr>
                  <?php endforeach;?>
@@ -86,9 +93,6 @@ $invoice_total = 0.0;
                     <td>$<?= $invoice_total; ?></td>
                   </tr>
                 </table>
-                  
-                Signed:
-                <hr/>
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -96,9 +100,9 @@ $invoice_total = 0.0;
           <!-- TODO: Implement Printing Invoice. this row will not appear when printing -->
           <!--<div class="row no-print">
             <div class="col-xs-12">
-              <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+              <a href="invoice-print.php" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
             </div>
           </div>-->
         </section><!-- /.content -->
         <div class="clearfix"></div>
-</body>
+      </div><!-- /.content-wrapper -->

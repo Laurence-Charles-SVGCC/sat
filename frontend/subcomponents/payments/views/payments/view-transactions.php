@@ -93,7 +93,25 @@ if (count($dataProvider->getModels()) > 0)
             'paydate',
             'paymentamount',
             'totaldue',
-            'comments:ntext',        
+            'comments:ntext',
+            [
+                'format' => 'html',
+                'label' => 'Receipt',
+                'value' => function($model)
+                    {
+                       return Html::a('View', 
+                               Url::to(['payments/get-transaction-receipt', 'receiptnumber' => $model->receiptnumber]));
+                    }
+            ],
+            [
+                'format' => 'html',
+                'label' => 'Receipt',
+                'value' => function($model)
+                    {
+                       return Html::a('Print', 
+                               Url::to(['payments/print-transaction-receipt', 'receiptnumber' => $model->receiptnumber]));
+                    }
+            ],            
         ],
     ]); ?>
 

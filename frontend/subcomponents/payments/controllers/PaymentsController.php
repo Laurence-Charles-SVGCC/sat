@@ -306,4 +306,34 @@ class PaymentsController extends Controller
             }
         }
     }
+    
+    /*
+    * Purpose: Provides view to update an existing Transaction model.
+    * Created: 06/08/2015 by Gamal Crichton
+    * Last Modified: 06/08/2015 by Gamal Crichton
+    */
+    public function actionGetTransactionReceipt($receiptnumber)
+    {
+        $models = Transaction::findAll(['receiptnumber' => $receiptnumber]);
+       
+        return $this->render('/transaction/invoice', [
+            'models' => $models,
+        ]);
+        
+    }
+    
+    /*
+    * Purpose: Provides view to update an existing Transaction model.
+    * Created: 06/08/2015 by Gamal Crichton
+    * Last Modified: 06/08/2015 by Gamal Crichton
+    */
+    public function actionPrintTransactionReceipt($receiptnumber)
+    {
+        $models = Transaction::findAll(['receiptnumber' => $receiptnumber]);
+        
+        return $this->renderPartial('/transaction/invoice-print', [
+            'models' => $models,
+        ]);
+
+    }
 }
