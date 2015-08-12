@@ -48,7 +48,7 @@ else
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini">SAT</span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><img src="<?= Url::to('css/dist/img/logo.png')?>"/>SVGCC SAT</span>
+          <span class="logo-lg"><img src="css/dist/img/logo.png"/>SVGCC SAT</span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top" role="navigation">
@@ -63,13 +63,13 @@ else
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="css/dist/img/user2-160x160.jpg" class="user-image" alt="User Image" />
+                  <img src="css/dist/img/logo.png" class="user-image" alt="User Image" />
                   <span class="hidden-xs"><?= $emp_firstname . " " . $emp_lastname ?></span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="css/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+                    <img src="css/dist/img/logo.png" class="img-circle" alt="User Image" />
                     <p>
                       Username: <?= $emp_username ?>
                       <small><?= $job_title ?></small>

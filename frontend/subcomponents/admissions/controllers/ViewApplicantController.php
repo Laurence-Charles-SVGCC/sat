@@ -186,20 +186,26 @@ class ViewApplicantController extends \yii\web\Controller
   /*
     * Purpose: Prepares applicant personal information for viewing only
     * Created: 6/08/2015 by Gamal Crichton
-    * Last Modified: 6/08/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
   public function actionViewPersonal($applicantusername)
   {
-      $app_info = self::getApplicantDetails($applicantusername);
+      //$app_info = self::getApplicantDetails($applicantusername);
+      $user = User::findOne(['username' =>$applicantusername]);
+      $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
+      $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
+      //$in = Institution::findone(['institutionid' => $institution->institutionid, 'isdeleted' => 0]);
       
-      if (!$app_info)
+      if (!$applicant)
       {
           Yii::$app->session->setFlash('error', 'No details found for this applicant.');
       }
       
       return $this->render('view-applicant-details',
               [
-                  'info' => $app_info,
+                  'username' => $user ? $user->username : '',
+                  'applicant' => $applicant,
+                  'institutions' => $institutions,
               ]);
   }
   
@@ -212,24 +218,11 @@ class ViewApplicantController extends \yii\web\Controller
   {
       if (Yii::$app->request->post())
       {
+          //$institutions = new PersonInstitution();
           $request = Yii::$app->request;
           $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
-          if ($applicant)
-          {
-              $applicant->title = $request->post('title');
-              $applicant->firstname = $request->post('firstname');
-              $applicant->middlename = $request->post('middlename');
-              $applicant->lastname = $request->post('lastname');
-              $applicant->gender = $request->post('gender');
-              $applicant->dateofbirth = $request->post('dateofbirth');
-              $applicant->nationality = $request->post('nationality');
-              $applicant->placeofbirth = $request->post('placeofbirth');
-              $applicant->religion = $request->post('religion');
-              $applicant->sponsorname = $request->post('sponsorname');
-              $applicant->clubs = $request->post('clubs');
-              $applicant->otherinterests = $request->post('otherinterests');
-              $applicant->maritalstatus = $request->post('maritalstatus');
-              
+          if ($applicant->load(Yii::$app->request->post()) )
+          { 
               if ($applicant->save())
               {
                   Yii::$app->session->setFlash('success', 'Applicant updated successfully');
@@ -242,16 +235,20 @@ class ViewApplicantController extends \yii\web\Controller
               Yii::$app->session->setFlash('error', 'Applicant not found');
           } 
       }
-      $app_info = self::getApplicantDetails($applicantusername);
+      $user = User::findOne(['username' =>$applicantusername]);
+      $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
+      $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
       
-      if (!$app_info)
+      if (!$applicant)
       {
           Yii::$app->session->setFlash('error', 'No details found for this applicant.');
       }
       
       return $this->render('edit-applicant-details',
               [
-                  'info' => $app_info,
+                  'username' => $user ? $user->username : '',
+                  'applicant' => $applicant,
+                  'institutions' => $institutions,
               ]);
   }
   

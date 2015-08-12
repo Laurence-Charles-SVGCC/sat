@@ -73,9 +73,9 @@ class TransactionController extends Controller
 
             if ($model->save())
             {
-                return $this->redirect('payments/view-transactions', [
-                    'transactionsummaryid' => $model->transactionsummaryid,
-                ]);
+                return $this->redirect(Url::to(['payments/view-transactions',
+                    'transactionsummaryid' => $model->transactionsummaryid
+                ]));
             }
         }
         

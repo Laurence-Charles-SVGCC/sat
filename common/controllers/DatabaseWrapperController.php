@@ -24,7 +24,7 @@ class DatabaseWrapperController extends Controller
     /*
     * Purpose: Gets the CSEC Centres relevant to active application periods
     * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function getCurrentCentres()
     {
@@ -33,7 +33,8 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['application_period.isactive' => 1, 'csec_centre.isdeleted' => 0])->all();
+                    ->where(['application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'application.isdeleted' => 0,
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])->all();
         
         return $centres;
     }
@@ -41,7 +42,7 @@ class DatabaseWrapperController extends Controller
      /*
     * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
     * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsReceived($cseccentreid)
     {
@@ -50,7 +51,8 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0])
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0,
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -59,7 +61,7 @@ class DatabaseWrapperController extends Controller
     * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
      *          who have already been fully verified
     * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsVerified($cseccentreid)
     {
@@ -69,7 +71,7 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isverified' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -78,7 +80,7 @@ class DatabaseWrapperController extends Controller
     * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
      *          who have a certificate flagged as to be queried
     * Created: 20/07/2015 by Gamal Crichton
-    * Last Modified: 20/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsQueried($cseccentreid)
     {
@@ -88,7 +90,7 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -97,7 +99,7 @@ class DatabaseWrapperController extends Controller
     /*
     * Purpose: Gets the count of Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
     * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsReceivedCount($cseccentreid)
     {
@@ -106,7 +108,8 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0])
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0,
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->count();
         return $applicants;
     }
@@ -115,7 +118,7 @@ class DatabaseWrapperController extends Controller
     * Purpose: Gets the count of Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
      *          who have already been fully verified
     * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsVerifiedCount($cseccentreid)
     {
@@ -125,7 +128,7 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isverified' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->count();
         return $applicants;
     }
@@ -134,7 +137,7 @@ class DatabaseWrapperController extends Controller
     * Purpose: Gets the count of Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
      *          who have a certificate flagged as to be queried
     * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 12/08/2015 by Gamal Crichton
     */
     public static function centreApplicantsQueriedCount($cseccentreid)
     {
@@ -144,7 +147,7 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')->count();
         return $applicants;
     }

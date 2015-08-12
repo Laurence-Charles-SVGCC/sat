@@ -2,8 +2,9 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\grid\GridView;
-use yii\helpers\Url;
+//use yii\grid\GridView;
+//use yii\helpers\Url;
+use frontend\models\Institution;
 
 $this->title = 'Applicant Details';
 $this->params['breadcrumbs'][] = ['label' => 'Applicant View', 'url' => ['index']];
@@ -13,93 +14,85 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="application-period-form">
     
     <h1><?= Html::encode($this->title) ?></h1>
-    <h2>Details for: <?= $info['username'] ?> </h2>
+    <h2>Details for: <?= $username ?> </h2>
     <h3>Personal Details</h3>
-    <?php ActiveForm::begin(); ?>
-    <?= Html::hiddenInput('applicantid', $info['applicantid']) ?>
-    <?= Html::hiddenInput('username', $info['username']) ?>
+    <?php $form = ActiveForm::begin(); ?>
+    <?= Html::hiddenInput('applicantid', $applicant->applicantid) ?>
+    <?= Html::hiddenInput('username', $username) ?>
     <div class="row">
         <div class="col-lg-3">
-            <?= Html::label( 'Title',  'title'); ?>
-            <?= Html::textInput('title', $info['title']) ?>
+            <?= $form->field($applicant, 'title')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'First Name',  'firstname'); ?>
-            <?= Html::textInput('firstname', $info['firstname']) ?>
+            <?= $form->field($applicant, 'firstname')->textInput(); ?>
+        </div>
+        <div class="col-lg-3">      
+            <?= $form->field($applicant, 'middlename')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Middle Name(s)',  'middlename'); ?>
-            <?= Html::textInput('middlename', $info['middlename']) ?>
-        </div>
-        <div class="col-lg-3">
-            <?= Html::label( 'Last Name',  'lastname'); ?>
-            <?= Html::textInput('lastname', $info['lastname']) ?>
+            <?= $form->field($applicant, 'lastname')->textInput(); ?>
         </div>
     </div>
     <br/>
     <div class="row">
         <div class="col-lg-3">
-            <?= Html::label( 'Gender',  'gender'); ?>
-            <?= Html::textInput('gender', $info['gender']) ?>
+            <?= $form->field($applicant, 'gender')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'date of Birth',  'dateofbirth'); ?>
-            <?= Html::textInput('dateofbirth', $info['dateofbirth']) ?>
+            <?= $form->field($applicant, 'dateofbirth')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Nationality',  'nationality'); ?>
-            <?= Html::textInput('nationality', $info['nationality']) ?>
+            <?= $form->field($applicant, 'nationality')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Place of Birth',  'placeofbirth'); ?>
-            <?= Html::textInput('placeofbirth', $info['placeofbirth']) ?>
+            <?= $form->field($applicant, 'placeofbirth')->textInput(); ?>
         </div>
     </div>
     <br/>
     <div class="row">
         <div class="col-lg-3">
-            <?= Html::label( 'Religion',  'religion'); ?>
-            <?= Html::textInput('religion', $info['religion']) ?>
+            <?= $form->field($applicant, 'religion')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Sponsor',  'sponsorname'); ?>
-            <?= Html::textInput('sponsorname', $info['sponsor']) ?>
+            <?= $form->field($applicant, 'sponsorname')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Clubs',  'clubs'); ?>
-            <?= Html::textInput('clubs', $info['clubs']) ?>
+            <?= $form->field($applicant, 'clubs')->textInput(); ?>
         </div>
     </div>
     <br/>
     <div>
         <div class="col-lg-3">
-            <?= Html::label( 'Marital Status',  'maritalstatus'); ?>
-            <?= Html::textInput('maritalstatus', $info['maritalstatus']) ?>
+            <?= $form->field($applicant, 'maritalstatus')->textInput(); ?>
         </div>
         <div class="col-lg-3">
-            <?= Html::label( 'Other Interests',  'otherinterests'); ?>
-            <?= Html::textInput('otherinterests', $info['otherinterests']) ?>
+            <?= $form->field($applicant, 'otherinterests')->textInput(); ?>
         </div>
     </div>
-    <br/><br/>
+    <br/><br/><br/>
     <h3>Institutional Attendance Details</h3>
-    <?php foreach($info['institution'] as $inst=>$value): ?>
+    <?php foreach($institutions as $inst): ?>
+    <?php $in = Institution::findone(['institutionid' => $inst->institutionid, 'isdeleted' => 0]); ?>
         <div class="row">
             <div class="col-lg-2">
-                <?= "<strong>Name: </strong>" . $value['name'] ?>
+                <?= $form->field($in, 'name')->textInput(); ?>
             </div>
             <div class="col-lg-2">
-                <?= "<strong>Formerly: </strong>" .  $value['formername'] ?>
+                
+                <?= $form->field($in, 'formername')->textInput(); ?>
             </div>
             <div class="col-lg-2">
-                <?= "<strong>From: </strong>" .  $value['startdate'] ?>
+                
+                <?= $form->field($inst, 'startdate')->textInput(); ?>
             </div>
             <div class="col-lg-2">
-                <?= "<strong>To: </strong>" .  $value['enddate'] ?>
+                
+                <?= $form->field($inst, 'enddate')->textInput(); ?>
             </div>
             <div class="col-lg-2">
-                <?php $grad = $value['hasgraduated'] ? 'Yes' : 'No' ?>
-                <?= "<strong>Graduated: </strong>" .  $grad ?>
+                <?php //$grad = $value['hasgraduated'] ? 'Yes' : 'No' ?>
+                
+                <?= $form->field($inst, 'hasgraduated')->textInput(); ?>
             </div>          
       </div>
     <?php endforeach; ?>

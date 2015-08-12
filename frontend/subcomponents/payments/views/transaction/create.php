@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 $this->title = 'New Payment';
-$this->params['breadcrumbs'][] = ['label' => 'Transaction', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['payments/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="payment">

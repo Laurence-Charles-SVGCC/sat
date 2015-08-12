@@ -154,7 +154,7 @@ class SiteController extends Controller
     {
         $last_user = User::find()->orderBy('personid DESC', 'desc')->one();
         //150 used to prevent username clashes with the users already entered on eCampus.
-        $num = $last_user ? strval($last_user->personid + 150) : 150;
+        $num = $last_user ? strval($last_user->personid + 1) : 150;
         while (strlen($num) < 4)
         {
             $num = '0' . $num;

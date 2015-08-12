@@ -100,43 +100,54 @@ class AcademicOfferingController extends Controller
                     }
                 }
             }
-            $capeprogramme = ProgrammeCatalog::findOne(['name' => 'cape']);
-            if ($capeprogramme)
+            $cape_selected = False;
+            foreach ($capesubject->subjectname as $subjectname=>$subject)
             {
-                $capeoffering = AcademicOffering::findOne(['programmecatalogid' => $capeprogramme->programmecatalogid,
-                    'applicationperiodid' => $model->applicationperiodid, 'isdeleted' => 0]);
-                if ($capeoffering)
+                if ($subject == 1)
                 {
-                    //var_dump($capesubject);
-                    foreach ($capesubject->subjectname as $subjectname=>$subject)
+                    $cape_selected = True;
+                    break;
+                }
+            }
+            if ($cape_selected)
+            {
+                $capeprogramme = ProgrammeCatalog::findOne(['name' => 'cape']);
+                if ($capeprogramme)
+                {
+                    $capeoffering = AcademicOffering::findOne(['programmecatalogid' => $capeprogramme->programmecatalogid,
+                        'applicationperiodid' => $model->applicationperiodid, 'isdeleted' => 0]);
+                    if ($capeoffering)
                     {
-                        if ($subject == 1)
+                        foreach ($capesubject->subjectname as $subjectname=>$subject)
                         {
-                            //Checkbox for this subject is ticked
-                            $cs_model = new CapeSubject();
-                            $cs_model->academicofferingid = $capeoffering->academicofferingid;
-                            $cs_model->subjectname = $subjectname;
-                            $cs_model->capacity = $capesubject->capacity[$subjectname];
-                            if (!$cs_model->save())
+                            if ($subject == 1)
                             {
-                                Yii::$app->getSession()->setFlash('error', 'Academic Offering of CAPE Subject was not saved.');
-                                return $this->render('create', [
-                                        'model' => $model,
-                                        'capesubject' => $capesubject,
-                                        'capesubjects' => array(),
-                                    ]);
+                                //Checkbox for this subject is ticked
+                                $cs_model = new CapeSubject();
+                                $cs_model->academicofferingid = $capeoffering->academicofferingid;
+                                $cs_model->subjectname = $subjectname;
+                                $cs_model->capacity = $capesubject->capacity[$subjectname];
+                                if (!$cs_model->save())
+                                {
+                                    Yii::$app->getSession()->setFlash('error', 'Academic Offering of CAPE Subject was not saved.');
+                                    return $this->render('create', [
+                                            'model' => $model,
+                                            'capesubject' => $capesubject,
+                                            'capesubjects' => array(),
+                                        ]);
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No academic offering of CAPE found for specified period.');
                     }
                 }
                 else
                 {
-                    Yii::$app->getSession()->setFlash('error', 'No academic offering of CAPE found for specified period.');
+                    Yii::$app->getSession()->setFlash('error', 'No Programme called CAPE found.');
                 }
-            }
-            else
-            {
-                Yii::$app->getSession()->setFlash('error', 'No Programme called CAPE found.');
             }
             return $this->redirect(Url::toRoute('academic-offering/index'));
         } 
