@@ -177,7 +177,7 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => self::centreApplicantsQueried($cseccentreid),
+            'allModels' => $data,
             'pagination' => [
                 'pageSize' => 20,
             ],
