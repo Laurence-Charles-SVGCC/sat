@@ -92,11 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->textInput(); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, "[$key]isverified", ['options' => [
-                                        'tag'=>'div',
-                                        ],
-                                        'template' => '{input}{error}'
-                                    ])->checkbox(['label' => NULL]); ?>
+                            <?= $form->field($model, "[$key]isverified")->checkbox(['label' => NULL]); ?>
                         </td>
                         <td>
                             <?= $form->field($model, "[$key]isqueried", ['options' => [
