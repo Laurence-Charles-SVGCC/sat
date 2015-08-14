@@ -7,7 +7,7 @@ use yii\helpers\Url;
 
 $this->title = 'Applicant View';
 $this->params['breadcrumbs'][] = ['label' => 'Verify Applicants', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $type, 'url' => ["view-$type", 'centreid' => $cseccentreid,'centrename' => $centrename]];
+//$this->params['breadcrumbs'][] = ['label' => $type, 'url' => ["view-$type", 'centreid' => $cseccentreid,'centrename' => $centrename]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
