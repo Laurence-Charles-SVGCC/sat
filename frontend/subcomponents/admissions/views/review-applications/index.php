@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
-use frontend\models\ApplicationStatus;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Review Applications';
@@ -16,10 +15,17 @@ $this->params['breadcrumbs'][] = $this->title;
       <div class="box">
         
         <div class="box-body">
+            <?php foreach ($appstatuses as $appstatus): ?>
+                <a class="btn btn-app" href="<?= Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
+                'application_status' => $appstatus->applicationstatusid])?>">
+                    <i class="fa fa-cart-plus"></i> <?= $appstatus->name ?>
+                 </a>
+            <?php endforeach; ?>
+            
             <?php ActiveForm::begin(); ?>
             <?= Html::label('Select Criteria', 'applicationstatusid'); ?>
             <?= Html::dropDownList('application_status_id', NULL,
-                ArrayHelper::map(ApplicationStatus::find()->all(), 'applicationstatusid', 'name'))  ; ?>
+                ArrayHelper::map($appstatuses, 'applicationstatusid', 'name'))  ; ?>
             <?php if (Yii::$app->user->can('reviewApplications')): ?>
                 <?= Html::submitButton('Query', ['class' => 'btn btn-success']) ?>
             <?php endif; ?>

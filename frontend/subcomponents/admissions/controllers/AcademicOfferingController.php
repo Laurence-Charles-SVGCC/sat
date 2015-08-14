@@ -15,6 +15,8 @@ use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\CapeSubject;
 use yii\data\ActiveDataProvider;
+use frontend\models\CapeGroup;
+use frontend\models\CapeSubjectGroup;
 
 /**
  * AcademicOfferingController implements the CRUD actions for AcademicOffering model.
@@ -135,6 +137,25 @@ class AcademicOfferingController extends Controller
                                             'capesubject' => $capesubject,
                                             'capesubjects' => array(),
                                         ]);
+                                }
+                                foreach (Yii::$app->request->post('capegroup')[$subjectname] as $key => $choice)
+                                {
+                                    $grp = CapeGroup::findOne(['name' => 'group' . $choice]);
+                                    $capesubjectgroup = new CapeSubjectGroup();
+                                    if ($grp)
+                                    {
+                                        $capesubjectgroup->capegroupid = $grp->capegroupid;
+                                        $capesubjectgroup->capesubjectid = $cs_model->capesubjectid;
+                                    }
+                                    if (!$capesubjectgroup->save())
+                                    {
+                                        Yii::$app->getSession()->setFlash('error', 'CAPE Subject Group not saved.');
+                                        return $this->render('create', [
+                                            'model' => $model,
+                                            'capesubject' => $capesubject,
+                                            'capesubjects' => array(),
+                                        ]);
+                                    }
                                 }
                             }
                         }

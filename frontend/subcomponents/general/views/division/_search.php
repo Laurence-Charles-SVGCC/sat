@@ -17,7 +17,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'divisionid') ?>
 
-    <?= $form->field($model, 'locationid') ?>
 
     <?= $form->field($model, 'name') ?>
 

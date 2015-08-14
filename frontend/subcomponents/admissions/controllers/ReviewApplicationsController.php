@@ -26,7 +26,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     /*
     * Purpose: Displays dashboard for reviewing offers
     * Created: 24/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
+    * Last Modified: 13/08/2015 by Gamal Crichton
     */
     public function actionIndex()
     {
@@ -39,8 +39,20 @@ class ReviewApplicationsController extends \yii\web\Controller
             return $this->redirect(Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                 'application_status' => $application_status]));
         }
-
-        return $this->render('index');
+        
+        $appstatuses = ApplicationStatus::find()->all();
+        foreach ($appstatuses as $key => $appstatus)
+        {
+            if (in_array(strtolower($appstatus->name), array('incomplete', 'unverified')))
+            {
+                unset($appstatuses[$key]);
+            }
+        }
+        return $this->render('index',
+                [
+                    'division_id' => $division_id,
+                    'appstatuses' => $appstatuses,
+                ]);
     }
     
     /*

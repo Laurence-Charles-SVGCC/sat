@@ -7,6 +7,7 @@ use yii\helpers\ArrayHelper;
 use frontend\models\AcademicYear;
 use frontend\models\ApplicationPeriod;
 use frontend\models\ProgrammeCatalog;
+use frontend\models\QualificationType;
 
 /* @var $this yii\web\View */
 /* @var $model frontend\models\AcademicOffering */
@@ -35,9 +36,11 @@ use frontend\models\ProgrammeCatalog;
             </div>
     </div>
     <?php foreach(ProgrammeCatalog::findAll(['isdeleted' => 0]) as $programme): ?>
+        <?php $qualification = QualificationType::findOne(['qualificationtypeid' => $programme->qualificationtypeid]) ?>
         <div class="row">
             <div class="col-lg-4">
-                <?= $form->field($model, 'programmecatalogid['. $programme->programmecatalogid .']')->checkbox(['label' => $programme->name]) ?>
+                <?= $form->field($model, 'programmecatalogid['. $programme->programmecatalogid .']')->checkbox(
+                    ['label' => $qualification->abbreviation . ' ' . $programme->name . ' '. $programme->specialisation ]) ?>
             </div>
             <div class="col-lg-4">
                 <?= $form->field($model, 'spaces['. $programme->programmecatalogid .']')->textInput() ?>
@@ -46,7 +49,6 @@ use frontend\models\ProgrammeCatalog;
                 <?= $form->field($model, 'interviewneeded['. $programme->programmecatalogid .']')->checkbox(['label' => 'Interview Needed']) ?>
             </div>
         </div>
-    <hr>
     <?php endforeach; ?>
     
     <div class="row">
@@ -61,6 +63,10 @@ use frontend\models\ProgrammeCatalog;
             </div>
             <div class="col-lg-4">
                 <?= $form->field($capesubject, 'capacity['. $csub->name .']')->textInput() ?>
+            </div>
+            <div class="col-lg-4">
+                <?= Html::label('Group', 'capegroup'); ?>
+                <?= Html::checkboxList('capegroup['. $csub->name .']', null, array(1,2,3,4,5,6,7)) ?>
             </div>
         </div>
     <hr>
