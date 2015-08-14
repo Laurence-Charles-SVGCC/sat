@@ -124,6 +124,7 @@ class ViewApplicantController extends \yii\web\Controller
         foreach($applications as $application)
         {
             $app_details = array();
+            $cape_subjects_names = array();
             $programme = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
