@@ -62,7 +62,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     */
     public function actionViewByStatus($application_status, $division_id)
     {
-        $applications = Application::find()->where(['applicationstatusid' => $application_status, 'isdeleted' => 0])->all();
+        $applications = Application::find()->where(['applicationstatusid' => $application_status, 'ordering' => 1, 'isdeleted' => 0])->all();
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
     }
     
@@ -82,6 +82,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         foreach($applications as $application)
         {
             $app_details = array();
+            $cape_subjects_names = array();
             $programme = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -373,7 +374,7 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             if ($request->post('interview') === '')
             {
-                $app_status = ApplicationStatus::findOne(['name' => 'interview']);
+                $app_status = ApplicationStatus::findOne(['name' => 'interviewoffer']);
                 $application->applicationstatusid = $app_status->applicationstatusid;
                 if ($application->save())
                 {
@@ -406,7 +407,7 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             if ($request->post('reject') === '')
             {
-                $app_status = ApplicationStatus::findOne(['name' => 'reject']);
+                $app_status = ApplicationStatus::findOne(['name' => 'rejected']);
                 $application->applicationstatusid = $app_status->applicationstatusid;
                 if ($application->save())
                 {
@@ -428,25 +429,29 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             if ($request->post('alternate_offer') === '')
             {
-                $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+                //echo "applicantid is: $applicantid";
+                $person = User::findOne(['username' => $applicantid]);
+                $applicant = Applicant::findOne(['personid' => $person->personid]);
                 $personid = $applicant->getPerson()->one() ? $applicant->getPerson()->one()->personid : NULL;
-                $applications = $personid ? Applications::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
+                $applications = $personid ? Application::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
                 $data = array();
                 foreach($applications as $application)
                 {
                     $app_details = array();
+                    $cape_subjects_names = array();
                     $programme = ProgrammeCatalog::find()
                         ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                         ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->where(['application.applicationid' => $application->applicationid])->one();
                     $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                    foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
                     
                     $programme_division = $programme->getDepartment()->one()->divisionid;
 
                     $app_details['order'] = $application->ordering;
                     $app_details['applicationid'] = $application->applicationid;
                     $app_details['programme_name'] = $programme->name;
-                    $app_details['subjects'] = implode(' ,', $cape_subjects);
+                    $app_details['subjects'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
                     $app_details['offerable'] = ($programme_division == $division_id || $division_id == 1);
 
                     $data[] = $app_details;

@@ -7,6 +7,8 @@ use yii\data\ArrayDataProvider;
 use common\controllers\DatabaseWrapperController;
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
+use frontend\models\ApplicationStatus;
+use frontend\models\Application;
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -58,8 +60,8 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         $amt_received = self::centreApplicantsReceivedCount($centre_id);
         $amt_verified = self::centreApplicantsVerifiedCount($centre_id);
-        $amt_pending = $amt_received - $amt_verified;
         $amt_queried = self::centreApplicantsQueriedCount($centre_id);
+        $amt_pending = $amt_received - ($amt_verified + $amt_queried);
 
         return $this->render('centre-details',
                 [
@@ -111,7 +113,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionViewPending($cseccentreid, $centrename)
     {
         $data = array();
-        foreach(self::centreApplicantsReceived($cseccentreid) as $application)
+        foreach(self::centreApplicantsPending($cseccentreid) as $application)
         {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -262,6 +264,22 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     Yii::$app->getSession()->setFlash('error', 'No Certificates data.');
                 }
+                $all_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0]));
+                $verified_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0, 'isverified' => 1]));
+                if ($all_certs == $verified_certs)
+                {
+                    $pending = ApplicationStatus::findOne(['name' => 'pending']);
+                    if ($pending)
+                    {
+                        $applications = Application::findAll(['personid' => $applicantid]);
+                        foreach($applications as $application)
+                        {
+                            $application->applicationstatusid = $pending->applicationstatusid;
+                            $application->save();
+                        }
+                    }
+                }
+                
                 //redirect
                 if (strcasecmp($type, "pending"))
                 {
@@ -358,6 +376,17 @@ class VerifyApplicantsController extends \yii\web\Controller
     private function centreApplicantsQueried($cseccentreid)
     {
         return DatabaseWrapperController::centreApplicantsQueried($cseccentreid);
+    }
+    
+    /*
+    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     *          who are still pending
+    * Created: 14/08/2015 by Gamal Crichton
+    * Last Modified: 14/08/2015 by Gamal Crichton
+    */
+    private function centreApplicantsPending($cseccentreid)
+    {
+        return DatabaseWrapperController::centreApplicantsPending($cseccentreid);
     }
     
     /*

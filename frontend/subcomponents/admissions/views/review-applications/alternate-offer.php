@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <strong><?= $grp_name ?></strong>
                             <?php foreach($cd as $subject): ?>                           
                                 <br/><?= Html::checkbox("cape_subject[" . $subject->getCapesubject()->one()->capesubjectid . "]"); ?>
-                                <?= $subject->getCapesubject()->one()->subjectcode; ?>                        
+                                <?= $subject->getCapesubject()->one()->subjectname; ?>                        
                              <?php endforeach; ?>
                             </div>
                         <?php endforeach; ?>

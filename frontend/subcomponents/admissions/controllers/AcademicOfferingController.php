@@ -142,7 +142,7 @@ class AcademicOfferingController extends Controller
                                 }
                                 foreach (Yii::$app->request->post('capegroup')[$subjectname] as $key => $choice)
                                 {
-                                    $grp = CapeGroup::findOne(['name' => 'group' . $choice]);
+                                    $grp = CapeGroup::findOne(['name' => 'group' . intval($choice)+1]);
                                     $capesubjectgroup = new CapeSubjectGroup();
                                     if ($grp)
                                     {
