@@ -92,14 +92,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->textInput(); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, "isverified")->checkbox(['label' => NULL]); ?>
+                            <?= $form->field($model, "[$key]isverified")->checkbox(['label' => NULL]); ?>
                         </td>
                         <td>
-                            <?= $form->field($model, "[$key]isqueried", ['options' => [
-                                        'tag'=>'div',
-                                        ],
-                                        'template' => '{input}{error}'
-                                    ])->checkbox(['label' => NULL]); ?>
+                            <?= $form->field($model, "[$key]isqueried")->checkbox(['label' => NULL]); ?>
                         </td>
                         <td>
                             <a class="btn" href="<?= Url::to(['delete-certificate',
