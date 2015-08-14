@@ -98,6 +98,8 @@ class AcademicOfferingController extends Controller
                         Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
                         return $this->render('create', [
                                 'model' => $model,
+                                'capesubject' => array(),
+                                'capesubjects' => array(),
                             ]);
                     }
                 }
