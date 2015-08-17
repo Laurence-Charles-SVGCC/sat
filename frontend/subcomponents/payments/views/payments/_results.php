@@ -15,6 +15,11 @@ use yii\helpers\Url;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
+                'attribute' => 'username',
+                'format' => 'text',
+                'label' => $type . ' ID'
+            ],
+            [
                 'format' => 'html',
                 'label' => 'Transaction Group ID',
                 'value' => function($row)

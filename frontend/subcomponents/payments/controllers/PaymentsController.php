@@ -94,7 +94,9 @@ class PaymentsController extends Controller
                         $trans = array();
                         $semester = $transaction->getSemester()->one();
                         $summary = $transaction->getTransactionsummary()->one();
+                        $user = User::findOne(['personid' => $transaction->personid]);
                         
+                        $trans['username'] = $user ? $user->username : NULL;
                         $trans['transaction_group_id'] = $transaction->transactionsummaryid;
                         $trans['academic_year'] = $semester ? $semester->getAcademicyear()->one()->title : '';
                         $trans['academic_semester'] = $semester ? $semester->title : '';
@@ -315,9 +317,17 @@ class PaymentsController extends Controller
     public function actionGetTransactionReceipt($receiptnumber)
     {
         $models = Transaction::findAll(['receiptnumber' => $receiptnumber]);
+        
+        if ($models)
+        {
+            $personid = $models[0]->personid;
+            //Only applicant supported for now, others later
+            $applicant = Applicant::findOne(['personid' => $personid]);
+        }
        
         return $this->render('/transaction/invoice', [
             'models' => $models,
+            'applicant' => $applicant,
         ]);
         
     }
@@ -330,9 +340,15 @@ class PaymentsController extends Controller
     public function actionPrintTransactionReceipt($receiptnumber)
     {
         $models = Transaction::findAll(['receiptnumber' => $receiptnumber]);
-        
+        if ($models)
+        {
+            $personid = $models[0]->personid;
+            //Only applicant supported for now, others later
+            $applicant = Applicant::findOne(['personid' => $personid]);
+        }
         return $this->renderPartial('/transaction/invoice-print', [
             'models' => $models,
+            'applicant' => $applicant,
         ]);
 
     }

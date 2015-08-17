@@ -39,6 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $results,
             'result_users' => $result_users,
             'info_string' => $info_string,
+            'type' => $type,
         ]) ?>
     <?php endif; ?>
 

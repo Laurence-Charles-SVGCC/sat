@@ -32,7 +32,7 @@ $invoice_total = 0.0;
             <div class="col-sm-4 invoice-col">
               To
               <address>
-                <strong>John Doe</strong><br>
+                <strong><?= $applicant->firstname . " " . $applicant->lastname ?></strong><br>
               </address>
             </div><!-- /.col -->
           </div><!-- /.row -->
