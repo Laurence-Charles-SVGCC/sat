@@ -102,7 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return static::findOne([
-            'password_reset_token' => $token,
+            'resettoken' => $token,
             'isactive' => self::STATUS_ACTIVE,
         ]);
     }
@@ -183,7 +183,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function generatePasswordResetToken()
     {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+        $this->resettoken = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
@@ -191,7 +191,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function removePasswordResetToken()
     {
-        $this->password_reset_token = null;
+        $this->resettoken = null;
     }
     
     /**
