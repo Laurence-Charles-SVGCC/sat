@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-lg-3">
                     <?= Html::label( 'Programmes',  'programme'); ?>
                     <?= Html::dropDownList('programme', null, 
-                        array_merge(['0' => 'None'] , ArrayHelper::map($programmes, 'programmecatalogid', 'name' ))
+                        array_merge(['0' => 'None'] , $programmes)
                             ) ; ?>
                 </div>
                 <!--TODO: Investigate how to sort dataProvider by multiple levels and implement Gamal Crichton 27/07/2015-->

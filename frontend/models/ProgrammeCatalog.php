@@ -97,4 +97,14 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Department::className(), ['departmentid' => 'departmentid']);
     }
+    
+    public function getFullName()
+    {
+        $qual = $this->getQualificationtype()->one();
+        if ($qual)
+        {
+            return $qual->abbreviation . ' ' . $this->name . ' ' . $this->specialisation;
+        }
+        return $this->name . ' ' . $this->specialisation;
+    }
 }

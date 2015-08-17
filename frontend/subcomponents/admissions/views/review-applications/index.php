@@ -11,6 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="verif-applicants-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
+    <h4>Click one of the buttons below or use the dropdown to filter</h4>
     <!-- Dashboard buttons -->
       <div class="box">
         

@@ -123,7 +123,7 @@ class ReviewApplicationsController extends \yii\web\Controller
             $app_details['firstname'] = $applicant->firstname;
             $app_details['middlename'] = $applicant->middlename;
             $app_details['lastname'] = $applicant->lastname;
-            $app_details['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $app_details['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             
             $app_details['subjects_no'] = self::getSubjectsPassedCount($application->personid);
             $app_details['ones_no'] = self::getSubjectGradesCount($application->personid, 1);
@@ -151,10 +151,15 @@ class ReviewApplicationsController extends \yii\web\Controller
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                 ->where($prog_cond)
                 ->all();
+        $progs = array();
+        foreach ($programmes as $programme)
+        {
+            $progs[$programme->programmecatalogid] = $programme->getFullName();
+        }
         return $this->render('view-application-applicant',
             [
                 'results' => $dataProvider,
-                'programmes' => $programmes,
+                'programmes' => $progs,
                 'application_status' => $application_status,
                 'division_id' => $division_id,
             ]);

@@ -62,19 +62,17 @@ class CardController extends \yii\web\Controller
             $offer_data = array();
             $offer_data['offerid'] = $offer->offerid;
             $offer_data['studentreg'] = $student_reg;
-            //$offer_data['studentregid'] = $student_reg->studentregistrationid;
             $offer_data['title'] = $applicant->title;
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['middlename'] = $applicant->middlename;
             $offer_data['lastname'] = $applicant->lastname;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $offer_data['studentno'] = $applicant->potentialstudentid;
             $offer_data['published'] = $offer->ispublished;
             $offer_data['registered'] = $student_reg ? True : False;
             $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
             $offer_data['cardready'] = $student_reg ? $student_reg->cardready : False ;
             $offer_data['cardcollected'] = $student_reg ? $student_reg->cardcollected : False;
-            echo $student_reg->isdeleted;
             $data[] = $offer_data;
         }
         
