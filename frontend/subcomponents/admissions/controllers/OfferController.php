@@ -173,8 +173,11 @@ class OfferController extends Controller
            $model->revokedate = date('Y-m-d');
            if ($model->save())
            {
-               //Remove Potential student ID
+               //Remove Potential student ID and update application status
+               $appstatus = ApplicationStatus::findOne(['name' => 'pending', 'isdeleted' => 0]);
                $application = $model->getApplication()->one();
+               $application->applicationstatusid = $appstatus ? $appstatus->applicationstatusid : 3;
+               $application->save();
                $applicant = $application ? $application->getPerson()->one() : Null;
                if ($applicant){ $applicant->potentialstudentid = Null; $applicant->save();}
                

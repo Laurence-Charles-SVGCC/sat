@@ -41,28 +41,55 @@ class ReviewApplicationsController extends \yii\web\Controller
         }
         
         $appstatuses = ApplicationStatus::find()->all();
+        $statuscounts = array();
         foreach ($appstatuses as $key => $appstatus)
         {
             if (in_array(strtolower($appstatus->name), array('incomplete', 'unverified')))
             {
                 unset($appstatuses[$key]);
             }
+            else
+            {
+                if ($division_id == 1)
+                {
+                    $condarr = ['isdeleted' => 0, 'ordering' => 1, 
+                    'applicationstatusid' => $appstatus->applicationstatusid];
+                }
+                else
+                {
+                    $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
+                    'applicationstatusid' => $appstatus->applicationstatusid];
+                }
+                $statuscounts[$appstatus->applicationstatusid] = Application::find()->where($condarr)->count();
+  
+            }
         }
         return $this->render('index',
                 [
                     'division_id' => $division_id,
                     'appstatuses' => $appstatuses,
+                    'statuscounts' => $statuscounts,
                 ]);
     }
     
     /*
     * Purpose: Allows viewing of applications based on their current status. 
     * Created: 27/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
+    * Last Modified: 17/08/2015 by Gamal Crichton
     */
     public function actionViewByStatus($application_status, $division_id)
     {
-        $applications = Application::find()->where(['applicationstatusid' => $application_status, 'ordering' => 1, 'isdeleted' => 0])->all();
+        if ($division_id == 1)
+        {
+            $condarr = ['isdeleted' => 0, 'ordering' => 1, 
+            'applicationstatusid' => $application_status];
+        }
+        else
+        {
+            $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
+            'applicationstatusid' => $application_status];
+        }
+        $applications = Application::find()->where($condarr)->all();
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
     }
     

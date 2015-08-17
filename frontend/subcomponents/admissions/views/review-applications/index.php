@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php foreach ($appstatuses as $appstatus): ?>
                 <a class="btn btn-app" href="<?= Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
                 'application_status' => $appstatus->applicationstatusid])?>">
+                    <span class="badge bg-green"><?= $statuscounts[$appstatus->applicationstatusid] ?></span>
                     <i class="fa fa-cart-plus"></i> <?= $appstatus->name ?>
                  </a>
             <?php endforeach; ?>

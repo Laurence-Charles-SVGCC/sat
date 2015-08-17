@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 
 //$type = ucfirst($type);
 $this->title = 'Applicant Information';
-//$this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Review Applicants', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
