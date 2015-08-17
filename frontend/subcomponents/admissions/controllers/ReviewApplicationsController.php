@@ -735,6 +735,12 @@ class ReviewApplicationsController extends \yii\web\Controller
     */
     private function getPossibleDuplicate($applicantid, $candidateno, $year)
     {
+        try{
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return False;
+        } 
+        
         $groups = CsecQualification::find()
                     ->where(['candidatenumber' => $candidateno, 'isverified' => 1, 'isdeleted' => 0,
                         'year' => $year])
@@ -755,5 +761,19 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             return $dups;
         }
+    }
+    
+    private function getPossibleReapplicant($candidateno, $year)
+    {
+        try{
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return False;
+        } 
+        
+        $reapplicant = Yii::$app->cms_db->createCommand(
+                "select certificate_id from applicants_certificates where year = $year and candidate_no = $candidateno")
+                ->queryOne();
+        return $reapplicant ? True : False;
     }
 }

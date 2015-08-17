@@ -29,8 +29,11 @@ use common\models\User;
  * @property string $nationality
  * @property string $religion
  * @property string $placeofbirth
+ *  @property string $nationalsports 
+* @property string $othersports 
+* @property string $otheracademics 
+* @property string $isexternal 
  *
-* @property ApplicantStatusType $applicanttype
  * @property Person $person
  */
 class Applicant extends \yii\db\ActiveRecord
@@ -52,9 +55,9 @@ class Applicant extends \yii\db\ActiveRecord
             [['applicanttypeid', 'personid', 'potentialstudentid'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['bursarystatus', 'isactive', 'isdeleted'], 'boolean'],
-            [['clubs', 'otherinterests'], 'string'],
+            [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
             [['title'], 'string', 'max' => 3],
-            [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],
+            [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth', 'isexternal'], 'string', 'max' => 45],
             [['gender'], 'string', 'max' => 6],
             [['photopath'], 'string', 'max' => 100],
             [['maritalstatus'], 'string', 'max' => 15]
@@ -88,15 +91,11 @@ class Applicant extends \yii\db\ActiveRecord
             'nationality' => 'Nationality',
             'religion' => 'Religion',
             'placeofbirth' => 'Place of Birth',
+            'nationalsports' => 'National Sports',
+            'othersports' => 'Other Sports',
+            'otheracademics' => 'Other Academics',
+            'isexternal' => 'External',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getApplicanttype()
-    {
-        return $this->hasOne(ApplicantStatusType::className(), ['applicantstatustypeid' => 'applicanttypeid']);
     }
 
     /**
