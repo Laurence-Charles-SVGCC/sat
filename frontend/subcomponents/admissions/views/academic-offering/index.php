@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'text',
                 'value' => function($model){
                     $result = ProgrammeCatalog::findOne(['programmecatalogid' => $model->programmecatalogid]);
-                    return $result->name;
+                    return $result->getFullName();
                 }
              ],
             [
