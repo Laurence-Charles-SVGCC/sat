@@ -187,7 +187,8 @@ class ReviewApplicationsController extends \yii\web\Controller
                 $applications = Application::find()
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-                        ->where(['application.applicationstatusid' => $application_status, 'programme_catalog.programmecatalogid' => $programme])
+                        ->where(['application.applicationstatusid' => $application_status, 'programme_catalog.programmecatalogid' => $programme,
+                            'application.ordering' => 1])
                         ->all();
             }
             else
