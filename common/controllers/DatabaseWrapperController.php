@@ -34,8 +34,9 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'application.isdeleted' => 0,
-                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])->all();
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])->all();
         
         return $centres;
     }
@@ -52,8 +53,9 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0,
-                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -71,8 +73,10 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isverified' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 
+                        'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->all();
         foreach ($applicants as $key => $applicant)
         {
@@ -97,8 +101,10 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0,
+                        'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -116,9 +122,10 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 0, 'csec_qualification.isverified' => 0,
                         'application_period.isactive' => 1, 'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 
-                        'academic_offering.isdeleted' => 0])
+                        'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->all();
         return $applicants;
     }
@@ -136,8 +143,9 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'application_period.isactive' => 1, 'application.isdeleted' => 0,
-                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->count();
         return $applicants;
     }
@@ -166,8 +174,10 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid, 'csec_qualification.isqueried' => 1, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0])
+                        'application.isdeleted' => 0, 'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 
+                        'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                     ->groupby('application.personid')->count();
         return $applicants;
     }
@@ -183,7 +193,8 @@ class DatabaseWrapperController extends Controller
         return Application::find()
                 ->joinWith('academic_offering')
                 ->joinwith('application_period')
-                ->where(['application_period.divisionid' => $division_id, 'application.ordering' => $order])
+                ->where(['application_period.divisionid' => $division_id, 'application.ordering' => $order, 'application.isdeleted' => 0,
+                    'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
                 ->count();
     }
 
