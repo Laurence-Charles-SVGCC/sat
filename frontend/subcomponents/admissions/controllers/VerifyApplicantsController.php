@@ -237,7 +237,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     foreach ($qualifications as $qual)
                     {
                         $cert = CsecQualification::find()->where(['csecqualificationid' => $qual['csecqualificationid']])->one();
-                        $cert->examinationbodyid = $qual['examinationbodyid'];
+                        //$cert->examinationbodyid = $qual['examinationbodyid'];
                         $cert->year = $qual['year'];
                         $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
                         $cert->subjectid = $qual['subjectid'];

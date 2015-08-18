@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
               <table id="certificate_table" class="table table-bordered table-striped">
                 <thead>
                   <tr>
-                    <th>Examining Body</th>
+                    <!--<th>Examining Body</th>-->
                     <th>Subject</th>
                     <th>Proficiency</th>
                     <th>Grade</th>
@@ -52,14 +52,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
                       <tr>
                           <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
-                          <td>
-                              <?= $form->field($model, "[$key]examinationbodyid", ['options' => [
+                          <!--<td>
+                              <?php /* $form->field($model, "[$key]examinationbodyid", ['options' => [
                                         'tag'=>'div',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
-                                           ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))?>
-                          </td>
+                                           ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))*/?>
+                          </td>-->
                           <td> 
                               <?= $form->field($model, "[$key]subjectid", ['options' => [
                                         'tag'=>'div',
