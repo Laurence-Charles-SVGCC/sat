@@ -182,20 +182,48 @@ class ReviewApplicationsController extends \yii\web\Controller
             $second_priority = $request->post('second_priority');
             $third_priority = $request->post('third_priority');
             
+            if ($division_id == 1)
+            {
+                $condarr = ['application.isdeleted' => 0, 'application.ordering' => 1, 
+                'application.applicationstatusid' => $application_status];
+            }
+            else
+            {
+                $condarr = ['application.divisionid' => $division_id, 'application.isdeleted' => 0, 'application.ordering' => 1, 
+                'application.applicationstatusid' => $application_status];
+            }
+            
+            
+//            $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+//            if ($division_id && $division_id == 1)
+//            {
+//                $prog_cond = array('application_period.isactive' => 1, 'application.applicationstatusid' => $application_status,
+//                    'application.ordering' => 1, 'isdeleted' => 0);
+//            }
+//            else
+//            {
+//                $prog_cond = array('application_period.isactive' => 1, 'application.applicationstatusid' => $application_status,
+//                    'application.ordering' => 1, 'application.isdeleted' => 0, 'application.divisionid' => $division_id);
+//            }
+            
             if ($programme != 0)
             {
+                $condarr['programme_catalog.programmecatalogid'] = $programme;
                 $applications = Application::find()
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-                        ->where(['application.applicationstatusid' => $application_status, 'academic_offering.programmecatalogid' => $programme,
-                            'application.ordering' => 1])
+                        ->where($condarr)
                         ->all();
             }
             else
             {
-                $applications = Application::find()
-                        ->where(['applicationstatusid' => $application_status])
-                        ->all();
+                $applications = Application::find()->where($condarr)->all();
+//                $applications = Application::find()
+//                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+//                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+//                        ->where($prog_cond)
+//                        ->all();
             }
             /*Priorities is not implemented. Need investigations into how multiple levels of sorting can be
                done by Yii dataProvider
