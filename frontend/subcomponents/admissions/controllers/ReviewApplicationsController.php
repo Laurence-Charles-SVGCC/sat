@@ -151,7 +151,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                 ->where($prog_cond)
                 ->all();
-        $progs = array();
+        $progs = array(0 => 'None');
         foreach ($programmes as $programme)
         {
             $progs[$programme->programmecatalogid] = $programme->getFullName();
@@ -178,10 +178,22 @@ class ReviewApplicationsController extends \yii\web\Controller
             $application_status = $request->post('application_status');
             $division_id = $request->post('division_id');
             $programme = $request->post('programme');
-            $first_priority = $request->post('first_priority');
+            /*$first_priority = $request->post('first_priority');
             $second_priority = $request->post('second_priority');
-            $third_priority = $request->post('third_priority');
+            $third_priority = $request->post('third_priority');*/
             
+            Yii::$app->session->set('application_status', $application_status);
+            Yii::$app->session->set('review_division', $division_id);
+            Yii::$app->session->set('programme', $programme);
+        }
+        else
+        {
+            $application_status = Yii::$app->session->get('application_status');
+            $division_id = Yii::$app->session->get('review_division');
+            $programme = Yii::$app->session->get('programme');
+        }
+        if ($application_status && $division_id && $programme)
+        {
             if ($division_id == 1)
             {
                 $condarr = ['application.isdeleted' => 0, 'application.ordering' => 1, 
@@ -193,18 +205,6 @@ class ReviewApplicationsController extends \yii\web\Controller
                 'application.applicationstatusid' => $application_status];
             }
             
-            
-//            $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
-//            if ($division_id && $division_id == 1)
-//            {
-//                $prog_cond = array('application_period.isactive' => 1, 'application.applicationstatusid' => $application_status,
-//                    'application.ordering' => 1, 'isdeleted' => 0);
-//            }
-//            else
-//            {
-//                $prog_cond = array('application_period.isactive' => 1, 'application.applicationstatusid' => $application_status,
-//                    'application.ordering' => 1, 'application.isdeleted' => 0, 'application.divisionid' => $division_id);
-//            }
             
             if ($programme != 0)
             {
@@ -219,17 +219,12 @@ class ReviewApplicationsController extends \yii\web\Controller
             else
             {
                 $applications = Application::find()->where($condarr)->all();
-//                $applications = Application::find()
-//                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-//                        ->where($prog_cond)
-//                        ->all();
             }
             /*Priorities is not implemented. Need investigations into how multiple levels of sorting can be
                done by Yii dataProvider
               Gamal Crichton 27/07/2015 */
             $priorities = array();
-            if ($first_priority != 'none')
+            /*if ($first_priority != 'none')
             {   
                 array_push($priorities, 
                         [$first_priority => 
@@ -252,10 +247,14 @@ class ReviewApplicationsController extends \yii\web\Controller
                             ['desc' => [$third_priority => SORT_DESC]]
                         ]
                      );  
-            }  
-            return self::actionViewApplicationApplicant($division_id, $applications, $application_status, $priorities);
+            }  */
         }
-        
+        else
+        {
+            Yii::$app->session->setFlash('error', 'No critera');
+            return self::actionViewApplicationApplicant(null, null, null, null);
+        }
+        return self::actionViewApplicationApplicant($division_id, $applications, $application_status, $priorities);
     }
     
     /*

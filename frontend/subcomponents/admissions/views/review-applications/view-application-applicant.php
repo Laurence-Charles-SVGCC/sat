@@ -25,9 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::hiddenInput('application_status', $application_status); ?>
                 <?= Html::hiddenInput('division_id', $division_id); ?>
                 <div class="col-lg-3">
+                    
                     <?= Html::label( 'Programmes',  'programme'); ?>
                     <?= Html::dropDownList('programme', null, 
-                        array_merge(['0' => 'None'] , $programmes)
+                        //array_merge(['0' => 'None'] , $programmes)
+                            $programmes
                             ) ; ?>
                 </div>
                 <!--TODO: Investigate how to sort dataProvider by multiple levels and implement Gamal Crichton 27/07/2015-->
