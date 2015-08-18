@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->dropDownList(
                                            ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))*/?>
                           </td>-->
-                          <td> 
+                          <td width = 25%> 
                               <?= $form->field($model, "[$key]subjectid", ['options' => [
                                         'tag'=>'div',
                                         ],
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->dropDownList(
                                            ArrayHelper::map(Subject::find()->all(), 'subjectid', 'name')) ?>
                           </td>
-                          <td>
+                          <td width = 15%>
                               <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
                                         'tag'=>'div',
                                         ],
@@ -84,17 +84,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ])->dropDownList(
                                            ArrayHelper::map(ExaminationGrade::find()->all(), 'examinationgradeid', 'name')); ?>
                         </td>
-                        <td>
+                        <td width = 10%>
                             <?= $form->field($model, "[$key]year", ['options' => [
                                         'tag'=>'div',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->textInput(); ?>
                         </td>
-                        <td>
+                        <td width= 5%>
                             <?= $form->field($model, "[$key]isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
                         </td>
-                        <td>
+                        <td width= 5%>
                             <?= $form->field($model, "[$key]isqueried")->checkbox(['label' => NULL]); ?>
                         </td>
                         <td>
