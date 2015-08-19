@@ -378,18 +378,20 @@ class ReviewApplicationsController extends \yii\web\Controller
                     $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                 }
                 $message = 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!';
-                //Yii::$app->session->setFlash('warning', 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!');
             }
             $reapp = self::getPossibleReapplicant($personid, $certificates[0]->candidatenumber, $certificates[0]->year);
             if ($reapp)
             {
                 $message = $message . ' Applicant applied to College in a previous year.';
-                //Yii::$app->session->setFlash('warning', 'Applicant applied to College in a previous year.');
             }
             if ($dups || $reapp)
             {
                 Yii::$app->session->setFlash('warning', $message);
             }
+        }
+        else
+        {
+            Yii::$app->session->setFlash('error', 'Applicant certificates nto yet verified.');
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $certificates,
@@ -808,7 +810,6 @@ class ReviewApplicationsController extends \yii\web\Controller
         } catch (Exception $ex) {
             return False;
         } 
-        
         if ($candidateno == 0 || strlen($origcandidateno) != 10 )
         {
             return False;
@@ -824,6 +825,8 @@ class ReviewApplicationsController extends \yii\web\Controller
         }
         else
         {
+            $dups = array();
+            echo count($groups);
             foreach ($groups as $group)
             {
                 if ($group->personid != $applicantid)

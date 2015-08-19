@@ -19,6 +19,7 @@ use frontend\models\Application;
 use frontend\models\Email;
 use frontend\models\ApplicationStatus;
 use frontend\models\PublishForm;
+use frontend\models\CapeSubject;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -84,7 +85,7 @@ class OfferController extends Controller
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;
@@ -99,11 +100,45 @@ class OfferController extends Controller
                 'pageSize' => 50,
             ],
         ]);
+        
+        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
+        if ($division_id && $division_id == 1)
+        {
+            $prog_cond = array('application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
+        }
+        $programmes = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($prog_cond)
+                ->all();
+        $progs = array(0 => 'None');
+        foreach ($programmes as $programme)
+        {
+            $progs[$programme->programmecatalogid] = $programme->getFullName();
+        }
+        
+        $cape_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+        if ($division_id && $division_id == 1)
+        {
+            $cape_cond = array('application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+        }
+        $cape = CapeSubject::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($cape_cond)
+                ->all();
+        $capes = array(0 => 'None');
+        foreach ($cape as $c)
+        {
+            $capes[$c->capesubjectid] = $c->subjectname;
+        }
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
+            'programmes' => $progs,
+            'cape_subjects' => $capes,
         ]);
     }
     
@@ -449,5 +484,148 @@ class OfferController extends Controller
                     'divisions' =>$divisions_arr,
                     'statuses' =>$status_types,
                 ]);
+    }
+    
+    
+    
+    
+    public function actionUpdateView()
+    {
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $programme = $request->post('programme');
+            $cape = $request->post('cape');
+            
+            Yii::$app->session->set('programme', $programme);
+            Yii::$app->session->set('cape', $cape);
+        }
+        else
+        {
+            $programme = Yii::$app->session->get('programme');
+            $cape = Yii::$app->session->get('cape');
+        }
+        
+        $division_id = Yii::$app->session->get('divisionid');
+        
+        $division = Division::findOne(['divisionid' => $division_id ]);
+        $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
+        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        
+        if ($division_id && $division_id == 1)
+        {
+            $app_period_name = "All Active Application Periods";
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        }
+        
+        if (! ($programme != 0 && $cape != 0))
+        {
+            if ($programme != 0)
+            {
+                $offer_cond['programme_catalog.programmecatalogid'] = $programme;
+            }
+            $offers = Offer::find()
+                    ->joinWith('application')
+                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                    ->where($offer_cond)
+                    ->all();
+            if ($cape != 0)
+            {
+                $offer_cond['application_capesubject.capesubjectid'] = $cape;
+                $offers = Offer::find()
+                    ->joinWith('application')
+                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    //->innerJoin('`cape_subject`', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
+                    ->where($offer_cond)
+                    ->all();
+            }
+        }
+        else
+        {
+            $offers = array();
+            Yii::$app->session->setFlash('error', 'Select either a programme OR a CAPE Subject.');
+        }
+        
+        $data = array();
+        foreach ($offers as $offer)
+        {
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            $data[] = $offer_data;
+        }
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 50,
+            ],
+        ]);
+        
+        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programmecatalogid.isdeleted' => 0);
+        if ($division_id && $division_id == 1)
+        {
+            $prog_cond = array('application_period.isactive' => 1);
+        }
+        $programmes = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($prog_cond)
+                ->all();
+        $progs = array(0 => 'None');
+        foreach ($programmes as $programme)
+        {
+            $progs[$programme->programmecatalogid] = $programme->getFullName();
+        }
+        
+        $cape_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+        if ($division_id && $division_id == 1)
+        {
+            $cape_cond = array('application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+        }
+        $cape = CapeSubject::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($cape_cond)
+                ->all();
+        $capes = array(0 => 'None');
+        foreach ($cape as $c)
+        {
+            $capes[$c->capesubjectid] = $c->subjectname;
+        }
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+            'divisionabbr' => $division_abbr,
+            'applicationperiodname' => $app_period_name,
+            'programmes' => $progs,
+            'cape_subjects' => $capes,
+        ]);
     }
 }
