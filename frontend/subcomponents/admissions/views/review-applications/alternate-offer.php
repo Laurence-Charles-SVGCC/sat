@@ -64,6 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
                 ); ?>
                 <?= Html::hiddenInput('division_id', $division_id); ?>
+                <?= Html::hiddenInput('applicantid', $applicantid); ?>
                 <?= Html::hiddenInput('application_status', $application_status); ?>
                 <div class="row">
                     <div class="col-lg-2">

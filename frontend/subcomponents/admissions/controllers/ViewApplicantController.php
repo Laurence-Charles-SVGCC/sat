@@ -92,8 +92,11 @@ class ViewApplicantController extends \yii\web\Controller
                     $dataProvider = new ArrayDataProvider([
                         'allModels' => $data,
                         'pagination' => [
-                            'pageSize' => 20,
+                            'pageSize' => 100,
                         ],
+                        'sort' => [
+                            'attributes' => ['applicantid', 'firstname', 'lastname'],
+                            ]
                     ]);
                     if (!$user)
                     {

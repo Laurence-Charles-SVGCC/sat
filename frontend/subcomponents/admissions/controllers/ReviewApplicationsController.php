@@ -367,6 +367,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         if ($certificates)
         {
             $dups = self::getPossibleDuplicate($personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+            $message = '';
             if ($dups)
             {
                 $dupes = '';
@@ -375,7 +376,18 @@ class ReviewApplicationsController extends \yii\web\Controller
                     $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
                     $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                 }
-                Yii::$app->session->setFlash('warning', 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!');
+                $message = 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!';
+                //Yii::$app->session->setFlash('warning', 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!');
+            }
+            $reapp = self::getPossibleReapplicant($personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+            if ($reapp)
+            {
+                $message = $message . ' Applicant applied to College in a previous year.';
+                //Yii::$app->session->setFlash('warning', 'Applicant applied to College in a previous year.');
+            }
+            if ($dups || $reapp)
+            {
+                Yii::$app->session->setFlash('warning', $message);
             }
         }
         $dataProvider = new ArrayDataProvider([
@@ -617,25 +629,29 @@ class ReviewApplicationsController extends \yii\web\Controller
         {
             $request = Yii::$app->request;
             $applicantid = $request->post('applicantid');
-            $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+            $person = User::findOne(['username' => $applicantid]);
+            $applicant = Applicant::findOne(['personid' => $person->personid]);
+            
             $applicant_personid =  $applicant ? $applicant->personid : Yii::$app->session->setFlash('error', 'Applicant not found');
             $app_count = Application::find()->where(['personid' => $applicant_personid])->count();
             
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $request->post('programme')]);
             $prog_name = $programme ? $programme->name : Yii::$app->session->setFlash('error', 'Programme not found');   
             $application = new Application();
-            $application->personid =  $applicantid; // Correct Way: $applicant_personid
-            $application->academicofferingid = AcademicOffering::findOne(['programmecatalogid' => $request->post('programme'), 'isactive' =>1])
-                    ->academicofferingid;
+            $application->personid =  $applicant_personid;
+            $ac_off = AcademicOffering::findOne(['programmecatalogid' => $request->post('programme'), 'isactive' =>1]);
+            $application->academicofferingid = $ac_off ? $ac_off->academicofferingid : Null;
+            $application->divisionid = $ac_off ? $ac_off->getApplicationperiod()->one()->divisionid : Null;
             $application->applicationstatusid = ApplicationStatus::findOne(['name' => 'offer'])->applicationstatusid;
-            $application->applicationdate = date("Y-m-d");
-            $application->ordering =  $app_count >= 3 ? $app_count + 1 : 3;
+            $application->applicationtimestamp = date("Y-m-d H:i:s");
+            $application->ordering =  $app_count >= 3 ? $app_count + 1 : 4;
             $application->ipaddress = $request->getUserIP() ;
             $application->browseragent = $request->getUserAgent();
             if ($application->save())
             {
                 $cape_success = True;
-                if (strcasecmp($prog_name, "cape"))
+                //echo "prog name" . strcasecmp("cape", "cape");
+                if (strcasecmp($prog_name, "cape") == 0)
                 {
                     //Deal with Cape Subjects
                     $groups_used = array();
@@ -764,11 +780,16 @@ class ReviewApplicationsController extends \yii\web\Controller
     private function getPossibleDuplicate($applicantid, $candidateno, $year)
     {
         try{
+            $origcandidateno = $candidateno;
             $candidateno = intval($candidateno);
         } catch (Exception $ex) {
             return False;
         } 
         
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+        {
+            return False;
+        }
         $groups = CsecQualification::find()
                     ->where(['candidatenumber' => $candidateno, 'isverified' => 1, 'isdeleted' => 0,
                         'year' => $year])
@@ -794,10 +815,15 @@ class ReviewApplicationsController extends \yii\web\Controller
     private function getPossibleReapplicant($candidateno, $year)
     {
         try{
+            $origcandidateno = $candidateno;
             $candidateno = intval($candidateno);
         } catch (Exception $ex) {
             return False;
         } 
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+        {
+            return False;
+        }
         
         $reapplicant = Yii::$app->cms_db->createCommand(
                 "select certificate_id from applicants_certificates where year = $year and candidate_no = $candidateno")

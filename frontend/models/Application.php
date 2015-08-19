@@ -43,11 +43,11 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'applicationtimestamp', 'ordering', 'ipaddress', 'browseragent'], 'required'],
+            [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'applicationtimestamp', 'ordering'], 'required'],
             [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'ordering'], 'integer'],
             [['applicationtimestamp'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['ipaddress', 'browseragent'], 'string', 'max' => 100]
+            [['ipaddress', 'browseragent'], 'string', 'max' => 150]
         ];
     }
 

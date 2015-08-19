@@ -52,7 +52,7 @@ class Applicant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['applicanttypeid', 'personid', 'potentialstudentid'], 'integer'],
+            [['personid', 'potentialstudentid'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['bursarystatus', 'isactive', 'isdeleted'], 'boolean'],
             [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
@@ -71,7 +71,6 @@ class Applicant extends \yii\db\ActiveRecord
     {
         return [
             'applicantid' => 'Applicantid',
-            'applicanttypeid' => 'Applicanttypeid',
             'personid' => 'Personid',
             'potentialstudentid' => 'Potentialstudentid',
             'title' => 'Title',
