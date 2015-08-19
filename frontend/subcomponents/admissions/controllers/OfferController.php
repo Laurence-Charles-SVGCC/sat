@@ -169,6 +169,7 @@ class OfferController extends Controller
         if ($model)
         {
            $model->isactive = 0;
+           $model->isdeleted = 1;
            $model->revokedby = Yii::$app->user->getId();
            $model->revokedate = date('Y-m-d');
            if ($model->save())

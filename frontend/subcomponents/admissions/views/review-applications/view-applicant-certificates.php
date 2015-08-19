@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
             ],
             [
+                'attribute' => 'subjectid',
                 'format' => 'text',
                 'label' => 'Subject',
                 'value' => function($model)

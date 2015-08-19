@@ -138,6 +138,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                 'pageSize' => 50,
             ],
             'sort' => [
+                'defaultOrder' => ['subjects_no' => SORT_DESC, 'ones_no' => SORT_DESC, 'twos_no' => SORT_DESC, 'threes_no' => SORT_DESC],
                 'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no'],
                 ]
         ]);
@@ -395,9 +396,6 @@ class ReviewApplicationsController extends \yii\web\Controller
             'pagination' => [
                 'pageSize' => 50,
             ],
-            'sort' => [
-                'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no'],
-                ]
         ]);
         return $this->render('view-applicant-certificates',
                 [
@@ -435,6 +433,10 @@ class ReviewApplicationsController extends \yii\web\Controller
             
             $application_status = $request->post('application_status');
             $application = Application::findOne(['applicationid' => $applicationid]);
+            
+            //Revoke any existing offers since new decision is being made
+            self::implicitRevoke($applicationid);
+            
             if ($request->post('make_offer') === '')
             {
                 if (self::actionMakeOffer($applicationid, False))
@@ -501,7 +503,6 @@ class ReviewApplicationsController extends \yii\web\Controller
             }
             if ($request->post('alternate_offer') === '')
             {
-                //echo "applicantid is: $applicantid";
                 $person = User::findOne(['username' => $applicantid]);
                 $applicant = Applicant::findOne(['personid' => $person->personid]);
                 $personid = $applicant->getPerson()->one() ? $applicant->getPerson()->one()->personid : NULL;
@@ -573,6 +574,28 @@ class ReviewApplicationsController extends \yii\web\Controller
                 ]));
         }
         return $this->redirect(Url::to(['review-applications/index']));
+    }
+    
+    public function implicitRevoke($applicationid)
+    {
+        $offers = Offer::findAll(['applicationid' => $applicationid]);
+        foreach($offers as $offer)
+        {
+           $offer->isactive = 0;
+           $offer->isdeleted = 1;
+           $offer->revokedby = Yii::$app->user->getId();
+           $offer->revokedate = date('Y-m-d');
+           if ($offer->save())
+           {
+               //Remove Potential student ID and update application status
+               $appstatus = ApplicationStatus::findOne(['name' => 'pending', 'isdeleted' => 0]);
+               $application = $offer->getApplication()->one();
+               $application->applicationstatusid = $appstatus ? $appstatus->applicationstatusid : 3;
+               $application->save();
+               $applicant = $application ? $application->getPerson()->one() : Null;
+               if ($applicant){ $applicant->potentialstudentid = Null; $applicant->save();}
+            }
+        }
     }
 
     /*

@@ -42,6 +42,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'pageSize' => 15,
             ],
             'sort' => [
+                'defaultOrder' => ['centre_name' => SORT_ASC],
                 'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
             ],
         ]);
@@ -123,6 +124,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'pageSize' => 20,
             ],
             'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                 'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
             ],
         ]);
