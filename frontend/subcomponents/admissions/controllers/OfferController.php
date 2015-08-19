@@ -68,6 +68,7 @@ class OfferController extends Controller
         $data = array();
         foreach ($offers as $offer)
         {
+            $cape_subjects_names = array();
             $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
