@@ -66,7 +66,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
-                                           ArrayHelper::map(Subject::find()->all(), 'subjectid', 'name')) ?>
+                                           ArrayHelper::map(Subject::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ->all(), 'subjectid', 'name')) ?>
                           </td>
                           <td width = 15%>
                               <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
@@ -74,7 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
-                                           ArrayHelper::map(ExaminationProficiencyType::find()->all(), 'examinationproficiencytypeid', 'name')) ?>
+                                           ArrayHelper::map(ExaminationProficiencyType::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ->all(), 'examinationproficiencytypeid', 'name')) ?>
                           </td>
                         <td> 
                             <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
@@ -82,7 +84,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
-                                           ArrayHelper::map(ExaminationGrade::find()->all(), 'examinationgradeid', 'name')); ?>
+                                           ArrayHelper::map(ExaminationGrade::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ->all(), 'examinationgradeid', 'name')); ?>
                         </td>
                         <td width = 10%>
                             <?= $form->field($model, "[$key]year", ['options' => [
@@ -109,7 +112,7 @@ $this->params['breadcrumbs'][] = $this->title;
               </table>
            
             <div class="form-group">
-                <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                     <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
                     <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                 <?php endif; ?>

@@ -35,7 +35,7 @@ class DatabaseWrapperController extends Controller
                     ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
-                    ->where(['application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'application.isdeleted' => 0,
+                    ->where(['application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'csec_centre.isactive' => 1, 'application.isdeleted' => 0,
                         'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])->all();
         
         return $centres;

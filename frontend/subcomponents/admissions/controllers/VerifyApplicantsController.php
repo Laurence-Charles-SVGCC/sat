@@ -9,6 +9,7 @@ use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 use frontend\models\ApplicationStatus;
 use frontend\models\Application;
+use frontend\models\CsecCentre;
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -36,6 +37,17 @@ class VerifyApplicantsController extends \yii\web\Controller
             $data[] = $centre_row;
         }
         
+        //For external applicants
+        $amt_received = count(self::getExternal());
+        $centre_row = array();
+        $centre_row['centre_name'] = "External";
+        $centre_row['centre_id'] = '00000';
+        $centre_row['status'] = "N/A";
+        $centre_row['applicants_verified'] = "N/A";
+        $centre_row['total_received'] = $amt_received;
+        $centre_row['percentage_completed'] = 0;
+        $data[] = $centre_row;
+        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -59,10 +71,20 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionCentreDetails($centre_id, $centre_name)
     {
-        $amt_received = self::centreApplicantsReceivedCount($centre_id);
-        $amt_verified = self::centreApplicantsVerifiedCount($centre_id);
-        $amt_queried = self::centreApplicantsQueriedCount($centre_id);
-        $amt_pending = $amt_received - ($amt_verified + $amt_queried);
+        if (strcasecmp($centre_name, "external") == 0)
+        {
+            $amt_received = count(self::getExternal());
+            $amt_verified = "N/A";
+            $amt_queried = "N/A";
+            $amt_pending = 0;
+        }
+        else
+        {
+            $amt_received = self::centreApplicantsReceivedCount($centre_id);
+            $amt_verified = self::centreApplicantsVerifiedCount($centre_id);
+            $amt_queried = self::centreApplicantsQueriedCount($centre_id);
+            $amt_pending = $amt_received - ($amt_verified + $amt_queried);
+        }
 
         return $this->render('centre-details',
                 [
@@ -82,18 +104,25 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewAll($cseccentreid, $centrename)
     {
-        $data = array();
-        foreach(self::centreApplicantsReceived($cseccentreid) as $application)
+        if (strcasecmp($centrename, "external") == 0)
         {
-            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            $data = self::getExternal();
         }
-        
+        else
+        {
+            $data = array();
+            foreach(self::centreApplicantsReceived($cseccentreid) as $application)
+            {
+                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            }
+        }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
                 'pageSize' => 20,
             ],
             'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                 'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
             ],
         ]);
@@ -155,6 +184,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'pageSize' => 20,
             ],
             'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                 'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
             ],
         ]);
@@ -186,6 +216,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'pageSize' => 20,
             ],
             'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                 'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
             ],
         ]);
@@ -214,20 +245,37 @@ class VerifyApplicantsController extends \yii\web\Controller
             if ($request->post('add_more') === '')
             {
                 $add_amt = $request->post('add_more_value');
-                $qmodel = $qualifications[0];
-                for ($i = 0; $i < $add_amt; $i++)
+                
+                if (count($qualifications) > 0)
                 {
-                    $qualification = new CsecQualification();
-                    $qualification->personid = $applicantid;
-                    $qualification->cseccentreid = $cseccentreid;
-                    $qualification->examinationbodyid = $qmodel ? $qmodel->examinationbodyid : 1;
-                    $qualification->subjectid = 1;
-                    $qualification->examinationproficiencytypeid = $qmodel ? $qmodel->examinationproficiencytypeid : 1;
-                    if (!$qualification->save()) 
+                    $qmodel = $qualifications[0];
+                }
+                else
+                {
+                    $qmodel = NULL;
+                    $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);
+                    $cseccentreid = $centre ? $centre->cseccentreid : NULL;
+                }
+                if ($qmodel || $cseccentreid)
+                {
+                    for ($i = 0; $i < $add_amt; $i++)
                     {
-                        Yii::$app->getSession()->setFlash('error', 'Could not add more certificates.');
-                        break;
+                        $qualification = new CsecQualification();
+                        $qualification->personid = $applicantid;
+                        $qualification->cseccentreid = $cseccentreid;
+                        $qualification->examinationbodyid = $qmodel ? $qmodel->examinationbodyid : 3;
+                        $qualification->subjectid = 1;
+                        $qualification->examinationproficiencytypeid = $qmodel ? $qmodel->examinationproficiencytypeid : 1;
+                        if (!$qualification->save()) 
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'Could not add more certificates.');
+                            break;
+                        }
                     }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'Centre to add certificates to not found');
                 }
             }
             else 
@@ -423,6 +471,30 @@ class VerifyApplicantsController extends \yii\web\Controller
         return DatabaseWrapperController::centreApplicantsQueriedCount($cseccentreid);
     }
     
+    private function getExternal()
+    {
+        $data = array();
+        $applications = Application::find()
+                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
+                ->where(['application_period.isactive' => 1, 'application.isdeleted' => 0, 'applicant.isexternal' => 1,
+                    'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+                ->groupby('application.personid')->all();
+        
+        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);
+        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
+        foreach($applications as $application)
+        {
+            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
+            if (!$qual || $qual->cseccentreid == $cseccentreid)
+            {
+                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            }
+        }
+        return $data;
+    }
     
 
 }

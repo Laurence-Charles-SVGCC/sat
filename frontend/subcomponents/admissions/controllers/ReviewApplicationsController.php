@@ -391,7 +391,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         }
         else
         {
-            Yii::$app->session->setFlash('error', 'Applicant certificates nto yet verified.');
+            Yii::$app->session->setFlash('error', 'Applicant certificates not yet verified OR Applicant has external Certificates.');
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $certificates,
