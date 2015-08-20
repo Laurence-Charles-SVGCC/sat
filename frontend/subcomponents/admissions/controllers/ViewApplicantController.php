@@ -306,5 +306,302 @@ class ViewApplicantController extends \yii\web\Controller
       }
       return Null;
   }
+  
+  /*
+    * Purpose: Allows applicant to review entire application [no submission functionality]
+    * Created: ?/2015 by Laurence Charles (For Apply)
+    * Last Modified: 20/08/2015 by Gamal Crichton
+    */
+    public function actionReview($applicantid)
+    {
+        $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+        $personid = $applicant ? $applicant->personid : Null;
+        
+        $permanentaddress = Address::findOne(['personid' => $personid, 'addresstypeid' => 1]);            
+        $residentaladdress = Address::findOne(['personid' => $personid, 'addresstypeid' => 2]);
+        $postaladdress = Address::findOne(['personid' => $personid, 'addresstypeid' => 3]);
+        $addresses = [$permanentaddress, $residentaladdress, $postaladdress];
+        
+        $phone = Phone::findOne(['personid' => $applicant->personid, 'isdeleted' => 0]);
+        
+        $relatives = Relation::findAll(['personid' => $personid, 'isdeleted => 0']);
+        $mother = false;
+        $father = false;
+        $nextofkin = false;
+        $emergencycontact = false;
+        $guardian = false;
+        $beneficiary = false;
+        $spouse = false;
+        
+        foreach($relatives as $relative){
+            if ($relative->relationtypeid == 1){
+                $mother = $relative;
+            }
+            else if ($relative->relationtypeid == 2){
+                $father = $relative;
+            }
+            else if ($relative->relationtypeid == 3){
+                $nextofkin = $relative;
+            }
+            else if ($relative->relationtypeid == 4){
+                $emergencycontact = $relative;
+            }
+            else if ($relative->relationtypeid == 5){
+                $guardian = $relative;
+            }
+            else if ($relative->relationtypeid == 6){
+                $beneficiary = $relative;
+            }
+            else if ($relative->relationtypeid == 7){
+                $spouse = $relative;
+            }          
+        }
+        
+        $medicalConditions = MedicalCondition::findAll(['personid' => $personid, 'isdeleted' => 0]);
+        
+        $applicantDetails = $applicant ? $applicant->variableDetails() : Null;
+
+        $applications = Application::findAll(['personid' => $personid, 'isdeleted' => 0]);
+        $first = array();
+        $firstDetails = array();
+        $second = array();
+        $secondDetails = array();
+        $third = array();
+        $thirdDetails = array();
+        
+        //$db = Yii::$app->db;
+        foreach($applications as $application)
+        {
+            $capeSubjects = NULL;
+            $isCape = NULL;
+            $division = NULL;
+            $programme = NULL;
+            $d = NULL;
+            $p = NULL;
+            if ($application->ordering == 1){
+                array_push($first, $application);
+                $isCape = Application::isCapeApplication($application->academicofferingid);
+                if ($isCape == true){
+                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  array_push($first, $capeSubjects);
+                }
+                $d = Division::find()
+                        ->where(['divisionid' => $application->divisionid])
+                        ->one();
+                $division = $d->name;
+                array_push($firstDetails, $division);
+                
+                $p = $db->createCommand(
+                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                                . " from  academic_offering "
+                                . " join programme_catalog"
+                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                                . " join qualification_type"
+                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                        )
+                        ->queryAll();
+
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($firstDetails, $fullname);
+            }
+            
+            else if ($application->ordering == 2){
+                array_push($second, $application);
+                $isCape = Application::isCapeApplication($application->academicofferingid);
+                if ($isCape == true){
+                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  array_push($second, $capeSubjects);
+                }
+                 $d = Division::find()
+                        ->where(['divisionid' => $application->divisionid])
+                        ->one();
+                $division = $d->name;
+                array_push($secondDetails, $division);
+                
+                $p = $db->createCommand(
+                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                                . " from  academic_offering "
+                                . " join programme_catalog"
+                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                                . " join qualification_type"
+                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                        )
+                        ->queryAll();
+
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($secondDetails, $fullname);
+            }
+            else if ($application->ordering == 3){
+                array_push($third, $application);
+                $isCape = Application::isCapeApplication($application->academicofferingid);
+                if ($isCape == true){
+                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  array_push($third, $capeSubjects);
+                }
+                 $d = Division::find()
+                        ->where(['divisionid' => $application->divisionid])
+                        ->one();
+                $division = $d->name;
+                array_push($thirdDetails, $division);
+                
+                
+                $p = $db->createCommand(
+                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                                . " from  academic_offering "
+                                . " join programme_catalog"
+                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                                . " join qualification_type"
+                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                        )
+                        ->queryAll();
+
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($thirdDetails, $fullname);
+            }
+        }
+        
+        
+        $preschools = PersonInstitution::getPersonInsitutionRecords($id, 1);
+        $preschoolNames = array();
+        if ($preschools!=false){
+            foreach ($preschools as $preschool){
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $preschool->institutionid])
+                        ->one();     
+                $name = $record->name;
+                array_push($preschoolNames, $name);          
+            }
+        }
+        
+        
+        $primaryschools = PersonInstitution::getPersonInsitutionRecords($id, 2);
+        $primaryschoolNames = array();
+        if ($primaryschools!=false){
+            foreach ($primaryschools as $primaryschool){
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $primaryschool->institutionid])
+                        ->one();     
+                $name = $record->name;
+                array_push($primaryschoolNames, $name); 
+            }
+        }
+        
+        
+        $secondaryschools = PersonInstitution::getPersonInsitutionRecords($id, 3);
+        $secondaryschoolNames = array();
+        if ($secondaryschools!=false){
+            foreach ($secondaryschools as $secondaryschool){
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $secondaryschool->institutionid])
+                        ->one();       
+                $name = $record->name;
+                array_push($secondaryschoolNames, $name); 
+            }
+        }
+        
+        $tertieryschools = PersonInstitution::getPersonInsitutionRecords($id, 4);
+        $tertieryschoolNames = array();
+        if ($tertieryschools!=false){
+            foreach ($tertieryschools as $tertieryschool){
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $tertieryschool->institutionid])
+                        ->one();  
+                $name = $record->name;
+                array_push($tertieryschoolNames, $name); 
+            }
+        }
+         
+        
+        $qualifications = CsecQualification::getQualifications($id);
+        $qualificationDetails = array();
+        
+        if ($qualifications != false)
+        {
+            $keys = ['centrename', 'examinationbody', 'subject', 'proficiency', 'grade'];
+            foreach ($qualifications as $qualification){
+                $values = array();
+                $combined = array();
+                $centre = CsecCentre::find()
+                        ->where(['cseccentreid' => $qualification->cseccentreid])
+                        ->one();
+                array_push($values, $centre->name);
+                $examinationbody = ExaminationBody::find()
+                        ->where(['examinationbodyid' => $qualification->examinationbodyid])
+                        ->one();
+                array_push($values, $examinationbody->abbreviation);
+                $subject = Subject::find()
+                        ->where(['subjectid' => $qualification->subjectid])
+                        ->one();
+                array_push($values, $subject->name);
+                $proficiency = ExaminationProficiencyType::find()
+                        ->where(['examinationproficiencytypeid' => $qualification->examinationproficiencytypeid])
+                        ->one();
+                array_push($values, $proficiency->name);
+                $grade = ExaminationGrade::find()
+                        ->where(['examinationgradeid' => $qualification->examinationgradeid])
+                        ->one();
+                array_push($values, $grade->name);
+                $combined = array_combine($keys,$values);
+                array_push($qualificationDetails, $combined);
+                $values = NULL;
+                $combined = NULL;
+            }
+        }
+        
+              
+        return $this->render('review', [
+            'applicant' => $applicant,
+            'addresses' => $addresses,
+            'phone'=> $phone,
+            'mother' => $mother,
+            'father' => $father,
+            'nextofkin' => $nextofkin,
+            'emergencycontact' => $emergencycontact,
+            'guardian' =>  $guardian,
+            'beneficiary' => $beneficiary,
+            'spouse' => $spouse,
+            'medicalConditions' => $medicalConditions,
+            'applicantDetails' => $applicantDetails,
+            'qualifications' => $qualifications,
+            'qualificationDetails' => $qualificationDetails,
+            'first' => $first,
+            'firstDetails' =>$firstDetails,
+            'second' => $second,
+            'secondDetails' =>$secondDetails,
+            'third' => $third,
+            'thirdDetails' =>$thirdDetails,
+            'preschools' => $preschools,
+            'preschoolNames' => $preschoolNames,
+            'primaryschools' => $primaryschools,
+            'primaryschoolNames' => $primaryschoolNames,
+            'secondaryschools' => $secondaryschools,
+            'secondaryschoolNames' => $secondaryschoolNames,
+            'tertieryschools' => $tertieryschools,
+            'tertieryschoolNames' => $tertieryschoolNames,  
+        ]);
+    }
 
 }
