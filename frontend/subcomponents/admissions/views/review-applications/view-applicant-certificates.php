@@ -16,9 +16,17 @@ $this->title = 'Applicant Certificates';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="verify-applicants-index">
-    <h1><?= Html::encode($this->title) ?></h1>
-    <h2><?= $firstname . " " . $middlename . " " . $lastname . "(" . $applicantid . ")" ?></h2>
-    <h2><?= "Applied to: " . $programme ?></h2>
+    <h2><?= Html::encode($this->title) ?></h2>
+    <h3><?= $firstname . " " . $middlename . " " . $lastname . "(" . $applicantid . ").  Applied to: " . $programme ?></h3>
+    <?php if($cape): ?>
+    <h4><strong>Offers Status:</strong> 
+        <?php foreach($cape_info as $key =>$ci): ?>
+            <?= $key . ': ' . $ci['offers_made'] . ' of ' . $ci['capacity'] . '.' ?>
+        <?php endforeach; ?>  
+        </h4>
+    <?php else: ?>
+        <h3><?= "Offers given: " . $offers_made . ". Proposed Intake: " . $spaces ?></h3>
+    <?php endif; ?>    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,

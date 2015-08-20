@@ -20,6 +20,7 @@ use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationGrade;
 use common\models\User;
+use frontend\models\CapeSubject;
 
 class ReviewApplicationsController extends \yii\web\Controller
 {   
@@ -399,6 +400,48 @@ class ReviewApplicationsController extends \yii\web\Controller
                 'pageSize' => 50,
             ],
         ]);
+        
+        $offers_made = 0;
+        $spaces = 0;
+        $cape_info = array();
+        $cape = False;
+        $ao = $application ? AcademicOffering::findOne(['academicofferingid' => $application->academicofferingid]) : NULL;
+        if ($ao)
+        {
+            $cape_prog = ProgrammeCatalog::findOne(['name' => 'cape']);
+            $cape = $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : False;
+            
+            if ($cape)
+            {
+                $cape_subjects = CapeSubject::find()
+                        ->innerJoin('application_capesubject', '`application_capesubject`.`capesubjectid` = `cape_subject`.`capesubjectid`')
+                        ->where(['application_capesubject.applicationid' => $application->applicationid])
+                        ->all();
+                
+                foreach ($cape_subjects as $cape)
+                {
+                    $cape_info[$cape->subjectname]['offers_made'] = count(Offer::find()
+                        ->joinWith('application')
+                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
+                        ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 'application_period.isactive' => 1, 
+                                'offer.isdeleted' => 0])
+                        ->all());
+                    $cape_info[$cape->subjectname]['capacity'] = $cape->capacity;
+                }
+            }
+            else
+            {
+                $offers_made = count(Offer::find()
+                        ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->where(['academic_offering.academicofferingid' => $ao->academicofferingid])
+                        ->all());
+
+                $spaces = $ao->spaces;
+            }
+        }
         return $this->render('view-applicant-certificates',
                 [
                     'applicantid' => $applicantid,
@@ -409,6 +452,10 @@ class ReviewApplicationsController extends \yii\web\Controller
                     'application_status' => $application_status,
                     'applicationid' => $applicationid,
                     'dataProvider' => $dataProvider,
+                    'offers_made' => $offers_made,
+                    'spaces' => $spaces,
+                    'cape' => $cape,
+                    'cape_info' => $cape_info,
                 ]);
     }
     
