@@ -47,6 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'attribute' => 'application_status',
+                'label' => 'Status',
+            ],
+            [
                 'format' => 'html',
                 'label' => 'Offer ID',
                 'value' => function($row)use ($applicant, $username)

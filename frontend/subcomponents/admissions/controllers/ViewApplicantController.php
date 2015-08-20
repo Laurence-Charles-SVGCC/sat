@@ -16,6 +16,7 @@ use frontend\models\Institution;
 use frontend\models\Phone;
 use frontend\models\Email;
 use frontend\models\Relation;
+use frontend\models\ApplicationHistory;
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -130,6 +131,8 @@ class ViewApplicantController extends \yii\web\Controller
         foreach($applications as $application)
         {
             $app_details = array();
+            $app_his = ApplicationHistory::find()->where(['applicationid' => $application->applicationid,
+                'isdeleted' => 0])->orderBy('applicationhistoryid DESC', 'desc')->one();
             $cape_subjects_names = array();
             $programme = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
@@ -141,10 +144,11 @@ class ViewApplicantController extends \yii\web\Controller
 
             $app_details['order'] = $application->ordering;
             $app_details['applicationid'] = $application->applicationid;
-            $app_details['programme_name'] = $programme->name;
+            $app_details['programme_name'] = $programme->getFullName();
             $app_details['subjects'] = implode(' ,', $cape_subjects_names);
             $app_details['offerid'] = $offer ? $offer->offerid : Null;
-            $app_details['divisionid'] = 
+            $app_details['divisionid'] = $application->divisionid;
+            $app_details['application_status'] = $app_his ? $app_his->applicationstatusid > 1 ? "Submitted" : "Incomplete" : Null; 
 
             $data[] = $app_details;
         }
