@@ -13,6 +13,9 @@ use frontend\models\Offer;
 use yii\helpers\Url;
 use frontend\models\PersonInstitution;
 use frontend\models\Institution;
+use frontend\models\Phone;
+use frontend\models\Email;
+use frontend\models\Relation;
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -199,6 +202,9 @@ class ViewApplicantController extends \yii\web\Controller
       $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
       $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
       //$in = Institution::findone(['institutionid' => $institution->institutionid, 'isdeleted' => 0]);
+      $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
+      $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
+      $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
       
       if (!$applicant)
       {
@@ -210,6 +216,9 @@ class ViewApplicantController extends \yii\web\Controller
                   'username' => $user ? $user->username : '',
                   'applicant' => $applicant,
                   'institutions' => $institutions,
+                  'phone' => $phone,
+                  'email' => $email,
+                  'relations' => $relations,
               ]);
   }
   

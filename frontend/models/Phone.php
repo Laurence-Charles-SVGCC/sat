@@ -6,25 +6,26 @@ use Yii;
 use common\models\User;
 
 /**
- * This is the model class for table "email".
+ * This is the model class for table "phone".
  *
- * @property string $emailid
+ * @property string $phoneid
  * @property string $personid
- * @property string $email
- * @property string $priority
+ * @property string $homephone
+ * @property string $cellphone
+ * @property string $workphone
  * @property integer $isactive
  * @property integer $isdeleted
  *
  * @property Person $person
  */
-class Email extends \yii\db\ActiveRecord
+class Phone extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'email';
+        return 'phone';
     }
 
     /**
@@ -33,9 +34,9 @@ class Email extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'email'], 'required'],
-            [['personid', 'priority', 'isactive', 'isdeleted'], 'integer'],
-            [['email'], 'string', 'max' => 45]
+            [['personid'], 'required'],
+            [['personid', 'isactive', 'isdeleted'], 'integer'],
+            [['homephone', 'cellphone', 'workphone'], 'string', 'max' => 15]
         ];
     }
 
@@ -45,10 +46,11 @@ class Email extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'emailid' => 'Emailid',
+            'phoneid' => 'Phoneid',
             'personid' => 'Personid',
-            'email' => 'Email',
-            'priority' => 'Priority',
+            'homephone' => 'Homephone',
+            'cellphone' => 'Cellphone',
+            'workphone' => 'Workphone',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];

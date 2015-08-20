@@ -68,6 +68,45 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
         <br/>
+        <h3>Contact</h3>
+        <div class="row">
+            <div class="col-lg-3">
+                <?= "<strong>Home Phone: </strong>" . ($phone ? $phone->homephone : "N/A") ?>
+            </div>
+            <div class="col-lg-3">
+                <?= "<strong>Cell Phone: </strong>" . ($phone ? $phone->cellphone : "N/A") ?>
+            </div>
+            <div class="col-lg-3">
+                <?= "<strong>Work Phone: </strong>" . ($phone ? $phone->workphone : "N/A") ?>
+            </div>
+            <div class="col-lg-3">
+                <?= "<strong>Email: </strong>" . ($email ? $email->email : "N/A") ?>
+            </div>
+        </div>
+        <h3>Relation Contact</h3>
+        <?php foreach($relations as $relation): ?>
+            <?php if ($relation->firstname != ''): ?> 
+                <div class="row">
+                    <div class="col-lg-2">
+                        <?= "<strong>First Name: </strong>" . $relation->firstname ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?= "<strong>Last Name: </strong>" .  $relation->lastname ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?= "<strong>Home Phone: </strong>" .  $relation->homephone ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?= "<strong>Cell Phone: </strong>" .  $relation->cellphone ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?= "<strong>Work Phone: </strong>" .  $relation->workphone ?>
+                    </div>     
+              </div>
+        <br/>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        
         <h3>Institutional Attendance Details</h3>
         <?php foreach($institutions as $inst): ?>
             <?php $in = Institution::findone(['institutionid' => $inst->institutionid, 'isdeleted' => 0]); ?>
