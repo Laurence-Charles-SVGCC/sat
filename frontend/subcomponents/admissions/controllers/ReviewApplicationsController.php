@@ -377,7 +377,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                     $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
                     $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                 }
-                $message = 'Applicant(s) ' . $dupes . ' had same Candidate Number in same CSEC Exam year!';
+                $message = 'Possible Duplicate of applicant(s) ' . $dupes;
             }
             $reapp = self::getPossibleReapplicant($personid, $certificates[0]->candidatenumber, $certificates[0]->year);
             if ($reapp)
@@ -821,7 +821,7 @@ class ReviewApplicationsController extends \yii\web\Controller
             return False;
         }
         $groups = CsecQualification::find()
-                    ->where(['candidatenumber' => $candidateno, 'isverified' => 1, 'isdeleted' => 0,
+                    ->where(['candidatenumber' => $candidateno, /*'isverified' => 1,*/ 'isdeleted' => 0,
                         'year' => $year])
                     ->groupBy('personid')
                     ->all();
@@ -832,7 +832,6 @@ class ReviewApplicationsController extends \yii\web\Controller
         else
         {
             $dups = array();
-            echo count($groups);
             foreach ($groups as $group)
             {
                 if ($group->personid != $applicantid)
