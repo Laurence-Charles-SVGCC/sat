@@ -594,8 +594,9 @@ class ReviewApplicationsController extends \yii\web\Controller
                $application = $offer->getApplication()->one();
                $application->applicationstatusid = $appstatus ? $appstatus->applicationstatusid : 3;
                $application->save();
-               $applicant = $application ? $application->getPerson()->one() : Null;
-               if ($applicant){ $applicant->potentialstudentid = Null; $applicant->save();}
+               $user = $application ? $application->getPerson()->one(): NULL;
+               $applicant = $user ? Applicant::findOne(['personid' => $user->personid]) : Null;
+               if ($applicant){ $applicant->potentialstudentid = Null;  $applicant->save();}
             }
         }
     }
@@ -675,7 +676,6 @@ class ReviewApplicationsController extends \yii\web\Controller
             if ($application->save())
             {
                 $cape_success = True;
-                //echo "prog name" . strcasecmp("cape", "cape");
                 if (strcasecmp($prog_name, "cape") == 0)
                 {
                     //Deal with Cape Subjects
@@ -725,7 +725,13 @@ class ReviewApplicationsController extends \yii\web\Controller
         $startyear = $ay ? substr(explode('-',$ay->startdate)[0], -2) : substr(date('Y'), -2);
         $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
         $num = str_pad(strval($base), 4, '0', STR_PAD_LEFT);
-        return $startyear . $div . $num;         
+        try
+        {
+            $potentialstudentid = intval($startyear . $div . $num);
+        } catch (Exception $ex) {
+            $potentialstudentid = NULL;
+        }
+        return $potentialstudentid;         
     }
     
     /*

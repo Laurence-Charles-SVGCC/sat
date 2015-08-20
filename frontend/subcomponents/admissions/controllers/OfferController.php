@@ -541,7 +541,6 @@ class OfferController extends Controller
                     ->joinWith('application')
                     ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    //->innerJoin('`cape_subject`', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
                     ->where($offer_cond)
                     ->all();

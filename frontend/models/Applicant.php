@@ -54,10 +54,10 @@ class Applicant extends \yii\db\ActiveRecord
         return [
             [['personid', 'potentialstudentid'], 'integer'],
             [['dateofbirth'], 'safe'],
-            [['bursarystatus', 'isactive', 'isdeleted'], 'boolean'],
+            [['bursarystatus', 'isactive', 'isdeleted', 'isexternal'], 'boolean'],
             [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
             [['title'], 'string', 'max' => 3],
-            [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth', 'isexternal'], 'string', 'max' => 45],
+            [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],
             [['gender'], 'string', 'max' => 6],
             [['photopath'], 'string', 'max' => 100],
             [['maritalstatus'], 'string', 'max' => 15]
