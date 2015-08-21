@@ -43,8 +43,13 @@ class ReviewApplicationsController extends \yii\web\Controller
         
         $appstatuses = ApplicationStatus::find()->all();
         $statuscounts = array();
+        $referred_status = Null;
         foreach ($appstatuses as $key => $appstatus)
         {
+            if (strcasecmp($appstatus->name, 'referred') == 0)
+            {
+                $referred_status = $appstatus->applicationstatusid;
+            }
             if (in_array(strtolower($appstatus->name), array('incomplete', 'unverified')))
             {
                 unset($appstatuses[$key]);
@@ -62,14 +67,25 @@ class ReviewApplicationsController extends \yii\web\Controller
                     'applicationstatusid' => $appstatus->applicationstatusid];
                 }
                 $statuscounts[$appstatus->applicationstatusid] = Application::find()->where($condarr)->count();
-  
             }
         }
+        if ($division_id == 1)
+        {
+            $total_count = Application::find()->where(['isdeleted' => 0, 'ordering' => 1, 'applicationstatusid' => [3,4,5,6,7,8,9]])->count();
+        }
+        else
+        {
+            $total_count = Application::find()->where(['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1])->count();
+        }
+        $referred_to_count = Application::find()->where('divisionid != ' . $division_id . ' and applicationstatusid = ' . $referred_status
+                . ' and isdeleted = 0 and ordering = 1')->count();
         return $this->render('index',
                 [
                     'division_id' => $division_id,
                     'appstatuses' => $appstatuses,
                     'statuscounts' => $statuscounts,
+                    'total_count' => $total_count,
+                    'referred_to_count' => $referred_to_count,
                 ]);
     }
     
@@ -92,6 +108,39 @@ class ReviewApplicationsController extends \yii\web\Controller
         }
         $applications = Application::find()->where($condarr)->all();
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
+    }
+    
+     /*
+    * Purpose: Allows viewing of applications referred to a particular Division 
+    * Created: 21/08/2015 by Gamal Crichton
+    * Last Modified: 21/08/2015 by Gamal Crichton
+    */
+    public function actionViewReferredTo($division_id)
+    {
+        $referred = ApplicationStatus::findOne(['name' => 'referred']);
+        $referred_status = $referred ? $referred->applicationstatusid : Null;
+        $applications = Application::find()->where('divisionid != ' . $division_id . ' and applicationstatusid = ' . $referred_status
+                . ' and isdeleted = 0 and ordering = 1')->all();
+        return self::actionViewApplicationApplicant($division_id, $applications, 'referred_to');
+    }
+    
+    /*
+    * Purpose: Allows viewing of applications whose first choice is a particular Division 
+    * Created: 21/08/2015 by Gamal Crichton
+    * Last Modified: 21/08/2015 by Gamal Crichton
+    */
+    public function actionViewAll($division_id)
+    {
+        if ($division_id == 1)
+        {
+            $applications = Application::find()->where(['isdeleted' => 0, 'ordering' => 1, 'applicationstatusid' => [3,4,5,6,7,8,9]])->all();
+        }
+        else
+        {
+            $applications = Application::find()->where(['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1])->all();
+        }
+        
+        return self::actionViewApplicationApplicant($division_id, $applications, 'all');
     }
     
     /*

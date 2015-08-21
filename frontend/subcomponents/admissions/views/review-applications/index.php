@@ -24,7 +24,15 @@ $this->params['breadcrumbs'][] = $this->title;
                  </a>
             <?php endforeach; ?>
             
+            <a class="btn btn-app" href="<?= Url::to(['review-applications/view-referred-to', 'division_id' => $division_id])?>">
+                <span class="badge bg-green"><?= $referred_to_count ?></span>
+                <i class="fa fa-cart-plus"></i> Referred To
+             </a>
             
+            <a class="btn btn-app" href="<?= Url::to(['review-applications/view-all', 'division_id' => $division_id])?>">
+                <span class="badge bg-green"><?= $total_count ?></span>
+                <i class="fa fa-cart-plus"></i> All
+             </a>
             
             <?php ActiveForm::begin(); ?>
             <?= Html::label('Select Criteria', 'applicationstatusid'); ?>

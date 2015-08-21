@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 //Get payee ID
-$payee_id = '';
+//$payee_id = $personid;
 if (count($dataProvider->getModels()) > 0)
 {
     $payee_id = $dataProvider->getModels()[0]->personid;
