@@ -66,7 +66,26 @@ class ReviewApplicationsController extends \yii\web\Controller
                     $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
                     'applicationstatusid' => $appstatus->applicationstatusid];
                 }
-                $statuscounts[$appstatus->applicationstatusid] = Application::find()->where($condarr)->count();
+                if (strcasecmp($appstatus->name, 'pending') == 0)
+                {
+                    $pending = 0;
+                    $apps = Application::find()->where($condarr)->groupby('personid')->all();
+                    foreach($apps as $app)
+                    {
+                        $condarr['applicationstatusid'] = [4, 5, 6, 7, 8 , 9];
+                        $condarr['personid'] = $app->personid;
+                        unset($condarr['ordering']);
+                        if (!Application::find()->where($condarr)->one())
+                        {
+                            $pending++;
+                        }
+                    }
+                    $statuscounts[$appstatus->applicationstatusid] = $pending;
+                }
+                else
+                {
+                    $statuscounts[$appstatus->applicationstatusid] = Application::find()->where($condarr)->count();
+                }
             }
         }
         if ($division_id == 1)
@@ -106,7 +125,26 @@ class ReviewApplicationsController extends \yii\web\Controller
             $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
             'applicationstatusid' => $application_status];
         }
-        $applications = Application::find()->where($condarr)->all();
+        $app_status = ApplicationStatus::findOne(['name' => 'pending']);
+        if ($application_status == $app_status->applicationstatusid)
+        {
+            $apps = Application::find()->where($condarr)->groupby('personid')->all();
+            foreach($apps as $key => $app)
+            {
+                $condarr['applicationstatusid'] = [4, 5, 6, 7, 8 , 9];
+                $condarr['personid'] = $app->personid;
+                unset($condarr['ordering']);
+                if (Application::find()->where($condarr)->one())
+                {
+                    unset($apps[$key]);
+                }
+            }
+            $applications = $apps;
+        }
+        else
+        {
+            $applications = Application::find()->where($condarr)->all();
+        }
         return self::actionViewApplicationApplicant($division_id, $applications, $application_status);
     }
     
