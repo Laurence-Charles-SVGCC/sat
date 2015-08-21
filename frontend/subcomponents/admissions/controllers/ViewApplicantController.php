@@ -17,6 +17,15 @@ use frontend\models\Phone;
 use frontend\models\Email;
 use frontend\models\Relation;
 use frontend\models\ApplicationHistory;
+use frontend\models\Address;
+use frontend\models\MedicalCondition;
+use frontend\models\Division;
+use frontend\models\CsecQualification;
+use frontend\models\CsecCentre;
+use frontend\models\ExaminationBody;
+use frontend\models\Subject;
+use frontend\models\ExaminationProficiencyType;
+use frontend\models\ExaminationGrade;
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -190,6 +199,10 @@ class ViewApplicantController extends \yii\web\Controller
           {
               return $this->redirect(Url::to(['view-applicant/edit-personal', 'applicantusername' => $applicantusername]));
           }
+          if ($request->post('view_review') === '')
+          {
+              return $this->redirect(Url::to(['view-applicant/review', 'applicantusername' => $applicantusername]));
+          }
           
       }
   }
@@ -235,7 +248,6 @@ class ViewApplicantController extends \yii\web\Controller
   {
       if (Yii::$app->request->post())
       {
-          //$institutions = new PersonInstitution();
           $request = Yii::$app->request;
           $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
           if ($applicant->load(Yii::$app->request->post()) )
@@ -310,11 +322,12 @@ class ViewApplicantController extends \yii\web\Controller
   /*
     * Purpose: Allows applicant to review entire application [no submission functionality]
     * Created: ?/2015 by Laurence Charles (For Apply)
-    * Last Modified: 20/08/2015 by Gamal Crichton
+    * Last Modified: 21/08/2015 by Gamal Crichton
     */
-    public function actionReview($applicantid)
+    public function actionReview($applicantusername)
     {
-        $applicant = Applicant::findOne(['applicantid' => $applicantid]);
+        $user = User::findOne(['username' =>$applicantusername]);
+        $applicant = $user ? Applicant::findOne(['personid' => $user->personid]) : NULL;
         $personid = $applicant ? $applicant->personid : Null;
         
         $permanentaddress = Address::findOne(['personid' => $personid, 'addresstypeid' => 1]);            
@@ -324,7 +337,7 @@ class ViewApplicantController extends \yii\web\Controller
         
         $phone = Phone::findOne(['personid' => $applicant->personid, 'isdeleted' => 0]);
         
-        $relatives = Relation::findAll(['personid' => $personid, 'isdeleted => 0']);
+        $relatives = Relation::findAll(['personid' => $personid, 'isdeleted' => 0]);
         $mother = false;
         $father = false;
         $nextofkin = false;
@@ -358,8 +371,6 @@ class ViewApplicantController extends \yii\web\Controller
         }
         
         $medicalConditions = MedicalCondition::findAll(['personid' => $personid, 'isdeleted' => 0]);
-        
-        $applicantDetails = $applicant ? $applicant->variableDetails() : Null;
 
         $applications = Application::findAll(['personid' => $personid, 'isdeleted' => 0]);
         $first = array();
@@ -369,7 +380,6 @@ class ViewApplicantController extends \yii\web\Controller
         $third = array();
         $thirdDetails = array();
         
-        //$db = Yii::$app->db;
         foreach($applications as $application)
         {
             $capeSubjects = NULL;
@@ -382,7 +392,7 @@ class ViewApplicantController extends \yii\web\Controller
                 array_push($first, $application);
                 $isCape = Application::isCapeApplication($application->academicofferingid);
                 if ($isCape == true){
-                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  $capeSubjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]); //getRecords($application->applicationid);
                   array_push($first, $capeSubjects);
                 }
                 $d = Division::find()
@@ -391,23 +401,11 @@ class ViewApplicantController extends \yii\web\Controller
                 $division = $d->name;
                 array_push($firstDetails, $division);
                 
-                $p = $db->createCommand(
-                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
-                                . " from  academic_offering "
-                                . " join programme_catalog"
-                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
-                                . " join qualification_type"
-                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
-                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
-                        )
-                        ->queryAll();
-
-
-                $specialization = $p[0]["specialisation"];
-                $qualification = $p[0]["abbreviation"];
-                $programme = $p[0]["name"];
-                $fullname = $qualification . " " . $programme . " " . $specialization;
-                array_push($firstDetails, $fullname);
+                $programme = ProgrammeCatalog::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                        ->where(['academic_offering.academicofferingid' => $application->academicofferingid])
+                        ->one();
+                array_push($firstDetails, $programme->getFullName());
             }
             
             else if ($application->ordering == 2){
@@ -423,23 +421,11 @@ class ViewApplicantController extends \yii\web\Controller
                 $division = $d->name;
                 array_push($secondDetails, $division);
                 
-                $p = $db->createCommand(
-                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
-                                . " from  academic_offering "
-                                . " join programme_catalog"
-                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
-                                . " join qualification_type"
-                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
-                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
-                        )
-                        ->queryAll();
-
-
-                $specialization = $p[0]["specialisation"];
-                $qualification = $p[0]["abbreviation"];
-                $programme = $p[0]["name"];
-                $fullname = $qualification . " " . $programme . " " . $specialization;
-                array_push($secondDetails, $fullname);
+                $programme = ProgrammeCatalog::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatlogid`')
+                        ->where(['academic_offering.academicofferingid' => $application->academicofferingid])
+                        ->one();
+                array_push($secondDetails, $programme->getFullName());
             }
             else if ($application->ordering == 3){
                 array_push($third, $application);
@@ -454,29 +440,18 @@ class ViewApplicantController extends \yii\web\Controller
                 $division = $d->name;
                 array_push($thirdDetails, $division);
                 
-                
-                $p = $db->createCommand(
-                                "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
-                                . " from  academic_offering "
-                                . " join programme_catalog"
-                                . " on programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
-                                . " join qualification_type"
-                                . " on programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
-                                . " where academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
-                        )
-                        ->queryAll();
-
-
-                $specialization = $p[0]["specialisation"];
-                $qualification = $p[0]["abbreviation"];
-                $programme = $p[0]["name"];
-                $fullname = $qualification . " " . $programme . " " . $specialization;
-                array_push($thirdDetails, $fullname);
+                $programme = ProgrammeCatalog::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatlogid`')
+                        ->where(['academic_offering.academicofferingid' => $application->academicofferingid])
+                        ->one();
+                array_push($thirdDetails, $programme->getFullName());
             }
         }
         
-        
-        $preschools = PersonInstitution::getPersonInsitutionRecords($id, 1);
+        $preschools = PersonInstitution::find()
+                ->innerJoin('institution', '`institution`.`institutionid` = `person_institution`.`institutionid`')
+                ->where(['person_institution.personid' => $personid, 'levelid' => 1, 'person_institution.isdeleted' => 0])
+                ->all();
         $preschoolNames = array();
         if ($preschools!=false){
             foreach ($preschools as $preschool){
@@ -490,8 +465,10 @@ class ViewApplicantController extends \yii\web\Controller
             }
         }
         
-        
-        $primaryschools = PersonInstitution::getPersonInsitutionRecords($id, 2);
+        $primaryschools = PersonInstitution::find()
+                ->innerJoin('institution', '`institution`.`institutionid` = `person_institution`.`institutionid`')
+                ->where(['person_institution.personid' => $personid, 'levelid' => 2, 'person_institution.isdeleted' => 0])
+                ->all();
         $primaryschoolNames = array();
         if ($primaryschools!=false){
             foreach ($primaryschools as $primaryschool){
@@ -505,8 +482,10 @@ class ViewApplicantController extends \yii\web\Controller
             }
         }
         
-        
-        $secondaryschools = PersonInstitution::getPersonInsitutionRecords($id, 3);
+        $secondaryschools = PersonInstitution::find()
+                ->innerJoin('institution', '`institution`.`institutionid` = `person_institution`.`institutionid`')
+                ->where(['person_institution.personid' => $personid, 'levelid' => 3, 'person_institution.isdeleted' => 0])
+                ->all();
         $secondaryschoolNames = array();
         if ($secondaryschools!=false){
             foreach ($secondaryschools as $secondaryschool){
@@ -520,7 +499,10 @@ class ViewApplicantController extends \yii\web\Controller
             }
         }
         
-        $tertieryschools = PersonInstitution::getPersonInsitutionRecords($id, 4);
+        $tertieryschools = PersonInstitution::find()
+                ->innerJoin('institution', '`institution`.`institutionid` = `person_institution`.`institutionid`')
+                ->where(['person_institution.personid' => $personid, 'levelid' => 4, 'person_institution.isdeleted' => 0])
+                ->all();
         $tertieryschoolNames = array();
         if ($tertieryschools!=false){
             foreach ($tertieryschools as $tertieryschool){
@@ -535,7 +517,7 @@ class ViewApplicantController extends \yii\web\Controller
         }
          
         
-        $qualifications = CsecQualification::getQualifications($id);
+        $qualifications = CsecQualification::findAll(['personid' => $personid, 'isdeleted' => 0]); //getQualifications($id);
         $qualificationDetails = array();
         
         if ($qualifications != false)
@@ -584,7 +566,6 @@ class ViewApplicantController extends \yii\web\Controller
             'beneficiary' => $beneficiary,
             'spouse' => $spouse,
             'medicalConditions' => $medicalConditions,
-            'applicantDetails' => $applicantDetails,
             'qualifications' => $qualifications,
             'qualificationDetails' => $qualificationDetails,
             'first' => $first,

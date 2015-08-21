@@ -127,4 +127,11 @@ class Application extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Offer::className(), ['applicationid' => 'applicationid']);
     }
+    
+    public static function isCapeApplication($academicofferingid)
+    {
+        $ao = AcademicOffering::findOne(['academicofferingid' => $academicofferingid]);
+        $cape_prog = ProgrammeCatalog::findOne(['name' => 'cape']);
+        return $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : False;
+    }
 }
