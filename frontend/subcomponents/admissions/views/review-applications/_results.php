@@ -20,7 +20,8 @@ use yii\helpers\Url;
                        return Html::a($row['applicantid'], 
                                Url::to(['review-applications/view-applicant-certificates', 'applicantid' => $row['applicantid'],
                                    'applicationid' => $row['applicationid'], 'firstname' => $row['firstname'], 'middlename' =>$middlename , 
-                                   'lastname' => $row['lastname'], 'programme' => $row['programme'], 'application_status' => $application_status]));
+                                   'lastname' => $row['lastname'], 'programme' => $row['programme'], 'application_status' => $application_status,
+                                   'referrer' => Yii::$app->request->referrer]));
                     }
             ],
             [
