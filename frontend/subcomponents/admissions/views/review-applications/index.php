@@ -24,17 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                  </a>
             <?php endforeach; ?>
             
-            <a class="btn btn-app" href="<?= Url::to(['review-applications/view-', 'division_id' => $division_id, 
-                'application_status' => $appstatus->applicationstatusid])?>">
-                <span class="badge bg-green"><?= $statuscounts[$appstatus->applicationstatusid] ?></span>
-                <i class="fa fa-cart-plus"></i> <?= $appstatus->name ?>
-             </a>
             
-            <a class="btn btn-app" href="<?= Url::to(['review-applications/view-by-status', 'division_id' => $division_id, 
-                'application_status' => $appstatus->applicationstatusid])?>">
-                <span class="badge bg-green"><?= $statuscounts[$appstatus->applicationstatusid] ?></span>
-                <i class="fa fa-cart-plus"></i> <?= $appstatus->name ?>
-             </a>
             
             <?php ActiveForm::begin(); ?>
             <?= Html::label('Select Criteria', 'applicationstatusid'); ?>
