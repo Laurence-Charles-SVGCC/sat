@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
     <div class="form-group">
-        <?= Html::submitButton('Publish', ['class' => 'btn btn-success']) ?>
+        <?= "Publishing Disabled At The Moment"//Html::submitButton('Publish', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

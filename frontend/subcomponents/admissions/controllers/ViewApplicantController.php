@@ -412,7 +412,7 @@ class ViewApplicantController extends \yii\web\Controller
                 array_push($second, $application);
                 $isCape = Application::isCapeApplication($application->academicofferingid);
                 if ($isCape == true){
-                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  $capeSubjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]); //getRecords($application->applicationid);
                   array_push($second, $capeSubjects);
                 }
                  $d = Division::find()
@@ -422,7 +422,7 @@ class ViewApplicantController extends \yii\web\Controller
                 array_push($secondDetails, $division);
                 
                 $programme = ProgrammeCatalog::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatlogid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                         ->where(['academic_offering.academicofferingid' => $application->academicofferingid])
                         ->one();
                 array_push($secondDetails, $programme->getFullName());
@@ -431,7 +431,7 @@ class ViewApplicantController extends \yii\web\Controller
                 array_push($third, $application);
                 $isCape = Application::isCapeApplication($application->academicofferingid);
                 if ($isCape == true){
-                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  $capeSubjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]); //getRecords($application->applicationid);
                   array_push($third, $capeSubjects);
                 }
                  $d = Division::find()
@@ -441,7 +441,7 @@ class ViewApplicantController extends \yii\web\Controller
                 array_push($thirdDetails, $division);
                 
                 $programme = ProgrammeCatalog::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatlogid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                         ->where(['academic_offering.academicofferingid' => $application->academicofferingid])
                         ->one();
                 array_push($thirdDetails, $programme->getFullName());
