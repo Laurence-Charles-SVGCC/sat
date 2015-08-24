@@ -149,13 +149,15 @@ class ViewApplicantController extends \yii\web\Controller
                 ->where(['application.applicationid' => $application->applicationid])->one();
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
             foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
-            $offer = Offer::findOne(['applicationid' => $application->applicationid, 'isdeleted' => 0]);
+            $offers = Offer::findAll(['applicationid' => $application->applicationid, 'isdeleted' => 0]);
+            $off = '';
+            foreach($offers as $offer) {$off = $off . $offer->offerid . ', ';}
 
             $app_details['order'] = $application->ordering;
             $app_details['applicationid'] = $application->applicationid;
             $app_details['programme_name'] = $programme->getFullName();
             $app_details['subjects'] = implode(' ,', $cape_subjects_names);
-            $app_details['offerid'] = $offer ? $offer->offerid : Null;
+            $app_details['offerid'] = $offers ? $off : Null;
             $app_details['divisionid'] = $application->divisionid;
             $app_details['application_status'] = $app_his ? $app_his->applicationstatusid > 1 ? "Submitted" : "Incomplete" : Null; 
 

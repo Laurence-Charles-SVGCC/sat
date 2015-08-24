@@ -414,8 +414,35 @@ class ReviewApplicationsController extends \yii\web\Controller
         $subjects_passed = self::getSubjectsPassedCount($personid);
         $has_english = self::hasEnglish($certificates);
         $has_math = self::hasMath($certificates);
+        $offers = $application ? Offer::find()
+                ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                ->where(['application.personid' => $application->personid, 'offer.isdeleted' => 0])
+                ->all() :
+                NULL;
+        $error_mess = 'Applicant: ';
         
-        if (!$has_math && !$has_english)
+        if (!$has_math)
+        {
+            $error_mess = $error_mess . 'Did not pass CSEC Math!  ';
+        }
+        if (!$has_english)
+        {
+            $error_mess = $error_mess . 'Did not pass CSEC English Language!  ';
+        } 
+        if ( $subjects_passed < 5)
+        {
+            $error_mess = $error_mess . 'Passed less than 5 CSEC Subjects!  ';
+        }
+        if ( count($offers) == 1)
+        {
+            $error_mess = $error_mess . 'Has an offer.  ';
+        }
+        if ( count($offers) > 1)
+        {
+            $error_mess = $error_mess . 'Has multiple offers!  ';
+        }
+        
+        /*if (!$has_math && !$has_english)
         {
             if ($subjects_passed < 5)
             {
@@ -447,10 +474,11 @@ class ReviewApplicationsController extends \yii\web\Controller
             {
                 Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC English Language!');
             }
-        }
-        if ($has_english && $has_math && $subjects_passed < 5)
+        }*/
+        if (!$has_english || !$has_math || $subjects_passed < 5 || $offers)
         {
-            Yii::$app->session->setFlash('error', 'Applicant Passed less than 5 CSEC Subjects!');
+            //Yii::$app->session->setFlash('error', 'Applicant Passed less than 5 CSEC Subjects!');
+            Yii::$app->session->setFlash('error', $error_mess);
         }
         //Get possible duplicates. needs work to deal with multiple years of certificates, but should catch majority
         if ($certificates)

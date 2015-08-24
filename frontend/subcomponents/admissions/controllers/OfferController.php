@@ -32,7 +32,7 @@ class OfferController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'delete' => ['post', 'get'],
                 ],
             ],
         ];
@@ -213,11 +213,24 @@ class OfferController extends Controller
                //Remove Potential student ID and update application status
                $appstatus = ApplicationStatus::findOne(['name' => 'pending', 'isdeleted' => 0]);
                $application = $model->getApplication()->one();
-               $application->applicationstatusid = $appstatus ? $appstatus->applicationstatusid : 3;
-               $application->save();
-               $applicant = $application ? $application->getPerson()->one() : Null;
-               if ($applicant){ $applicant->potentialstudentid = Null; $applicant->save();}
-               
+               if ( $application && !Offer::findOne(['applicationid' =>$application->applicationid , 'isdeleted' => 0]))
+               {
+                   //no other offers for this application exists
+                   $application->applicationstatusid = $appstatus ? $appstatus->applicationstatusid : 3;
+                   $application->save();
+               }
+               $applicant = $application ? Applicant::findOne(['personid' => $application->personid]) : Null;
+               $offers = $application ? Offer::find()
+                ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                ->where(['application.personid' => $application->personid, 'offer.isdeleted' => 0])
+                ->all() :
+                NULL;
+               if ($applicant && !$offers)
+               { 
+                   //applicant has no other offers
+                   $applicant->potentialstudentid = Null; 
+                   $applicant->save();
+               }
                Yii::$app->session->setFlash('success', 'Offer Revoked');
            }
            else
@@ -225,7 +238,10 @@ class OfferController extends Controller
                Yii::$app->session->setFlash('error', 'Offer could not be revoked');
            }
         }
-        Yii::$app->session->setFlash('error', 'Offer not found');
+        else
+        {
+            Yii::$app->session->setFlash('error', 'Offer not found');
+        }
 
         return $this->redirect(['index']);
     }
