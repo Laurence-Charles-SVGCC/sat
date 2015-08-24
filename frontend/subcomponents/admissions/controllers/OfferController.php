@@ -603,7 +603,7 @@ class OfferController extends Controller
             ],
         ]);
         
-        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programmecatalogid.isdeleted' => 0);
+        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
         if ($division_id && $division_id == 1)
         {
             $prog_cond = array('application_period.isactive' => 1);
