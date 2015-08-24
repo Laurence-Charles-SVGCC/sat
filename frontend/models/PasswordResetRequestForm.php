@@ -47,9 +47,9 @@ class PasswordResetRequestForm extends Model
 
             if ($user->save()) {
                 return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
-                    ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+                    ->setFrom([\Yii::$app->params['supportEmail'] => 'SAT Administrator'])
                     ->setTo($this->email)
-                    ->setSubject('Password reset for ' . \Yii::$app->name)
+                    ->setSubject('Password reset for SAT.')
                     ->send();
             }
         }
