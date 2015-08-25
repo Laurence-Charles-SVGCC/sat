@@ -69,6 +69,7 @@ class ReviewApplicationsController extends \yii\web\Controller
                 if (strcasecmp($appstatus->name, 'pending') == 0)
                 {
                     $pending = 0;
+                    $condarr['ordering'] = 1;
                     $apps = Application::find()->where($condarr)->groupby('personid')->all();
                     foreach($apps as $app)
                     {
@@ -156,6 +157,7 @@ class ReviewApplicationsController extends \yii\web\Controller
         $app_status = ApplicationStatus::findOne(['name' => 'pending']);
         if ($application_status == $app_status->applicationstatusid)
         {
+            $condarr['ordering'] = 1;
             $apps = Application::find()->where($condarr)->groupby('personid')->all();
             foreach($apps as $key => $app)
             {
