@@ -58,12 +58,12 @@ class ReviewApplicationsController extends \yii\web\Controller
             {
                 if ($division_id == 1)
                 {
-                    $condarr = ['isdeleted' => 0, 'ordering' => 1, 
+                    $condarr = ['isdeleted' => 0, /*'ordering' => 1,*/ 
                     'applicationstatusid' => $appstatus->applicationstatusid];
                 }
                 else
                 {
-                    $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
+                    $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, /*'ordering' => 1,*/ 
                     'applicationstatusid' => $appstatus->applicationstatusid];
                 }
                 if (strcasecmp($appstatus->name, 'pending') == 0)
@@ -82,6 +82,21 @@ class ReviewApplicationsController extends \yii\web\Controller
                     }
                     $statuscounts[$appstatus->applicationstatusid] = $pending;
                 }
+                else if (in_array($appstatus->applicationstatusid, array(4, 5, 6, 7, 8)))
+                {
+                    $statcount = 0;
+                    $apps = Application::find()->where($condarr)->groupby('personid')->all();
+                    foreach($apps as $app)
+                    {
+                        if (!Offer::find()
+                                ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                                ->where(['application.personid' => $app->personid, 'offer.isdeleted' => 0])->one())
+                        {
+                            $statcount++;
+                        }
+                    }
+                    $statuscounts[$appstatus->applicationstatusid] = $statcount;
+                }
                 else
                 {
                     $statuscounts[$appstatus->applicationstatusid] = Application::find()->where($condarr)->count();
@@ -96,8 +111,21 @@ class ReviewApplicationsController extends \yii\web\Controller
         {
             $total_count = Application::find()->where(['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1])->count();
         }
-        $referred_to_count = Application::find()->where('divisionid != ' . $division_id . ' and applicationstatusid = ' . $referred_status
-                . ' and isdeleted = 0 and ordering = 1')->count();
+        
+        //Get Referred to count
+        $referred_to_count = 0;
+         $apps = Application::find()->where('divisionid != ' . $division_id . ' and applicationstatusid = ' . $referred_status
+                . ' and isdeleted = 0')->groupby('personid')->all();
+        foreach($apps as $app)
+        {
+            if (!Offer::find()
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.personid' => $app->personid, 'offer.isdeleted' => 0])->one())
+            {
+                $referred_to_count++;
+            }
+        }
+                    
         return $this->render('index',
                 [
                     'division_id' => $division_id,
@@ -117,12 +145,12 @@ class ReviewApplicationsController extends \yii\web\Controller
     {
         if ($division_id == 1)
         {
-            $condarr = ['isdeleted' => 0, 'ordering' => 1, 
+            $condarr = ['isdeleted' => 0, /*'ordering' => 1,*/ 
             'applicationstatusid' => $application_status];
         }
         else
         {
-            $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, 'ordering' => 1, 
+            $condarr = ['divisionid' => $division_id, 'isdeleted' => 0, /*'ordering' => 1,*/ 
             'applicationstatusid' => $application_status];
         }
         $app_status = ApplicationStatus::findOne(['name' => 'pending']);
@@ -131,10 +159,24 @@ class ReviewApplicationsController extends \yii\web\Controller
             $apps = Application::find()->where($condarr)->groupby('personid')->all();
             foreach($apps as $key => $app)
             {
-                $condarr['applicationstatusid'] = [4, 5, 6, 7, 8 , 9];
+                $condarr['applicationstatusid'] = [4, 5, 6, 7, 8, 9];
                 $condarr['personid'] = $app->personid;
                 unset($condarr['ordering']);
                 if (Application::find()->where($condarr)->one())
+                {
+                    unset($apps[$key]);
+                }
+            }
+            $applications = $apps;
+        }
+        else if (in_array($application_status, array(4,5,6,7,8)))
+        {
+            $apps = Application::find()->where($condarr)->groupby('personid')->all();
+            foreach($apps as $key => $app)
+            {
+                if (Offer::find()
+                        ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->where(['application.personid' => $app->personid, 'offer.isdeleted' => 0])->one())
                 {
                     unset($apps[$key]);
                 }
