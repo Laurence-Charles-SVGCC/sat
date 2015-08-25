@@ -124,7 +124,7 @@ class OfferController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 50,
+                'pageSize' => 40,
             ],
         ]);
         
@@ -669,6 +669,7 @@ class OfferController extends Controller
             'applicationperiodname' => $app_period_name,
             'programmes' => $progs,
             'cape_subjects' => $capes,
+            'offer_issues' => Null,
         ]);
     }
     
