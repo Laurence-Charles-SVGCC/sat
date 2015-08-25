@@ -397,14 +397,14 @@ class OfferController extends Controller
             $divisioname = $division->name;
             
             
-            $attachments = array('../files/Library_Pre-Registration_Forms.pdf', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.pdf',
-                '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.pdf');
+            $attachments = array('../files/Library_Pre-Registration_Forms.PDF', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.PDF',
+                '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.PDF');
             
             if ($division->divisionid == 5)
             {
                 $attachments = array_merge($attachments, array('../files/Additional_requirements_for_Hospitality_and_Agricultural_Science_and_Entrepreneurship.pdf',
                     '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf',
-                    '../files/DTVE_Orientation_ Schedule_August_2015'));
+                    '../files/DTVE_Orientation_ Schedule_August_2015.pdf'));
             }
             
                 if (self::publishOffer('Test', 'User', 'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
