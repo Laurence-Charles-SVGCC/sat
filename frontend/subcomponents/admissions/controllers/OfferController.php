@@ -488,11 +488,25 @@ class OfferController extends Controller
                 $mail_error = True;
             }
         }
+        sleep(Yii::$app->params['admissionsEmailInterval']);
         if ($mail_error)
         {
             Yii::$app->session->setFlash('error', 'There were mail errors.');
         }
         $this->redirect(Url::to(['offer/index']));
+    }
+    
+    /*
+    * Purpose: Publishs all non-offers (rejects and interview at this time) for a particular division for active application periods
+    * Created: 29/07/2015 by Gamal Crichton
+    * Last Modified: 30/07/2015 by Gamal Crichton
+    */
+    public function PublishTestNonOffer($division_id, $status)
+    {
+        if (strcasecmp($status, 'rejected') == 0)
+        {
+            self::publishReject('Test', 'User', 'gamal.crichton@svgcc.vc', 'Your SVGCC Application');
+        }  
     }
     
     /*
@@ -575,7 +589,8 @@ class OfferController extends Controller
                 }
                 case 2:
                 {
-                    self::PublishBulkNonOffer($model->divisionid, 'interviewoffer');
+                    
+                     self::PublishBulkNonOffer($model->divisionid, 'interviewoffer');
                 }
                 case 3:
                 {
