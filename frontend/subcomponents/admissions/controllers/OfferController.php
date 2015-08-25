@@ -742,6 +742,7 @@ class OfferController extends Controller
     
     private function getHasEnglish($offers, $details = False)
     {
+        $offerids = array();
         foreach($offers as $offer)
         {
             $applicant = Applicant::find()
