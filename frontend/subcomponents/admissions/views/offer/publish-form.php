@@ -21,9 +21,12 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'statustype')->dropDownList(
                     $statuses)->label('Publish Type') ?>
         </div>
+        <div class="col-lg-4">
+            <?= $form->field($model, 'test')->checkbox() ?>
+        </div>
     </div>
     <div class="form-group">
-        <?= "Publishing Disabled At The Moment"//Html::submitButton('Publish', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Publish', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -298,10 +298,12 @@ class OfferController extends Controller
     public function PublishBulkOffers($division_id)
     {
         
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 
+            'application.isdeleted' => 0, 'offer.ispublished' => 0);
         if ($division_id && $division_id == 1)
         {
-            $offer_cond = array('application_period.isactive' => 1);
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 
+            'application.isdeleted' => 0, 'offer.ispublished' => 0);
         }
         
         $mail_error = False;
@@ -312,8 +314,9 @@ class OfferController extends Controller
                 ->where($offer_cond)
                 ->all();
         
-        foreach ($offers as $offer)
+        foreach (array_slice($offers, 0, 5) as $offer)
         {
+            $cape_subjects_names = array();
             $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
@@ -324,16 +327,29 @@ class OfferController extends Controller
             
             $divisionabbr = strtolower($division->abbreviation);
             $viewfile = 'publish-offer-' . $divisionabbr;
+            if (count($cape_subjects) > 0)
+            {
+                $viewfile = $viewfile . '-cape';
+            }
             $divisioname = $division->name;
             $firstname = $applicant->firstname;
             $lastname = $applicant->lastname;
-            $programme_name = empty($cape_subjects) ? $programme->name : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $email = $contact ? $contact->email : '';
+            
+            $attachments = array('../files/Library_Pre-Registration_Forms.pdf', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.pdf',
+                '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.pdf');
+            
+            if ($division->divisionid == 5)
+            {
+                $attachments = array_merge($attachments, array('../files/Additional_requirements_for_Hospitality_and_Agricultural_Science_and_Entrepreneurship.pdf',
+                    '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf'));
+            }
             
             if (!empty($email))
             {
                 if (self::publishOffer($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application',
-                        $viewfile))
+                        $viewfile, $attachments))
                 {
                     $offer->ispublished = 1;
                     $offer->save();
@@ -344,9 +360,64 @@ class OfferController extends Controller
                 }
             }
         }
+        sleep(Yii::$app->params['admissionsEmailInterval']);
         if ($mail_error)
         {
-            sleep(Yii::$app->params['admissionsEmailInterval']);
+            Yii::$app->session->setFlash('error', 'There were mail errors.');
+        }
+        $this->redirect(Url::to(['offer/index']));
+    }
+    
+    /*
+    * Purpose: Publishs all offers for a particular division for active application periods
+    * Created: 29/07/2015 by Gamal Crichton
+    * Last Modified: 29/07/2015 by Gamal Crichton
+    */
+    public function PublishTestOffer($division_id)
+    {
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 
+            'application.isdeleted' => 0, 'offer.ispublished' => 0);
+        if ($division_id && $division_id == 1)
+        {
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 
+            'application.isdeleted' => 0, 'offer.ispublished' => 0);
+        }
+        
+        $mail_error = False;
+        
+            $division = Division::findOne(['divisionid' => $division_id]);
+
+            
+            $divisionabbr = strtolower($division->abbreviation);
+            $viewfile = 'publish-offer-' . $divisionabbr;
+//            if (count($cape_subjects) > 0)
+//            {
+//                $viewfile = $viewfile . '-cape';
+//            }
+            $divisioname = $division->name;
+            
+            
+            $attachments = array('../files/Library_Pre-Registration_Forms.pdf', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.pdf',
+                '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.pdf');
+            
+            if ($division->divisionid == 5)
+            {
+                $attachments = array_merge($attachments, array('../files/Additional_requirements_for_Hospitality_and_Agricultural_Science_and_Entrepreneurship.pdf',
+                    '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf',
+                    '../files/DTVE_Orientation_ Schedule_August_2015'));
+            }
+            
+                if (self::publishOffer('Test', 'User', 'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
+                        $viewfile, $attachments))
+                {
+                }
+                else
+                {
+                    $mail_error = True;
+                }
+            
+        if ($mail_error)
+        {
             Yii::$app->session->setFlash('error', 'There were mail errors.');
         }
         $this->redirect(Url::to(['offer/index']));
@@ -429,14 +500,23 @@ class OfferController extends Controller
     * Created: 29/07/2015 by Gamal Crichton
     * Last Modified: 29/07/2015 by Gamal Crichton
     */
-    private function publishOffer($firstname, $lastname, $programme, $divisioname, $email, $subject, $viewfile)
+    private function publishOffer($firstname, $lastname, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
     {
-       return Yii::$app->mailer->compose('@common/mail/' . $viewfile, ['first_name' => $firstname, 'last_name' => $lastname, 
+       $mail = Yii::$app->mailer->compose('@common/mail/' . $viewfile, ['first_name' => $firstname, 'last_name' => $lastname, 
            'programme' => $programme, 'division_name' => $divisioname])
                 ->setFrom(Yii::$app->params['admissionsEmail'])
                 ->setTo($email)
-                ->setSubject($subject)
-                ->send();
+                ->setSubject($subject);
+       if ($attachments)
+       {
+           foreach($attachments as $attachment)
+           {
+               echo 'attachemnt: ' . $attachment;
+               $mail->attach($attachment);
+           }
+       }
+       
+       return $mail->send();
     }
     
     /*
@@ -478,12 +558,20 @@ class OfferController extends Controller
         $model = new PublishForm();
         if (Yii::$app->request->post() && $model->load(Yii::$app->request->post()))
         {
+            
             $statustype = $model->statustype;
             switch (intval($statustype))
             {
                 case 1:
                 {
-                    self::PublishBulkOffers($model->divisionid);
+                    if ($model->test)
+                    {
+                        self::PublishTestOffer($model->divisionid);
+                    }
+                    else
+                    {
+                        self::PublishBulkOffers($model->divisionid);
+                    }
                 }
                 case 2:
                 {
@@ -491,7 +579,14 @@ class OfferController extends Controller
                 }
                 case 3:
                 {
-                    self::PublishBulkNonOffer($model->divisionid, 'rejected');
+                    if ($model->test)
+                    {
+                        self::PublishTestNonOffer($model->divisionid, 'rejected');
+                    }
+                    else
+                    {
+                        self::PublishBulkNonOffer($model->divisionid, 'rejected');
+                    }
                 }
             }
         }

@@ -10,6 +10,7 @@ class PublishForm extends Model
 {
     public $divisionid;
     public $statustype;
+    public $test;
 
     /**
      * @inheritdoc
@@ -18,6 +19,7 @@ class PublishForm extends Model
     {
         return [
             [['divisionid', 'statustype'], 'required'],
+            [['test'], 'boolean'],
         ];
     }
 
