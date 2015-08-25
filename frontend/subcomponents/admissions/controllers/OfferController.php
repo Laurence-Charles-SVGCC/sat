@@ -20,6 +20,10 @@ use frontend\models\Email;
 use frontend\models\ApplicationStatus;
 use frontend\models\PublishForm;
 use frontend\models\CapeSubject;
+use frontend\models\CsecQualification;
+use frontend\models\ExaminationBody;
+use frontend\models\Subject;
+use frontend\models\ExaminationGrade;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -66,6 +70,29 @@ class OfferController extends Controller
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->where($offer_cond)
                 ->all();
+        $multiple_offers = self::getMultipleOffers($offers);
+        $english_req = self::getHasEnglish($offers);
+        $subjects_req = self::getSubjectsPassed($offers);
+        $message = '';
+        $offer_issues = False;
+        if ($multiple_offers)
+        {
+            $message = $message . ' Multiple Offers to single applicant. ';
+        }
+        if ($english_req)
+        {
+            $message = $message . ' Offers to applicants without CSEC English. ';
+        }
+        if ($subjects_req)
+        {
+            $message = $message . ' Offers to applicants without minimum requirements. ';
+        }
+        if ($message != '')
+        {
+            Yii::$app->session->setFlash('error', 'Offer issues: ' . $message . ' Click Button below for details.');
+            $offer_issues = True;
+        }
+        
         $data = array();
         foreach ($offers as $offer)
         {
@@ -139,6 +166,7 @@ class OfferController extends Controller
             'applicationperiodname' => $app_period_name,
             'programmes' => $progs,
             'cape_subjects' => $capes,
+            'offer_issues' => $offer_issues,
         ]);
     }
     
@@ -642,5 +670,262 @@ class OfferController extends Controller
             'programmes' => $progs,
             'cape_subjects' => $capes,
         ]);
+    }
+    
+    private function getMultipleOffers($offers, $details = False)
+    {
+        $offerids = array();
+        $personids = array();
+        $offenderids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            if ($applicant && in_array($applicant->personid, $personids))
+            {
+                if ($details)
+                {
+                    $offenderids[] = $applicant->personid;
+                }
+                else
+                {
+                    return True;
+                }
+            }
+            else if ($applicant)
+            {
+                $personids[] = $applicant->personid;
+            }
+        }
+        foreach($offenderids as $offenderid)
+        {
+            $offs = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.personid' => $offenderid, 'offer.isdeleted' => 0, 'application.isdeleted' => 0])
+                    ->all();
+            foreach($offs as $off)
+            {
+                $offerids[] = $off;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : False;
+    }
+    
+    private function getSubjectsPassed($offers, $details = False)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $subjects_passed = self::getSubjectsPassedCount($applicant->personid);
+            if ($subjects_passed < 5)
+            {
+                if ($details)
+                {
+                    $offerids[] = $offer;
+                }
+                else
+                {
+                    return True;
+                }
+            }        
+        }
+        return count($offerids) > 0 ? $offerids : False;
+    }
+    
+    private function getHasEnglish($offers, $details = False)
+    {
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $certificates = self::getSubjects($applicant->personid);
+            $has_english = self::hasEnglish($certificates);
+            if (!$has_english)
+            {
+                if ($details)
+                {
+                    $offerids[] = $offer;
+                }
+                else
+                {
+                    return True;
+                }
+            }
+        }
+        return count($offerids) > 0 ? $offerids : False;
+    }
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    private function getSubjects($applicantid)
+    {
+        return CsecQualification::find()
+                    ->where(['personid' => $applicantid, 'isverified' => 1, 'isdeleted' => 0])
+                    ->all();
+    }
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    private function getSubjectsPassedCount($applicantid)
+    {
+        return CsecQualification::find()
+                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
+                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                        'examination_grade.ordering' => [1, 2, 3]])
+                    ->count();
+    }
+    
+     /*
+    * Purpose: Determins if student passed CSEC Math 
+    * Created: 4/08/2015 by Gamal Crichton
+    * Last Modified: 4/08/2015 by Gamal Crichton
+    */
+    private function hasEnglish($certificates)
+    {
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $english = Subject::findOne(['name' => 'english language', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($english)
+            {
+                foreach($certificates as $cert)
+                {
+                    if ($cert->subjectid == $english->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                        {
+                                return True;
+                        }
+                    }
+                }
+            }
+        }
+        return False;
+    }
+    
+    public function actionOfferIssueDetails()
+    {
+        $division_id = Yii::$app->session->get('divisionid');
+        
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
+        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        
+        if ($division_id && $division_id == 1)
+        {
+            $app_period_name = "All Active Application Periods";
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        }
+        
+        $offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($offer_cond)
+                ->all();
+        
+        $mult = self::getMultipleOffers($offers, True);
+        $multiple_offers = $mult ? $mult : array();
+        $mult_offerids = array();
+        foreach($multiple_offers as $off){$mult_offerids[] = $off->offerid; };
+        $eng = self::getHasEnglish($offers, True);
+        $english_req = $eng ? $eng : array();
+        $subs = self::getSubjectsPassed($offers, True);
+        $subjects_req = $subs ? $subs : array();
+        
+        $multiple_offers_data = array();
+        $english_req_data = array();
+        $subjects_req_data = array();
+        foreach ($offers as $offer)
+        {
+            if (!in_array($offer->offerid, $mult_offerids) 
+                    && !in_array($offer, $english_req ) 
+                    && !in_array($offer, $subjects_req ))
+            {
+                continue;
+            }
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            if (in_array($offer->offerid, $mult_offerids))
+            {
+                 $multiple_offers_data[] = $offer_data;
+            }
+            if (in_array($offer, $english_req))
+            {
+                 $english_req_data[] = $offer_data;
+            }
+            if (in_array($offer, $subjects_req))
+            {
+                 $subjects_req_data[] = $offer_data;
+            }
+        }
+        
+        $multOfferDataProvider = new ArrayDataProvider([
+            'allModels' => $multiple_offers_data,
+            'pagination' => [
+                'pageSize' => 20,
+                ],
+            'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+            ],
+        ]);
+        $engReqDataProvider = new ArrayDataProvider([
+            'allModels' => $english_req_data,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+        $subjectReqsDataProvider = new ArrayDataProvider([
+            'allModels' => $subjects_req_data,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+        
+        return $this->render('offer-issues-details',
+                [
+                    'multOfferDataProvider' => $multOfferDataProvider,
+                    'engReqDataProvider' => $engReqDataProvider,
+                    'subjectReqsDataProvider' => $subjectReqsDataProvider,
+                ]);
     }
 }

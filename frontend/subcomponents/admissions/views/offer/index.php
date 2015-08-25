@@ -12,6 +12,10 @@ $this->title = $divisionabbr . ' Offers for ' . $applicationperiodname;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="body-content">
+    <?php if($offer_issues): ?>
+        <?= Html::a('Offer Issue Details', ['offer-issue-details'], ['class' => 'btn btn-danger']) ?>
+    <?php endif; ?>
+    
     <h1><?= Html::encode($this->title) ?></h1>
     
     <div class="row">
