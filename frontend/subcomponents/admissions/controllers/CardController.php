@@ -82,6 +82,10 @@ class CardController extends \yii\web\Controller
             'pagination' => [
                 'pageSize' => 50,
             ],
+            'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                'attributes' => ['firstname', 'lastname', 'studentno'],
+              ]
         ]);
 
         return $this->render('view-applicants', [
