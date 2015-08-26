@@ -16,6 +16,9 @@ use frontend\models\Application;
 use frontend\models\ApplicationPeriod;
 use frontend\models\ApplicationHistory;
 use frontend\models\Offer;
+use frontend\models\TransactionType;
+use frontend\models\PaymentMethod;
+use frontend\models\Semester;
 
 
 class PaymentsController extends Controller
@@ -133,6 +136,20 @@ class PaymentsController extends Controller
         $model = new Transaction();
         if ($model->load(Yii::$app->request->post()))
         {
+            $app_fee = TransactionPurpose::findOne(['name' => 'application']);
+            if ($app_fee && $model->transactionpurposeid == $app_fee->transactionpurposeid)
+            {
+                $type = TransactionType::findOne(['name' => 'full payment', 'isdeleted' => 0]);
+                $method = PaymentMethod::findOne(['name' => 'cash', 'isdeleted' => 0]);
+                $sem = Semester::findOne(['isactive' => 1, 'isdeleted' => 0]);
+                if ($model->totaldue == '') { $model->totaldue = 20.00;}
+                if ($model->paymentamount == '') { $model->paymentamount = 20.00;}
+                if ($type && $model->transactiontypeid == '') { $model->transactiontypeid = $type->transactiontypeid;}
+                if ($method && $model->paymentmethodid == '') { $model->paymentmethodid = $method->paymentmethodid;}
+                if ($sem && $model->semesterid == '') { $model->semesterid = $sem->semesterid;}
+                if ($model->paydate == '') { $model->paydate = date('Y-m-d');}
+            }
+            
             $request = Yii::$app->request;
             $total_due = floatval($model->totaldue);
             $trans_amt = floatval($model->paymentamount);

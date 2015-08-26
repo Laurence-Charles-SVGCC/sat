@@ -52,7 +52,8 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
+            //[['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
+            [['transactionpurposeid'], 'required'],
             [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'verifyingofficerid'], 'integer'],
             [['paydate'], 'safe'],
             [['paymentamount', 'totaldue'], 'number'],

@@ -5,7 +5,6 @@ use yii\helpers\Url;
 use yii\grid\GridView;
 
 use frontend\models\Employee;
-//use frontend\models\TransactionSummary;
 use common\models\User;
 
 /* @var $this yii\web\View */
@@ -17,10 +16,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 //Get payee ID
-//$payee_id = $personid;
 if (count($dataProvider->getModels()) > 0)
 {
-    $payee_id = $dataProvider->getModels()[0]->personid;
+    foreach(array_slice($dataProvider->getModels(), 0, 1) as $model)
+    {
+        $payee_id = $model->personid;
+    }
 }
 ?>
 <div class="transaction-index">
