@@ -336,7 +336,7 @@ class OfferController extends Controller
             $firstname = $applicant->firstname;
             $lastname = $applicant->lastname;
             $studentno = $applicant->potentialstudentid;
-            $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(', ', $cape_subjects_names);
             $email = $contact ? $contact->email : '';
             
             $attachments = array('../files/Library_Pre-Registration_Forms.PDF', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.PDF',
@@ -347,6 +347,11 @@ class OfferController extends Controller
                 $attachments = array_merge($attachments, array('../files/Additional_requirements_for_Hospitality_and_Agricultural_Science_and_Entrepreneurship.pdf',
                     '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf',
                     '../files/DTVE_Orientation_ Schedule_August_2015.pdf'));
+            }
+            if ($division->divisionid == 4)
+            {
+                $attachments = array_merge($attachments, array('../files/Terms_of_Agreement_for_Discipline_DASGS.pdf',
+                    '../files/Orientation_Groups_DASGS.pdf', '../files/Timetable_for_Orientation_2015-2016_DASGS.pdf'));
             }
             
             if (!empty($email))
@@ -368,7 +373,11 @@ class OfferController extends Controller
         {
             Yii::$app->session->setFlash('error', 'There were mail errors.');
         }
-        $this->redirect(Url::to(['offer/index']));
+        else
+        {
+            Yii::$app->session->setFlash('success', 'Mails successfully sent.');
+        }
+        $this->redirect(Url::to(['offer/bulk-publish']));
     }
     
     /*
@@ -387,16 +396,10 @@ class OfferController extends Controller
         }
         
         $mail_error = False;
-        
             $division = Division::findOne(['divisionid' => $division_id]);
-
             
             $divisionabbr = strtolower($division->abbreviation);
             $viewfile = 'publish-offer-' . $divisionabbr;
-//            if (count($cape_subjects) > 0)
-//            {
-//                $viewfile = $viewfile . '-cape';
-//            }
             $divisioname = $division->name;
             
             
@@ -409,21 +412,30 @@ class OfferController extends Controller
                     '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf',
                     '../files/DTVE_Orientation_ Schedule_August_2015.pdf'));
             }
+            if ($division->divisionid == 4)
+            {
+                $attachments = array_merge($attachments, array('../files/Terms_of_Agreement_for_Discipline_DASGS.pdf',
+                    '../files/Orientation_Groups_DASGS.pdf', '../files/Timetable_for_Orientation_2015-2016_DASGS.pdf'));
+            }
             
-                if (self::publishOffer('Test', 'User', '000000',  'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
-                        $viewfile, $attachments))
-                {
-                }
-                else
-                {
-                    $mail_error = True;
-                }
+            if (self::publishOffer('Test', 'User', '000000',  'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
+                    $viewfile, $attachments))
+            {
+            }
+            else
+            {
+                $mail_error = True;
+            }
             
         if ($mail_error)
         {
             Yii::$app->session->setFlash('error', 'There were mail errors.');
         }
-        $this->redirect(Url::to(['offer/index']));
+        else
+        {
+            Yii::$app->session->setFlash('success', 'Mails successfully sent.');
+        }
+        $this->redirect(Url::to(['offer/bulk-publish']));
     }
     
     /*

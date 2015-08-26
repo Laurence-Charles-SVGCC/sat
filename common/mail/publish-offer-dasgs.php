@@ -29,20 +29,23 @@
                         </ol>
                         <p>In addition the following fees MUST be paid:</p>
                         <ol>
-                        	<li>Registration Fee<sup>*</sup> EC$350.00 </li>
-                                <li>College Identification Card EC$15.00</li>
-                                <li>Technology Fee EC$20.00</li>
-                                <li>Student Guild Fee EC$15.00</li>
+                            <li>Registration Fee<sup>*</sup> &nbsp; EC$350.00 </li>
+                                <li>College Identification Card &nbsp; EC$15.00</li>
+                                <li>Technology Fee &nbsp; EC$20.00</li>
+                                <li>Student Guild Fee &nbsp; EC$15.00</li>
  
                         </ol>
                         <p>An examination fee of $165.00 is payable to the College in <strong>November</strong> of <strong>2015</strong> and $200.00 by 
                             <strong>November</strong> of <strong>2016</strong>. </p>
-                        <p>Please see the attached information regarding orientation to obtain your group assignment for the
-orientation process along with a schedule/timetable of activities and room assignments. During this week
-a time will be designated for photographs to be taken for your College Identification Card. If your
-Registration fees are not paid by this time your College ID will <strong>NOT</strong> be processed and you will be unable
-to attend classes.</p>
-                        <p>Please note that you are required to familiarize yourself with the Student Rules and Regulations of the College and other information that is specific to your Division, on the College Website www.svgcc.vc.</p>
+                        <p>
+                            Please see the attached information regarding orientation to obtain your group assignment for the
+                            orientation process along with a schedule/timetable of activities and room assignments. During this week
+                            a time will be designated for photographs to be taken for your College Identification Card. If your
+                            Registration fees are not paid by this time your College ID will <strong>NOT</strong> be processed and you will be unable
+                            to attend classes.
+                        </p>
+                        <p>Please note that you are required to familiarize yourself with the Student Rules and Regulations of the College and 
+                            other information that is specific to your Division, on the College Website <a href="http://www.svgcc.vc/">www.svgcc.vc</a>.</p>
                         <p>At your earliest convenience, kindly advise the Registrar's office if you are sponsored by an organization or individual.</p>
                         <p>We wish you every success during your tenure at the St. Vincent and the Grenadines Community College.</p>
                         <p>With warm wishes and kind regards,</p>

@@ -14,7 +14,7 @@
                     	<p><?php echo date("l F j, Y"); ?></p>
                         <p>Dear <?php echo $first_name . ' ' . $last_name ?>,</p>
                         <p>We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful.  
-                            You are offered a place in the <?php echo $programme; ?> at the <?php echo $division_name ?> commencing on August 31, 2015
+                            You are offered a place in the <?php echo $programme; ?> at the <?php echo $division_name ?> commencing on August 31, 2015.
                             Your Student Number is: <?php echo $studentno; ?>.
                         </p>
                         <p>Orientation for new students will take place on Wednesday 26<sup>th</sup> - Friday 28<sup>th</sup> August, 2015.
@@ -44,7 +44,8 @@ orientation process along with a schedule/timetable of activities and room assig
 a time will be designated for photographs to be taken for your College Identification Card. If your
 Registration fees are not paid by this time your College ID will <strong>NOT</strong> be processed and you will be unable
 to attend classes.</p>
-                        <p>Please note that you are required to familiarize yourself with the Student Rules and Regulations of the College and other information that is specific to your Division, on the College Website <a href="www.svgcc.vc">www.svgcc.vc</a>.</p>
+                        <p>Please note that you are required to familiarize yourself with the Student Rules and Regulations of the College and other information 
+                            that is specific to your Division, on the College Website <a href="http://www.svgcc.vc/">www.svgcc.vc</a>.</p>
                         <p>At your earliest convenience, kindly advise the Registrar's office if you are sponsored by an organization or individual.</p>
                         <p>We wish you every success during your tenure at the St. Vincent and the Grenadines Community College.</p>
                         <p>With warm wishes and kind regards,</p>
