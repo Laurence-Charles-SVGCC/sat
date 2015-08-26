@@ -476,11 +476,11 @@ class OfferController extends Controller
             if (!empty($email))
             {
                 sleep(Yii::$app->params['admissionsEmailInterval']);
-                if (strcasecmp($status, 'rejected'))
+                if (strcasecmp($status, 'rejected') == 0)
                 {
                     self::publishReject($firstname, $lastname, $email, 'Your SVGCC Application');
                 }
-                else if (strcasecmp($status, 'interviewoffer'))
+                else if (strcasecmp($status, 'interviewoffer') == 0)
                 {
                     self::publishInterviews($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application', $viewfile);
                 }
@@ -490,7 +490,7 @@ class OfferController extends Controller
                 $mail_error = True;
             }
         }
-        sleep(Yii::$app->params['admissionsEmailInterval']);
+        //sleep(Yii::$app->params['admissionsEmailInterval']);
         if ($mail_error)
         {
             Yii::$app->session->setFlash('error', 'There were mail errors.');
