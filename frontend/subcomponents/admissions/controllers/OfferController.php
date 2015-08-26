@@ -24,6 +24,7 @@ use frontend\models\CsecQualification;
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationGrade;
+use common\models\User;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -814,6 +815,45 @@ class OfferController extends Controller
             {
                 $personids[] = $applicant->personid;
             }
+            
+            $certificates = self::getSubjects($applicant->personid);
+            if ($certificates)
+            {
+                $division_id = Yii::$app->session->get('divisionid');
+                $dups = self::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                if ($dups)
+                {
+                    foreach($dups as $dup)
+                    {
+                        $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                        if ($user)
+                        {
+                            $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+                                'application.personid' => $user->personid);
+
+                            if ($division_id && $division_id == 1)
+                            {
+                                $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
+                            }
+
+                            $offers = Offer::find()
+                                    ->joinWith('application')
+                                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                    ->where($offer_cond)
+                                    ->all();
+                            if ($details)
+                            {
+                                $offenderids[] = $user->personid;
+                            }
+                            else
+                            {
+                                return True;
+                            }
+                        }
+                    }
+                }
+            }
         }
         foreach($offenderids as $offenderid)
         {
@@ -1043,5 +1083,45 @@ class OfferController extends Controller
                     'engReqDataProvider' => $engReqDataProvider,
                     'subjectReqsDataProvider' => $subjectReqsDataProvider,
                 ]);
+    }
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    private function getPossibleDuplicate($applicantid, $candidateno, $year)
+    {
+        try{
+            $origcandidateno = $candidateno;
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return False;
+        } 
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+        {
+            return False;
+        }
+        $groups = CsecQualification::find()
+                    ->where(['candidatenumber' => $candidateno, /*'isverified' => 1,*/ 'isdeleted' => 0,
+                        'year' => $year])
+                    ->groupBy('personid')
+                    ->all();
+        if (count($groups) == 1)
+        {
+            return False;
+        }
+        else
+        {
+            $dups = array();
+            foreach ($groups as $group)
+            {
+                if ($group->personid != $applicantid)
+                {
+                    $dups[] = $group->personid;
+                }
+            }
+            return $dups;
+        }
     }
 }

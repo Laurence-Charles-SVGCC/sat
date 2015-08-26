@@ -486,42 +486,8 @@ class ReviewApplicationsController extends \yii\web\Controller
             $error_mess = $error_mess . 'Has multiple offers!  ';
         }
         
-        /*if (!$has_math && !$has_english)
-        {
-            if ($subjects_passed < 5)
-            {
-                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC Math or CSEC English Language!');
-            }
-            else
-            {
-                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC Math or CSEC English Language!');
-            }
-        }
-        else if (!$has_math)
-        {
-            if ($subjects_passed < 5)
-            {
-                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC Math!');
-            }
-            else
-            {
-                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC Math!');
-            }
-        }
-        else if (!$has_english)
-        {
-            if ($subjects_passed < 5)
-            {
-                Yii::$app->session->setFlash('error', 'Applicant passed less than 5 subjects and did not pass CSEC English Language!');
-            }
-            else
-            {
-                Yii::$app->session->setFlash('error', 'Applicant did not pass CSEC English Language!');
-            }
-        }*/
         if (!$has_english || !$has_math || $subjects_passed < 5 || $offers)
         {
-            //Yii::$app->session->setFlash('error', 'Applicant Passed less than 5 CSEC Subjects!');
             Yii::$app->session->setFlash('error', $error_mess);
         }
         //Get possible duplicates. needs work to deal with multiple years of certificates, but should catch majority
