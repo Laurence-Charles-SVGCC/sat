@@ -587,11 +587,13 @@ class OfferController extends Controller
                     {
                         self::PublishBulkOffers($model->divisionid);
                     }
+                    break;
                 }
                 case 2:
                 {
                     
                      self::PublishBulkNonOffer($model->divisionid, 'interviewoffer');
+                     break;
                 }
                 case 3:
                 {
@@ -603,6 +605,7 @@ class OfferController extends Controller
                     {
                         self::PublishBulkNonOffer($model->divisionid, 'rejected');
                     }
+                    break;
                 }
             }
         }
