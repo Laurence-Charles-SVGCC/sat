@@ -338,8 +338,8 @@ class OfferController extends Controller
             $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $email = $contact ? $contact->email : '';
             
-            $attachments = array('../files/Library_Pre-Registration_Forms.pdf', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.pdf',
-                '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.pdf');
+            $attachments = array('../files/Library_Pre-Registration_Forms.PDF', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.PDF',
+                '../files/Uniform_Requirements_2015.PDF', '../files/Library_Information_Brochure.PDF');
             
             if ($division->divisionid == 5)
             {
