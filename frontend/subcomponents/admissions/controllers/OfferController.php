@@ -334,6 +334,7 @@ class OfferController extends Controller
             $divisioname = $division->name;
             $firstname = $applicant->firstname;
             $lastname = $applicant->lastname;
+            $studentno = $applicant->potentialstudentid;
             $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $email = $contact ? $contact->email : '';
             
@@ -348,7 +349,7 @@ class OfferController extends Controller
             
             if (!empty($email))
             {
-                if (self::publishOffer($firstname, $lastname, $programme_name, $divisioname, $email, 'Your SVGCC Application',
+                if (self::publishOffer($firstname, $lastname, $studentno, $programme_name, $divisioname, $email, 'Your SVGCC Application',
                         $viewfile, $attachments))
                 {
                     $offer->ispublished = 1;
@@ -407,7 +408,7 @@ class OfferController extends Controller
                     '../files/DTVE_Orientation_ Schedule_August_2015.pdf'));
             }
             
-                if (self::publishOffer('Test', 'User', 'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
+                if (self::publishOffer('Test', 'User', '000000',  'Test Programme', $divisioname, 'gamal.crichton@svgcc.vc', 'Your SVGCC Application',
                         $viewfile, $attachments))
                 {
                 }
@@ -514,10 +515,10 @@ class OfferController extends Controller
     * Created: 29/07/2015 by Gamal Crichton
     * Last Modified: 29/07/2015 by Gamal Crichton
     */
-    private function publishOffer($firstname, $lastname, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
+    private function publishOffer($firstname, $lastname, $studentno, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
     {
        $mail = Yii::$app->mailer->compose('@common/mail/' . $viewfile, ['first_name' => $firstname, 'last_name' => $lastname, 
-           'programme' => $programme, 'division_name' => $divisioname])
+           'programme' => $programme, 'division_name' => $divisioname, 'studentno' => $studentno])
                 ->setFrom(Yii::$app->params['admissionsEmail'])
                 ->setTo($email)
                 ->setSubject($subject);

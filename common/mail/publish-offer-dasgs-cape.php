@@ -13,7 +13,11 @@
                     <td>
                     	<p><?php echo date("l F j, Y"); ?></p>
                         <p>Dear <?php echo $first_name . ' ' . $last_name ?>,</p>
-                        <p>We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful.  You are offered a place in the <?php echo $programme; ?> at the <?php echo $division_name ?> commencing on August 27, 2014.</p>
+                        <p>We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful.  
+                            You are offered a place in the <?php echo $programme; ?> at the <?php echo $division_name ?> commencing on August 27, 2014.
+                            Your Student Number is: <?php echo $studentno; ?>
+                        </p>
+                        
                         <p>Orientation for new students will take place on Friday 22<sup>nd</sup>, Monday 25<sup>th</sup> and Tuesday 26<sup>th</sup> August, 2014 commencing at 9:00 AM. 
                             You will be required to wear a white shirt with short or long sleeves and a pair of blue or black jeans. During this week of orientation you will be required to present:</p>
                         <ol>
