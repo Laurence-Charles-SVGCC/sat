@@ -527,7 +527,6 @@ class OfferController extends Controller
        {
            foreach($attachments as $attachment)
            {
-               echo 'attachemnt: ' . $attachment;
                $mail->attach($attachment);
            }
        }
