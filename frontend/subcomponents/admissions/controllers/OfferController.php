@@ -524,12 +524,18 @@ class OfferController extends Controller
         }  
     }
     
+    public static function actionPublishOffer($firstname, $lastname, $studentno, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
+    {
+        $attach =  explode('::', $attachments);//   implode(', ', $cape_subjects_names)
+        return self::publishOffer($firstname, $lastname, $studentno, $programme, $divisioname, $email, $subject, $viewfile, $attach);
+    }
+    
     /*
     * Purpose: Publishes (email) a single offer
     * Created: 29/07/2015 by Gamal Crichton
     * Last Modified: 29/07/2015 by Gamal Crichton
     */
-    private function publishOffer($firstname, $lastname, $studentno, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
+    private static function publishOffer($firstname, $lastname, $studentno, $programme, $divisioname, $email, $subject, $viewfile, $attachments = '')
     {
        $mail = Yii::$app->mailer->compose('@common/mail/' . $viewfile, ['first_name' => $firstname, 'last_name' => $lastname, 
            'programme' => $programme, 'division_name' => $divisioname, 'studentno' => $studentno])
@@ -547,12 +553,17 @@ class OfferController extends Controller
        return $mail->send();
     }
     
+    public static function actionPublishReject($firstname, $lastname, $email, $subject)
+    {
+        return self::publishReject($firstname, $lastname, $email, $subject);
+    }
+    
     /*
     * Purpose: Publishes (email) a single rejection
     * Created: 30/07/2015 by Gamal Crichton
     * Last Modified: 30/07/2015 by Gamal Crichton
     */
-    private function publishReject($firstname, $lastname, $email, $subject)
+    private static function publishReject($firstname, $lastname, $email, $subject)
     {
        return Yii::$app->mailer->compose('@common/mail/publish-reject', ['first_name' => $firstname, 'last_name' => $lastname])
                 ->setFrom(Yii::$app->params['admissionsEmail'])

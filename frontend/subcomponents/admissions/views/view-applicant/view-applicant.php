@@ -93,6 +93,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if(Yii::$app->user->can('viewReviewScreen')): ?>
             <?= Html::submitButton('View Review Screen', ['class' => 'btn btn-success', 'name' => 'view_review']); ?>
          <?php endif; ?>
+         <?php if(Yii::$app->user->can('publishOffer')): ?>
+            <?= Html::submitButton('Publish Decision', ['class' => 'btn btn-success', 'name' => 'publish_decision']); ?>
+         <?php endif; ?>
+         
     <?php ActiveForm::end(); ?>
     
 </div>

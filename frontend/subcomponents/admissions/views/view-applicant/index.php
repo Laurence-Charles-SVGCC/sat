@@ -18,17 +18,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
         <div class="body-content">
             <div class="row">
-                <div class="col-lg-4">
-                    <?= Html::label( 'Applicant ID',  'text'); ?>
+                <div class="col-lg-3">
+                    <?= Html::label( 'Applicant ID',  'id'); ?>
                     <?= Html::input('text', 'id'); ?>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <?= Html::label( 'First Name',  'firstname'); ?>
                     <?= Html::input('text', 'firstname'); ?>
                 </div>
-                <div class="col-lg-4">
-                   <?= Html::label('Last Name',  'firstname'); ?>
+                <div class="col-lg-3">
+                   <?= Html::label('Last Name',  'lastname'); ?>
                     <?= Html::input('text', 'lastname'); ?>
+                </div>
+                <div class="col-lg-3">
+                   <?= Html::label('Email Address',  'email'); ?>
+                    <?= Html::input('text', 'email'); ?>
                 </div>
             </div>
         </div>

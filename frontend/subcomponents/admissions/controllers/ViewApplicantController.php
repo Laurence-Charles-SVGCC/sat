@@ -54,6 +54,7 @@ class ViewApplicantController extends \yii\web\Controller
             $app_id = $request->post('id');
             $firstname = $request->post('firstname');
             $lastname = $request->post('lastname');
+            $email = $request->post('email');
             
             if ($app_id)
             {
@@ -70,6 +71,12 @@ class ViewApplicantController extends \yii\web\Controller
             {
                 $cond_arr['lastname'] = $lastname;
                 $info_string = $info_string .  " Last Name: " . $lastname;
+            }
+            if ($email)
+            {
+                $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+                 $cond_arr['personid'] = $email_add ? $email_add->personid : NULL;
+                 $info_string = $info_string .  " Email: " . $email;
             }
             
             if (empty($cond_arr))
@@ -205,7 +212,10 @@ class ViewApplicantController extends \yii\web\Controller
           {
               return $this->redirect(Url::to(['view-applicant/review', 'applicantusername' => $applicantusername]));
           }
-          
+          if ($request->post('publish_decision') === '')
+          {
+              return $this->redirect(Url::to(['view-applicant/publish-decision', 'applicantusername' => $applicantusername]));
+          }
       }
   }
   
@@ -216,11 +226,9 @@ class ViewApplicantController extends \yii\web\Controller
     */
   public function actionViewPersonal($applicantusername)
   {
-      //$app_info = self::getApplicantDetails($applicantusername);
       $user = User::findOne(['username' =>$applicantusername]);
       $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
       $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
-      //$in = Institution::findone(['institutionid' => $institution->institutionid, 'isdeleted' => 0]);
       $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
       $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
       $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
@@ -586,5 +594,107 @@ class ViewApplicantController extends \yii\web\Controller
             'tertieryschoolNames' => $tertieryschoolNames,  
         ]);
     }
+    
+    public function actionPublishDecision($applicantusername)
+      {
+          $user = User::findOne(['username' =>$applicantusername]);
+          $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
+          
+          if ($applicant)
+          {
+              $email = $user ? Email::findOne(['personid' =>$applicant->personid,  'isdeleted' => 0]) : NULL;
+              $firstname = $applicant->firstname;
+              $lastname = $applicant->lastname;
+              $offer_cond = array( 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 
+                'application.isdeleted' => 0, 'application.personid' => $applicant->personid);
+
+               $offers = Offer::find()
+                    ->joinWith('application')
+                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where($offer_cond)
+                    ->all();
+               if (count($offers) == 1) 
+               {
+                   $offer = $offers[0];
+                   $cape_subjects_names = array();
+                    $application = $offer->getApplication()->one();
+                    $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                    foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+                    $division = Division::findOne(['divisionid' => $application->divisionid]);
+
+                    $divisionabbr = strtolower($division->abbreviation);
+                    $viewfile = 'publish-offer-' . $divisionabbr;
+                    if (count($cape_subjects) > 0)
+                    {
+                        $viewfile = $viewfile . '-cape';
+                    }
+                    $divisioname = $division->name;
+                    
+                    $studentno = $applicant->potentialstudentid;
+                    $programme_name = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(', ', $cape_subjects_names);
+
+                    $attachments = array('../files/Library_Pre-Registration_Forms.PDF', '../files/Ecollege_services.pdf', '../files/Internet_and_Multimedia_Services_Policies.PDF',
+                        '../files/Uniform_Requirements_2015.pdf', '../files/Library_Information_Brochure.PDF');
+
+                    if ($division->divisionid == 5)
+                    {
+                        $attachments = array_merge($attachments, array('../files/Additional_requirements_for_Hospitality_and_Agricultural_Science_and_Entrepreneurship.pdf',
+                            '../files/DTVE_PROGRAMME_FEES.pdf', '../files/Terms_of_Agreement_for_Discipline_DTVE.pdf',
+                            '../files/DTVE_Orientation_ Schedule_August_2015.pdf'));
+                    }
+                    if ($division->divisionid == 4)
+                    {
+                        $attachments = array_merge($attachments, array('../files/Terms_of_Agreement_for_Discipline_DASGS.pdf',
+                            '../files/Orientation_Groups_DASGS.pdf', '../files/Timetable_for_Orientation_2015-2016_DASGS.pdf'));
+                    }
+
+                    if (($email && $email->email))
+                    {
+                        
+                        $attach = implode('::', $attachments);
+                        if(OfferController::actionPublishOffer($firstname, $lastname, $studentno, $programme_name, $divisioname, 
+                            $email->email, 'Your SVGCC Application', $viewfile, $attach))
+                        {
+                            $offer->ispublished = 1;
+                            $offer->save();
+                            //return $this->redirect(Url::to(['index']));
+                        }
+                        else
+                        {
+                            Yii::$app->session->setFlash('error', 'There was a mail error.');
+                        }
+                    }
+               }
+               else if (count($offers) == 0)
+               {
+                   $rejected = False;
+                   $app_status = \frontend\models\ApplicationStatus::findOne(['name' => 'rejected']);
+                   $applications = Application::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]);
+                   foreach ($applications as $application)
+                   {
+                       if ($app_status && $application->applicationstatusid == $app_status->applicationstatusid)
+                       {
+                           $rejected = True;
+                       }
+                   }
+                   if ($rejected && $email && $email->email)
+                   {
+                       OfferController::actionPublishReject($firstname, $lastname, $email->email, 'Your SVGCC Application');
+                   }
+                   else
+                   {
+                       Yii::$app->session->setFlash('error', 'Applicant is still under consideration. No decision can be published.');
+                   }
+               }
+               else if (count($offers) > 1)
+               {
+                   Yii::$app->session->setFlash('error', 'Applicant has multiple offers. A decision cannot be published.');
+               }
+          }
+
+          return $this->redirect(Yii::$app->request->referrer);
+      } 
 
 }
