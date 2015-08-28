@@ -161,14 +161,22 @@ class ViewApplicantController extends \yii\web\Controller
             foreach($offers as $offer) {$off = $off . $offer->offerid . ', ';}
             
              $app_status = $application->getApplicationStatus() ? $application->getApplicationStatus()->one() : Null;
-
+             $status = NULL;
+             if ($app_status && $app_status->applicationstatusid == 1)
+             {
+                 if ($app_his && $app_his->applicationstatusid > 1)
+                 {
+                     $status = "Unverified";
+                 }
+             }
+            
             $app_details['order'] = $application->ordering;
             $app_details['applicationid'] = $application->applicationid;
             $app_details['programme_name'] = $programme->getFullName();
             $app_details['subjects'] = implode(' ,', $cape_subjects_names);
             $app_details['offerid'] = $offers ? $off : Null;
             $app_details['divisionid'] = $application->divisionid;
-            $app_details['application_status'] = $app_status ? $app_status->name : NULL; 
+            $app_details['application_status'] = $status ? $status : ($app_status ? $app_status->name : NULL); 
 
             $data[] = $app_details;
         }
