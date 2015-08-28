@@ -68,7 +68,7 @@ class RegisterStudentController extends \yii\web\Controller
         else
         {
             //Check Bursary Status
-            $app_purpose = TransactionPurpose::findOne(['name' => 'application', 'isdeleted' => 0]);
+            /*$app_purpose = TransactionPurpose::findOne(['name' => 'application', 'isdeleted' => 0]);
             $reg_purpose = TransactionPurpose::findOne(['name' => 'registration', 'isdeleted' => 0]);
             $app_fee = Transaction::findOne(['transactionpurposeid' => $app_purpose->transactionpurposeid, 'personid' => $personid,
                 'isdeleted' => 0]);
@@ -83,7 +83,7 @@ class RegisterStudentController extends \yii\web\Controller
                 Yii::$app->session->setFlash('error', 'This applicant has not settled registration fees.');
             }
             else
-            {
+            {*/
                 //Get documents already submitted
                 $selections = array();
                 foreach (DocumentSubmitted::findAll(['personid' => $personid]) as $doc)
@@ -97,7 +97,7 @@ class RegisterStudentController extends \yii\web\Controller
                     'offerid' => $success_offer->offerid,
                     'applicationid' => $success_application->applicationid,
                 ]);
-            }
+            //}
         }
                  
         return $this->redirect(Url::to(['view-applicant/view-applicant', 'applicantid' => $applicant->applicantid,
