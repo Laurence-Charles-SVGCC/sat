@@ -159,6 +159,8 @@ class ViewApplicantController extends \yii\web\Controller
             $offers = Offer::findAll(['applicationid' => $application->applicationid, 'isdeleted' => 0]);
             $off = '';
             foreach($offers as $offer) {$off = $off . $offer->offerid . ', ';}
+            
+             $app_status = $application->getApplicationStatus() ? $application->getApplicationStatus()->one() : Null;
 
             $app_details['order'] = $application->ordering;
             $app_details['applicationid'] = $application->applicationid;
@@ -166,7 +168,7 @@ class ViewApplicantController extends \yii\web\Controller
             $app_details['subjects'] = implode(' ,', $cape_subjects_names);
             $app_details['offerid'] = $offers ? $off : Null;
             $app_details['divisionid'] = $application->divisionid;
-            $app_details['application_status'] = $app_his ? $app_his->applicationstatusid > 1 ? "Submitted" : "Incomplete" : Null; 
+            $app_details['application_status'] = $app_status ? $app_status->name : NULL; 
 
             $data[] = $app_details;
         }
