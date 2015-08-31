@@ -168,7 +168,7 @@ else
                     <li><a href="<?= Url::toRoute(['/subcomponents/students/student/manage-students'])?>"><i class="fa fa-circle-o"></i>Manage Students</a></li>
                 <?php endif; ?>
                 <?php if (Yii::$app->user->can('searchStudents')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/search-students'])?>"><i class="fa fa-circle-o"></i>Search Students</a></li>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/search-student'])?>"><i class="fa fa-circle-o"></i>Search Students</a></li>
                 <?php endif; ?>    
               </ul>
             </li>

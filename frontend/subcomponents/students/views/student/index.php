@@ -1,39 +1,30 @@
 <?php
-
 use yii\helpers\Html;
-use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Students ';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'SVGCC Administrative Terminal';
 ?>
-<div class="verif-applicants-index">
+<div class="site-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <!-- Dashboard buttons -->
-      <div class="box">
-        
-       <?php if (Yii::$app->user->can('manageStudents')): ?>
-        <div class="box-body">
-            <a class="btn btn-app" href="<?= Url::to(['student/view-students', 
-                'divisionid' => $dasgsid])?>">
-                <i class="fa fa-cart-plus"></i> DASGS
-             </a>
-            
-            <a class="btn btn-app" href="<?= Url::to(['student/view-students',
-                'divisionid' => $dtveid])?>">
-                <i class="fa fa-check"></i> DTVE
-             </a>
-            
-            <a class="btn btn-app" href="<?= Url::to(['student/view-students',
-                'divisionid' => 1])?>">
-                <i class="fa fa-users"></i> All
-             </a>
+    <div class="jumbotron">
+        <h1>Students Dashboard</h1>
+        <h2>Select a Task</h2>
+    </div>
+
+    <div class="body-content">
+
+        <div class="row">
+            <div class="col-lg-4">
+                <?php if (Yii::$app->user->can('manageStudents')): ?>
+                    <?= Html::a('Manage Students', ['student/manage-students'], ['class' => 'btn btn-success']) ?>
+                <?php endif; ?>
+            </div>
+            <div class="col-lg-4">
+                <?php if (Yii::$app->user->can('searchStudents')): ?>
+                    <?= Html::a('Search Students', ['student/search-students'], ['class' => 'btn btn-success']) ?>
+                <?php endif; ?>
+            </div>
         </div>
-       <?php endif; ?>
-      </div>
-    <!-- Button with count at top for future. add above i tag: <span class="badge bg-green">value</span>-->
+        <br/>
+    </div>
 </div>
