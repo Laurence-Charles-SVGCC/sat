@@ -156,6 +156,24 @@ else
               </ul>
             </li>
             <?php endif; ?>
+            
+            <?php if (Yii::$app->user->can('students')): ?>
+            <li class="active treeview">
+              <a href="">
+                <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                <?php if (Yii::$app->user->can('manageStudents')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/manage-students'])?>"><i class="fa fa-circle-o"></i>Manage Students</a></li>
+                <?php endif; ?>
+                <?php if (Yii::$app->user->can('searchStudents')): ?>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/search-student'])?>"><i class="fa fa-circle-o"></i>Search Students</a></li>
+                <?php endif; ?>    
+              </ul>
+            </li>
+            <?php endif; ?>
+            
             <?php if (Yii::$app->user->can('programmes')): ?>
             <li class="active treeview">
               <a href="">

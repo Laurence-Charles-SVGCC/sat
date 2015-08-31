@@ -49,6 +49,9 @@ return [
                 'programmes' => [
                     'class' => 'app\subcomponents\programmes\ProgrammesModule',
                 ],
+                'students' => [
+                    'class' => 'app\subcomponents\students\StudentsModule',
+                ],
               ]
           ]
     ]

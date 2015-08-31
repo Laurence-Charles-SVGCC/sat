@@ -68,6 +68,7 @@ class RegisterStudentController extends \yii\web\Controller
         else
         {
             //Check Bursary Status
+            /*Removed on order 28/08/2015*/
             /*$app_purpose = TransactionPurpose::findOne(['name' => 'application', 'isdeleted' => 0]);
             $reg_purpose = TransactionPurpose::findOne(['name' => 'registration', 'isdeleted' => 0]);
             $app_fee = Transaction::findOne(['transactionpurposeid' => $app_purpose->transactionpurposeid, 'personid' => $personid,

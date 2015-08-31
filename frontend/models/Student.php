@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use common\models\User;
 
 /**
  * This is the model class for table "student".
@@ -17,8 +18,8 @@ use Yii;
  * @property string $lastname
  * @property string $gender
  * @property string $dateofbirth
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  * @property string $email
  *
  * @property Person $person
@@ -39,10 +40,10 @@ class Student extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+
             [['personid', 'applicantname', 'admissiondate', 'firstname', 'lastname', 'gender', 'dateofbirth'], 'required'],
             [['personid'], 'integer'],
             [['admissiondate', 'dateofbirth'], 'safe'],
-            [['isactive', 'isdeleted'], 'boolean'],
             [['applicantname', 'firstname', 'middlename', 'lastname', 'email'], 'string', 'max' => 45],
             [['title'], 'string', 'max' => 3],
             [['gender'], 'string', 'max' => 6]
@@ -76,6 +77,6 @@ class Student extends \yii\db\ActiveRecord
      */
     public function getPerson()
     {
-        return $this->hasOne(Person::className(), ['personid' => 'personid']);
+        return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
 }
