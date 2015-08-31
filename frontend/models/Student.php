@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use common\models\User;
 
 /**
  * This is the model class for table "student".
@@ -75,6 +76,6 @@ class Student extends \yii\db\ActiveRecord
      */
     public function getPerson()
     {
-        return $this->hasOne(Person::className(), ['personid' => 'personid']);
+        return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
 }
