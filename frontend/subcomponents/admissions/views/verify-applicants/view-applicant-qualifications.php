@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
               <table id="certificate_table" class="table table-bordered table-striped">
                 <thead>
                   <tr>
-                    <!--<th>Examining Body</th>-->
+                    <th>Examining Body</th>
                     <th>Subject</th>
                     <th>Proficiency</th>
                     <th>Grade</th>
@@ -52,15 +52,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
                       <tr>
                           <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
-                          <!--<td>
-                              <?php /* $form->field($model, "[$key]examinationbodyid", ['options' => [
+                          <td width = 15%>
+                              <?=  $form->field($model, "[$key]examinationbodyid", ['options' => [
                                         'tag'=>'div',
                                         ],
                                         'template' => '{input}{error}'
                                     ])->dropDownList(
-                                           ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'))*/?>
-                          </td>-->
-                          <td width = 25%> 
+                                           ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'abbreviation'))?>
+                          </td>
+                          <td width = 20%> 
                               <?= $form->field($model, "[$key]subjectid", ['options' => [
                                         'tag'=>'div',
                                         ],
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                            ArrayHelper::map(ExaminationProficiencyType::find()->where(['examinationbodyid' => $model->examinationbodyid])
                                                    ->all(), 'examinationproficiencytypeid', 'name')) ?>
                           </td>
-                        <td> 
+                        <td width = 15%> 
                             <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
                                         'tag'=>'div',
                                         ],
