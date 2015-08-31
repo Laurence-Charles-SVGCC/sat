@@ -203,6 +203,12 @@ class RegisterStudentController extends \yii\web\Controller
                {
                    Yii::$app->session->setFlash('error', 'Student could not be added');
                }
+               $user = User::findOne(['personid' => $applicant->personid]);
+               if ($user)
+               {
+                return $this->redirect(Url::to(['register-student/register-applicant', 'applicantusername' => $user->username]));
+               }
+               return $this->redirect(Url::to(['view-applicant/index']));
            }
        }
    }

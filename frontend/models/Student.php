@@ -39,7 +39,7 @@ class Student extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'applicantname', 'admissiondate', 'title', 'firstname', 'middlename', 'lastname', 'gender', 'dateofbirth'], 'required'],
+            [['personid', 'applicantname', 'admissiondate', 'firstname', 'lastname', 'gender', 'dateofbirth'], 'required'],
             [['personid'], 'integer'],
             [['admissiondate', 'dateofbirth'], 'safe'],
             [['isactive', 'isdeleted'], 'boolean'],
