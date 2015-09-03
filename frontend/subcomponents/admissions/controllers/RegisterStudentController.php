@@ -136,6 +136,7 @@ class RegisterStudentController extends \yii\web\Controller
                    if ($applicant->potentialstudentid)
                    {
                        $user->username = $applicant->potentialstudentid;
+                       $user->save();
                    }
                    else
                    {
