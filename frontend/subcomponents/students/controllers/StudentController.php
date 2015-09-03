@@ -34,14 +34,18 @@ class StudentController extends Controller
     
     public function actionViewStudents($divisionid)
     {
-        //$division = Division::findOne(['divisionid' => $divisionid ]);
+        $stu_cond = array('student.isdeleted' => 0, 'student.isactive' => 1, 'student_registration.isdeleted' => 0, 
+            'student_registration.isactive' => 1);
+        if ($divisionid && $divisionid != 1)
+        {
+            $stu_cond['application_period.divisionid'] = $divisionid;
+        }
         
         $students = Student::find()
                 ->innerJoin('student_registration', '`student`.`personid` = `student_registration`.`personid`')
                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `student_registration`.`academicofferingid`')
                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['student.isdeleted' => 0, 'student.isactive' => 1, 'student_registration.isdeleted' => 0, 'student_registration.isactive' => 1, 
-                    'application_period.divisionid' => $divisionid])
+                ->where($stu_cond)
                 ->all();
         
         $data = array();
