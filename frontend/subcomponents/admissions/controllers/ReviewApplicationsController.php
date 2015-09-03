@@ -237,6 +237,10 @@ class ReviewApplicationsController extends \yii\web\Controller
         {
             $sort_attributes = array();
         }
+        if (!$applications)
+        {
+            $applications = array();
+        }
         $data = array();
         foreach($applications as $application)
         {
@@ -274,10 +278,11 @@ class ReviewApplicationsController extends \yii\web\Controller
                 'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no'],
                 ]
         ]);
-        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 
+            'academic_offering.isactive' => 1);
         if ($division_id && $division_id == 1)
         {
-            $prog_cond = array('application_period.isactive' => 1);
+            $prog_cond = array('application_period.isactive' => 1, 'academic_offering.isactive' => 1);
         }
         $programmes = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
@@ -325,34 +330,35 @@ class ReviewApplicationsController extends \yii\web\Controller
             $division_id = Yii::$app->session->get('review_division');
             $programme = Yii::$app->session->get('programme');
         }
-        if ($application_status && $division_id && $programme)
+        if ($application_status && $division_id && ($programme || $programme ==0))
         {
             if ($division_id == 1)
             {
-                $condarr = ['application.isdeleted' => 0, 'application.ordering' => 1, 
+                $condarr = ['application.isdeleted' => 0, 'application.isdeleted' => 0,/*'application.ordering' => 1,*/ 
                 'application.applicationstatusid' => $application_status];
             }
             else
             {
-                $condarr = ['application.divisionid' => $division_id, 'application.isdeleted' => 0, 'application.ordering' => 1, 
+                $condarr = ['application.divisionid' => $division_id, 'application.isdeleted' => 0, /*'application.ordering' => 1,*/ 
                 'application.applicationstatusid' => $application_status];
             }
             
-            
+             /*Pending*/
+            if ($application_status == 3)
+            {
+                $condarr['application.ordering'] = 1;
+            }
             if ($programme != 0)
             {
                 $condarr['programme_catalog.programmecatalogid'] = $programme;
-                $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-                        ->where($condarr)
-                        ->all();
             }
-            else
-            {
-                $applications = Application::find()->where($condarr)->all();
-            }
+            
+            $applications = Application::find()
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                    ->where($condarr)
+                    ->all();
             /*Priorities is not implemented. Need investigations into how multiple levels of sorting can be
                done by Yii dataProvider
               Gamal Crichton 27/07/2015 */
