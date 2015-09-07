@@ -29,11 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'studentno',
                 'format' => 'html',
                 'label' => 'Studentnt No.',
-                'value' => function($row) //use()
-                    {
-                        //$user = User::findOne(['personid' => $model->personid]);
-                        //$username = $user ? $user->username : $model->personid;
-                       return $row['studentno'];
+                'value' => function($row)
+                    { 
+                        return Html::a($row['studentno'], 
+                                        Url::to(['student/view-student', 'studentid' => $row['studentid'], 'username' => $row['studentno']]));
                     }
             ],
             [

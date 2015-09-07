@@ -14,10 +14,11 @@ use yii\helpers\Url;
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'format' => 'html',
-                'label' => 'Applicant ID',
+                'label' => 'Student ID',
                 'value' => function($row)
                     {
-                        return $row['studentno'];
+                        return Html::a($row['studentno'], 
+                                        Url::to(['student/view-student', 'studentid' => $row['studentid'], 'username' => $row['studentno']]));
                     }
             ],
             [
