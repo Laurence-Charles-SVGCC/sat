@@ -784,7 +784,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     * Created: 28/07/2015 by Gamal Crichton
     * Last Modified: 4/08/2015 by Gamal Crichton
     */
-    public static function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='', $redirectto = '')
+    public function actionMakeOffer($applicationid, $redirect = True, $division_id = NULL, $application_status ='', $redirectto = '')
     {
         $application = Application::findOne(['applicationid' => $applicationid]);
         $offer = new Offer();
@@ -897,7 +897,7 @@ class ReviewApplicationsController extends \yii\web\Controller
     * Created: 4/08/2015 by Gamal Crichton
     * Last Modified: 4/08/2015 by Gamal Crichton
     */
-    public static function getPotentialStudentID($divisionid, $base)
+    public function getPotentialStudentID($divisionid, $base)
     {
         $ay = AcademicYear::findOne(['iscurrent' => 1, 'isdeleted' => 0]);
         $startyear = $ay ? substr(explode('-',$ay->startdate)[0], -2) : substr(date('Y'), -2);

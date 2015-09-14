@@ -3,7 +3,6 @@
 namespace app\subcomponents\students\controllers;
 
 use yii\web\Controller;
-use app\subcomponents\admissions\controllers\ReviewApplicationsController;
 
 use Yii;
 use frontend\models\Division;
@@ -24,6 +23,7 @@ use frontend\models\CapeSubjectGroup;
 use frontend\models\AcademicOffering;
 use frontend\models\ApplicationStatus;
 use frontend\models\RegistrationType;
+use frontend\models\Offer;
 
 class StudentController extends Controller
 {
@@ -195,7 +195,7 @@ class StudentController extends Controller
   /*
     * Purpose: Retrieve information necessary to display results of a student search.
     * Created: 1/08/2015 by Gamal Crichton
-    * Last Modified: 1/08/2015 by Gamal Crichton
+    * Last Modified: 14/09/2015 by Gamal Crichton
     */
   public function actionViewStudent($studentid, $username = '')
   {
@@ -208,26 +208,53 @@ class StudentController extends Controller
       }
       $registrations = StudentRegistration::findAll(['personid' => $personid, 'isdeleted' => 0]);
       $data = array();
+      $acads_done = array();
         foreach($registrations as $registration)
         {
             $reg_details = array();
             $acad_off = $registration->getAcademicoffering()->one();
+            //To deal with cases of multiple registartions to same academic offering which is allowed esp with CAPE
+            if (in_array($acad_off->academicofferingid, $acads_done))
+            {
+                continue;
+            }
+            $reg_details['active'] = $registration->isactive;
+            array_push($acads_done, $acad_off->academicofferingid);
             $cape_subjects_names = array();
             $programme = $acad_off ? $acad_off->getProgrammeCatalog()->one() : NULL;
-            $application = Application::find()
+            $applications = Application::find()
                     ->innerJoin('offer', '`offer`.`applicationid` = `application`.`applicationid`')
                     ->where(['personid' => $personid, 'application.academicofferingid' => $acad_off->academicofferingid])
-                    ->one();
-            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+                    ->all();
+            $latest = NULL;
             
-            $reg_details['order'] = $application->ordering;
-            $reg_details['applicationid'] = $application->applicationid;
-            $reg_details['programme_name'] = $cape_subjects ? "CAPE: " . implode(' ,', $cape_subjects_names) : $programme->getFullName();
-            $reg_details['active'] = $registration->isactive;
-            $reg_details['divisionid'] = $application->divisionid;
+            if (count($applications) > 1)
+            {
+               
+                $latest = Application::find()
+                    ->innerJoin('offer', '`offer`.`applicationid` = `application`.`applicationid`')
+                    ->where(['personid' => $personid, 'application.academicofferingid' => $acad_off->academicofferingid])
+                    ->orderby('applicationid desc', 'DESC')
+                    ->one();
+                $reg_details['active'] = False;
+                 
+            }
+            $active_reg = StudentRegistration::findAll(['academicofferingid' => $registration->academicofferingid, 'personid' => $personid,
+                    'isactive' => 1]);
+            foreach($applications as $application)
+            {
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
 
-            $data[] = $reg_details;
+                $reg_details['order'] = $application->ordering;
+                $reg_details['applicationid'] = $application->applicationid;
+                $reg_details['programme_name'] = $cape_subjects ? "CAPE: " . implode(' ,', $cape_subjects_names) : $programme->getFullName();
+                if ($application == $latest && $active_reg){ $reg_details['active'] = True; }
+                $reg_details['divisionid'] = $application->divisionid;
+
+                $data[] = $reg_details;
+            }
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
@@ -459,32 +486,39 @@ class StudentController extends Controller
                 }
                 if ($cape_success)
                 {
-                    $res = ReviewApplicationsController::actionMakeOffer($application->applicationid, $redirect = False, $request->post('division_id'));
-                    if ($res)
+                    $offer = new Offer();
+                    $offer->applicationid = $application->applicationid;
+                    $offer->issuedby = Yii::$app->user->getId();
+                    $offer->issuedate = date("Y-m-d");
+                    if ($offer->save())
                     {
-                       $registrations = StudentRegistration::findAll(['personid' => $student_personid, 'isdeleted' => 0]);
+                        $app_status = ApplicationStatus::findOne(['name' => 'offer']);
+                        $application->applicationstatusid = $app_status->applicationstatusid;
+                        if ($application->save())
+                        {
+                           $registrations = StudentRegistration::findAll(['personid' => $student_personid, 'isdeleted' => 0]);
                         
-                       $reg = new StudentRegistration();
-                       $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
+                           $reg = new StudentRegistration();
+                           $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
 
-                       $reg->personid = $student->personid;
-                       $reg->academicofferingid = $application->academicofferingid;
-                       $reg->registrationtypeid = $reg_type->registrationtypeid;
-                       $reg->currentlevel = 1;
-                       $reg->registrationdate = date('Y-m-d');
-                       
-                       if ($reg->save())
-                       {
-                           //Inactivate previous registrations
-                           foreach ($registrations as $prev_reg)
+                           $reg->personid = $student->personid;
+                           $reg->academicofferingid = $application->academicofferingid;
+                           $reg->registrationtypeid = $reg_type->registrationtypeid;
+                           $reg->currentlevel = 1;
+                           $reg->registrationdate = date('Y-m-d');
+
+                           if ($reg->save())
                            {
-                               $prev_reg->isactive = 0;
-                               $prev_reg->save();
+                               //Inactivate previous registrations
+                               foreach ($registrations as $prev_reg)
+                               {
+                                   $prev_reg->isactive = 0;
+                                   $prev_reg->save();
+                               }
+                               Yii::$app->session->setFlash('success', 'New registration added.');
                            }
-                           Yii::$app->session->setFlash('success', 'New registration added.');
-                       }
+                        }
                     }
-                    
                 }
             }
             return $this->redirect(Url::to(['student/view-student', 'studentid' => $student->studentid, 'username' => $username]));
