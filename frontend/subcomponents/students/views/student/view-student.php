@@ -44,12 +44,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($row)
                     {
                         
-                       // if (Yii::$app->user->can('editRegistration'))
-                        //{
+                        if (Yii::$app->user->can('editRegistration'))
+                        {
                            return Html::a('Edit', 
                                         Url::to(['student/edit-registration']),
                                                 ['class' => 'btn btn-primary']);
-                        //}
+                        }
                         return 'N/A';   
                     }
             ],
@@ -60,15 +60,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'action' => Url::to(['student/student-actions'])
     ]); ?>
         <?= Html::hiddenInput('username', $username); ?>
-        <?php //if (Yii::$app->user->can('viewStudentPersonal')): ?>
+        <?php if (Yii::$app->user->can('viewStudentPersonal')): ?>
             <?= Html::submitButton('View Personal Details', ['class' => 'btn btn-success', 'name' => 'view_personal']); ?>
-        <?php //endif; ?>
-        <?php //if (Yii::$app->user->can('editStudentPersonal')): ?>
+        <?php endif; ?>
+        <?php if (Yii::$app->user->can('editStudentPersonal')): ?>
             <?= Html::submitButton('Edit Personal Details', ['class' => 'btn btn-success', 'name' => 'edit_personal']); ?>
-        <?php //endif; ?>
-         <?php //if (Yii::$app->user->can('addRegistration')): ?>
+        <?php endif; ?>
+         <?php if (Yii::$app->user->can('addRegistration')): ?>
             <?= Html::submitButton('Add Registration', ['class' => 'btn btn-success', 'name' => 'add_registration']); ?>
-        <?php //endif; ?>
+        <?php endif; ?>
     <?php ActiveForm::end(); ?>
     
 </div>
