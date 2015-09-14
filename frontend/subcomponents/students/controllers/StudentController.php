@@ -113,7 +113,7 @@ class StudentController extends Controller
             {
                 $user = User::findOne(['username' => $stu_id, 'isdeleted' => 0]);
                  $cond_arr['personid'] = $user ? $user->personid : NULL;
-                 $info_string = $info_string .  " Student ID: " . $app_id;
+                 $info_string = $info_string .  " Student ID: " . $stu_id;
             }
             if ($firstname)
             {
@@ -290,33 +290,72 @@ class StudentController extends Controller
   }
   
   /*
-    * Purpose: Prepares applicant personal information for editing
+    * Purpose: Prepares student personal information for editing
     * Created: 7/09/2015 by Gamal Crichton
-    * Last Modified: 7/09/2015 by Gamal Crichton
+    * Last Modified: 14/09/2015 by Gamal Crichton
     */
   public function actionEditPersonal($username)
   {
       if (Yii::$app->request->post())
       {
           $request = Yii::$app->request;
+          
           $student = Student::findOne(['studentid' => $request->post('studentid')]);
-          if ($student->load(Yii::$app->request->post()) )
+          $institutions = $student ? PersonInstitution::findAll(['personid' => $student->personid, 'isdeleted' => 0]) : array();
+          $phone = $student ? Phone::findOne(['personid' =>$student->personid]) : NULL;
+          $email = $student ? Email::findOne(['personid' =>$student->personid]) : NULL;
+          $relations = $student ? Relation::findAll(['personid' =>$student->personid]) : NULL;
+          if ($student->load(Yii::$app->request->post()) && $phone->load(Yii::$app->request->post()) &&
+                  $email->load(Yii::$app->request->post()))
           { 
-              if ($student->save())
+              if (!$student->save() && $phone->save() && $email->save())
               {
-                  Yii::$app->session->setFlash('success', 'Student updated successfully');
-                  $this->redirect(Url::to(['student/view-personal', 'username' =>$request->post('username')]));
+                  Yii::$app->session->setFlash('error', 'Student could not be saved');
               }
-              Yii::$app->session->setFlash('error', 'Student could not be saved');
           }
-          else
-          {
-              Yii::$app->session->setFlash('error', 'Student not found');
-          } 
+
+          foreach($request->post('Relation') as $key =>$rel)
+          { 
+              $relation = Relation::findOne(['relationid' =>$key]);
+              if ($relation)
+              {
+                  $relation->firstname = $rel['firstname'];
+                  $relation->lastname = $rel['lastname'];
+                  $relation->homephone = $rel['homephone'];
+                  $relation->cellphone = $rel['cellphone'];
+                  $relation->workphone = $rel['workphone'];
+                  if (!$relation->save())
+                  {
+                      Yii::$app->session->setFlash('error', 'Relation could not be saved');
+                  } 
+              }
+          }
+          
+          foreach($request->post('PersonInstitution') as $key =>$pins)
+          { 
+              $pi = PersonInstitution::findOne(['personinstitutionid' =>$key]);
+              if ($pi)
+              {
+                  $ins = $request->post('Institution');
+                          
+                  $pi->institutionid = $ins ? $ins[$key]['institutionid'] : NULL;
+                  $pi->startdate = $pins['startdate'];
+                  $pi->enddate = $pins['enddate'];
+                  $pi->hasgraduated = $pins['hasgraduated'];
+                  if (!$pi->save())
+                  {
+                      Yii::$app->session->setFlash('error', 'Attendance could not be saved');
+                  }
+              }
+          }
+          $this->redirect(Url::to(['student/view-personal', 'username' =>$request->post('username')]));
       }
       $user = User::findOne(['username' =>$username]);
       $student = $user ? Student::findOne(['personid' =>$user->personid]) : Null;
       $institutions = $student ? PersonInstitution::findAll(['personid' => $student->personid, 'isdeleted' => 0]) : array();
+      $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
+      $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
+      $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
       
       if (!$student)
       {
@@ -328,44 +367,19 @@ class StudentController extends Controller
                   'username' => $user ? $user->username : '',
                   'student' => $student,
                   'institutions' => $institutions,
+                  'phone' => $phone,
+                  'email' => $email,
+                  'relations' => $relations,
               ]);
   }
   
-  private function getApplicantDetails($username)
+  /*
+    * Purpose: Prepares student personal information for editing
+    * Created: 7/09/2015 by Gamal Crichton
+    * Last Modified: 14/09/2015 by Gamal Crichton
+    */
+  public function actionEditRegistration($username)
   {
-      $user = User::findOne(['username' =>$username]);
-      $student = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
-      if ($student)
-      {
-          $institutions = PersonInstitution::findAll(['personid' => $student->personid, 'isdeleted' => 0]);
-          
-          $stu['studentid'] = $student->studentid;
-          $stu['username'] = $user->username;
-          $stu['title'] = $student->title;
-          $stu['firstname'] = $student->firstname;
-          $stu['middlename'] = $student->middlename;
-          $stu['lastname'] = $student->lastname;
-          $stu['gender'] = $student->gender;
-          $stu['dateofbirth'] = $student->dateofbirth;
-          $stu['nationality'] = $student->nationality;
-          $stu['placeofbirth'] = $student->placeofbirth;
-          $stu['religion'] = $student->religion;
-          $stu['sponsor'] = $student->sponsorname;
-          $stu['clubs'] = $student->clubs;
-          $stu['otherinterests'] = $student->otherinterests;
-          $stu['maritalstatus'] = $student->maritalstatus;
-          $stu['institution'] = array();
-          foreach ($institutions as $key => $institution)
-          {
-              $in = Institution::findone(['institutionid' => $institution->institutionid, 'isdeleted' => 0]);
-              $stu['institution'][$key]['name'] = $in ? $in->name : '';
-              $stu['institution'][$key]['formername'] = $in ? $in->formername : '';
-              $stu['institution'][$key]['startdate'] = $institution->startdate;
-              $stu['institution'][$key]['enddate'] = $institution->enddate;
-              $stu['institution'][$key]['hasgraduated'] = $institution->hasgraduated;
-          }
-          return $stu;
-      }
-      return Null;
+      
   }
 }
