@@ -3,6 +3,7 @@
 namespace app\subcomponents\students\controllers;
 
 use yii\web\Controller;
+use app\subcomponents\admissions\controllers\ReviewApplicationsController;
 
 use Yii;
 use frontend\models\Division;
@@ -17,6 +18,12 @@ use frontend\models\PersonInstitution;
 use frontend\models\Phone;
 use frontend\models\Email;
 use frontend\models\Relation;
+use frontend\models\ProgrammeCatalog;
+use frontend\models\CapeGroup;
+use frontend\models\CapeSubjectGroup;
+use frontend\models\AcademicOffering;
+use frontend\models\ApplicationStatus;
+use frontend\models\RegistrationType;
 
 class StudentController extends Controller
 {
@@ -256,6 +263,10 @@ class StudentController extends Controller
           {
               return $this->redirect(Url::to(['student/edit-personal', 'username' => $username]));
           }
+          if ($request->post('add_registration') === '')
+          {
+              return $this->redirect(Url::to(['student/add-registration', 'username' => $username]));
+          }
       }
   }
   
@@ -381,5 +392,171 @@ class StudentController extends Controller
   public function actionEditRegistration($username)
   {
       
+  }
+  
+  /*
+    * Purpose: Adds a regsitration to a student
+    * Created: 14/09/2015 by Gamal Crichton
+    * Last Modified: 14/09/2015 by Gamal Crichton
+    */
+  public function actionAddRegistration($username = '')
+  {
+      //Get user's division_id from session
+      $division_id = Yii::$app->session->get('divisionid');
+            
+      if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $username = $request->post('username');
+            $person = User::findOne(['username' => $username]);
+            $student = Student::findOne(['personid' => $person->personid]);
+
+            $student_personid =  $student ? $student->personid : Yii::$app->session->setFlash('error', 'Student not found');
+            $app_count = Application::find()->where(['personid' => $student_personid])->count();
+
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $request->post('programme')]);
+            $prog_name = $programme ? $programme->name : Yii::$app->session->setFlash('error', 'Programme not found');   
+            $application = new Application();
+            $application->personid =  $student_personid;
+            $ac_off = AcademicOffering::findOne(['programmecatalogid' => $request->post('programme'), 'isactive' =>1]);
+            $application->academicofferingid = $ac_off ? $ac_off->academicofferingid : Null;
+            $application->divisionid = $ac_off ? $ac_off->getApplicationperiod()->one()->divisionid : Null;
+            $application->applicationstatusid = ApplicationStatus::findOne(['name' => 'offer'])->applicationstatusid;
+            $application->applicationtimestamp = date("Y-m-d H:i:s");
+            $application->ordering =  $app_count >= 3 ? $app_count + 1 : 4;
+            $application->ipaddress = $request->getUserIP() ;
+            $application->browseragent = $request->getUserAgent();
+            if ($application->save())
+            {
+                $cape_success = True;
+                if (strcasecmp($prog_name, "cape") == 0)
+                {
+                    //Deal with Cape Subjects
+                    $groups_used = array();
+                    foreach($request->post('cape_subject') as $key=>$value)
+                    {
+                        $groupid = CapeSubjectGroup::findOne(['capesubjectid' => $key])->capegroupid;
+                        if (!in_array($groupid, $groups_used))
+                        {
+                            array_push($groups_used, $groupid);
+                            $application_cape = new ApplicationCapesubject();
+                            $application_cape->applicationid = $application->applicationid;
+                            $application_cape->capesubjectid = $key;
+                            if (!$application_cape->save())
+                            {
+                                Yii::$app->session->setFlash('error', 'Cape Subject could not be added');
+                                $cape_success = False;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            Yii::$app->session->setFlash('error', 'Subjects from the same group selected');
+                            $cape_success = False;
+                            break;
+                        }
+                    }
+                }
+                if ($cape_success)
+                {
+                    $res = ReviewApplicationsController::actionMakeOffer($application->applicationid, $redirect = False, $request->post('division_id'));
+                    if ($res)
+                    {
+                       $registrations = StudentRegistration::findAll(['personid' => $student_personid, 'isdeleted' => 0]);
+                        
+                       $reg = new StudentRegistration();
+                       $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
+
+                       $reg->personid = $student->personid;
+                       $reg->academicofferingid = $application->academicofferingid;
+                       $reg->registrationtypeid = $reg_type->registrationtypeid;
+                       $reg->currentlevel = 1;
+                       $reg->registrationdate = date('Y-m-d');
+                       
+                       if ($reg->save())
+                       {
+                           //Inactivate previous registrations
+                           foreach ($registrations as $prev_reg)
+                           {
+                               $prev_reg->isactive = 0;
+                               $prev_reg->save();
+                           }
+                           Yii::$app->session->setFlash('success', 'New registration added.');
+                       }
+                    }
+                    
+                }
+            }
+            return $this->redirect(Url::to(['student/view-student', 'studentid' => $student->studentid, 'username' => $username]));
+        }
+        else
+        {
+            $person = User::findOne(['username' => $username]);
+            $student = Student::findOne(['personid' => $person->personid]);
+            $personid = $person ? $person->personid : NULL;
+            $applications = $personid ? Application::findAll(['personid' => $personid, 'isdeleted' => 0]) : array();
+            $data = array();
+            foreach($applications as $application)
+            {
+                $app_details = array();
+                $cape_subjects_names = array();
+                $programme = ProgrammeCatalog::find()
+                    ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->where(['application.applicationid' => $application->applicationid])->one();
+                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+
+                $programme_division = $programme->getDepartment()->one()->divisionid;
+
+                $app_details['order'] = $application->ordering;
+                $app_details['applicationid'] = $application->applicationid;
+                $app_details['programme_name'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $app_details['offerable'] = ($programme_division == $division_id || $division_id == 1);
+                $data[] = $app_details;
+            }
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 5,
+                ],
+            ]);
+            $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+            if ($division_id && $division_id == 1)
+            {
+                $prog_cond = array('application_period.isactive' => 1);
+            }
+            $progs = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($prog_cond)
+                ->all();
+            
+            $programmes = array();
+            foreach($progs as $prog)
+            {
+               $programmes[$prog->programmecatalogid] = $prog->getFullName();
+            }
+
+            //Cape group information
+            $cape_data = array();
+            $cape_grps = CapeGroup::findall(['cape_group.isactive' => 1]);
+            foreach ($cape_grps as $grp)
+            {
+                $cape_data[$grp->name] = CapeSubjectGroup::findAll(['capegroupid' => $grp->capegroupid]);
+            }
+            return $this->render('add-registration', 
+               [        
+                    'dataProvider' => $dataProvider, 
+                    'programmes' => $programmes,
+                   'cape_data' => $cape_data,
+                   'division_id' => $division_id,
+                   'firstname' => $student ? $student->firstname : '',
+                   'middlename' => $student ? $student->middlename : '',
+                   'lastname' => $student ? $student->lastname : '',
+                   'username' => $username
+               ]
+            );
+       }
   }
 }

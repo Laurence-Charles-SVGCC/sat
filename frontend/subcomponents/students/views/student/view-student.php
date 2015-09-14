@@ -37,16 +37,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'text',
                 'label' => 'Programme',
             ],
+            'active:boolean',
             [
                 'format' => 'html',
                 'label' => 'Registration Actions',
                 'value' => function($row)
                     {
+                        
                        // if (Yii::$app->user->can('editRegistration'))
                         //{
                            return Html::a('Edit', 
                                         Url::to(['student/edit-registration']),
-                                                ['class' => 'btn btn-success']);
+                                                ['class' => 'btn btn-primary']);
                         //}
                         return 'N/A';   
                     }
@@ -64,7 +66,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php //if (Yii::$app->user->can('editStudentPersonal')): ?>
             <?= Html::submitButton('Edit Personal Details', ['class' => 'btn btn-success', 'name' => 'edit_personal']); ?>
         <?php //endif; ?>
-         
+         <?php //if (Yii::$app->user->can('addRegistration')): ?>
+            <?= Html::submitButton('Add Registration', ['class' => 'btn btn-success', 'name' => 'add_registration']); ?>
+        <?php //endif; ?>
     <?php ActiveForm::end(); ?>
     
 </div>
