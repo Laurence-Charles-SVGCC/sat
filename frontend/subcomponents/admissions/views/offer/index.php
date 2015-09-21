@@ -38,6 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php if (Yii::$app->user->can('publishOffer')): ?>
                 <?= Html::a('Bulk Publish', ['bulk-publish'], ['class' => 'btn btn-primary']) ?>
             <?php endif; ?>
+            <?= Html::a('Export Valid Offers', ['export-valid-offers'], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Export All Offers', ['export-all-offers'], ['class' => 'btn btn-primary']) ?>
         </div>
     </div>
         

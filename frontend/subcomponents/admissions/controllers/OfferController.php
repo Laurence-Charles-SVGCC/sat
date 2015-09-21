@@ -1147,4 +1147,118 @@ class OfferController extends Controller
             return $dups;
         }
     }
+    
+    public function actionExportValidOffers()
+    {
+        $division_id = Yii::$app->session->get('divisionid');
+        
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        
+        if ($division_id && $division_id == 1)
+        {
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        }
+        
+        $offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($offer_cond)
+                ->all();
+        
+        $data = array();
+        foreach ($offers as $offer)
+        {
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            $data[] = $offer_data;
+        }
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 2000,
+            ],
+        ]);
+        
+        return $this->renderPartial('offer-export', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    public function actionExportAllOffers()
+    {
+        $division_id = Yii::$app->session->get('divisionid');
+        
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        
+        if ($division_id && $division_id == 1)
+        {
+            $offer_cond = array('application_period.isactive' => 1);
+        }
+        
+        $offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($offer_cond)
+                ->all();
+        
+        $data = array();
+        foreach ($offers as $offer)
+        {
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            $data[] = $offer_data;
+        }
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 2000,
+            ],
+        ]);
+        
+        return $this->renderPartial('offer-export', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 }

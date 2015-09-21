@@ -4,7 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1d800105fc1a99966ae2e2be284a4022",
+    "hash": "fb8c8544ad3ad7ac3bd52773ef4560b6",
+    "content-hash": "400e765dac045d19d1c8859c0b1b178d",
     "packages": [
         {
             "name": "2amigos/yii2-date-picker-widget",
@@ -412,6 +413,63 @@
             "time": "2013-11-30 08:25:19"
         },
         {
+            "name": "phpoffice/phpexcel",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PHPExcel.git",
+                "reference": "049e85ae98a90869e1bc83087f755010e9223091"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/049e85ae98a90869e1bc83087f755010e9223091",
+                "reference": "049e85ae98a90869e1bc83087f755010e9223091",
+                "shasum": ""
+            },
+            "require": {
+                "ext-xml": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExcel": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Maarten Balliauw",
+                    "homepage": "http://blog.maartenballiauw.be"
+                },
+                {
+                    "name": "Mark Baker"
+                },
+                {
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
+                },
+                {
+                    "name": "Erik Tilt"
+                }
+            ],
+            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+            "homepage": "http://phpexcel.codeplex.com",
+            "keywords": [
+                "OpenXML",
+                "excel",
+                "php",
+                "spreadsheet",
+                "xls",
+                "xlsx"
+            ],
+            "time": "2015-05-05 00:10:25"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "5.x-dev",
             "source": {
@@ -421,7 +479,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/caf94ee2473ba6503e411ce3bcbd33b080f1d903",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/6522539daf0a7bdada1cc2dccb7ec37dc0712136",
                 "reference": "5a1b5d121689369cf7b54cc67b16216cfd4da7b3",
                 "shasum": ""
             },
@@ -633,7 +691,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/9a86cd637c21e37fd5a04df00b822074f0799d92",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/d3c831024b7d7dba941f3944c8d9bac42aea4856",
                 "reference": "06e9f915f52906b04377ac62169d66e8cbcd4a66",
                 "shasum": ""
             },
@@ -721,7 +779,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/56d47544eb98ebdb542422abc598ef8097b3e9c5",
+                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/c25dc1e23d188954b546f6bd95def1027d91113b",
                 "reference": "56d47544eb98ebdb542422abc598ef8097b3e9c5",
                 "shasum": ""
             },
@@ -897,7 +955,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/b1abe41e1357ad790398d7a668b19ac733b4e1c1",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/c8097f5f5db48aa32ae067b84aee4c0fc419b30c",
                 "reference": "6615c01b7b2a9c46f4cc426f860866a122eae0af",
                 "shasum": ""
             },
@@ -983,7 +1041,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/b3407b0c8614c1d614c5c58287816027ba98418b",
+                "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/4428504253562c3de6643776d1bda273088bdeb4",
                 "reference": "b3407b0c8614c1d614c5c58287816027ba98418b",
                 "shasum": ""
             },
@@ -1028,7 +1086,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/ef8f6f69884b10ba1e55dce6d925a9df021d904d",
+                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/daf79cf6f6e32c474c9a476293d199cae64254fb",
                 "reference": "1d2f8519c78c557b3d28f647a6bacfad1d6720f8",
                 "shasum": ""
             },
@@ -1075,7 +1133,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/66432de272e5795435dc7da49381ea7bea2a2a67",
+                "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/091bc3c5db9e53031817c6e155c0bd518f3606de",
                 "reference": "66432de272e5795435dc7da49381ea7bea2a2a67",
                 "shasum": ""
             },
@@ -1122,7 +1180,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/4487b4600525f04b5e2e8a46593f04f62a9c3446",
+                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/6519954dc8dd16050d886d1266d6248cbae2d14f",
                 "reference": "bc7df9d8fa44b3308cc899ffc8e4204316304e41",
                 "shasum": ""
             },
@@ -1168,7 +1226,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "yiisoft/yii2-swiftmailer": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
