@@ -270,23 +270,66 @@ class ViewApplicantController extends \yii\web\Controller
       {
           $request = Yii::$app->request;
           $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
-          if ($applicant->load(Yii::$app->request->post()) )
+          $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
+          $phone = $applicant ? Phone::findOne(['personid' =>$applicant->personid]) : NULL;
+          $email = $applicant ? Email::findOne(['personid' =>$applicant->personid]) : NULL;
+          $relations = $applicant ? Relation::findAll(['personid' =>$applicant->personid]) : NULL;
+          if ($applicant->load(Yii::$app->request->post()) && $phone->load(Yii::$app->request->post()) &&
+                  $email->load(Yii::$app->request->post()))
           { 
-              if ($applicant->save())
+              if (!$applicant->save() && $phone->save() && $email->save())
               {
-                  Yii::$app->session->setFlash('success', 'Applicant updated successfully');
-                  $this->redirect(Url::to(['view-applicant/view-personal', 'applicantusername' =>$request->post('username')]));
+                  Yii::$app->session->setFlash('error', 'Applicant could not be updated');
+                  //$this->redirect(Url::to(['view-applicant/view-personal', 'applicantusername' =>$request->post('username')]));
               }
               Yii::$app->session->setFlash('error', 'Applicant could not be saved');
           }
-          else
+          foreach($request->post('Relation') as $key =>$rel)
+          { 
+              $relation = Relation::findOne(['relationid' =>$key]);
+              if ($relation)
+              {
+                  $relation->firstname = $rel['firstname'];
+                  $relation->lastname = $rel['lastname'];
+                  $relation->homephone = $rel['homephone'];
+                  $relation->cellphone = $rel['cellphone'];
+                  $relation->workphone = $rel['workphone'];
+                  if (!$relation->save())
+                  {
+                      Yii::$app->session->setFlash('error', 'Relation could not be saved');
+                  } 
+              }
+          }
+          
+          foreach($request->post('PersonInstitution') as $key =>$pins)
+          { 
+              $pi = PersonInstitution::findOne(['personinstitutionid' =>$key]);
+              if ($pi)
+              {
+                  $ins = $request->post('Institution');
+                          
+                  $pi->institutionid = $ins ? $ins[$key]['institutionid'] : NULL;
+                  $pi->startdate = $pins['startdate'];
+                  $pi->enddate = $pins['enddate'];
+                  $pi->hasgraduated = $pins['hasgraduated'];
+                  if (!$pi->save())
+                  {
+                      Yii::$app->session->setFlash('error', 'Attendance could not be saved');
+                  }
+              }
+          }
+          $this->redirect(Url::to(['view-applicant/view-personal', 'applicantusername' =>$request->post('username')]));
+          /*else
           {
               Yii::$app->session->setFlash('error', 'Applicant not found');
-          } 
+          }*/ 
       }
       $user = User::findOne(['username' =>$applicantusername]);
       $applicant = $user ? Applicant::findOne(['personid' =>$user->personid]) : Null;
       $institutions = $applicant ? PersonInstitution::findAll(['personid' => $applicant->personid, 'isdeleted' => 0]) : array();
+      $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
+      $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
+      $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
       
       if (!$applicant)
       {
@@ -298,6 +341,9 @@ class ViewApplicantController extends \yii\web\Controller
                   'username' => $user ? $user->username : '',
                   'applicant' => $applicant,
                   'institutions' => $institutions,
+                  'phone' => $phone,
+                  'email' => $email,
+                  'relations' => $relations,
               ]);
   }
   

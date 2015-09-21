@@ -163,7 +163,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php endforeach; ?>
     
     <br/>
-        <?php if (Yii::$app->user->can('editApplicantPersonal')): ?>
+        <?php if (Yii::$app->user->can('editStudentPersonal')): ?>
             <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']); ?>
         <?php endif; ?>
     <?php ActiveForm::end(); ?>
