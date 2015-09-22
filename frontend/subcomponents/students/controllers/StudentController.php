@@ -109,8 +109,8 @@ class StudentController extends Controller
     {
         $dataProvider = NULL;
         $info_string = "";
-        if (Yii::$app->request->post() || !empty(Yii::$app->session->get('stu_id')) || !empty(Yii::$app->session->get('firstname'))
-                || !empty(Yii::$app->session->get('lastname')) || !empty(Yii::$app->session->get('email')))
+        if (Yii::$app->request->post() || !Yii::$app->session->get('stu_id') || !Yii::$app->session->get('firstname')
+                || !Yii::$app->session->get('lastname') || !Yii::$app->session->get('email'))
         {
             if (Yii::$app->request->post())
             {
@@ -125,8 +125,8 @@ class StudentController extends Controller
                 Yii::$app->session->set('lastname', $lastname);
                 Yii::$app->session->set('email', $email);
             }
-            else if (!empty(Yii::$app->session->get('stu_id')) || !empty(Yii::$app->session->get('firstname'))
-                || !empty(Yii::$app->session->get('lastname')) || !empty(Yii::$app->session->get('email')))
+            else if (!Yii::$app->session->get('stu_id') || !Yii::$app->session->get('firstname')
+                || !Yii::$app->session->get('lastname') || !Yii::$app->session->get('email'))
             {
                 $stu_id = Yii::$app->session->get('stu_id');
                 $firstname = Yii::$app->session->get('firstname');
