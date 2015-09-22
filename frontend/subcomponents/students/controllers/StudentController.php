@@ -509,11 +509,22 @@ class StudentController extends Controller
 
                            if ($reg->save())
                            {
-                               //Inactivate previous registrations
+                               //Inactivate previous registrations and their offers
                                foreach ($registrations as $prev_reg)
                                {
                                    $prev_reg->isactive = 0;
                                    $prev_reg->save();
+                                   $offers = Offer::find()
+                                           ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                                           ->innerJoin('student_registration', '`student_registration`.`academicofferingid` = `application`.`academicofferingid`')
+                                           ->where(['student_registration.studentregistrationid' => $prev_reg->studentregistrationid, 
+                                                   'student_registration.isdeleted' => 0])
+                                           ->all();
+                                   foreach ($offers as $offer)
+                                   {
+                                       $offer->isactive = 0;
+                                       $offer->save();
+                                   }
                                }
                                Yii::$app->session->setFlash('success', 'New registration added.');
                            }
