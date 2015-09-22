@@ -24,6 +24,7 @@ use frontend\models\AcademicOffering;
 use frontend\models\ApplicationStatus;
 use frontend\models\RegistrationType;
 use frontend\models\Offer;
+use frontend\models\Address;
 
 class StudentController extends Controller
 {
@@ -310,6 +311,7 @@ class StudentController extends Controller
       $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
       $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
       $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
+      $addresses = $user ? Address::findAll(['personid' =>$user->personid]) : NULL;
       
       if (!$student)
       {
@@ -324,6 +326,7 @@ class StudentController extends Controller
                   'phone' => $phone,
                   'email' => $email,
                   'relations' => $relations,
+                  'addresses' => $addresses,
               ]);
   }
   

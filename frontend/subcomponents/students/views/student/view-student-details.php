@@ -5,6 +5,8 @@ use yii\helpers\Html;
 //use yii\grid\GridView;
 //use yii\helpers\Url;
 use frontend\models\Institution;
+use frontend\models\AddressType;
+use frontend\models\RelationType;
 
 $this->title = 'Student Details';
 $this->params['breadcrumbs'][] = ['label' => 'Students', 'url' => ['index']];
@@ -83,16 +85,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= "<strong>Email: </strong>" . ($email ? $email->email : "N/A") ?>
             </div>
         </div>
+        
+        <h3>Addresses</h3>
+        <div class="row">
+            <?php foreach($addresses as $address): ?> 
+                <div class="col-lg-4">
+                    <?php $add = AddressType::findOne(['addresstypeid' => $address->addresstypeid]); 
+                        $add_type = $add ? ucwords($add->name) : 'Unknown Address Type'; ?>
+                    <?= "<strong>$add_type: </strong>" . ucwords($address->addressline . ', ' . $address->town . ', ' . $address->country) ?>
+                </div>
+            <?php endforeach; ?>
+        </div> 
+        <br/>
+        
+        
         <h3>Relation Contact</h3>
         <?php foreach($relations as $relation): ?>
             <?php if ($relation->firstname != ''): ?> 
                 <div class="row">
+                    <?php $rel = RelationType::findOne(['relationtypeid' => $relation->relationtypeid]); 
+                        $rel_type = $add ? ucwords($rel->name) : 'Unknown Relation Type'; ?>
                     <div class="col-lg-2">
-                        <?= "<strong>First Name: </strong>" . $relation->firstname ?>
+                        <?= "<strong>$rel_type: </strong>" ?>
                     </div>
                     <div class="col-lg-2">
-                        <?= "<strong>Last Name: </strong>" .  $relation->lastname ?>
+                        <?= "<strong>Name: </strong>" . ucwords($relation->firstname . ' ' . $relation->lastname) ?>
                     </div>
+                    
                     <div class="col-lg-2">
                         <?= "<strong>Home Phone: </strong>" .  $relation->homephone ?>
                     </div>
