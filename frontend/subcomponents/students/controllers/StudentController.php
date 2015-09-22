@@ -103,19 +103,36 @@ class StudentController extends Controller
     /*
     * Purpose: Collect search parameters and display results of an applicant search.
     * Created: 1/08/2015 by Gamal Crichton
-    * Last Modified: 1/08/2015 by Gamal Crichton
+    * Last Modified: 22/09/2015 by Gamal Crichton
     */
     public function actionSearchStudent()
     {
         $dataProvider = NULL;
         $info_string = "";
-        if (Yii::$app->request->post())
+        if (Yii::$app->request->post() || !empty(Yii::$app->session->get('stu_id')) || !empty(Yii::$app->session->get('firstname'))
+                || !empty(Yii::$app->session->get('lastname')) || !empty(Yii::$app->session->get('email')))
         {
-            $request = Yii::$app->request;
-            $stu_id = $request->post('id');
-            $firstname = $request->post('firstname');
-            $lastname = $request->post('lastname');
-            $email = $request->post('email');
+            if (Yii::$app->request->post())
+            {
+                $request = Yii::$app->request;
+                $stu_id = $request->post('id');
+                $firstname = $request->post('firstname');
+                $lastname = $request->post('lastname');
+                $email = $request->post('email');
+
+                Yii::$app->session->set('stu_id', $stu_id);
+                Yii::$app->session->set('firstname', $firstname);
+                Yii::$app->session->set('lastname', $lastname);
+                Yii::$app->session->set('email', $email);
+            }
+            else if (!empty(Yii::$app->session->get('stu_id')) || !empty(Yii::$app->session->get('firstname'))
+                || !empty(Yii::$app->session->get('lastname')) || !empty(Yii::$app->session->get('email')))
+            {
+                $stu_id = Yii::$app->session->get('stu_id');
+                $firstname = Yii::$app->session->get('firstname');
+                $lastname = Yii::$app->session->get('lastname');
+                $email = Yii::$app->session->get('email');
+            }
             
             if ($stu_id)
             {

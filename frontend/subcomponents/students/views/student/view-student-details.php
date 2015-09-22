@@ -97,8 +97,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php endforeach; ?>
         </div> 
         <br/>
-        
-        
         <h3>Relation Contact</h3>
         <?php foreach($relations as $relation): ?>
             <?php if ($relation->firstname != ''): ?> 
