@@ -510,6 +510,7 @@ class StudentController extends Controller
                     $offer->applicationid = $application->applicationid;
                     $offer->issuedby = Yii::$app->user->getId();
                     $offer->issuedate = date("Y-m-d");
+                    $offer->ispublished = 1;
                     if ($offer->save())
                     {
                         $app_status = ApplicationStatus::findOne(['name' => 'offer']);
@@ -536,7 +537,7 @@ class StudentController extends Controller
                                    $prev_reg->save();
                                    $offers = Offer::find()
                                            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
-                                           ->innerJoin('student_registration', '`student_registration`.`academicofferingid` = `application`.`academicofferingid`')
+                                           ->innerJoin('student_registration', '`student_registration`.`personid` = `application`.`personid`')
                                            ->where(['student_registration.studentregistrationid' => $prev_reg->studentregistrationid, 
                                                    'student_registration.isdeleted' => 0])
                                            ->all();
