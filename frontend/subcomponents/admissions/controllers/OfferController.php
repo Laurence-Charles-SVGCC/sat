@@ -57,12 +57,13 @@ class OfferController extends Controller
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+            'offer.isactive' => 1);
         
         if ($division_id && $division_id == 1)
         {
             $app_period_name = "All Active Application Periods";
-            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'offer.isactive' => 1);
         }
         
         $offers = Offer::find()
@@ -1152,11 +1153,12 @@ class OfferController extends Controller
     {
         $division_id = Yii::$app->session->get('divisionid');
         
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
+        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+            'offer.isactive' => 1);
         
         if ($division_id && $division_id == 1)
         {
-            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'offer.isactive' => 1);
         }
         
         $offers = Offer::find()

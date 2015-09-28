@@ -34,12 +34,14 @@ class CardController extends \yii\web\Controller
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $divisionid, 'isactive' => 1]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-        $offer_cond = array('application_period.divisionid' => $divisionid, 'application_period.isactive' => 1);
+        $offer_cond = array('application_period.divisionid' => $divisionid, 'application_period.isactive' => 1, 'offer.isactive' => 1,
+            'offer.isdeleted' => 1);
         
         if ($divisionid && $divisionid == 1)
         {
             $app_period_name = "All Active Application Periods";
-            $offer_cond = array('application_period.isactive' => 1);
+            $offer_cond = array('application_period.isactive' => 1, 'offer.isactive' => 1,
+            'offer.isdeleted' => 1);
         }
         $offer_cond['offer.isdeleted'] = 0;
         
