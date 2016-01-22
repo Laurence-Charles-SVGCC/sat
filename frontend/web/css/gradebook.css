@@ -1,0 +1,143 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 4, 2015, 10:57:56 PM
+    Author     : laurencecharles
+*/
+
+
+.custom_wrapper
+{
+    background-image:url(../../images/watermark.jpg);
+    background-repeat:repeat;
+    
+    margin: 0 auto;
+    border: 5px solid #CCCCCC;
+    border-radius: 6px 6px 6px 6px;
+/*    min-height:2650px; */
+    min-height:3500px; 
+    width:100%;
+    min-width: 1200px;
+    position: relative;
+    top: 25px;
+    
+    font-family:Arial, Helvetica, Geneva, sans-serif;
+    font-size: 1.25em;
+}
+
+.custom_header
+{      
+    width: 95%;
+    min-width:1000px;
+    position:relative;
+    top:10px;
+    margin: 0 auto;
+    border: 3px solid #CCCCCC;
+    border-radius: 6px 6px 6px 6px;
+}
+
+.custom_body
+{      
+    width: 95%;
+    min-width:1000px;
+    /*min-height:2475px;*/
+    min-height:3200px;
+    position:relative;
+    top:40px;
+    margin: 0 auto;
+    border: 3px solid #CCCCCC;
+    border-radius: 6px 6px 6px 6px;
+}
+
+.custom_logo
+{
+    padding-left:1px;
+}
+
+.custom_logo_students
+{
+    padding-left:1px;
+    padding-right:50px;
+}
+
+.custom_module_label
+{
+  position: relative;
+  font-family: Arial, Helvetica, Geneva, sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 33px;
+  letter-spacing: 1px;
+}
+
+.custom_h1
+{
+    text-align: center;
+    font: bold 40px Arial, Helvetica, Geneva, sans-serif;
+    color: #4B4B55;text-shadow: #fffeff 0 1px 0;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+
+.custom_h2
+{
+    margin-left:35px;
+    font: bold 30px Arial, Helvetica, Geneva, sans-serif;
+    color: #4B4B55;text-shadow: #fffeff 0 1px 0;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+
+.module_body
+{
+    width: 95%;
+    min-width:1000px;
+/*    min-height:2400px;*/
+    min-height:3000px;
+    position:relative;
+    top:40px;
+    margin: 0 auto;
+    border: 3px solid #CCCCCC;
+    border-radius: 6px 6px 6px 6px;
+    
+}
+
+.general_text
+{
+    font-size:18px;
+}
+
+.form_label{
+    font-size:18px;
+}
+
+.form_field{
+    font-size:16px;
+}
+
+.center_content 
+{
+  width:60%;
+  min-height: 350px;
+  margin: 0 auto;
+  border: 3px solid #CCCCCC;
+  border-radius: 6px 6px 6px 6px;
+}
+
+.form-layout{
+    border: 1px solid #CCCCCC;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #CCCCCF;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 85%;
+    margin: 0 auto;
+}

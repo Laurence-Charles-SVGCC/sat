@@ -5,6 +5,8 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 
+use frontend\models\EmployeeDivision;
+
 /**
  * This is the model class for table "employee".
  *
@@ -103,4 +105,53 @@ class Employee extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
+    
+    
+    /**
+     * Returns the full name of an employee
+     * 
+     * @param type $personid
+     * @return boolean|string
+     * 
+     * Author: Laurence Charles
+     * Date Created : 23/12/2015
+     * Date Last Modified: 23/12/2015
+     */
+    public static function getEmployeeName($personid)
+    {
+        $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($employee)
+        {
+            $full_name = $employee->title . ". " . $employee->firstname . " " . $employee->lastname;
+            return $full_name;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Returns the divisionid of an employee
+     * 
+     * @param type $personid
+     * @return boolean|string
+     * 
+     * Author: Laurence Charles
+     * Date Created : 16/01/2016
+     * Date Last Modified: 16/01/2016
+     */
+    public static function getEmployeeDivisionID($personid)
+    {
+        $employee = EmployeeDivision::find()
+                    ->where(['employeeid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($employee)
+        {
+            return $employee->divisionid;
+        }
+        return false;
+    }
+    
+    
 }

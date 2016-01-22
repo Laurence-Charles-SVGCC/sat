@@ -37,10 +37,9 @@ class PersonInstitution extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'institutionid'], 'required'],
-            [['personid', 'institutionid', 'unverifiedinstitutionid'], 'integer'],
-            [['startdate', 'enddate'], 'safe'],
-            [['hasgraduated', 'isactive', 'isdeleted'], 'boolean']
+            [['personid', 'institutionid', 'startdate', 'enddate', 'hasgraduated'], 'required'],
+            [['personid', 'institutionid', 'unverifiedinstitutionid', 'hasgraduated', 'isactive', 'isdeleted'], 'integer'],
+            [['startdate', 'enddate'], 'safe']
         ];
     }
 
@@ -84,5 +83,28 @@ class PersonInstitution extends \yii\db\ActiveRecord
     public function getUnverifiedinstitution()
     {
         return $this->hasOne(UnverifiedInstitution::className(), ['unverifiedinstitutionid' => 'unverifiedinstitutionid']);
+    }
+    
+    
+    /**
+     * Returns a "PersonInstitution" record based on personid and level of school
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/12/2015
+     * Date Last Modified: 23/12/2015
+     */
+    public static function getPersonInsitutionRecords($id, $type)
+    {
+        $records = PersonInstitution::find()
+               ->joinWith('institution')
+               ->where(['person_institution.personid'=> $id, 'institution.levelid'=> $type, 'person_institution.isactive' => 1 , 'person_institution.isdeleted' => 0]) 
+               ->all();
+        if (count($records) > 0)
+            return $records;
+        return false;
     }
 }

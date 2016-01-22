@@ -19,17 +19,17 @@ use common\models\User;
  * @property string $gender
  * @property string $dateofbirth
  * @property string $photopath
- * @property boolean $bursarystatus
+ * @property integer $bursarystatus
  * @property string $sponsorname
  * @property string $clubs
  * @property string $otherinterests
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  * @property string $maritalstatus
  * @property string $nationality
  * @property string $religion
  * @property string $placeofbirth
- *  @property string $nationalsports 
+ * @property string $nationalsports 
 * @property string $othersports 
 * @property string $otheracademics 
 * @property string $isexternal 
@@ -52,9 +52,8 @@ class Applicant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'potentialstudentid'], 'integer'],
+            [['personid', 'potentialstudentid', 'applicantintentid', 'bursarystatus', 'isactive', 'isdeleted', 'isexternal'], 'integer'],
             [['dateofbirth'], 'safe'],
-            [['bursarystatus', 'isactive', 'isdeleted', 'isexternal'], 'boolean'],
             [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
             [['title'], 'string', 'max' => 3],
             [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],
@@ -73,6 +72,7 @@ class Applicant extends \yii\db\ActiveRecord
             'applicantid' => 'Applicantid',
             'personid' => 'Personid',
             'potentialstudentid' => 'Potentialstudentid',
+            'applicantintentid' => 'Applicantintentid',
             'title' => 'Title',
             'firstname' => 'First Name',
             'middlename' => 'Middle Name',
@@ -104,4 +104,70 @@ class Applicant extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
+    
+    
+    /**
+    * Finds applicant by personid
+    *
+    * @param string $username
+    * @return static|null
+    * 
+    * Author: Laurence Charles
+    * Date Created: 21/12/2015
+    * Date Last Modified: 21/12/2015 
+    */
+    public static function findByPersonID($id)
+    {
+        return static::findOne(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0]);
+    }
+    
+    
+    /**
+     * Load applicant model with data from 'General' view
+     * 
+     * @param type $student_profile
+     * 
+     * Author: Laurence Charles
+     * Date Created: 25/12/2015
+     * Date Last Modified: 28/12/2015
+     */
+    public function loadGeneral($student_profile)
+    {
+        $this->title = $student_profile->title;
+        $this->firstname = $student_profile->firstname;       
+        $this->middlename = $student_profile->middlename;   
+        $this->lastname = $student_profile->lastname;
+        $this->dateofbirth = $student_profile->dateofbirth;
+        $this->gender = $student_profile->gender;
+        $this->nationality = $student_profile->nationality;
+        $this->placeofbirth = $student_profile->placeofbirth;
+        $this->religion = $student_profile->religion;     
+        $this->maritalstatus = $student_profile->maritalstatus;
+        $this->sponsorname = $student_profile->sponsorname;
+    }
+    
+    
+    /**
+     * Used to determine the intended division of an applicant
+     * 
+     * @param type $id
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/01/2016
+     * Date Last Modified: 09/01/2016
+     */
+    public static function getApplicantIntent($id)
+    {
+        $applicant= Applicant::find()
+                    ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if($applicant)
+        {
+            return $applicant->applicantintentid;
+        }
+        return false;    
+    }
+  
+    
 }

@@ -71,4 +71,27 @@ class QualificationType extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Level::className(), ['levelid' => 'levelid']);
     }
+    
+    /**
+     * Returns an abbreviation of qualificationtype
+     * 
+     * @param type $id
+     * @return boolean|string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 08/12/2015
+     * Date Last Modified: 08/12/2015
+     */
+    public static function getQualificationAbbreviation($id)
+    {
+        $qualification = QualificationType::find()
+                    ->where(['qualificationtypeid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($qualification)
+        {
+            $name = $qualification->abbreviation . ".  ";
+            return $name;
+        }
+        return false;
+    }
 }

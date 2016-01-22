@@ -9,13 +9,14 @@ use Yii;
  *
  * @property string $offerid
  * @property string $applicationid
+ * @property string $offertypeid
  * @property string $issuedby
  * @property string $issuedate
  * @property string $revokedby
  * @property string $revokedate
- * @property boolean $ispublished
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $ispublished
+ * @property interger $isactive
+ * @property integer $isdeleted
  *
  * @property Application $application
  */
@@ -35,10 +36,9 @@ class Offer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['applicationid', 'issuedby', 'issuedate'], 'required'],
-            [['applicationid', 'issuedby', 'revokedby'], 'integer'],
-            [['issuedate', 'revokedate'], 'safe'],
-            [['ispublished', 'isactive', 'isdeleted'], 'boolean']
+            [['applicationid', 'issuedby', 'issuedate', ], 'required'],
+            [['applicationid', 'offertypeid', 'issuedby', 'revokedby', 'ispublished', 'isactive', 'isdeleted'], 'integer'],
+            [['issuedate', 'revokedate'], 'safe']
         ];
     }
 
@@ -50,6 +50,7 @@ class Offer extends \yii\db\ActiveRecord
         return [
             'offerid' => 'Offerid',
             'applicationid' => 'Applicationid',
+            'offertypeid' => 'Offertypeid',
             'issuedby' => 'Issuedby',
             'issuedate' => 'Issuedate',
             'revokedby' => 'Revokedby',
@@ -67,4 +68,109 @@ class Offer extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Application::className(), ['applicationid' => 'applicationid']);
     }
+    
+    
+    
+    public static function getOffers($personid)
+    {
+        $db = Yii::$app->db;
+        $records = $db->createCommand(
+                "SELECT application.applicationid AS 'applicationid',"
+                . " application.academicofferingid AS 'academicofferingid',"
+                . " application.ordering AS 'ordering',"
+                . " offer_type.name AS 'offertype',"
+                . " programme_catalog.name AS 'name',"
+                . " offer.issuedby AS 'issuedby',"
+                . " offer.issuedate AS 'issuedate',"
+                . " offer.revokedby AS 'revokedby',"
+                . " offer.revokedate AS 'revokedate'"
+                . " FROM offer"
+                . " JOIN application"
+                . " ON offer.applicationid = application.applicationid"
+                . " JOIN academic_offering"
+                . " ON application.academicofferingid = academic_offering.academicofferingid"
+                . " JOIN programme_catalog"
+                . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+                . " JOIN offer_type"
+                . " ON offer.offertypeid = offer_type.offertypeid"
+                . " WHERE application.personid = " . $personid
+                //. " AND offer.isactive = 1"
+                . " AND offer.isdeleted = 0"
+                . " AND offer.ispublished = 1;"
+                )
+                ->queryAll();
+        if (count($records)>0)
+            return $records;
+        return false;
+    }
+    
+    
+    /**
+    * Returns programme details
+    * 
+    * @param type $offerid
+    * @return string
+    * 
+    * Author: Laurence Charles
+    * Date Created:10/01/2016
+    * Date Last Modified: 10/01/2016
+    */
+   public static function getProgrammeDetails($offerid)
+   {
+        $db = Yii::$app->db;
+        $record = $db->createCommand(
+                    "SELECT qualification_type.name AS 'qualification',"
+                    . " programme_catalog.name AS 'programmename',"
+                    . " programme_catalog.specialisation AS 'specialisation'"
+                    . " FROM offer"
+                    . " JOIN application"
+                    . " ON offer.applicationid = application.applicationid"
+                    . " JOIN academic_offering"
+                    . " ON application.academicofferingid = academic_offering.academicofferingid"
+                    . " JOIN programme_catalog"
+                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+                    . " JOIN qualification_type"
+                    . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                    . " WHERE offer.offerid = ". $offerid
+//                    . " AND offer.isdeleted = 0;"
+                    . " AND offer.isdeleted = 0;"
+                    )
+                    ->queryOne();
+        if ($record)
+            return $record;
+        return false;
+   }
+   
+   
+   /**
+     * Determines if a 'offer' record is associated with a CAPE programme
+     * 
+     * @param type $offerid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/01/2016
+     * Date Last Modified: 10/01/2016
+     */
+    public static function isCape($offerid)
+    {
+        $db = Yii::$app->db;
+        $records = $db->createCommand(
+                    "SELECT * "
+                    . " FROM offer"
+                    . " JOIN application"
+                    . " ON offer.applicationid = application.applicationid"
+                    . " JOIN academic_offering"
+                    . " ON application.academicofferingid = academic_offering.academicofferingid"
+                    . " JOIN programme_catalog"
+                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+                    . " WHERE offer.offerid = ". $offerid
+                    . " AND programme_catalog.name = 'CAPE';"
+                    )
+                    ->queryAll();
+        if (count($records) > 0)
+            return true;
+        return false;
+    }
+   
 }

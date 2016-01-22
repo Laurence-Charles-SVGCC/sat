@@ -42,7 +42,7 @@ class CapeSubject extends \yii\db\ActiveRecord
             [['academicofferingid', 'subjectname'], 'required'],
             [['cordinatorid', 'academicofferingid', 'unitcount', 'capacity'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['subjectname'], 'string', 'max' => 45]
+            [['subjectname'], 'string', 'max' => 100]
         ];
     }
 
@@ -109,5 +109,37 @@ class CapeSubject extends \yii\db\ActiveRecord
     public function getCapeUnits()
     {
         return $this->hasMany(CapeUnit::className(), ['capesubjectid' => 'capesubjectid']);
+    }
+    
+    
+    /**
+     *Returns key=>value array of capesubjectid=>subjectname
+     *  
+     * @param type $subjects
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/01/2016
+     * Date Last Modified: 09/01/2016
+     */
+    public static function processGroup($subjects)
+    {
+        $combined = array();
+        $keys = array();
+        $values = array();
+        array_push($keys, '0');
+        array_push($values, 'None');
+        foreach($subjects as $subject)
+        {
+            $target = CapeSubject::find()
+                    ->where(['capesubjectid' => $subject->capesubjectid])
+                    ->one();
+            $k = strval($target->capesubjectid);
+            $v = strval($target->subjectname);
+            array_push($keys, $k);
+            array_push($values, $v);
+        }
+        $combined = array_combine($keys, $values);
+        return $combined;
     }
 }

@@ -13,7 +13,9 @@ class SignupUserForm extends Model
     public $lastname;
     public $password;
     public $confirm_password;
-    public $email;
+    public $personal_email;
+    public $institutional_email;
+    
     public $persontypeid;
     public $department;
     public $username;
@@ -28,8 +30,10 @@ class SignupUserForm extends Model
             [['password', 'confirm_password'], 'string', 'min' => 6],
             ['confirm_password', 'compare', 'compareAttribute' => 'password'],
             
-            ['email', 'email'],
-            ['email', 'svgccmail'],
+            ['personal_email', 'email'],
+            
+            ['institutional_email', 'email'],
+            ['institutional_email', 'svgccmail'],
             
             [['firstname', 'lastname'], 'string', 'max' => 45],
             [['persontypeid'], 'integer'],
@@ -41,12 +45,17 @@ class SignupUserForm extends Model
      * Signs user up.
      *
      * @return User|null the saved model or null if saving fails
+     * 
+     * Author: Game Crichton
+     * Date Created: ??
+     * Date Last Modified: 20/01/2016 (Laurence Charles)
      */
-    public function signup($username)
+    public function signup($username, $institutional_email)
     {
         if ($this->validate()) {
             $user = new User();
             $user->username = $username;
+            $user->email = $institutional_email;
             $user->setPassword($this->password);
             $user->setPersonTypeID($this->persontypeid);
             $user->setSalt();

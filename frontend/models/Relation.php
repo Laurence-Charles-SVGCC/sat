@@ -46,9 +46,10 @@ class Relation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['relationtypeid', 'personid'], 'required'],
+            [['personid', 'relationtypeid', 'title', 'firstname', 'lastname'], 'required'],
             [['relationtypeid', 'personid', 'receivemail', 'isactive', 'isdeleted'], 'integer'],
             [['title'], 'string', 'max' => 3],
+            [['address'], 'string'],
             [['firstname', 'lastname', 'occupation', 'email', 'country', 'constituency', 'town', 'addressline'], 'string', 'max' => 45],
             [['homephone', 'cellphone', 'workphone'], 'string', 'max' => 15]
         ];
@@ -70,6 +71,7 @@ class Relation extends \yii\db\ActiveRecord
             'homephone' => 'Homephone',
             'cellphone' => 'Cellphone',
             'workphone' => 'Workphone',
+            'address' => "Address",
             'receivemail' => 'Receivemail',
             'email' => 'Email',
             'country' => 'Country',
@@ -95,5 +97,92 @@ class Relation extends \yii\db\ActiveRecord
     public function getPerson()
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
+    }
+    
+    
+    /**
+     * Aims to retrieve a relation of a particular type
+     * 
+     * @param type $id
+     * @param type $relationType
+     * @return boolean
+     * 
+     * Date Created: 22/12/2015
+     * Date Last Modified: 22/12/2015
+     */
+    public static function getRelationRecord($id, $relationType)
+    {
+        $model = Relation::find()
+                ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0, 'relationtypeid'=>$relationType])
+                ->one();
+        if ($model != NULL && strcmp($model->title,"") !=0) 
+        {
+            return $model;
+        } 
+        return false;
+    }
+    
+    
+    /**
+     * Checks if town field is populated
+     * For conditional appearance of town
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/12/2015
+     * Date Last Modified: 30/12/2015
+     */
+    public function checkTown()
+    {
+        if(strcmp($this->town,"")!=0  && is_null($this->town) == false)
+            return true;
+        return false;
+    }
+    
+
+    /**
+     * Checks if town field is populated
+     * For conditional appearance of town
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/12/2015
+     * Date Last Modified: 30/12/2015
+     */
+    public function checkAddressline()
+    {
+        if(strcmp($this->addressline,"")!=0  && is_null($this->addressline) == false)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Creates a blank Relation model
+     * 
+     * @param type $personid
+     * @param type $type
+     * @return \frontend\models\Relation
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2015
+     * Date Last Modified: 04/01/2015
+     */
+    public static function getDumyRelation($personid, $type)
+    {
+        $temp = new Relation();
+        $temp->personid = $personid;
+        $temp->relationtypeid = $type;
+        $temp->title = "Mr.";
+        $temp->firstname = "FirstName";
+        $temp->lastname = "LastName";
+//        $temp->address = "";
+        return $temp;
     }
 }

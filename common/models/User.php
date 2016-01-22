@@ -16,6 +16,7 @@ use common\controllers\DatabaseWrapperController;
  * @property integer $personid
  * @property string $username
  * @property string $pword
+ * @property string $email
  * 
  * @property string $auth_key
  * @property integer $isactive
@@ -212,5 +213,25 @@ class User extends ActiveRecord implements IdentityInterface
     public function setSalt()
     {
         $this->salt = Yii::$app->security->generateRandomString();
+    }
+    
+    
+    /**
+     * Returns a user based on $personid
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/12/2015
+     * Date Last Modified: 20/12/2015
+     */
+    public static function getUser($personid){
+        $user = User::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($user)
+            return $user;
+        return false;
     }
 }

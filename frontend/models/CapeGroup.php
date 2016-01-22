@@ -65,4 +65,23 @@ class CapeGroup extends \yii\db\ActiveRecord
     {
         return $this->hasMany(CapeSubject::className(), ['capesubjectid' => 'capesubjectid'])->viaTable('cape_subject_group', ['capegroupid' => 'capegroupid']);
     }
+    
+    
+    /**
+     * Returns array of currently active cape groups
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/01/2016
+     * Date Last Modified: 09/01/2016
+     */
+    public static function getGroups()
+    {
+        $groups = CapeGroup::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        return $groups;
+    }
+    
 }

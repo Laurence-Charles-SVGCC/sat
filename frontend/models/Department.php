@@ -77,4 +77,62 @@ class Department extends \yii\db\ActiveRecord
     {
         return $this->hasMany(ProgrammeCatalog::className(), ['departmentid' => 'departmentid']);
     }
+    
+    
+    /**
+     * Returns an array containing the education departments of a particular division
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/12/2015
+     * Date Last Modified: 07/12/2015
+     */
+    public static function getDepartments($divisionid)
+    {
+        if ($divisionid == 4)      //if DASGS
+        {
+            $departments = Department::find()
+                        ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->andWhere(['not', ['name' => 'DASGS Senior']])
+                        ->andWhere(['not', ['name' => 'Administrative (DASGS)']])
+                        ->andWhere(['not', ['name' => 'Library (DASGS)']])
+                        ->all();             
+        }
+        elseif ($divisionid == 5)      //if DTVE
+        {
+            $departments = Department::find()
+                         ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->andWhere(['not', ['name' => 'DTVE Senior']])
+                        ->andWhere(['not', ['name' => 'Administrative (DTVE)']])
+                        ->andWhere(['not', ['name' => 'Library (DTVE)']])
+                        ->all();
+        }
+        elseif ($divisionid == 6)      //if DTE
+        {
+            $departments = Department::find()
+                         ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->andWhere(['not', ['name' => 'DTE Senior']])
+                        ->andWhere(['not', ['name' => 'Administrative (DTE)']])
+                        ->andWhere(['not', ['name' => 'Library (DTE)']])
+                        ->all();  
+        }
+        elseif ($divisionid == 7)      //if DNE
+        {
+            $departments = Department::find()
+                        ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->andWhere(['not', ['name' => 'DNE Senior']])
+                        ->andWhere(['not', ['name' => 'Administrative (DNE)']])
+                        ->andWhere(['not', ['name' => 'Library (DNE)']])
+                        ->all(); 
+        }
+        
+        if (count($departments) > 0)
+            return $departments;
+        else
+            return false;
+    }
+    
+    
 }

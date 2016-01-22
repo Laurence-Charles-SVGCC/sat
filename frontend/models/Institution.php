@@ -89,4 +89,48 @@ class Institution extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PersonInstitution::className(), ['institutionid' => 'institutionid']);
     }
+    
+    
+    /**
+     * Returns an array of insititutions
+     * 
+     * @param type $id
+     * @param type $index
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/01/2016
+     * Date Last Modified: 05/01/2016
+     */
+    public static function initializeSchoolList($levelid)
+    {
+        $institutions = Institution::find()
+                    ->where(['levelid' => $levelid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+        
+        $keys = array();
+        array_push($keys, '');
+        $values = array();
+        array_push($values, 'Select...');
+        $combined = array();
+        
+        if(count($institutions) == 0)
+        {
+            $combined = array_combine($keys, $values);
+            return $combined;   
+        }
+        else        //if institutions exist
+        {
+            foreach($institutions as $institution)
+            {
+                $k = strval($institution->institutionid);
+                array_push($keys, $k);
+                $v = strval($institution->name);
+                array_push($values, $v);
+            }  
+
+            $combined = array_combine($keys, $values);
+            return $combined;   
+        }
+    }
 }

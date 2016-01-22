@@ -2,17 +2,18 @@
 
 namespace app\subcomponents\students\controllers;
 
-use yii\web\Controller;
-
 use Yii;
+use yii\web\Controller;
+use yii\helpers\Url;
+use yii\data\ArrayDataProvider;
+
+
 use frontend\models\Division;
 use frontend\models\Student;
 use common\models\User;
-use yii\data\ArrayDataProvider;
 use frontend\models\StudentRegistration;
 use frontend\models\Application;
 use frontend\models\ApplicationCapesubject;
-use yii\helpers\Url;
 use frontend\models\PersonInstitution;
 use frontend\models\Phone;
 use frontend\models\Email;
@@ -25,13 +26,27 @@ use frontend\models\ApplicationStatus;
 use frontend\models\RegistrationType;
 use frontend\models\Offer;
 use frontend\models\Address;
+use frontend\models\Department;
+use frontend\models\AcademicYear;
+use frontend\models\Cordinator;
+use frontend\models\StudentStatus;
+use frontend\models\Applicant;
+use frontend\models\Assessment;
+use frontend\models\AssessmentCape;
+use frontend\models\AssessmentStudent;
+use frontend\models\AssessmentStudentCape;
+use frontend\models\BatchStudent;
+use frontend\models\BatchStudentCape;
+use frontend\models\Hold;
+
 
 class StudentController extends Controller
 {
     
     public function actionIndex()
     {
-        return $this->render('index');
+//        return $this->render('index');
+        return $this->redirect(['student/find-a-student']);
     }
     
     public function actionManageStudents()
@@ -624,5 +639,756 @@ class StudentController extends Controller
                ]
             );
        }
-  }
+    }
+    
+    
+    
+    /**
+     * Renders the Student find_a_student view and process form submission
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/12/2015
+     * Date Last Modified: 10/12/2015
+     */
+    public function actionFindAStudent($id = NULL)
+    {
+        $info_string = "";
+
+        $all_students_provider = NULL;
+        $all_students_info = array();
+
+        $a_f_provider = NULL;
+        $a_f_info = array();
+
+        $g_l_provider = NULL;
+        $g_l_info = array();
+
+        $m_r_provider = NULL;
+        $m_r_info = array();
+
+        $s_z_provider = NULL;
+        $s_z_info = array();
+        
+        //need to facilitate breadcrumb navigation from 'student_listing' to 'programme_listing' of source division
+        if ($id)
+        {
+            $request = Yii::$app->request;
+            $divisionid = $id;
+
+            if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
+            {
+                $division_name = Division::getDivisionAbbreviation($divisionid);
+                $department_count = count(Department::getDepartments($divisionid));
+
+                $data_package = array();
+                $programme_collection = array();
+                /*
+                 * Package Collection structure is as follows
+                 * [department_count, [[programme, cohort_count, [cohorts,...]]]
+                 */
+                array_push($data_package, $department_count);
+
+                $programmes = ProgrammeCatalog::getProgrammes($divisionid);
+                if ($programmes)
+                {
+                    foreach ($programmes as $programme) 
+                    {
+                        $temp_array = array();
+
+                        $cohort_array = array();
+
+                        array_push($temp_array, $programme);
+
+                        $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid); //yet to be created
+                        array_push($temp_array, $cohort_count);
+
+                        if ($cohort_count > 0)
+                        {
+                            $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); //yet to be created
+
+                            for($i = 0 ; $i < $cohort_count ; $i++)
+                            {
+                                array_push($cohort_array, $cohorts[$i]);
+                            }
+                            array_push($temp_array, $cohort_array);
+                        }
+
+
+
+                        array_push($programme_collection, $temp_array);
+
+                        $temp_array = NULL;
+                        $cohort_array = NULL;
+                        $name = NULL;
+                        $cohort_count = NULL;
+                        $cohorts = NULL;
+                    }
+                    array_push($data_package, $programme_collection);
+
+                    return $this->render('programme_listing', [
+                        'division_id' => $divisionid,
+                        'division_name' => $division_name,
+                        'data' => $data_package,
+                    ]);
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'No programmes found.');
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Please select a divsion.');                
+        }
+        
+        
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $divisionid = $request->post('division');
+            $studentid = $request->post('id_field');
+            $firstname = $request->post('fname_field');
+            $lastname = $request->post('lname_field');
+
+            //if user initiates search based on programme
+            if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
+            {
+                $division_name = Division::getDivisionAbbreviation($divisionid);
+                $department_count = count(Department::getDepartments($divisionid));
+
+                $data_package = array();
+                $programme_collection = array();
+                /*
+                 * Package Collection structure is as follows
+                 * [department_count, [[programme, cohort_count, [cohorts,...]]]
+                 */
+                array_push($data_package, $department_count);
+
+                $programmes = ProgrammeCatalog::getProgrammes($divisionid);
+                if ($programmes)
+                {
+                    foreach ($programmes as $programme) 
+                    {
+                        $temp_array = array();
+
+                        $cohort_array = array();
+
+                        array_push($temp_array, $programme);
+
+                        $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid); //yet to be created
+                        array_push($temp_array, $cohort_count);
+
+                        if ($cohort_count > 0)
+                        {
+                            $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); //yet to be created
+
+                            for($i = 0 ; $i < $cohort_count ; $i++)
+                            {
+                                array_push($cohort_array, $cohorts[$i]);
+                            }
+                            array_push($temp_array, $cohort_array);
+                        }
+
+                        array_push($programme_collection, $temp_array);
+
+                        $temp_array = NULL;
+                        $cohort_array = NULL;
+                        $name = NULL;
+                        $cohort_count = NULL;
+                        $cohorts = NULL;
+                    }
+                    array_push($data_package, $programme_collection);
+
+                    return $this->render('programme_listing', [
+                        'division_id' => $divisionid,
+                        'division_name' => $division_name,
+                        'data' => $data_package,
+                    ]);
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'No programmes found.');
+            }
+
+            //if user initiates search based on studentID
+            elseif ($studentid != NULL  && strcmp($studentid, "") != 0)
+            {
+                $info_string = $info_string .  " Student ID: " . $studentid;
+                $user = User::findOne(['username' => $studentid, 'isactive' => 1, 'isdeleted' => 0]);
+
+                if ($user)
+                { 
+                    //if system user is a Dean or Deputy Dean then their search is contrained by their division
+//                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
+//                    {
+//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+//                        $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
+//                    }
+//                    else
+//                    {
+                        $registrations = StudentRegistration::find()
+                                    ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                    ->all();
+//                    }
+                    if (count($registrations) > 0)
+                    {    
+                        foreach ($registrations as $registration) 
+                        { 
+                            $student = Student::getStudent($user->personid);
+                            if ($student)
+                            {
+                                $all_students_info['personid'] = $user->personid;
+                                $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                                $all_students_info['studentno'] = $user->username;
+                                $all_students_info['firstname'] = $student->firstname;
+                                $all_students_info['middlename'] = $student->middlename;
+                                $all_students_info['lastname'] = $student->lastname;
+                                $all_students_info['gender'] = $student->gender;
+
+                                $student_status = StudentStatus::find()
+                                                ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one();
+                                $all_students_info['studentstatus'] = $student_status->name;
+                                $all_student_data_container[] = $all_students_info;
+                            }
+                            else
+                            {
+                                Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'No students found matching this criteria.');
+                    }                    
+
+                    $all_students_provider = new ArrayDataProvider([
+                            'allModels' => $all_student_data_container,
+                            'pagination' => [
+                                'pageSize' => 20,
+                            ],
+                            'sort' => [
+                                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                                'attributes' => ['firstname', 'lastname'],
+                            ]
+                    ]);    
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+                }                     
+            }
+
+            //if user initiates search based student name
+            elseif( ($firstname != NULL && strcmp($firstname,"") != 0)  || ($lastname != NULL && strcmp($lastname,"") != 0) )
+            {
+//                    Yii::$app->getSession()->setFlash('error', 'Lets search using student name.');
+                if ($firstname)
+                {
+                    $cond_arr['firstname'] = $firstname;
+                    $info_string = $info_string .  " First Name: " . $firstname; 
+                }
+                if ($lastname)
+                {
+                    $cond_arr['lastname'] = $lastname;
+                    $info_string = $info_string .  " Last Name: " . $lastname;
+                }
+
+                if (empty($cond_arr))
+                {
+                    Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+                }
+                else
+                {
+                    $cond_arr['isactive'] = 1;
+                    $cond_arr['isdeleted'] = 0;
+
+                    $students = Student::find()
+                            ->where($cond_arr)
+                            ->all();
+                    
+                    //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
+//                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
+//                    {
+//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+//                        //if no students records matching criteria name criteria exists of students not from appropriate division
+//                        if (empty($students) || Student::checkStudentsDivision($students, $divisionid) == false)
+//                        {
+//                            Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
+//                        }
+//                        else
+//                        {
+//                            $registration = StudentRegistration::find()
+//                                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
+//                                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+//                                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+//                                        ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+//                                        ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
+//                                        ->where(['student_registration.personid' => $student->personid, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid])
+//                                        ->one();
+//                            $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
+//                            if ($registration && $user)
+//                            {
+//                                $all_students_info['personid'] = $student->personid;
+//                                $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+//                                $all_students_info['studentno'] = $user->username;
+//                                $all_students_info['firstname'] = $student->firstname;
+//                                $all_students_info['middlename'] = $student->middlename;
+//                                $all_students_info['lastname'] = $student->lastname;
+//                                $all_students_info['gender'] = $student->gender;
+//
+//                                $student_status = StudentStatus::find()
+//                                                ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+//                                                ->one();
+//                                $all_students_info['studentstatus'] = $student_status->name;
+//                                $all_student_data_container[] = $all_students_info;
+//                            }
+//                            else
+//                            {
+//                                Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+//                            }
+//                        }
+//                    }
+//                    else    //if system user is not a Dean or Deputy Dean
+//                    {
+                        if (empty($students))
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
+                        }
+                        else
+                        {
+                            foreach ($students as $student)
+                            {
+                                $registration = StudentRegistration::find()
+                                        ->where(['personid' => $student->personid, 'isdeleted' => 0])
+                                        ->one();    
+                                $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                                if ($registration && $user)
+                                {
+                                    $all_students_info['personid'] = $student->personid;
+                                    $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                                    $all_students_info['studentno'] = $user->username;
+                                    $all_students_info['firstname'] = $student->firstname;
+                                    $all_students_info['middlename'] = $student->middlename;
+                                    $all_students_info['lastname'] = $student->lastname;
+                                    $all_students_info['gender'] = $student->gender;
+
+                                    $student_status = StudentStatus::find()
+                                                    ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                                    ->one();
+                                    $all_students_info['studentstatus'] = $student_status->name;
+                                    $all_student_data_container[] = $all_students_info;
+                                }
+                                else
+                                {
+                                    Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+                                }                  
+                            }
+
+                            $all_students_provider = new ArrayDataProvider([
+                                    'allModels' => $all_student_data_container,
+                                    'pagination' => [
+                                        'pageSize' => 30,
+                                    ],
+                                    'sort' => [
+                                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                                        'attributes' => ['firstname', 'lastname'],
+                                    ]
+                            ]);      
+                        }   
+//                    }
+                }
+            }
+
+            else    //if user clicks 'search' button without entering any search criteria
+            {
+                Yii::$app->getSession()->setFlash('error', 'Please select enter valid search criteria.');
+            }
+        }  
+
+        return $this->render('find_a_student_index',[
+            'all_students_provider' => $all_students_provider,
+            'info_string' => $info_string,
+        ]);
+    }
+    
+    
+    
+    /**
+     * Renders the 'Student Listing view and process form submission
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/12/2015
+     * Date Last Modified: 20/12/2015
+     */
+    public function actionStudents($academicyearid, $academicofferingid, $programmename, $divisionid)
+    {
+        $all_students_provider = NULL;
+        $all_students_info = array();
+
+        $a_f_provider = NULL;
+        $a_f_info = array();
+
+        $g_l_provider = NULL;
+        $g_l_info = array();
+
+        $m_r_provider = NULL;
+        $m_r_info = array();
+
+        $s_z_provider = NULL;
+        $s_z_info = array();
+
+        $academicyear = AcademicYear::getYear($academicyearid);
+        $cordinator = Cordinator::getCordinator($academicofferingid, 2);
+
+        $registrations = StudentRegistration::getStudentRegistration($academicofferingid);
+        if ($registrations)
+        {
+            /************************** Prepares data for 'all_student' tab *******************************************/
+            foreach ($registrations as $registration)
+            {
+                $user = $registration->getPerson()->one();
+                if ($user)
+                {                 
+                    $personid = $registration->personid;
+                    $student = Student::getStudent($personid);
+                    if ($student)
+                    {
+                        $all_students_info['personid'] = $user->personid;
+                        $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                        $all_students_info['studentno'] = $user->username;
+                        $all_students_info['firstname'] = $student->firstname;
+                        $all_students_info['middlename'] = $student->middlename;
+                        $all_students_info['lastname'] = $student->lastname;
+                        $all_students_info['gender'] = $student->gender;
+
+                        $student_status = StudentStatus::find()
+                                        ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+                        $all_students_info['studentstatus'] = $student_status->name;
+                        $all_student_data_container[] = $all_students_info;
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Student not found');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'User not found');
+                }                    
+            }
+            $all_students_provider = new ArrayDataProvider([
+                    'allModels' => $all_student_data_container,
+                    'pagination' => [
+                        'pageSize' => 40,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                    ]
+            ]);
+            /***************************************************************************************************************/
+
+            /*************************************Prepares data for 'a_f' tab **********************************************/
+            foreach ($registrations as $registration)
+            {
+                $user = $registration->getPerson()->one();
+                if ($user)
+                {                 
+                    $personid = $registration->personid;
+                    $student = Student::getStudent($personid);
+
+                    //inspects surname for filtering
+                    $surname = $student->lastname;
+                    $first_character = substr($surname,0,1);
+
+                    if ($student==true)
+                    {
+                        if (strcmp($first_character,"A")==0 || strcmp($first_character,"a")==0 || strcmp($first_character,"B")==0 || strcmp($first_character,"b")==0 || strcmp($first_character,"C")==0 || strcmp($first_character,"c")==0  || strcmp($first_character,"D")==0 || strcmp($first_character,"d")==0 || strcmp($first_character,"E")==0 || strcmp($first_character,"e")==0 || strcmp($first_character,"F")==0 || strcmp($first_character,"f")==0)
+                        {
+                            $a_f_info['personid'] = $user->personid;
+                            $a_f_info['studentregistrationid'] = $registration->studentregistrationid;
+                            $a_f_info['studentno'] = $user->username;
+                            $a_f_info['firstname'] = $student->firstname;
+                            $a_f_info['middlename'] = $student->middlename;
+                            $a_f_info['lastname'] = $student->lastname;
+                            $a_f_info['gender'] = $student->gender;
+
+                            $student_status = StudentStatus::find()
+                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                            $a_f_info['studentstatus'] = $student_status->name;
+                            $a_f_data_container[] = $a_f_info;
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Student not found');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'User not found');
+                }                    
+            } 
+            $a_f_provider = new ArrayDataProvider([
+                    'allModels' => $a_f_data_container,
+                    'pagination' => [
+                        'pageSize' => 40,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                    ]
+            ]);
+            /***************************************************************************************************************/
+
+            /*************************************Prepares data for 'g_l' tab **********************************************/
+            foreach ($registrations as $registration)
+            {
+                $user = $registration->getPerson()->one();
+                if ($user)
+                {                 
+                    $personid = $registration->personid;
+                    $student = Student::getStudent($personid);
+
+                    //inspects surname for filtering
+                    $surname = $student->lastname;
+                    $first_character = substr($surname,0,1);
+
+                    if ($student==true)
+                    {
+                        if (strcmp($first_character,"G")==0 || strcmp($first_character,"g")==0 || strcmp($first_character,"H")==0 || strcmp($first_character,"h")==0 || strcmp($first_character,"I")==0 || strcmp($first_character,"i")==0  || strcmp($first_character,"J")==0 || strcmp($first_character,"j")==0 || strcmp($first_character,"K")==0 || strcmp($first_character,"k")==0 || strcmp($first_character,"L")==0 || strcmp($first_character,"l")==0)
+                        {
+                            $g_l_info['personid'] = $user->personid;
+                            $g_l_info['studentregistrationid'] = $registration->studentregistrationid;
+                            $g_l_info['studentno'] = $user->username;
+                            $g_l_info['firstname'] = $student->firstname;
+                            $g_l_info['middlename'] = $student->middlename;
+                            $g_l_info['lastname'] = $student->lastname;
+                            $g_l_info['gender'] = $student->gender;
+
+                            $student_status = StudentStatus::find()
+                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                            $g_l_info['studentstatus'] = $student_status->name;
+                            $g_l_data_container[] = $g_l_info;
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Student not found');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'User not found');
+                }                    
+            } 
+            $g_l_provider = new ArrayDataProvider([
+                    'allModels' => $g_l_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                    ]
+            ]);
+            /***************************************************************************************************************/ 
+
+            /*************************************Prepares data for 'm_r' tab **********************************************/
+            foreach ($registrations as $registration)
+            {
+                $user = $registration->getPerson()->one();
+                if ($user)
+                {                 
+                    $personid = $registration->personid;
+                    $student = Student::getStudent($personid);
+
+                    //inspects surname for filtering
+                    $surname = $student->lastname;
+                    $first_character = substr($surname,0,1);
+
+                    if ($student==true)
+                    {
+                        if (strcmp($first_character,"M")==0 || strcmp($first_character,"m")==0 || strcmp($first_character,"N")==0 || strcmp($first_character,"n")==0 || strcmp($first_character,"O")==0 || strcmp($first_character,"o")==0  || strcmp($first_character,"P")==0 || strcmp($first_character,"p")==0 || strcmp($first_character,"Q")==0 || strcmp($first_character,"q")==0 || strcmp($first_character,"R")==0 || strcmp($first_character,"r")==0)
+                        {
+                            $m_r_info['personid'] = $user->personid;
+                            $m_r_info['studentregistrationid'] = $registration->studentregistrationid;
+                            $m_r_info['studentno'] = $user->username;
+                            $m_r_info['firstname'] = $student->firstname;
+                            $m_r_info['middlename'] = $student->middlename;
+                            $m_r_info['lastname'] = $student->lastname;
+                            $m_r_info['gender'] = $student->gender;
+
+                            $student_status = StudentStatus::find()
+                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                            $m_r_info['studentstatus'] = $student_status->name;
+                            $m_r_data_container[] = $m_r_info;                       
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Student not found');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'User not found');
+                }                    
+            } 
+            $m_r_provider = new ArrayDataProvider([
+                    'allModels' => $m_r_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                    ]
+            ]);
+            /***************************************************************************************************************/
+
+            /*************************************Prepares data for 's_z' tab **********************************************/
+            foreach ($registrations as $registration)
+            {
+                $user = $registration->getPerson()->one();
+                if ($user)
+                {                 
+                    $personid = $registration->personid;
+                    $student = Student::getStudent($personid);
+
+                    //inspects surname for filtering
+                    $surname = $student->lastname;
+                    $first_character = substr($surname,0,1);
+
+                    if ($student==true)
+                    {
+                        if (strcmp($first_character,"S")==0 || strcmp($first_character,"s")==0 || strcmp($first_character,"T")==0 || strcmp($first_character,"t")==0  || strcmp($first_character,"U")==0 || strcmp($first_character,"u")==0 || strcmp($first_character,"V")==0 || strcmp($first_character,"v")==0 || strcmp($first_character,"W")==0 || strcmp($first_character,"w")==0 || strcmp($first_character,"X")==0 || strcmp($first_character,"x")==0 || strcmp($first_character,"Y")==0 || strcmp($first_character,"y")==0 || strcmp($first_character,"Z")==0 || strcmp($first_character,"z")==0)
+                        {
+                            $s_z_info['personid'] = $user->personid;
+                            $s_z_info['studentregistrationid'] = $registration->studentregistrationid;
+                            $s_z_info['studentno'] = $user->username;
+                            $s_z_info['firstname'] = $student->firstname;
+                            $s_z_info['middlename'] = $student->middlename;
+                            $s_z_info['lastname'] = $student->lastname;
+                            $s_z_info['gender'] = $student->gender;
+
+                            $student_status = StudentStatus::find()
+                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                            $s_z_info['studentstatus'] = $student_status->name;
+                            $s_z_data_container[] = $s_z_info;
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Student5 not found');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'User not found');
+                }                    
+            } 
+            $s_z_provider = new ArrayDataProvider([
+                    'allModels' => $s_z_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                    ]
+            ]); 
+            /***************************************************************************************************************/
+        }
+        else
+        {
+            Yii::$app->session->setFlash('error', 'No students are enrolled in the selected cohort.');
+            return $this->redirect(['student/find-a-student']);
+//                , 'id' => $divisionid]);
+
+        }
+
+        return $this->render('student_listing', [
+            'division_id' => $divisionid,
+            'programmename' => $programmename,
+            'academicyear' => $academicyear,
+            'cordinator' => $cordinator,
+            'all_students_provider' => $all_students_provider,
+            'a_f_provider' => $a_f_provider,
+            'g_l_provider' => $g_l_provider,
+            'm_r_provider' => $m_r_provider,
+            's_z_provider' => $s_z_provider,      
+        ]);
+    }
+    
+    
+    /**
+     * Renders the 'Academic Holds' view and process form submission
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/01/2015
+     * Date Last Modified: 07/01/2015
+     */
+    public function actionViewActiveAcademicHolds($notified = NULL, $studentholdid = NULL)
+    {
+        if($notified != NULL && $studentholdid != NULL)
+        {
+            $student_hold = Hold::find()
+                        ->where(['studentholdid' => $studentholdid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            if($student_hold)
+            {
+                if($notified == 1)
+                {
+                    $student_hold->wasnotified = 1;
+                    $student_hold->save();
+                }
+                elseif($notified == 0)
+                {
+                    $student_hold->wasnotified = 0;
+                    $student_hold->save();
+                }
+            }
+        }
+        
+        $divisions = Division::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                    ->andWhere(['not in', 'divisionid', [1, 8]])
+                    ->all();
+        
+        $all_holds = NULL;
+        $dasgs_holds = NULL;
+        $dtve_holds = NULL;
+        $dte_holds =  NULL;
+        $dne_holds = NULL;
+        
+        $all_holds = StudentRegistration::getAcademicActiveHolds(1);
+        $dasgs_holds = StudentRegistration::getAcademicActiveHolds(4);
+        $dtve_holds = StudentRegistration::getAcademicActiveHolds(5);
+        $dte_holds =  StudentRegistration::getAcademicActiveHolds(6);
+        $dne_holds = StudentRegistration::getAcademicActiveHolds(7);
+   
+        
+        return $this->render('active_academic_holds', [
+            'divisions' => $divisions,
+            'all_holds' => $all_holds,
+            'dasgs_holds' => $dasgs_holds,
+            'dtve_holds' => $dtve_holds,
+            'dte_holds' => $dte_holds,
+            'dne_holds' => $dne_holds,   
+        ]);
+    }
+    
+    
+    
+    
 }

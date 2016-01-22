@@ -10,6 +10,7 @@ use Yii;
  * @property string $semesterid
  * @property string $academicyearid
  * @property string $title
+ * @property string $period
  * @property string $startdate
  * @property string $enddate
  * @property boolean $iscurrent
@@ -37,11 +38,12 @@ class Semester extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['academicyearid', 'title', 'startdate', 'enddate'], 'required'],
+            [['academicyearid', 'title', 'startdate', 'enddate', 'period'], 'required'],
             [['academicyearid'], 'integer'],
             [['startdate', 'enddate'], 'safe'],
             [['iscurrent', 'isactive', 'isdeleted'], 'boolean'],
-            [['title'], 'string', 'max' => 15]
+            [['title'], 'string', 'max' => 15],
+            [['period'], 'string', 'max' => 45]
         ];
     }
 
@@ -54,6 +56,7 @@ class Semester extends \yii\db\ActiveRecord
             'semesterid' => 'Semesterid',
             'academicyearid' => 'Academicyearid',
             'title' => 'Title',
+            'period' => 'Period',
             'startdate' => 'Startdate',
             'enddate' => 'Enddate',
             'iscurrent' => 'Iscurrent',

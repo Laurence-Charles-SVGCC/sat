@@ -65,8 +65,8 @@ class UserController extends Controller
      * Creates a new User.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
-     * Created: 30/07/2015 By Gamal Crichton
-     * Modified: 30/07/2015 By Gamal Crichton
+     * Date Created: 30/07/2015 By Gamal Crichton
+     * Date Last Modified: 20/01/2016 By Laurence Charles
      */
     public function actionCreate()
     {
@@ -75,10 +75,12 @@ class UserController extends Controller
         if ($model->load(Yii::$app->request->post())) 
         {   
             $username = $model->username == '' ? SiteController::createUsername() : $model->username;
-            if ($user = $model->signup($username)) 
+            $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
+            
+            if ($user = $model->signup($username, $model->institutional_email)) 
             {
                 $email = new Email();
-                $email->email = $model->email;
+                $email->email = $model->personal_email;
                 $email->personid = $user->personid;
                 $email->priority = 1;
                 if ($email->save())

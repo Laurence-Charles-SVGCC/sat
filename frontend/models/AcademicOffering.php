@@ -12,9 +12,9 @@ use Yii;
  * @property string $academicyearid
  * @property string $applicationperiodid
  * @property string $spaces
- * @property boolean $appliable
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $appliable
+ * @property integer $isactive
+ * @property integer $isdeleted
  * @property ProgrammeCatalog $programmecatalog 
   * @property AcademicYear $academicyear 
   * @property ApplicationPeriod $applicationperiod 
@@ -40,8 +40,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
     {
         return [
             [['programmecatalogid', 'academicyearid', 'applicationperiodid'], 'required'],
-            [['programmecatalogid', 'academicyearid', 'applicationperiodid', 'spaces'], 'integer'],
-            [['interviewneeded', 'isactive', 'isdeleted'], 'boolean']
+            [['programmecatalogid', 'academicyearid', 'applicationperiodid', 'spaces', 'interviewneeded', 'isactive', 'isdeleted'], 'integer']
         ];
     }
 
@@ -73,7 +72,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
        /** 
         * @return \yii\db\ActiveQuery 
         */ 
-       public function getAcademicyear() 
+       public function getacademic_year() 
        { 
            return $this->hasOne(AcademicYear::className(), ['academicyearid' => 'academicyearid']); 
        } 
@@ -117,4 +116,49 @@ class AcademicOffering extends \yii\db\ActiveRecord
        { 
            return $this->hasMany(StudentRegistration::className(), ['academicofferingid' => 'academicofferingid']); 
        } 
+       
+       
+       /**
+        * Returns an array of cohorts for a particular programme
+        * 
+        * @param type $programmecatalogid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 06/12/2015
+        * Date Last Modified: 09/12/2015
+        */
+       public static function getCohortCount($programmecatalogid)
+       {
+           $cohorts = AcademicOffering::find()
+                   ->where(['programmecatalogid' => $programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
+                   ->all();
+           return count($cohorts);
+       }
+       
+       
+       /**
+        * Returns an count of the cohorts for a particular programme
+        * 
+        * @param type $programmecatalogid
+        * @return boolean
+        * 
+        * Author: Laurence Charles
+        * Date Created: 06/12/2015
+        * Date Last Modified: 09/12/2015
+        */
+       public static function getCohorts($programmecatalogid)
+       {
+            $cohorts = AcademicOffering::find()
+                   ->where(['programmecatalogid' => $programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
+                   ->all();
+            if (count($cohorts) > 0)
+                return $cohorts;
+            else
+                return false;
+       }
+          
+       
+       
+       
 }

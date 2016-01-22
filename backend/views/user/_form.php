@@ -22,10 +22,13 @@ use frontend\models\Department;
         <div class="col-lg-4">
             <?= $form->field($model, 'lastname')->textInput()->label('Last Name'); ?>
         </div>
+        <div class="col-lg-4">
+            <?= $form->field($model, 'institutional_email')->textInput()->label('College Email'); ?>
+        </div>
     </div>
     <div class="row">
         <div class="col-lg-4">
-            <?= $form->field($model, 'email')->textInput()->label('College Email'); ?>
+            <?= $form->field($model, 'personal_email')->textInput()->label('Personal Email'); ?>
         </div>
         <div class="col-lg-4">
             <?= $form->field($model, 'password')->passwordInput()->label('Password'); ?>

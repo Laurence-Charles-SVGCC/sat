@@ -65,4 +65,25 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
     {
         return $this->hasOne(CapeSubject::className(), ['capesubjectid' => 'capesubjectid']);
     }
+    
+    
+    /**
+     * Returns an array of cape subjects associated with a particular CapeGroup
+     * 
+     * @param type $groupid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/01/2016
+     * Date LAst Modified: 09/01/2016
+     */
+    public static function getSubjects($groupid)
+    {
+        $subjects = CapeSubjectGroup::find()
+            ->where(['capegroupid' => $groupid, 'isactive' => 1, 'isdeleted' => 0])
+            ->all();
+        return $subjects;
+    }
+    
+    
 }

@@ -134,6 +134,45 @@ else
               </ul>
               <?php endif; ?>
             </li>
+            
+            
+            <?php if (Yii::$app->user->can('students')): ?>
+                <li class="active treeview">
+                    <a href="">
+                        <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <?php if (Yii::$app->user->can('students')): ?>
+                            <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
+                        <?php endif; ?>
+                            
+                        <?php if (Yii::$app->user->can('students')): ?>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds'])?>"><i class="fa fa-circle-o"></i>View Active Academic Holds</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+            <?php endif; ?>
+               
+                
+            <?php if (Yii::$app->user->can('gradebook')): ?>
+                <li class="active treeview">
+                    <a href="">
+                        <i class="glyphicon glyphicon-book"></i> <span>Grade Book</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    
+                    <ul class="treeview-menu">
+                        <li class="active">
+                            <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index'])?>">
+                                <i class="fa fa-circle-o"></i>Home
+                            </a>
+                        </li>
+                        
+                        
+                    </ul>                  
+                </li>
+            <?php endif; ?>
+                
+                
             <?php if (Yii::$app->user->can('payments')): ?>
             <li class="active treeview">
               <a href="">
@@ -157,22 +196,7 @@ else
             </li>
             <?php endif; ?>
             
-            <?php if (Yii::$app->user->can('students')): ?>
-            <li class="active treeview">
-              <a href="">
-                <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <?php if (Yii::$app->user->can('manageStudents')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/manage-students'])?>"><i class="fa fa-circle-o"></i>Manage Students</a></li>
-                <?php endif; ?>
-                <?php if (Yii::$app->user->can('searchStudents')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/students/student/search-student'])?>"><i class="fa fa-circle-o"></i>Search Students</a></li>
-                <?php endif; ?>    
-              </ul>
-            </li>
-            <?php endif; ?>
+            
             
             <?php if (Yii::$app->user->can('programmes')): ?>
             <li class="active treeview">
@@ -191,29 +215,31 @@ else
             </li>
             <?php endif; ?>
             <?php if (Yii::$app->user->can('general')): ?>
-            <li class="active treeview">
-              <a href="#">
-                <i class="fa fa-cogs"></i>
-                <span>General</span>
-                <span class="label label-primary pull-right">4</span>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="<?= Url::toRoute(['/subcomponents/general/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <?php if (Yii::$app->user->can('viewDivision')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/general/division'])?>"><i class="fa fa-circle-o"></i>Divisions</a></li>
-                <?php endif; ?>
-                <?php if (Yii::$app->user->can('viewCsecCentre')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/general/csec-centre'])?>"><i class="fa fa-circle-o"></i>CSEC-Centres</a></li>
-                <?php endif; ?>
-                <?php if (Yii::$app->user->can('viewAcademicYear')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/general/academic-year'])?>"><i class="fa fa-circle-o"></i>Academic Years</a></li>
-                <?php endif; ?>
-                <?php if (Yii::$app->user->can('viewSemester')): ?>
-                    <li><a href="<?= Url::toRoute(['/subcomponents/general/semester'])?>"><i class="fa fa-circle-o"></i>Academic Semesters</a></li>
-                <?php endif; ?>    
-              </ul>
-            </li>
+                <li class="active treeview">
+                  <a href="#">
+                    <i class="fa fa-cogs"></i>
+                    <span>General</span>
+                    <span class="label label-primary pull-right">4</span>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li><a href="<?= Url::toRoute(['/subcomponents/general/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    <?php if (Yii::$app->user->can('viewDivision')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/general/division'])?>"><i class="fa fa-circle-o"></i>Divisions</a></li>
+                    <?php endif; ?>
+                    <?php if (Yii::$app->user->can('viewCsecCentre')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/general/csec-centre'])?>"><i class="fa fa-circle-o"></i>CSEC-Centres</a></li>
+                    <?php endif; ?>
+                    <?php if (Yii::$app->user->can('viewAcademicYear')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/general/academic-year'])?>"><i class="fa fa-circle-o"></i>Academic Years</a></li>
+                    <?php endif; ?>
+                    <?php if (Yii::$app->user->can('viewSemester')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/general/semester'])?>"><i class="fa fa-circle-o"></i>Academic Semesters</a></li>
+                    <?php endif; ?>    
+                  </ul>
+                </li>
             <?php endif; ?>
+            
+            
           </ul>
         </section>
         <!-- /.sidebar -->

@@ -107,4 +107,54 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
         }
         return $this->name . ' ' . $this->specialisation;
     }
+    
+    
+    /**
+     * Return a list of programmes by division
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/12/2015
+     * Date Last Modified: 08/12/2015
+     */
+    public static function getProgrammes($divisionid)
+    {
+        $programmes = ProgrammeCatalog::find()
+                ->joinWith('department')
+                ->innerJoin('`division`', '`division`.`divisionid` = `department`.`divisionid`')
+                ->where(['division.divisionid' => $divisionid, 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+//                ->andWhere(['not', ['programme_catalog.name' => "Cape"]])
+                ->all();
+        
+        if (count($programmes)>0)
+            return $programmes;
+        else
+            return false;       
+    }
+    
+    /**
+     * Returns a list of programmes based on $departmentid
+     * 
+     * @param type $departmentid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 08/12/2015
+     * Date Last Modified: 08/12/2015
+     */
+    public static function getProgrammesByDepartment($departmentid)
+    {   
+        $programmes = ProgrammeCatalog::find()
+                ->where(['departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if (count($programmes) > 0)
+            return $programmes;
+        else
+            return false;       
+    }
+    
+    
+    
 }

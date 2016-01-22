@@ -30,6 +30,7 @@ class AppAsset extends AssetBundle
         'css/plugins/datepicker/datepicker3.css',
         'css/plugins/daterangepicker/daterangepicker-bs3.css',
         'css/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css',
+        'css/gradebook.css',
     ];
     public $js = [
         'css/bootstrap/js/bootstrap.min.js',
@@ -46,6 +47,11 @@ class AppAsset extends AssetBundle
         'css/dist/js/app.min.js',
         /*'css/dist/js/pages/dashboard.js', Clashes with DosAmigos Datepicker*/
         'css/dist/js/demo.js',
+        'js/gradebook/home.js',
+        'js/gradebook/programme_listing.js',
+        'js/gradebook/edit_assessment.js',
+        'js/students/students.js',
+        
     ];
     public $depends = [
         'yii\web\YiiAsset',

@@ -16,10 +16,10 @@ use Yii;
  * @property string $examinationproficiencytypeid
  * @property string $year
  * @property string $examinationgradeid
- * @property boolean $isverified
- * @property boolean $isactive
- * @property boolean $isdeleted
- * @property boolean $isqueried
+  * @property integer $isverified
+ * @property integer $isactive
+ * @property integer $isdeleted
+ * @property integer $isqueried
  *
  * @property CsecCentre $cseccentre
  * @property Person $person
@@ -120,5 +120,27 @@ class CsecQualification extends \yii\db\ActiveRecord
     public function getExaminationgrade()
     {
         return $this->hasOne(ExaminationGrade::className(), ['examinationgradeid' => 'examinationgradeid']);
+    }
+    
+    
+    /**
+     * Retrieves all the csec qualification records, associated with a personid
+     * 
+     * @param type $id
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/12/2015
+     * Date Last Modified: 23/12/2015
+     */
+    public static function getQualifications($id)
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $id, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+        
+        if(count($records) > 0)
+            return $records;
+        return false;
     }
 }

@@ -12,8 +12,8 @@ use Yii;
  * @property string $name
  * @property string $alias
  * @property string $abbreviation
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  */
 class ExaminationBody extends \yii\db\ActiveRecord
 {
@@ -54,4 +54,47 @@ class ExaminationBody extends \yii\db\ActiveRecord
             'isdeleted' => 'Isdeleted',
         ];
     }
+    
+    
+    /**
+     * Returns array of currently active examination bodies
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2016
+     * Date Last Modified: 03/11/2016
+     */
+    public static function processExaminationBodies()
+    {
+        $records = ExaminationBody::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        
+        if(count($records)==0)
+        {
+            return false;
+        }
+        else        //if examination body records found
+        {   
+            $keys = array();        
+            $values = array();        
+            $combined = array();
+            
+            array_push($keys, '');     //set to '1000' to ensure default value passes validation
+            array_push($values, 'Select...');
+            
+            foreach($records as $record)
+            {
+                $k = strval($record->examinationbodyid);
+                array_push($keys, $k);
+                $v = strval($record->abbreviation);
+                array_push($values, $v);
+            }
+            $combined = array_combine($keys, $values);
+            return $combined; 
+        }
+    }
+    
+    
 }

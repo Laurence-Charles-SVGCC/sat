@@ -52,6 +52,9 @@ return [
                 'students' => [
                     'class' => 'app\subcomponents\students\StudentsModule',
                 ],
+                'gradebook' => [
+                    'class' => 'app\subcomponents\gradebook\GradebookModule',
+                ],
               ]
           ]
     ]

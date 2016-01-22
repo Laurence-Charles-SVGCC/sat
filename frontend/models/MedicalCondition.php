@@ -64,4 +64,25 @@ class MedicalCondition extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
+    
+    
+    /**
+     * Retrieves all the medical records associated with a personid
+     * 
+     * @param type $id
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/12/2015
+     * Date Last Modified: 23/12/2015
+     */
+    public static function getMedicalConditions($id)
+    {
+        $conditions = MedicalCondition::find()
+                 ->where(['personid'=> $id, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+        if (count($conditions) > 0)
+            return $conditions;
+        return false;     
+    }
 }

@@ -77,4 +77,74 @@ class Address extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AddressType::className(), ['addresstypeid' => 'addresstypeid']);
     }
+    
+    
+    /**
+     * Returns an address of a particular type
+     * 
+     * @param type $id
+     * @param type $type
+     * @return type
+     * @throws NotFoundHttpException
+     * 
+     * Author: Laurence Charles
+     * Date Created: 21/12/2015
+     * Date Last Modified: 21/12/2015
+     */
+    public static function findAddress($id, $type)
+    {
+        $address = Address::find()
+                ->where(['personid' => $id, 'addresstypeid'=>$type, 'isactive' => 1 , 'isdeleted' => 0])
+                ->one();
+        if ($address)
+            return $address;
+        return false;
+    }
+
+    
+    /**
+     * Checks is applicant town field is populated
+     * For conditional appearance of town
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 29/12/2015
+     * Date Last Modified: 29/12/2015
+     */
+    public static function checkTown($id, $type){
+        $record = self::findAddress($id, $type);
+        if ($record){
+            if(strcmp($record->town,"")!=0  && is_null($record->town) == false){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+    /**
+     * Checks is applicant town field is populated
+     * For conditional appearance of town
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 29/12/2015
+     * Date Last Modified: 29/12/2015
+     */
+    public static function checkAddressline($id, $type){
+        $record = self::findAddress($id, $type);
+        if ($record){
+            if(strcmp($record->addressline,"")!=0  && is_null($record->addressline) == false){
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
