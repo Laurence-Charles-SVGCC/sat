@@ -178,12 +178,12 @@
             $tertiaryschoolNames = array();
             if ($tertiaryschools!=false)
             {
-                foreach ($tertieryschools as $tertieryschool)
+                foreach ($tertiaryschools as $tertiaryschool)
                 {
                     $name = NULL;
                     $record = NULL;
                     $record = Institution::find()
-                            ->where(['institutionid' => $tertieryschool->institutionid])
+                            ->where(['institutionid' => $tertiaryschool->institutionid])
                             ->one();  
                     $name = $record->name;
                     array_push($tertiaryschoolNames, $name); 
