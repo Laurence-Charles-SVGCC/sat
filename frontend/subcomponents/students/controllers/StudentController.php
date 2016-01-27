@@ -819,7 +819,7 @@ class StudentController extends Controller
                 if ($user)
                 { 
                     //if system user is a Dean or Deputy Dean then their search is contrained by their division
-                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
+                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))  && !Yii::$app->user->can('System Administrator'))
                     {
                         $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
                         $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
@@ -925,7 +925,7 @@ class StudentController extends Controller
                     {
                         //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
                         $eligible_students_found = false; //students within correct division
-                        if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
+                        if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')) &&  !Yii::$app->user->can('System Administrator'))
                         {
                             $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
                             foreach ($students as $student)
