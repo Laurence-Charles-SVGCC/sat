@@ -716,8 +716,6 @@ class StudentController extends Controller
                             array_push($temp_array, $cohort_array);
                         }
 
-
-
                         array_push($programme_collection, $temp_array);
 
                         $temp_array = NULL;
@@ -740,7 +738,6 @@ class StudentController extends Controller
             else
                 Yii::$app->getSession()->setFlash('error', 'Please select a divsion.');                
         }
-        
         
         
         if (Yii::$app->request->post())

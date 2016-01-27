@@ -60,16 +60,12 @@
                             </p>
 
                             <div id="by_division" style="display:none">
-                                <?php if (Yii::$app->user->can('Support (View Only)') 
-                                            || Yii::$app->user->can('Deputy Director')
-                                            || Yii::$app->user->can('Assistant Registrar')
-                                        ): ?>
-                                    <?= Html::dropDownList('division_choice', null, Division::getAllDivisions());?>
-                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>
-
-                                <?php elseif (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')):?>
-                                    <?= Html::dropDownList('division_choice', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
-                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>                               
+                                <?php if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))  && !Yii::$app->user->can('System Administrator')):?>
+                                    <?= Html::dropDownList('division', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
+                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?> 
+                                <?php else:?>
+                                    <?= Html::dropDownList('division', null, Division::getAllDivisions());?>
+                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
                                 <?php endif; ?>
                             </div>
 
