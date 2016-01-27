@@ -563,7 +563,6 @@
                 ]);
             }
             
-            
             if ($post_data = Yii::$app->request->post())
             {
                 $student_profile_load_flag = false;

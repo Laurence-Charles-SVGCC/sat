@@ -60,17 +60,12 @@
                             </p>
 
                             <div id="by_div" style="display:none">
-                                <?php if (Yii::$app->user->can('Support (View Only)') 
-                                            || Yii::$app->user->can('Bursar')
-                                            || Yii::$app->user->can('Deputy Director')
-                                            || Yii::$app->user->can('Registry Staff')
-                                        ): ?>
-                                    <?= Html::dropDownList('division', null, Division::getAllDivisions());?>
-                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>
-
-                                <?php elseif (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')):?>
+                                <?php if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')):?>
                                     <?= Html::dropDownList('division', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
-                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>                               
+                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
+                                <?php else:?>
+                                    <?= Html::dropDownList('division', null, Division::getAllDivisions());?>
+                                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
                                 <?php endif; ?>
                             </div>
 

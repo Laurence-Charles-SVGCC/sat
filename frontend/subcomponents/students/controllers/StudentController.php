@@ -9,6 +9,7 @@ use yii\data\ArrayDataProvider;
 
 
 use frontend\models\Division;
+use frontend\models\Employee;
 use frontend\models\Student;
 use common\models\User;
 use frontend\models\StudentRegistration;
@@ -818,17 +819,27 @@ class StudentController extends Controller
                 if ($user)
                 { 
                     //if system user is a Dean or Deputy Dean then their search is contrained by their division
-//                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
-//                    {
-//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
-//                        $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
-//                    }
-//                    else
-//                    {
+                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
+                    {
+                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+                        $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
+                        
+                        if (empty($registrations))
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria within your division.');
+                            return $this->render('find_a_student_index',[
+                                'all_students_provider' => $all_students_provider,
+                                'info_string' => $info_string,
+                            ]);
+                        }
+                    }
+                    //if system user is not a Dean or Deputy Dean then their search is not contrained
+                    else
+                    {
                         $registrations = StudentRegistration::find()
                                     ->where(['personid' => $user->personid, 'isdeleted' => 0])
                                     ->all();
-//                    }
+                    }
                     if (count($registrations) > 0)
                     {    
                         foreach ($registrations as $registration) 
@@ -906,58 +917,61 @@ class StudentController extends Controller
                             ->where($cond_arr)
                             ->all();
                     
-                    //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
-//                    if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
-//                    {
-//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
-//                        //if no students records matching criteria name criteria exists of students not from appropriate division
-//                        if (empty($students) || Student::checkStudentsDivision($students, $divisionid) == false)
-//                        {
-//                            Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
-//                        }
-//                        else
-//                        {
-//                            $registration = StudentRegistration::find()
-//                                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
-//                                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-//                                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-//                                        ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-//                                        ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
-//                                        ->where(['student_registration.personid' => $student->personid, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid])
-//                                        ->one();
-//                            $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
-//                            if ($registration && $user)
-//                            {
-//                                $all_students_info['personid'] = $student->personid;
-//                                $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
-//                                $all_students_info['studentno'] = $user->username;
-//                                $all_students_info['firstname'] = $student->firstname;
-//                                $all_students_info['middlename'] = $student->middlename;
-//                                $all_students_info['lastname'] = $student->lastname;
-//                                $all_students_info['gender'] = $student->gender;
-//
-//                                $student_status = StudentStatus::find()
-//                                                ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
-//                                                ->one();
-//                                $all_students_info['studentstatus'] = $student_status->name;
-//                                $all_student_data_container[] = $all_students_info;
-//                            }
-//                            else
-//                            {
-//                                Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-//                            }
-//                        }
-//                    }
-//                    else    //if system user is not a Dean or Deputy Dean
-//                    {
-                        if (empty($students))
+                    if (empty($students))
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
+                    }
+                    else
+                    {
+                        //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
+                        $eligible_students_found = false; //students within correct division
+                        if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))
                         {
-                            Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
+                            $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+                            foreach ($students as $student)
+                            {
+                                $registrations = StudentRegistration::getStudentsByDivision($divisionid, $student->personid);
+                                if (!empty($registrations))
+                                {
+                                    foreach ($registrations as $registration)
+                                    {
+                                        $eligible_students_found = true;
+                                        $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                                        if ($registration && $user)
+                                        {
+                                            $all_students_info['personid'] = $student->personid;
+                                            $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                                            $all_students_info['studentno'] = $user->username;
+                                            $all_students_info['firstname'] = $student->firstname;
+                                            $all_students_info['middlename'] = $student->middlename;
+                                            $all_students_info['lastname'] = $student->lastname;
+                                            $all_students_info['gender'] = $student->gender;
+
+                                            $student_status = StudentStatus::find()
+                                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                                            ->one();
+                                            $all_students_info['studentstatus'] = $student_status->name;
+                                            $all_student_data_container[] = $all_students_info;
+                                        }
+                                    }
+                                }  
+                            }
+
+                            //if among the possible matching 'student' records there are no 'student_registration' records related to the user's division
+                            if ($eligible_students_found == false)
+                            {
+                                Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria within your division.');
+                                return $this->render('find_a_student_index',[
+                                    'all_students_provider' => $all_students_provider,
+                                    'info_string' => $info_string,
+                                ]);
+                            }
                         }
+                        //if system user is not a Dean or Deputy Dean then their search is not contrained
                         else
                         {
                             foreach ($students as $student)
-                            {
+                            {   
                                 $registration = StudentRegistration::find()
                                         ->where(['personid' => $student->personid, 'isdeleted' => 0])
                                         ->one();    
@@ -983,19 +997,19 @@ class StudentController extends Controller
                                     Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
                                 }                  
                             }
+                        }
 
-                            $all_students_provider = new ArrayDataProvider([
-                                    'allModels' => $all_student_data_container,
-                                    'pagination' => [
-                                        'pageSize' => 30,
-                                    ],
-                                    'sort' => [
-                                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                                        'attributes' => ['firstname', 'lastname'],
-                                    ]
-                            ]);      
-                        }   
-//                    }
+                        $all_students_provider = new ArrayDataProvider([
+                                'allModels' => $all_student_data_container,
+                                'pagination' => [
+                                    'pageSize' => 30,
+                                ],
+                                'sort' => [
+                                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                                    'attributes' => ['firstname', 'lastname'],
+                                ]
+                        ]);      
+                    } 
                 }
             }
 

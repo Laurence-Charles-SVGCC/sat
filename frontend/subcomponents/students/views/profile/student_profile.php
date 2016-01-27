@@ -804,7 +804,7 @@
                                             <tr>
                                                 <th>Address</th>
                                                 <?php if($nextofkin->address != NULL && strcmp($nextofkin->address,"")!=0):?>
-                                                    <td><?= $guardian->address;?></td>
+                                                    <td><?= $nextofkin->address;?></td>
                                                 <?php elseif($nextofkin->town == NULL || strcmp($nextofkin->town,"") == 0  || strcmp($nextofkin->town,"other") == 0  || strcmp($nextofkin->country,"st. vincent and the grenadines") != 0): ?>
                                                     <td><?=$nextofkin->addressline . "," . "<br/>" . $nextofkin->country ;?></td>
                                                 <?php elseif($nextofkin->addressline == NULL || strcmp($nextofkin->addressline,"") == 0): ?>
@@ -1089,7 +1089,15 @@
                                                                         . "<a class='btn btn-info glyphicon glyphicon-pencil' href='$pri_edit_link' role='button'> Edit</a>"
                                                                     . "</td>";
                                                             }
-                                                        echo "</tr>";                                                  
+                                                        echo "</tr>";   
+                                                        
+                                                        echo "<tr>";
+                                                            echo "<th colspan='3'>Has student graduated from this institution?</th>";
+                                                            if ($primaryschools[$i]->hasgraduated == 1)
+                                                                echo "<td colspan='3'>Yes</td>";
+                                                            else
+                                                                echo "<td colspan='3'>No</td>";
+                                                        echo "</tr>";
                                                     }
                                                 echo "</table>";
                                             }
@@ -1148,6 +1156,14 @@
                                                                     . "</td>";
                                                             }
                                                         echo "</tr>";
+                                                        
+                                                         echo "<tr>";
+                                                            echo "<th colspan='3'>Has student graduated from this institution?</th>";
+                                                            if ($secondaryschools[$i]->hasgraduated == 1)
+                                                                echo "<td colspan='3'>Yes</td>";
+                                                            else
+                                                                echo "<td colspan='3'>No</td>";
+                                                        echo "</tr>";
                                                     }
                                                 echo "</table>";
                                             }
@@ -1205,6 +1221,14 @@
                                                                     . "<a class='btn btn-info glyphicon glyphicon-pencil' href='$ter_edit_link' role='button'> Edit</a>"
                                                                 . "</td>";
                                                             }
+                                                        echo "</tr>";
+                                                        
+                                                         echo "<tr>";
+                                                            echo "<th colspan='3'>Has student graduated from this institution?</th>";
+                                                            if ($tertiaryschools[$i]->hasgraduated == 1)
+                                                                echo "<td colspan='3'>Yes</td>";
+                                                            else
+                                                                echo "<td colspan='3'>No</td>";
                                                         echo "</tr>";
                                                     }
                                                 echo "</table>";
