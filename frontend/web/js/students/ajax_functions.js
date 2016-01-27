@@ -111,9 +111,12 @@ function AddCsecQualificationAjaxFunction(e)
     var targetID = targ.id;
     /**************************************************************************/
 
-    //For live implementation
-//    var url= "http://www.svgcc.vc/subdomains/apply/frontend/web/index.php?r=qualifications%2Fexamination-body-dependants&";
-     var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    //For live sat_dev implementation
+//    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    
+    //For live sat implementation
+    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    
     
     //For local implementation
 //    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";

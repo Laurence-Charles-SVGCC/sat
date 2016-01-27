@@ -395,7 +395,8 @@
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
             $studentregistration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
                     ->one();
             $student = Student::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
