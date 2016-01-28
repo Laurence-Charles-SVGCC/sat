@@ -150,7 +150,7 @@
                                             echo "<td>{$course_results[$j]['examtotal']}</td>";
                                             echo "<td>{$course_results[$j]['final']}</td>";
                                             echo "<td>{$course_results[$j]['grade']}</td>";
-                                            echo "<td>{$course_results[$j]['gradepoints']}</td>";
+                                            echo "<td>{$course_results[$j]['qualitypoints']}</td>";
                                             echo "<td>{$course_results[$j]['course_status']}</td>";
                                             
                                             if (Yii::$app->user->can('editTranscript') == true)      
@@ -164,13 +164,12 @@
                                             
                                             if (strcmp($course_results[$j]['course_status'], "P") == 0)
                                             {
-                                                $points_sum += $course_results[$j]["gradepoints"];  
                                                 $credits_sum += $course_results[$j]["credits_awarded"];  
                                             }
                                         echo "</tr>";
                                     }
                                     
-                                    $semester_gpa = $points_sum/$valid_courses_count;
+                                    $semester_gpa = BatchStudent::getSemesterGPA($studentregistration->studentregistrationid, $semester_id);
                                     echo "<tr>";
                                         echo "<th colspan='2'>Credits Attained</th>";
                                         echo "<td colspan='2'>$credits_sum<td>";

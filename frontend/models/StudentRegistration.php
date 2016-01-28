@@ -182,9 +182,9 @@ class StudentRegistration extends \yii\db\ActiveRecord
      */
     public static function calculateCumulativeGPA($studentregistrationid)
     {
-        $gradepoints_total = 0;
-        $course_count = 0;
         $cumulative_gpa = 0;
+        $gradepoints_sum = 0;
+        $credits_sum = 0;
         
         $db = Yii::$app->db;
         $records = $db->createCommand(
@@ -192,7 +192,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                 . " course_type.name AS 'course_type',"
                 . " course_offering.credits AS 'credits',"
                 . " batch_students.coursestatusid AS 'course_status',"
-                . " batch_students.gradepoints AS 'gradepoints'"
+                . " batch_students.qualitypoints AS 'qualitypoints'"
                 . " FROM student_registration"
                 . " JOIN batch_students"
                 . " ON student_registration.studentregistrationid = batch_students.studentregistrationid"
@@ -203,8 +203,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                 . " JOIN course_type"
                 . " ON course_offering.coursetypeid = course_type.coursetypeid"
                 . " WHERE batch_students.studentregistrationid = ". $studentregistrationid
-                . " AND student_registration.isactive = 1"
-                . " AND student_registration.isdeleted = 0;"
+                . ";"
                 )
                 ->queryAll();
         
@@ -213,16 +212,15 @@ class StudentRegistration extends \yii\db\ActiveRecord
         {
             for ($i = 0 ; $i < $records_count ; $i++)
             {
+                $grade_points = $records[$i]['credits'] * $records[$i]['qualitypoints'];
+                $gradepoints_sum += $grade_points;
                 if (strcmp($records[$i]['course_status'],'Incomplete') != 0  && 
                         ($records[$i]['passfailtypeid'] == 1 || $records[$i]['passfailtypeid'] == 3))
                 {
-                   
-                    $gradepoints_total+= $records[$i]['gradepoints'];
-                    $course_count++;
+                   $credits_sum += $records[$i]["credits"]; 
                 }
             }
-            $cumulative_gpa = $gradepoints_total/$course_count;
-            $cumulative_gpa = round($cumulative_gpa, 2); 
+            $cumulative_gpa = round(($gradepoints_sum/$credits_sum), 2);
         } 
         return $cumulative_gpa;
     }

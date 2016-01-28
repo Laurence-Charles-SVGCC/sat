@@ -325,6 +325,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " course_type.name AS 'course_type',"
                 . " course_offering.courseworkweight AS 'courseworkweight',"
                 . " course_offering.examweight AS 'examweight', "
+                . " course_offering.passfailtypeid AS 'passfailtypeid',"
                 . " course_catalog.coursecode AS 'code',"
                 . " course_catalog.name AS 'name',"
                 . " course_offering.credits AS 'credits_attempted',"
@@ -334,7 +335,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " batch_students.final AS 'final',"
                 . " course_status.abbreviation AS 'course_status', "
                 . " batch_students.grade AS 'grade',"
-                . " batch_students.gradepoints AS 'gradepoints'"
+                . " batch_students.qualitypoints AS 'qualitypoints'"
                 . " FROM batch_students"
                 . " JOIN batch"
                 . " ON batch_students.batchid = batch.batchid"
@@ -360,6 +361,7 @@ class BatchStudent extends \yii\db\ActiveRecord
             array_push($keys, "course_type");
             array_push($keys, "courseworkweight");
             array_push($keys, "examweight");
+            array_push($keys, "passfailtypeid");
             array_push($keys, "code");
             array_push($keys, "name");
             array_push($keys, "credits_attempted");
@@ -369,13 +371,14 @@ class BatchStudent extends \yii\db\ActiveRecord
             array_push($keys, "final");
             array_push($keys, "course_status");
             array_push($keys, "grade");
-            array_push($keys, "gradepoints");
+            array_push($keys, "qualitypoints");
             
             $values = array();
             array_push($values, $batch_student_records[$i]["batchid"]);
             array_push($values, $batch_student_records[$i]["course_type"]);
             array_push($values, $batch_student_records[$i]["courseworkweight"]);
             array_push($values, $batch_student_records[$i]["examweight"]);
+            array_push($values, $batch_student_records[$i]["passfailtypeid"]);
             array_push($values, $batch_student_records[$i]["code"]);
             array_push($values, $batch_student_records[$i]["name"]);
             array_push($values, $batch_student_records[$i]["credits_attempted"]);
@@ -385,7 +388,7 @@ class BatchStudent extends \yii\db\ActiveRecord
             array_push($values, $batch_student_records[$i]["final"]);
             array_push($values, $batch_student_records[$i]["course_status"]);
             array_push($values, $batch_student_records[$i]["grade"]);
-            array_push($values, $batch_student_records[$i]["gradepoints"]);
+            array_push($values, $batch_student_records[$i]["qualitypoints"]);
             
             $combined = array_combine($keys, $values);
             array_push($records_container, $combined);
@@ -394,6 +397,40 @@ class BatchStudent extends \yii\db\ActiveRecord
             $combined = NULL;
         }
         return $records_container;
+    }
+    
+    
+    /**
+     * Returns the GPA of a student for a particular semester
+     * 
+     * @param type $studentregistrationid
+     * @param type $semesterid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/01/2016
+     * Date Last Modified: 28/01/2016
+     */
+    public static function getSemesterGPA($studentregistrationid, $semesterid)
+    {
+        $semester_results = self::getSemesterRecords($studentregistrationid, $semesterid);
+        $gradepoints_sum = 0;
+        $credits_sum = 0;
+        
+        $count = count($semester_results);
+        
+        for ($i=0 ; $i<$count ; $i++)
+        {
+            $grade_points = $semester_results[$i]['credits_attempted'] * $semester_results[$i]['qualitypoints'];
+            $gradepoints_sum += $grade_points;
+            if (strcmp($semester_results[$i]['course_status'],'Incomplete') != 0  && 
+                ($semester_results[$i]['passfailtypeid'] == 1 || $semester_results[$i]['passfailtypeid'] == 3))
+            {
+                $credits_sum += $semester_results[$i]["credits_awarded"]; 
+            }
+        }
+        $semester_gpa = round(($gradepoints_sum/$credits_sum), 2);
+        return $semester_gpa;
     }
     
     
@@ -429,7 +466,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " batch_students.final AS 'final',"
                 . " course_status.abbreviation AS 'course_status', "
                 . " batch_students.grade AS 'grade',"
-                . " batch_students.gradepoints AS 'gradepoints'"
+                . " batch_students.qualitypoints AS 'qualitypoints'"
                 . " FROM batch_students"
                 . " JOIN batch"
                 . " ON batch_students.batchid = batch.batchid"

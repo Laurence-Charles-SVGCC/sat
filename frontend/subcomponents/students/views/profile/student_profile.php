@@ -1681,21 +1681,22 @@
                                                                 echo "<th>Course Name</th>";
                                                                 echo "<th>Credits Attempted</th>";
                                                                 echo "<th>Credits Awarded</th>";
-                                                                echo "<th>Coursework</th>";
+                                                                echo "<th>CW</th>";
                                                                 echo "<th>Exam</th>";
-                                                                echo "<th>Final</th>";                    
-                                                                echo "<th>Grade</th>";
-                                                                echo "<th>Grade Points</th> ";  
+                                                                echo "<th>Final</th>"; 
                                                                 echo "<th>Course Status</th>";
+                                                                echo "<th>Grade</th>";
+                                                                echo "<th>Quality Points</th> "; 
+                                                                echo "<th>Grade Points</th> "; 
                                                             echo "</tr>";
 
                                                             $course_results = BatchStudent::getSemesterRecords($studentregistrationid, $semester_id);
-                                                            $points_sum = 0;
                                                             $credits_sum = 0;
                                                             $courses_count = BatchStudent::getCourseCount($studentregistrationid, $semester_id);
-                                                            $valid_courses_count = BatchStudent::getValidCourseCount($studentregistrationid, $semester_id);
+                                                            
                                                             for ($j = 0 ; $j < $courses_count ; $j++)
                                                             {  
+                                                                $grade_points = $course_results[$j]['credits_attempted'] * $course_results[$j]['qualitypoints'];
                                                                 echo "<tr>";
                                                                     echo "<td>{$course_results[$j]['code']}</td>";
                                                                     echo "<td>{$course_results[$j]['name']}</td>";
@@ -1706,20 +1707,15 @@
                                                                         echo "<td>0</td>";  
                                                                     echo "<td>{$course_results[$j]['courseworktotal']}</td>";
                                                                     echo "<td>{$course_results[$j]['examtotal']}</td>";
+                                                                    echo "<td>{$course_results[$j]['course_status']}</td>";
                                                                     echo "<td>{$course_results[$j]['final']}</td>"; 
                                                                     echo "<td>{$course_results[$j]['grade']}</td>";
-                                                                    echo "<td>{$course_results[$j]['gradepoints']}</td>";
-                                                                    echo "<td>{$course_results[$j]['course_status']}</td>";
-                                                                    //student must either pass course
-                                                                    if (strcmp($course_results[$j]['course_status'], "P") == 0 )
-                                                                    {
-                                                                        $points_sum += $course_results[$j]["gradepoints"];  
-                                                                        $credits_sum += $course_results[$j]["credits_awarded"];  
-                                                                    }
-                                                                    echo "</tr>";
+                                                                    echo "<td>{$course_results[$j]['qualitypoints']}</td>";
+                                                                    echo "<td>$grade_points</td> "; 
+                                                                echo "</tr>";
                                                             }
 
-                                                            $semester_gpa = $points_sum/$valid_courses_count;
+                                                            $semester_gpa = BatchStudent::getSemesterGPA($studentregistrationid, $semester_id);
                                                             echo "<tr>";
                                                                 echo "<th colspan='2'>Credits Attained</th>";
                                                                 echo "<td colspan='2'>$credits_sum<td>";
