@@ -106,9 +106,9 @@
                                         }
                                     echo "</tr>";
                                     
-                                    $course_results = BatchStudentCape::getSemesterRecords($semester_id);
+                                    $course_results = BatchStudentCape::getSemesterRecords($studentregistration->studentregistrationid, $semester_id);
                                    
-                                    $courses_count = BatchStudentCape::getCourseCount($semester_id);
+                                    $courses_count = BatchStudentCape::getCourseCount($studentregistration->studentregistrationid, $semester_id);
                                     
                                     for ($j = 0 ; $j < $courses_count ; $j++)
                                     {  
