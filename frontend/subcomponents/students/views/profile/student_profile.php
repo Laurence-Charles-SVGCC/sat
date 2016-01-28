@@ -1447,7 +1447,7 @@
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                             if ($offers == false)
                                             {
-                                                echo "<h4>No tertiary school records have been entered.</h4>";
+                                                echo "<h4>No offers records found.</h4>";
                                             }
                                             else
                                             {

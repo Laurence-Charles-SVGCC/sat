@@ -70,6 +70,48 @@ class Offer extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns the most current offer information
+     * 
+     * @param type $studentregistrationid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public static function getCurrentOffer($studentregistrationid)
+    {
+        $db = Yii::$app->db;
+        $records = $db->createCommand(
+                "SELECT application.applicationid AS 'applicationid',"
+                . " application.academicofferingid AS 'academicofferingid',"
+                . " application.ordering AS 'ordering',"
+                . " offer_type.name AS 'offertype',"
+                . " programme_catalog.name AS 'name',"
+                . " offer.issuedby AS 'issuedby',"
+                . " offer.issuedate AS 'issuedate',"
+                . " offer.revokedby AS 'revokedby',"
+                . " offer.revokedate AS 'revokedate'"
+                . " FROM student_registration"
+                . " JOIN offer"
+                . " ON student_registration.offerid = offer.offerid"
+                . " JOIN application"
+                . " ON offer.applicationid = application.applicationid"
+                . " JOIN academic_offering"
+                . " ON application.academicofferingid = academic_offering.academicofferingid"
+                . " JOIN programme_catalog"
+                . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+                . " JOIN offer_type"
+                . " ON offer.offertypeid = offer_type.offertypeid"
+                . " WHERE student_registration.registrationid = " . $studentregistrationid
+                . ";"
+                )
+                ->queryAll();
+        if (count($records) > 0)
+            return $records;
+        return false;
+    }
+    
     
     public static function getOffers($personid)
     {
@@ -99,6 +141,7 @@ class Offer extends \yii\db\ActiveRecord
                 . " AND offer.ispublished = 1;"
                 )
                 ->queryAll();
+    
         if (count($records)>0)
             return $records;
         return false;

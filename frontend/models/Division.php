@@ -173,11 +173,16 @@ class Division extends \yii\db\ActiveRecord
     {
         $db = Yii::$app->db;
         $records = $db->createCommand(
-                    "SELECT * "
-                    . " FROM employee_division"
-                    . " WHERE employeeid = ". $personid
-                    . " AND isactive = 1"
-                    . " AND isdeleted = 0;"
+                    "SELECT  employee_department.personid AS 'personid',"
+                    . " employee_department.departmentid AS 'departmentid',"
+                    . " department.divisionid AS 'divisionid'"
+                    . " FROM employee_department"
+                    . " JOIN department"
+                    . " ON employee_department.departmentid = department.departmentid"
+                    . " WHERE employee_department.personid = ". $personid
+                    . " AND employee_department.departmentid <> 20"
+                    . " AND employee_department.isactive = 1"
+                    . " AND employee_department.isdeleted = 0;"
                     )
                     ->queryAll();
 
@@ -204,6 +209,41 @@ class Division extends \yii\db\ActiveRecord
         
         $combined = array_combine($keys, $values);
         return $combined;
+//    public static function getDivisionsAssignedTo($personid)
+//    {
+//        $db = Yii::$app->db;
+//        $records = $db->createCommand(
+//                    "SELECT * "
+//                    . " FROM employee_division"
+//                    . " WHERE employeeid = ". $personid
+//                    . " AND isactive = 1"
+//                    . " AND isdeleted = 0;"
+//                    )
+//                    ->queryAll();
+//
+//        $keys = array();
+//        array_push($keys, '0');
+//        
+//        $values = array();
+//        array_push($values, 'Select Division...');
+//        
+//        foreach($records as $record)
+//        {
+//            $division = NULL;
+//            $id = NULL;
+//            $id = $record["divisionid"];
+//            $division = Division::find()
+//                    ->where(['divisionid' => $id,  'isactive' => 1, 'isdeleted' => 0])
+//                    ->one();
+//            
+//            $key = strval($division->divisionid);
+//            array_push($keys, $key);
+//            $value = strval($division->abbreviation);
+//            array_push($values, $value);           
+//        }
+//        
+//        $combined = array_combine($keys, $values);
+//        return $combined;
     }
     
     
