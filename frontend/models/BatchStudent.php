@@ -243,16 +243,17 @@ class BatchStudent extends \yii\db\ActiveRecord
     
      
     /**
-     * Returns the number of courses taken in a particular semester
+     * Returns the number of courses taken in a particular semester by a particular student
      * 
+     * @param type $studentregistrationid
      * @param type $semesterid
      * @return type
      * 
      * Author: Laurence Charles
      * Date Created: 10/12/2015
-     * Dte Last Modified: 10/12/2015
+     * Date Last Modified: 29/01/2016
      */
-    public static function getCourseCount($semesterid)
+    public static function getCourseCount($studentregistrationid, $semesterid)
     {
         $db = Yii::$app->db;
         $count = $db->createCommand(
@@ -264,6 +265,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " JOIN course_offering"
                 . " ON batch.courseofferingid = course_offering.courseofferingid"
                 . " WHERE course_offering.semesterid = " .  $semesterid
+                . " AND batch_students.studentregistrationid = " . $studentregistrationid
                 . ";"    
                 )
                 ->queryScalar();
@@ -274,14 +276,15 @@ class BatchStudent extends \yii\db\ActiveRecord
     /**
      * Returns the number of courses that should be considered for GPA calculation
      * 
+     * @param type $studentregistrationid
      * @param type $semesterid
      * @return type
      * 
      * Author: Laurence Charles
      * Date Created: 13/01/2016
-     * Dte Last Modified: 13/01/2016
+     * Date Last Modified: 29/01/2016
      */
-    public static function getValidCourseCount($semesterid)
+    public static function getValidCourseCount($studentregistrationid, $semesterid)
     {
         $db = Yii::$app->db;
         $count = $db->createCommand(
@@ -293,6 +296,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " JOIN course_offering"
                 . " ON batch.courseofferingid = course_offering.courseofferingid"
                 . " WHERE course_offering.semesterid = " .  $semesterid
+                . " AND batch_students.studentregistrationid = " . $studentregistrationid
                 . " AND batch_students.examtotal IS NOT NULL"
                 . " AND batch_students.courseworktotal IS NOT NULL"
                 . ";"    
@@ -305,14 +309,15 @@ class BatchStudent extends \yii\db\ActiveRecord
     /**
      * Returns and array of associative arrays where each associative array hold one modified 'batch_student' record
      * 
+     * @param type $studentregistrationid
      * @param type $semesterid
      * @return array
      * 
      * Author: Laurence Charles
      * Date Created: 11/12/2015
-     * Date Last Modified: 11/12/2015
+     * Date Last Modified: 29/01/2016
      */
-    public static function getSemesterRecords($semesterid)
+    public static function getSemesterRecords($studentregistrationid, $semesterid)
     {
         $db = Yii::$app->db;
         $batch_student_records = $db->createCommand(
@@ -342,6 +347,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " JOIN course_type"
                 . " ON course_offering.coursetypeid = course_type.coursetypeid"
                 . " WHERE course_offering.semesterid = " .  $semesterid
+                . " AND batch_students.studentregistrationid = " . $studentregistrationid
                 . ";"    
                 )
                 ->queryAll();

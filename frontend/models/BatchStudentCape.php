@@ -263,14 +263,15 @@ class BatchStudentCape extends \yii\db\ActiveRecord
     /**
      * Returns the number of courses taken in a particular semester
      * 
+     * @param type $studentregistrationid
      * @param type $semesterid
      * @return type
      * 
      * Author: Laurence Charles
      * Date Created: 10/12/2015
-     * Dte Last Modified: 10/12/2015
+     * Date Last Modified: 29/01/2016
      */
-    public static function getCourseCount($semesterid)
+    public static function getCourseCount($studentregistrationid, $semesterid)
     {
         $db = Yii::$app->db;
         $count = $db->createCommand(
@@ -281,6 +282,7 @@ class BatchStudentCape extends \yii\db\ActiveRecord
                 . " JOIN cape_course"
                 . " ON cape_course.capecourseid = batch_cape.capecourseid"
                 . " WHERE cape_course.semesterid = " .  $semesterid
+                . " AND batch_student_cape.studentregistrationid = " . $studentregistrationid
                 . ";"    
                 )
                 ->queryScalar();
@@ -290,14 +292,15 @@ class BatchStudentCape extends \yii\db\ActiveRecord
     /**
      * Returns and array of associative arrays where each associative array hold one modified 'batch_student_cape' record
      * 
+     * @param type $studentregistrationid
      * @param type $semesterid
      * @return array
      * 
      * Author: Laurence Charles
      * Date Created: 14/12/2015
-     * Date Last Modified: 14/12/2015
+     * Date Last Modified: 29/01/2016
      */
-    public static function getSemesterRecords($semesterid)
+    public static function getSemesterRecords($studentregistrationid, $semesterid)
     {
         $db = Yii::$app->db;
         $batch_student_records = $db->createCommand(
@@ -319,6 +322,7 @@ class BatchStudentCape extends \yii\db\ActiveRecord
                 . " JOIN cape_subject"
                 . " ON cape_unit.capesubjectid = cape_subject.capesubjectid"
                 . " WHERE cape_course.semesterid = " .  $semesterid
+                . " AND batch_student_cape.studentregistrationid = " . $studentregistrationid
                 . ";"    
                 )
                 ->queryAll();

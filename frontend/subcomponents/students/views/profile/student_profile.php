@@ -1597,9 +1597,9 @@
                                                                 echo "<th>Final</th>";                    
                                                             echo "</tr>";
 
-                                                            $course_results = BatchStudentCape::getSemesterRecords($semester_id);
+                                                            $course_results = BatchStudentCape::getSemesterRecords($studentregistrationid, $semester_id);
 
-                                                            $courses_count = BatchStudentCape::getCourseCount($semester_id);
+                                                            $courses_count = BatchStudentCape::getCourseCount($studentregistrationid, $semester_id);
 
                                                             for ($j = 0 ; $j < $courses_count ; $j++)
                                                             {  
@@ -1689,11 +1689,11 @@
                                                                 echo "<th>Course Status</th>";
                                                             echo "</tr>";
 
-                                                            $course_results = BatchStudent::getSemesterRecords($semester_id);
+                                                            $course_results = BatchStudent::getSemesterRecords($studentregistrationid, $semester_id);
                                                             $points_sum = 0;
                                                             $credits_sum = 0;
-                                                            $courses_count = BatchStudent::getCourseCount($semester_id);
-                                                            $valid_courses_count = BatchStudent::getValidCourseCount($semester_id);
+                                                            $courses_count = BatchStudent::getCourseCount($studentregistrationid, $semester_id);
+                                                            $valid_courses_count = BatchStudent::getValidCourseCount($studentregistrationid, $semester_id);
                                                             for ($j = 0 ; $j < $courses_count ; $j++)
                                                             {  
                                                                 echo "<tr>";

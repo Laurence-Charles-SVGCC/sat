@@ -127,7 +127,6 @@
                                     echo "<div role='tabpanel' class='tab-pane fade' id='$string_id'>";
                                       echo "<br/>";
                                         if (ProgrammeCatalog::getProgrammesByDepartment($depts[$i]->departmentid) == false)
-//                                            echo "<p>Shit</p>";
                                               echo "<div class='alert alert-info' role='alert'>No programmes are currently attached to this department.</div>";
                                         else
                                         {                                                                                                                            
@@ -142,12 +141,13 @@
                                                     if ($data[1][$j][0]->departmentid == $depts[$i]->departmentid)
                                                     {
                                                         echo "<tr>";                                           
-                                                        $pname = $data[1][$j][0]->name;
+//                                                        $pname = $data[1][$j][0]->name;
                                                         $full_name = "";
                                                         $pname = $data[1][$j][0]->name;
 
                                                         $qualification = QualificationType::getQualificationAbbreviation($data[1][$j][0]->qualificationtypeid);
-                                                        if ($qualification != NULL  && strcmp($qualification,"") != 0)
+                                                        
+                                                        if ($qualification != NULL  && strcmp($qualification,"") != 0  && strcmp($qualification,"CAPE.  ") != 0)
                                                             $full_name = $full_name . $qualification;
 
                                                         $specialisation = $data[1][$j][0]->specialisation;
