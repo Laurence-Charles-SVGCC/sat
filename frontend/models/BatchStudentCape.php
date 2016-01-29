@@ -283,7 +283,7 @@ class BatchStudentCape extends \yii\db\ActiveRecord
                 . " ON cape_course.capecourseid = batch_cape.capecourseid"
                 . " WHERE cape_course.semesterid = " .  $semesterid
                 . " AND batch_student_cape.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_student_cape.isactive = 1;"      
                 )
                 ->queryScalar();
         return $count;
@@ -323,7 +323,7 @@ class BatchStudentCape extends \yii\db\ActiveRecord
                 . " ON cape_unit.capesubjectid = cape_subject.capesubjectid"
                 . " WHERE cape_course.semesterid = " .  $semesterid
                 . " AND batch_student_cape.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_student_cape.isactive = 1;"   
                 )
                 ->queryAll();
         
@@ -397,7 +397,7 @@ class BatchStudentCape extends \yii\db\ActiveRecord
                 . " ON cape_unit.capesubjectid = cape_subject.capesubjectid"
                 . " WHERE batch_student_cape.batchcapeid = " .  $batchid
                 . " AND batch_student_cape.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_student_cape.isactive = 1;"     
                 )
                 ->queryOne();
         if ($course_record)

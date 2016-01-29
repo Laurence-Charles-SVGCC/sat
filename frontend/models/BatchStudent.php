@@ -299,7 +299,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " AND batch_students.studentregistrationid = " . $studentregistrationid
                 . " AND batch_students.examtotal IS NOT NULL"
                 . " AND batch_students.courseworktotal IS NOT NULL"
-                . ";"    
+                . " AND batch_students.isactive = 1;"       
                 )
                 ->queryScalar();
         return $count;
@@ -349,7 +349,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " ON course_offering.coursetypeid = course_type.coursetypeid"
                 . " WHERE course_offering.semesterid = " .  $semesterid
                 . " AND batch_students.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_students.isactive = 1;"
                 )
                 ->queryAll();
         
@@ -478,7 +478,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " ON course_offering.coursecatalogid = course_catalog.coursecatalogid"
                 . " WHERE batch_students.batchid = " .  $batchid
                 . " AND batch_students.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_students.isactive = 1;"      
                 )
                 ->queryOne();
         if ($course_record)
