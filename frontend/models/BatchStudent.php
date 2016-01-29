@@ -266,7 +266,7 @@ class BatchStudent extends \yii\db\ActiveRecord
                 . " ON batch.courseofferingid = course_offering.courseofferingid"
                 . " WHERE course_offering.semesterid = " .  $semesterid
                 . " AND batch_students.studentregistrationid = " . $studentregistrationid
-                . ";"    
+                . " AND batch_students.isactive = 1;"        
                 )
                 ->queryScalar();
         return $count;
