@@ -104,10 +104,11 @@
                                         echo "<th>Credits Awarded</th>";
                                         echo "<th>CW</th>";
                                         echo "<th>Exam</th>";
-                                        echo "<th>Final</th>";                                      
-                                        echo "<th>Grade</th>";
-                                        echo "<th>Grade Points</th> "; 
+                                        echo "<th>Final</th>"; 
                                         echo "<th>Course Status</th>";
+                                        echo "<th>Grade</th>";
+                                        echo "<th>Quality Points</th> "; 
+                                        echo "<th>Grade Points</th> "; 
                                         if (Yii::$app->user->can('editTranscript') == true)      
                                         {
                                             echo "<th>Action</th>";
@@ -121,6 +122,7 @@
                                     $valid_courses_count = BatchStudent::getValidCourseCount($studentregistration->studentregistrationid, $semester_id);
                                     for ($j = 0 ; $j < $courses_count ; $j++)
                                     {  
+                                        $grade_points = $course_results[$j]['credits_attempted'] * $course_results[$j]['qualitypoints'];
                                         echo "<tr>";
                                             $iscape = 0;
                                             $batchid = $course_results[$j]['batchid'];
@@ -149,9 +151,11 @@
                                             echo "<td>{$course_results[$j]['courseworktotal']}</td>";
                                             echo "<td>{$course_results[$j]['examtotal']}</td>";
                                             echo "<td>{$course_results[$j]['final']}</td>";
+                                            echo "<td>{$course_results[$j]['course_status']}</td>";
                                             echo "<td>{$course_results[$j]['grade']}</td>";
                                             echo "<td>{$course_results[$j]['qualitypoints']}</td>";
-                                            echo "<td>{$course_results[$j]['course_status']}</td>";
+                                            echo "<td>$grade_points</td> "; 
+                                            
                                             
                                             if (Yii::$app->user->can('editTranscript') == true)      
                                             {

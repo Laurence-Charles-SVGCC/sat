@@ -1707,12 +1707,17 @@
                                                                         echo "<td>0</td>";  
                                                                     echo "<td>{$course_results[$j]['courseworktotal']}</td>";
                                                                     echo "<td>{$course_results[$j]['examtotal']}</td>";
-                                                                    echo "<td>{$course_results[$j]['course_status']}</td>";
                                                                     echo "<td>{$course_results[$j]['final']}</td>"; 
+                                                                    echo "<td>{$course_results[$j]['course_status']}</td>";
                                                                     echo "<td>{$course_results[$j]['grade']}</td>";
                                                                     echo "<td>{$course_results[$j]['qualitypoints']}</td>";
                                                                     echo "<td>$grade_points</td> "; 
                                                                 echo "</tr>";
+                                                                
+                                                                if (strcmp($course_results[$j]['course_status'], "P") == 0)
+                                                                {
+                                                                    $credits_sum += $course_results[$j]["credits_awarded"];  
+                                                                }
                                                             }
 
                                                             $semester_gpa = BatchStudent::getSemesterGPA($studentregistrationid, $semester_id);
