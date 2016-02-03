@@ -480,7 +480,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     * 
     * Author: Laurence Charles
     * Date Created:16/01/2016
-    * Date Last Modified: 16/01/2016
+    * Date Last Modified: 16/01/2016 | 03/02/2016
     */
     public static function getStudentsByDivision($divisionid, $personid)
     {
@@ -493,7 +493,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                     ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
-                    ->where(['student_registration.personid' => $personid, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid])
+                    ->where(['student_registration.personid' => $personid, 'student_registration.isdeleted' => 0, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid])
                     ->all();
         
         return $registrations;
