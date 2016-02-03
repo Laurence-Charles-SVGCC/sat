@@ -423,7 +423,7 @@ class BatchStudent extends \yii\db\ActiveRecord
         {
             $grade_points = $semester_results[$i]['credits_attempted'] * $semester_results[$i]['qualitypoints'];
 //            $gradepoints_sum += $grade_points;
-            if (strcmp($semester_results[$i]['course_status'],'Incomplete') != 0  && strcmp($records[$i]['course_status'],'Unknown') != 0
+            if (strcmp($semester_results[$i]['course_status'],'Incomplete') != 0  && strcmp($semester_results[$i]['course_status'],'Unknown') != 0
                 && ($semester_results[$i]['passfailtypeid'] == 1 || $semester_results[$i]['passfailtypeid'] == 3))
             {
                 $gradepoints_sum += $grade_points;
