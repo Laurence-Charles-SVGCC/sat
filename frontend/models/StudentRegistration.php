@@ -178,7 +178,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created:17/12/215
-     * Date Last Modified: 14/01/2016
+     * Date Last Modified: 14/01/2016 | 03/02/2016
      */
     public static function calculateCumulativeGPA($studentregistrationid)
     {
@@ -213,10 +213,11 @@ class StudentRegistration extends \yii\db\ActiveRecord
             for ($i = 0 ; $i < $records_count ; $i++)
             {
                 $grade_points = $records[$i]['credits'] * $records[$i]['qualitypoints'];
-                $gradepoints_sum += $grade_points;
-                if (strcmp($records[$i]['course_status'],'Incomplete') != 0  && 
-                        ($records[$i]['passfailtypeid'] == 1 || $records[$i]['passfailtypeid'] == 3))
+//                $gradepoints_sum += $grade_points;
+                if (strcmp($records[$i]['course_status'],'Incomplete') != 0  && strcmp($records[$i]['course_status'],'Unknown') != 0
+                    &&  ($records[$i]['passfailtypeid'] == 1 || $records[$i]['passfailtypeid'] == 3))
                 {
+                   $gradepoints_sum += $grade_points;
                    $credits_sum += $records[$i]["credits"]; 
                 }
             }
