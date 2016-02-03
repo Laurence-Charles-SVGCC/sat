@@ -416,6 +416,7 @@ class BatchStudent extends \yii\db\ActiveRecord
         $semester_results = self::getSemesterRecords($studentregistrationid, $semesterid);
         $gradepoints_sum = 0;
         $credits_sum = 0;
+        $semester_gpa = "Pending";
         
         $count = count($semester_results);
         
@@ -430,7 +431,10 @@ class BatchStudent extends \yii\db\ActiveRecord
                 $credits_sum += $semester_results[$i]["credits_awarded"]; 
             }
         }
-        $semester_gpa = round(($gradepoints_sum/$credits_sum), 2);
+        
+        if($gradepoints_sum!=0  && $credits_sum!=0)
+            $semester_gpa = round(($gradepoints_sum/$credits_sum), 2);
+        
         return $semester_gpa;
     }
     

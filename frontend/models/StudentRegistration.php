@@ -182,7 +182,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
      */
     public static function calculateCumulativeGPA($studentregistrationid)
     {
-        $cumulative_gpa = 0;
+        $cumulative_gpa = "Pending";
         $gradepoints_sum = 0;
         $credits_sum = 0;
         
@@ -221,7 +221,8 @@ class StudentRegistration extends \yii\db\ActiveRecord
                    $credits_sum += $records[$i]["credits"]; 
                 }
             }
-            $cumulative_gpa = round(($gradepoints_sum/$credits_sum), 2);
+            if($gradepoints_sum!=0  && $credits_sum!=0)
+                $cumulative_gpa = round(($gradepoints_sum/$credits_sum), 2);
         } 
         return $cumulative_gpa;
     }
