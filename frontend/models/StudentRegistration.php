@@ -214,7 +214,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
             {
                 $grade_points = $records[$i]['credits'] * $records[$i]['qualitypoints'];
 //                $gradepoints_sum += $grade_points;
-                if (strcmp($records[$i]['course_status'],'Incomplete') != 0  && strcmp($records[$i]['course_status'],'Unknown') != 0
+                if (strcmp($records[$i]['course_status'],'INC') != 0  && strcmp($records[$i]['course_status'],'UN') != 0
                     &&  ($records[$i]['passfailtypeid'] == 1 || $records[$i]['passfailtypeid'] == 3))
                 {
                    $gradepoints_sum += $grade_points;
