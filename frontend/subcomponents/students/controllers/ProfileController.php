@@ -2198,6 +2198,7 @@
                                                     if ($new_offer_save_flag == true)
                                                     {
                                                         $registration->offerid = $new_offer->offerid;   //associate new offer with student_registration
+                                                        $registration->academicofferingid = $application->academicofferingid;
                                                         $registration_save_flag = $registration->save();
                                                         
                                                         if($registration_save_flag == true)
