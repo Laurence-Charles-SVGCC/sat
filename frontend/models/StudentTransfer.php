@@ -7,7 +7,7 @@ use frontend\models\Employee;
 use frontend\models\StudentRegistration;
 use frontend\models\Offer;
 use frontend\models\ApplicationCapesubject;
-use frontend\models\Capesubject;
+use frontend\models\CapeSubject;
 
 /**
  * This is the model class for table "student_transfer".
