@@ -42,7 +42,7 @@ class Institution extends \yii\db\ActiveRecord
             [['levelid', 'name'], 'required'],
             [['levelid', 'personid'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean'],
-            [['name', 'formername', 'country', 'constituency', 'town', 'addressline'], 'string', 'max' => 45]
+            [['name', 'formername', 'country', 'constituency', 'town', 'addressline'], 'string', 'max' => 100]
         ];
     }
 

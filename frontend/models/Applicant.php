@@ -155,15 +155,18 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 09/01/2016
-     * Date Last Modified: 09/01/2016
+     * Date Last Modified: 09/01/2016 | 09/02/2016
      */
     public static function getApplicantIntent($id)
     {
-        $applicant= Applicant::find()
+        $applicants = Applicant::find()
                     ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-        if($applicant)
+                    ->all();
+        $count = count($applicants);
+        if($count > 0)
         {
+            $target = $count-1;
+            $applicant = $applicants[$target];
             return $applicant->applicantintentid;
         }
         return false;    

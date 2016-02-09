@@ -41,7 +41,6 @@
                                     'id' => 'add-transfer-form',
                                     'options' => [
                                         'class' => 'form-layout'
-    //                                    'class' => 'form-inline',
                                     ],
                                 ]);
                             

@@ -406,6 +406,9 @@ class Division extends \yii\db\ActiveRecord
             $combined = array_combine($keys, $values);
             return $combined;
         }
+        
+        
+        
     }
     
     
