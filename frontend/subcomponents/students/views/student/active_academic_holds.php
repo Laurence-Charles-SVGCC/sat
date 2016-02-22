@@ -127,7 +127,7 @@
                                                 echo "<th>Notification Status</th>"; 
                                             echo "</tr>";
                                     
-                                            foreach($all_holds as $academic_hold)
+                                            foreach($dasgs_holds as $academic_hold)
                                             {
                                                 echo "<tr>";
                                                     $profile_link = Url::toRoute(['/subcomponents/students/profile/student-profile', 'personid' => $academic_hold['personid'], 'studentregistrationid' => $academic_hold['studentregistrationid']]);
