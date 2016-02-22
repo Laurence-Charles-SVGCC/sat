@@ -122,6 +122,7 @@
             
             $info_string = "";
             
+            $all_student_data_container = array();
             $all_students_provider = array();
             $all_students_info = array();
             
