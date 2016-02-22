@@ -150,7 +150,7 @@ class RegisterStudentController extends \yii\web\Controller
                        $reg = new StudentRegistration();
                        $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
                        
-                       $reg->offerid = $offerid;
+                       $reg->offerid = intval($offerid);
                        $reg->personid = $applicant->personid;
                        $reg->academicofferingid = $application->academicofferingid;
                        $reg->registrationtypeid = $reg_type->registrationtypeid;
