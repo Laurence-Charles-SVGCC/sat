@@ -657,19 +657,19 @@ class StudentController extends Controller
     {
         $info_string = "";
 
-        $all_students_provider = NULL;
+        $all_students_provider = array();
         $all_students_info = array();
 
-        $a_f_provider = NULL;
+        $a_f_provider = array();
         $a_f_info = array();
 
-        $g_l_provider = NULL;
+        $g_l_provider = array();
         $g_l_info = array();
 
-        $m_r_provider = NULL;
+        $m_r_provider = array();
         $m_r_info = array();
 
-        $s_z_provider = NULL;
+        $s_z_provider = array();
         $s_z_info = array();
         
         //need to facilitate breadcrumb navigation from 'student_listing' to 'programme_listing' of source division

@@ -96,4 +96,92 @@ class AcademicYear extends \yii\db\ActiveRecord
         return false;
     }
     
+    
+    /**
+     * Returns an associative array of all academic years
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/02/2016
+     * Date Last Modified: 09/02/2016
+     */
+    public static function getAcademicYears()
+    {
+        $years = AcademicYear::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+        if (count($years) > 0)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select Year...');
+
+            foreach($years as $year)
+            {
+                $key = strval($year->academicyearid);
+                array_push($keys, $key);
+                $value = strval($year->title);
+                array_push($values, $value);
+            }
+
+            $combined = array_combine($keys, $values);
+            return $combined;
+        }
+        return false;
+    }
+    
+    
+    
+    /**
+     * Returns an associative array of the current academic year
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/02/2016
+     * Date Last Modified: 12/02/2016
+     */
+    public static function getCurrentAcademicYearPrepared()
+    {
+        $year = self::getCurrentYear();
+                    
+        if ($year)
+        {
+            $keys = array();
+            $values = array();
+
+            $key = strval($year->academicyearid);
+            array_push($keys, $key);
+            $value = strval($year->title);
+            array_push($values, $value);
+
+            $combined = array_combine($keys, $values);
+            return $combined;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Returns the current academic year
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 11/02/2016
+     * Date Last Modified: 11/02/2016
+     */
+    public static function getCurrentYear()
+    {
+        $year = AcademicYear::find()
+                ->where(['iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($year)
+            return $year;
+        return false;
+    }
+    
 }

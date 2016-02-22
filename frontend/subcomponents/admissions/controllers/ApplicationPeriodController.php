@@ -128,4 +128,57 @@ class ApplicationPeriodController extends Controller
         }
     }
     
+    
+    /**
+         * Updates an ApplicationPeriod record 
+         * 
+         * @param type $personid
+         * @param type $studentregistrationid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 09/02/2016
+         * Date Last Modified: 09/02/2016
+         */
+        public function actionEditApplicationPeriod($recordid)
+        {
+            $employeeid = Yii::$app->user->identity->personid;
+            $period = ApplicationPeriod::find()
+                        ->where(['applicationperiodid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            if ($period == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve application period record. Please try again.');
+                return $this->render('edit_application_period',[
+                                    'period' => $period
+                                ]);
+            }
+            
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                
+                $load_flag = $period->load($post_data);
+                $period->personid = $employeeid;
+                if($load_flag == true)
+                {
+                    $save_flag = $period->save();
+                    if($save_flag == true)
+                        return $this->redirect(['admisssions/manage-application-period']);
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record. Please try again.');              
+            }
+            
+            return $this->render('edit_application_period',[
+                                    'period' => $period
+                                ]);
+        }
+    
+    
+    
 }

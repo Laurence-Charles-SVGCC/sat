@@ -16,73 +16,83 @@ class VerifyApplicantsController extends \yii\web\Controller
     /*
     * Purpose: Displays centres and statistics of verification
     * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionIndex()
     {
         $data = array();
-        $current_centres = self::getCurrentCentres();
-        foreach ($current_centres as $centre)
+        $current_centres = CsecCentre::getCurrentCentres();
+        
+        /*
+         *  If there is an active application the associated csec centres are retreived
+         */
+        if ($current_centres == true)      
         {
-            $amt_received = self::centreApplicantsReceivedCount($centre->cseccentreid);
-            $amt_verified = self::centreApplicantsVerifiedCount($centre->cseccentreid);
-            
+            foreach ($current_centres as $centre)
+            {
+                $amt_received = Application::centreApplicantsReceivedCount($centre->cseccentreid);
+                $amt_verified = Application::centreApplicantsVerifiedCount($centre->cseccentreid);
+
+                $centre_row = array();
+                $centre_row['centre_name'] = $centre->name;
+                $centre_row['centre_id'] = $centre->cseccentreid;
+                $centre_row['status'] = ($amt_received - $amt_verified) <= 0 ? "Complete" : "Incomplete";
+                $centre_row['applicants_verified'] = $amt_verified;
+                $centre_row['total_received'] = $amt_received;
+                $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($amt_verified/$amt_received) * 100, 2);
+                array_push($data, $centre_row);
+            }
+
+            //For external applicants
+            $amt_received = count(Application::getExternal());
             $centre_row = array();
-            $centre_row['centre_name'] = $centre->name;
-            $centre_row['centre_id'] = $centre->cseccentreid;
-            $centre_row['status'] = ($amt_received - $amt_verified) <= 0 ? "Complete" : "Incomplete";
-            $centre_row['applicants_verified'] = $amt_verified;
+            $centre_row['centre_name'] = "External";
+            $centre_row['centre_id'] = '00000';
+            $centre_row['status'] = "N/A";
+            $centre_row['applicants_verified'] = "N/A";
             $centre_row['total_received'] = $amt_received;
-            $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($amt_verified/$amt_received) * 100, 2);
-            $data[] = $centre_row;
+            $centre_row['percentage_completed'] = 0;
+            array_push($data, $centre_row);
+
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 15,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['centre_name' => SORT_ASC],
+                    'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
+                ],
+            ]);
         }
-        
-        //For external applicants
-        $amt_received = count(self::getExternal());
-        $centre_row = array();
-        $centre_row['centre_name'] = "External";
-        $centre_row['centre_id'] = '00000';
-        $centre_row['status'] = "N/A";
-        $centre_row['applicants_verified'] = "N/A";
-        $centre_row['total_received'] = $amt_received;
-        $centre_row['percentage_completed'] = 0;
-        $data[] = $centre_row;
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $data,
-            'pagination' => [
-                'pageSize' => 15,
-            ],
-            'sort' => [
-                'defaultOrder' => ['centre_name' => SORT_ASC],
-                'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
-            ],
-        ]);
+        else
+            $dataProvider = false;
         
         return $this->render('index',
                 ['dataProvider' => $dataProvider]
                 );
     }
     
+    
     /*
     * Purpose: Displays verification dashboard of a centre
     * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionCentreDetails($centre_id, $centre_name)
     {
         if (strcasecmp($centre_name, "external") == 0)
         {
-            $amt_received = count(self::getExternal());
+            $amt_received = count(Application::getExternal());
             $amt_verified = "N/A";
             $amt_queried = "N/A";
             $amt_pending = 0;
         }
         else
         {
-            $amt_received = self::centreApplicantsReceivedCount($centre_id);
-            $amt_verified = self::centreApplicantsVerifiedCount($centre_id);
-            $amt_queried = self::centreApplicantsQueriedCount($centre_id);
+            $amt_received = Application::centreApplicantsReceivedCount($centre_id);
+            $amt_verified = Application::centreApplicantsVerifiedCount($centre_id);
+            $amt_queried = Application::centreApplicantsQueriedCount($centre_id);
             $amt_pending = $amt_received - ($amt_verified + $amt_queried);
         }
 
@@ -97,6 +107,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
+    
     /*
     * Purpose: Displays all applicants from a given centre
     * Created: 15/07/2015 by Gii
@@ -106,12 +117,12 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         if (strcasecmp($centrename, "external") == 0)
         {
-            $data = self::getExternal();
+            $data = Application::getExternal();
         }
         else
         {
             $data = array();
-            foreach(self::centreApplicantsReceived($cseccentreid) as $application)
+            foreach(Application::centreApplicantsReceived($cseccentreid) as $application)
             {
                 $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
             }
@@ -138,12 +149,12 @@ class VerifyApplicantsController extends \yii\web\Controller
     /*
     * Purpose: Displays pending applicants from a given centre
     * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionViewPending($cseccentreid, $centrename)
     {
         $data = array();
-        foreach(self::centreApplicantsPending($cseccentreid) as $application)
+        foreach(Application::centreApplicantsPending($cseccentreid) as $application)
         {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -166,15 +177,16 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
+    
     /*
     * Purpose: Displays verified applicants from a given centre
     * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionViewVerified($cseccentreid, $centrename)
     {
         $data = array();
-        foreach(self::centreApplicantsVerified($cseccentreid) as $application)
+        foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
         {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -200,12 +212,12 @@ class VerifyApplicantsController extends \yii\web\Controller
     /*
     * Purpose: Displays queried applicants from a given centre
     * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton
+    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionViewQueried($cseccentreid, $centrename)
     {
         $data = array();
-        foreach(self::centreApplicantsQueried($cseccentreid) as $application)
+        foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
         {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -229,18 +241,21 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
     
+    
     /*
     * Purpose: Displays all certificates for a given applicant from a given centre.
      * Handles actions from the display: add more certificates, save all as verified
      * and save changes.
     * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 18/07/2015 by Gamal Crichton
+    * Last Modified: 18/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
     */
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
         if (Yii::$app->request->post())
         {
-            $qualifications = CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all();
+            $qualifications = CsecQualification::find()
+                            ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->all();
             $request = Yii::$app->request;
             if ($request->post('add_more') === '')
             {
@@ -286,7 +301,9 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $qualifications = $request->post('CsecQualification');
                     foreach ($qualifications as $qual)
                     {
-                        $cert = CsecQualification::find()->where(['csecqualificationid' => $qual['csecqualificationid']])->one();
+                        $cert = CsecQualification::find()
+                                ->where(['csecqualificationid' => $qual['csecqualificationid']])
+                                ->one();
                         $cert->examinationbodyid = $qual['examinationbodyid'];
                         $cert->year = $qual['year'];
                         $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
@@ -349,8 +366,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
+        
         $dataProvider = new ArrayDataProvider([
-            'allModels' => CsecQualification::find()->where(['personid' => $applicantid, 'isdeleted' => 0])->all(),
+            'allModels' => CsecQualification::find()
+                            ->where(['personid' => $applicantid, 'isdeleted' => 0])
+                            ->all(),
             'pagination' => [
                 'pageSize' => 20,
             ],
@@ -358,7 +378,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
             ],
         ]);
-        $applicant_model = Applicant::find()->where(['personid' => $applicantid])->one();
+        
+        $applicant_model = Applicant::find()
+                        ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+       
         return $this->render('view-applicant-qualifications',
                 [
                     'dataProvider' => $dataProvider,
@@ -366,8 +390,10 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'centrename' => $centrename,
                     'centreid' => $cseccentreid,
                     'type' => $type,
+                    'isexternal' => $applicant_model->isexternal,
                 ]);
     }
+    
     
     /*
     * Purpose: Soft deletes a given certificate.
@@ -376,15 +402,49 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionDeleteCertificate($certificate_id)
     {
-        $cert = CsecQualification::find()->where(['csecqualificationid' => $certificate_id])->one();
-        $cert->isdeleted = 1;
-        $cert->isactive = 0;
-        if (!$cert->save())
+        $save_flag = false;
+        $cert = CsecQualification::find()
+                ->where(['csecqualificationid' => $certificate_id])
+                ->one();
+        if ($cert == true)
         {
-            Yii::$app->session->setFlash('error', 'Certificate could not be deleted');
+            $cert->isdeleted = 1;
+            $cert->isactive = 0;
+            $save_flag = $cert->save();
+
+            if ($save_flag == false)
+            {
+                Yii::$app->session->setFlash('error', 'Certificate could not be deleted');
+            }
         }
+        else
+            Yii::$app->session->setFlash('error', 'Error retrieving certificate');
+        
+      
         return $this->redirect(\Yii::$app->request->getReferrer());
+        
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /*
     * Purpose: Gets the CSEC Centres relevant to active application periods
@@ -459,6 +519,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         return DatabaseWrapperController::centreApplicantsVerifiedCount($cseccentreid);
     }
+    
     
     /*
     * Purpose: Gets counts of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods

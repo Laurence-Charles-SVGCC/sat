@@ -9,8 +9,8 @@ use Yii;
  *
  * @property string $capegroupid
  * @property string $capesubjectid
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  *
  * @property CapeGroup $capegroup
  * @property CapeSubject $capesubject
@@ -31,8 +31,9 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['capegroupid', 'capesubjectid'], 'required'],
-            [['capegroupid', 'capesubjectid'], 'integer'],
+//            [['capegroupid', 'capesubjectid'], 'required'],
+            [['capesubjectid'], 'required'],
+            [['capegroupid', 'capesubjectid', 'isactive', 'isdeleted'], 'integer'],
             [['isactive', 'isdeleted'], 'boolean']
         ];
     }
@@ -75,7 +76,7 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 09/01/2016
-     * Date LAst Modified: 09/01/2016
+     * Date Last Modified: 09/01/2016
      */
     public static function getSubjects($groupid)
     {
@@ -83,6 +84,94 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
             ->where(['capegroupid' => $groupid, 'isactive' => 1, 'isdeleted' => 0])
             ->all();
         return $subjects;
+    }
+    
+    
+    /**
+     * Returns an array of the associated CapeSubjectGroup records
+     * 
+     * @param type $applicationperiodid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/01/2016
+     * Date Last Modified: 09/01/2016
+     */
+    public static function getAssociatedCapeGroups($applicationperiodid)
+    {
+        $records = CapeSubjectGroup::find()
+                ->innerJoin('cape_subject', '`cape_subject_group`.`capesubjectid` = `cape_subject`.`capesubjectid`')
+                ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'programme_catalog.name' => 'CAPE', 'academic_offering.applicationperiodid' => $applicationperiodid])
+                ->all();
+        if (count($records) > 0)
+            return $records;
+        return false;
+    }
+    
+    
+    /**
+     * Creates backup of a collection of CapeSubjectGroups records
+     * 
+     * @param type $groups
+     * @return array
+     * 
+     * Author: Laurence Charles
+     * Date Created: 16/02/2016
+     * Date Last Modified: 16/02/2016
+     */
+    public static function backup($groups)
+    {
+        $saved = array();
+         
+        foreach ($groups as $group)
+        {
+            $temp = NULL;
+            $temp = new CapeSubjectGroup();
+            $temp->capegroupid = $group->capegroupid;
+            $temp->capesubjectid = $group->capesubjectid;
+            $temp->isactive = $group->isactive;
+            $temp->isdeleted = $group->isdeleted;
+            array_push($saved, $temp);      
+        }
+        return $saved;
+    }
+    
+    
+    /**
+     * Saves a collection records
+     * 
+     * @param type $groups
+     * 
+     * Author: Laurence Charles
+     * Date Created: 16/02/2016
+     * Date Last Modified: 16/02/2016
+     */
+    public static function restore($groups)
+    {
+        foreach($groups as $group)
+        {
+            $group->save();
+        }
+    }
+    
+    
+    /**
+     * Delete collection of capesubjectgroups
+     * 
+     * @param type $groups
+     * 
+     * Author: Laurence Charles
+     * Date Created: 16/02/2016
+     * Date Last Modified: 16/02/2016
+     */
+    public static function deleteGroups($groups)
+    {
+        foreach($groups as $group)
+        {
+            $group->delete();
+        }
     }
     
     

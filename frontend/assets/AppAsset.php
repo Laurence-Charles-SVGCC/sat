@@ -52,6 +52,7 @@ class AppAsset extends AssetBundle
         'js/gradebook/edit_assessment.js',
         'js/students/students.js',
         'js/students/ajax_functions.js',
+        'js/admissions/admissions.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

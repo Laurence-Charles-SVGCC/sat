@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "programme_catalog".
  *
  * @property string $programmecatalogid
+ * @property string $programmetypeid
  * @property string $examinationbodyid
  * @property string $qualificationtypeid
  * @property string $departmentid
@@ -15,8 +16,8 @@ use Yii;
  * @property string $specialisation
  * @property integer $duration
  * @property string $name
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  *
  * @property AcademicOffering[] $academicOfferings
  * @property ExaminationBody $examinationbody
@@ -39,10 +40,9 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['examinationbodyid', 'qualificationtypeid', 'departmentid', 'creationdate', 'duration', 'name'], 'required'],
-            [['examinationbodyid', 'qualificationtypeid', 'departmentid', 'duration'], 'integer'],
+            [['programmetypeid', 'examinationbodyid', 'qualificationtypeid', 'departmentid', 'creationdate', 'duration', 'name'], 'required'],
+            [['programmetypeid', 'examinationbodyid', 'qualificationtypeid', 'departmentid', 'duration', 'isactive', 'isdeleted'], 'integer'],
             [['creationdate'], 'safe'],
-            [['isactive', 'isdeleted'], 'boolean'],
             [['specialisation', 'name'], 'string', 'max' => 45]
         ];
     }
@@ -54,6 +54,7 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     {
         return [
             'programmecatalogid' => 'Programmecatalogid',
+            'programmetypeid' => 'Programmetypeid',
             'examinationbodyid' => 'Examination Body',
             'qualificationtypeid' => 'Qualification Type',
             'departmentid' => 'Department',
@@ -98,6 +99,7 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
         return $this->hasOne(Department::className(), ['departmentid' => 'departmentid']);
     }
     
+    
     public function getFullName()
     {
         $qual = $this->getQualificationtype()->one();
@@ -134,6 +136,7 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
             return false;       
     }
     
+    
     /**
      * Returns a list of programmes based on $departmentid
      * 
@@ -154,6 +157,114 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
         else
             return false;       
     }
+    
+    
+    /**
+     * Returns an associated array programes
+     * 
+     * @param type $divisionid
+     * @param type $applicationperiodtypeid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/02/2016
+     * Date Last Modified: 12/02/2016
+     */
+    public static function getProgrammeListing($divisionid, $applicationperiodtypeid)
+    {
+        $db = Yii::$app->db;
+        $records = $db->createCommand(
+                "SELECT programme_catalog.programmecatalogid AS 'id',"
+                . " intent_type.name AS 'programme_type',"
+                . " qualification_type.abbreviation AS 'qualification',"
+                . " programme_catalog.name AS 'name',"
+                . " programme_catalog.specialisation AS 'specialisation'"
+                . " FROM programme_catalog" 
+                . " JOIN intent_type"
+                . " ON programme_catalog.programmetypeid = intent_type.intenttypeid"
+                . " JOIN qualification_type"
+                . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                . " JOIN department"
+                . " ON programme_catalog.departmentid= department.departmentid"
+                . " WHERE programme_catalog.isactive = 1"
+                . " AND programme_catalog.isdeleted = 0"
+                . " AND department.divisionid = " . $divisionid
+                . " AND programme_catalog.programmetypeid = " . $applicationperiodtypeid
+                . " AND programme_catalog.name <> 'CAPE'"
+                . ";"
+            )
+            ->queryAll();
+        if (count($records) > 0)
+            return $records;
+        return false;
+    }
+    
+    
+    /**
+     * Returns an associated array all programes
+     * 
+     * @param type $divisionid
+     * @param type $applicationperiodtypeid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 14/02/2016
+     * Date Last Modified: 14/02/2016
+     */
+    public static function getFullProgrammeListing($divisionid, $applicationperiodtypeid)
+    {
+        $db = Yii::$app->db;
+        $records = $db->createCommand(
+                "SELECT programme_catalog.programmecatalogid AS 'id',"
+                . " intent_type.name AS 'programme_type',"
+                . " qualification_type.abbreviation AS 'qualification',"
+                . " programme_catalog.name AS 'name',"
+                . " programme_catalog.specialisation AS 'specialisation'"
+                . " FROM programme_catalog" 
+                . " JOIN intent_type"
+                . " ON programme_catalog.programmetypeid = intent_type.intenttypeid"
+                . " JOIN qualification_type"
+                . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                . " JOIN department"
+                . " ON programme_catalog.departmentid= department.departmentid"
+                . " WHERE programme_catalog.isactive = 1"
+                . " AND programme_catalog.isdeleted = 0"
+                . " AND department.divisionid = " . $divisionid
+                . " AND programme_catalog.programmetypeid = " . $applicationperiodtypeid
+                . ";"
+            )
+            ->queryAll();
+        if (count($records) > 0)
+            return $records;
+        return false;
+    }
+    
+    
+    
+    /**
+     * Returns an array of all programmes associated with open application periods
+     * 
+     * @param type $divisionid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 19/02/2016
+     * Date Last Modified: 19/02/2016
+     */
+    public static function getCurrentProgrammes($division_id)
+    {
+        $prog_cond = null;
+         if ($division_id == 1)
+             $prog_cond = array('application_period.isactive' => 1, 'application_period.isactive' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0);
+         else
+             $prog_cond = array('application_period.isactive' => 1, 'application_period.isactive' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'application_period.divisionid' => $division_id); 
+        
+        $records = ProgrammeCatalog::find()
+                    ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where($prog_cond)
+                    ->all();
+        
+        return $records;
+    }
+    
     
     
     

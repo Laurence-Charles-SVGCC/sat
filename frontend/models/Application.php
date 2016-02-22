@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 use common\models\User;
+use frontend\models\Applicant;
+use frontend\models\AcademicYear;
 
 /**
  * This is the model class for table "application".
@@ -292,5 +294,556 @@ class Application extends \yii\db\ActiveRecord
         }
         return $new_id;
     }
+    
+    
+    /**
+     * Gets the Applicants with CSEC Certificates who indicated they have "External" qualifications
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function getExternal()
+    {
+        $data = array();
+        $applications = Application::find()
+                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                ->where(['application_period.isactive' => 1,
+                        'academic_year.iscurrent' => 1,
+                        'application.isdeleted' => 0,
+                        'applicant.isexternal' => 1,
+                        'academic_offering.isdeleted' => 0,
+                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+                ->groupby('application.personid')
+                ->all();
+        
+        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);     //retrieves the 'exception' csec_centre
+        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
+        foreach($applications as $application)
+        {
+            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
+            if (!$qual || $qual->cseccentreid == $cseccentreid) //if no qualificatons can be found or the qualification found is of centreid="00000"
+            {
+                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            }
+        }
+        return $data;
+    }
+    
+    
+    /**
+     * Gets the count of Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsReceivedCount($cseccentreid)
+    {
+        $count = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
+                            'csec_qualification.isdeleted' => 0,
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0
+                            ])
+                    ->groupby('application.personid')
+                    ->count();
+        return $count;
+    }
+    
+    /**
+     * Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsReceived($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
+                            'csec_qualification.isdeleted' => 0,
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0
+                            ])
+                    ->groupby('application.personid')
+                    ->all();
+        return $applicants;
+    }
+    
+  
+    /**
+     * Gets a count of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * who have already been fully verified
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsVerifiedCount($cseccentreid)
+    {
+        $count = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                            'application_period.isactive' => 1, 
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0])
+                    ->groupby('application.personid')
+                    ->count();
+        
+        return $count;
+    }
+    
+    
+    /**
+     * Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * who have already been fully verified
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsVerified($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                            'application_period.isactive' => 1, 
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0])
+                    ->groupby('application.personid')
+                    ->all();
+        
+        return $applicants;
+    }
+    
+    
+    /**
+     * Gets the count of Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * who have a certificate flagged as to be queried
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsQueriedCount($cseccentreid)
+    {
+        $count = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
+                            'application_period.isactive' => 1, 
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0])
+                    ->groupby('application.personid')
+                    ->count();
+        return $count;
+    }
+    
+    
+    /**
+     * Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * who have a certificate flagged as to be queried
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsQueried($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
+                            'application_period.isactive' => 1, 
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0])
+                    ->groupby('application.personid')
+                    ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * who have a certificate that are not flagged as yet
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function centreApplicantsPending($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'academic_year.iscurrent' => 1,
+                            'csec_qualification.isqueried' => 0, 'csec_qualification.isverified' => 0, 'csec_qualification.isdeleted' => 0,
+                            'application_period.isactive' => 1, 
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'academic_offering.isdeleted' => 0])
+                    ->groupby('application.personid')
+                    ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Determines if and application is the application currently under consideration
+     * 
+     * @param type $applications
+     * @param type $application_status
+     * @param type $candidate
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/02/2016
+     * Date Last Modified: 20/02/2016
+     */
+    public static function isTarget($applications, $application_status, $candidate)
+    {
+        $count = count($applications);
+                
+        if ($application_status == 6)       //if reject
+        {
+            $target_application = $applications[($count-1)];
+        }
+            
+        elseif ($application_status == 3)   //if pending
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid==3)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 4)    //if shortlist
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 4)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 7)   //if borderline
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 7)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 8)    //if conditional offer
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 8)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 9)   //if full-offer
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 9)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 10)  //if conditional-offer-reject
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 10)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+        
+        if ($candidate->ordering == $target_application->ordering)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Retrieves application currently under consideration
+     * 
+     * @param type $applications
+     * @param type $application_status
+     * @param type $candidate
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/02/2016
+     * Date Last Modified: 20/02/2016
+     */
+    public static function getTarget($applications, $application_status)
+    {
+        $count = count($applications);
+                
+        if ($application_status == 6)       //if reject
+        {
+            $target_application = $applications[($count-1)];
+        }
+            
+        elseif ($application_status == 3)   //if pending
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid==3)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 4)    //if shortlist
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 4)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 7)   //if borderline
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 7)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 8)    //if conditional offer
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 8)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 9)   //if full-offer
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 9)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+
+        elseif ($application_status == 10)  //if conditional-offer-reject
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 10)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+        
+        return $target_application;
+    }
+    
+    
+    /**
+     * Returns the position of an application in the appliction array
+     * 
+     * @param type $applications
+     * @param type $application
+     * @return boolean|int
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/02/2016
+     * Date Last Modified: 20/02/2016
+     */
+    public static function getPosition($applications, $application)
+    {
+        $count = count($applications);
+        
+        for ($i = 0 ; $i < $count ; $i++)
+        {
+            if($application[$i]->applicationid == $application->applicationid)
+                return $i;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Retrieves applicants based on the current application status 
+     * 
+     * @param type $status_id
+     * @param type $division_id
+     * 
+     * Author: Laurence Charles
+     * Date Created: 19/02/2016
+     * Date Last Modified: 19/02/2016
+     */
+//    public static function getByStatus($status_id, $division_id)
+//    {
+//        $applicants = array();
+//        
+//        $apps = Applicant::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
+//        
+//        foreach($apps as $key => $app)
+//        {
+//            // If seeking 'Rejected'
+//            if ($status_id == 6)        
+//            {
+//                if(Applicant::isRejected($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            // If seeking 'Pending'
+//            elseif ($status_id == 3)        
+//            {
+//                if(Applicant::isPending($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            // If seeking 'Shortlisted'
+//            elseif ($status_id == 4)        
+//            {
+//                if(Applicant::isShortlisted($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            
+//            // If seeking 'Borderline'
+//            elseif ($status_id == 7)        
+//            {
+//                if(Applicant::isBorderline($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            // If seeking 'InterviewOffer'
+//            elseif ($status_id == 8)        
+//            {
+//                if(Applicant::isInterviewOffer($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            // If seeking 'Offer'
+//            elseif ($status_id == 9)        
+//            {
+//                if(Applicant::isOffer($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//            
+//            // If seeking 'RejectedConditionalOffer'
+//            elseif ($status_id == 10)        
+//            {
+//                if(Applicant::isRejectedConditionalOffer($app->personid) == false)
+//                    unset($apps[$key]);
+//            }
+//        }
+//        $applicants = $apps;
+//    }
+    
     
 }

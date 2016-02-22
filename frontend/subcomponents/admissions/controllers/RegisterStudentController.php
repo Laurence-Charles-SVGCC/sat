@@ -111,6 +111,7 @@ class RegisterStudentController extends \yii\web\Controller
        {
            $request = Yii::$app->request;
            //Make applicant a student
+           $offerid = $request->post('offerid');
            $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
            if (!$applicant){ $applicant = new Applicant; }
@@ -148,7 +149,8 @@ class RegisterStudentController extends \yii\web\Controller
                        //Capture student registration
                        $reg = new StudentRegistration();
                        $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
-
+                       
+                       $reg->offerid = $offerid;
                        $reg->personid = $applicant->personid;
                        $reg->academicofferingid = $application->academicofferingid;
                        $reg->registrationtypeid = $reg_type->registrationtypeid;

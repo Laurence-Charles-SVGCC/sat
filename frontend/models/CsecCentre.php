@@ -88,4 +88,34 @@ class CsecCentre extends \yii\db\ActiveRecord
             return $combined;
         }
     }
+    
+    
+ 
+    /**
+     * Gets the CSEC Centres relevant to active application periods
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 18/02/2016
+     */
+    public static function getCurrentCentres()
+    {
+        $centres = CsecCentre::find()
+                    ->innerJoin('csec_qualification', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['academic_year.iscurrent' => 1, 'application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'csec_centre.isactive' => 1, 'application.isdeleted' => 0,
+                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+                    ->all();
+        if (count($centres) > 0)
+            return $centres;
+        return false;
+    }
+    
+    
+    
 }

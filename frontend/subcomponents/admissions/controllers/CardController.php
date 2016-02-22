@@ -82,7 +82,7 @@ class CardController extends \yii\web\Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 50,
+                'pageSize' => 35,
             ],
             'sort' => [
                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],

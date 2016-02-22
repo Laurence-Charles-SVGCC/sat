@@ -61,10 +61,10 @@
 
                             <div id="by_division" style="display:none">
                                 <?php if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))  && !Yii::$app->user->can('System Administrator')):?>
-                                    <?= Html::dropDownList('division', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
+                                    <?= Html::dropDownList('division_choice', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
                                     <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?> 
                                 <?php else:?>
-                                    <?= Html::dropDownList('division', null, Division::getAllDivisions());?>
+                                    <?= Html::dropDownList('division_choice', null, Division::getAllDivisions());?>
                                     <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
                                 <?php endif; ?>
                             </div>

@@ -10,6 +10,7 @@ use yii\helpers\Url;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
+        'options' => ['style' => 'width: 100%; margin: 0 auto;'],
         'columns' => [
             [
                 'format' => 'html',

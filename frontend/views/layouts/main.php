@@ -108,20 +108,30 @@ else
                     <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
                   </a>
                   <ul class="treeview-menu">
+                     
                     
-                      
+                        
                       
                       
                     <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    <!--
+                    <?php if (Yii::$app->user->can('Registrar')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])?>"><i class="fa fa-circle-o"></i>Manage Application Periods</a></li> 
+                    <?php endif; ?>
+                    <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
+                    <?php endif; ?>
+                    <?php if (Yii::$app->user->can('reviewApplications')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
+                    <?php endif; ?>
+                    -->
+                    
                     <?php if (Yii::$app->user->can('viewApplicationPeriod')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
                     <?php endif; ?>
                     <?php if (Yii::$app->user->can('viewAcademicOffering')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('verifyApplicants')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
-                    <?php endif; ?>
+                    <?php endif; ?> 
                     <?php if (Yii::$app->user->can('reviewApplications')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
                     <?php endif; ?>

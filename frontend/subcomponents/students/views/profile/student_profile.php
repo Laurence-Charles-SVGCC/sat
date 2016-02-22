@@ -1990,7 +1990,7 @@
                                                             {
                                                                 echo "<th rowspan=$library_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
                                                             }
-                                                            
+                                                            echo "<td>Applied By</td>";
                                                             echo "<td>{$applying_officer}</td>";
                                                             echo "<th>Date Applied</th>";
                                                             echo "<td>{$library_hold->dateapplied}</td>";

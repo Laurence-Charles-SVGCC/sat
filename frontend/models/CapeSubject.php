@@ -142,4 +142,108 @@ class CapeSubject extends \yii\db\ActiveRecord
         $combined = array_combine($keys, $values);
         return $combined;
     }
+    
+    
+    /**
+    * Determines of a CAPE offering has been created for a particular appolication period
+    * 
+    * @param type $applicationperiodid
+    * @return boolean
+    * 
+    * Author: Laurence Charles
+    * Date Created: 14/02/2016
+    * Date Last Modified: 14/02/2016
+    */
+//   public static function getCapeSubjects($applicationperiodid)
+//   {
+//        $db = Yii::$app->db;
+//        $records = $db->createCommand(
+//                "SELECT *"
+//                . " FROM cape_subject" 
+//                . " JOIN academic_offering"
+//                . " ON cape_subject.academicofferingid = academic_offering.academicofferingid"
+//                . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
+//                . " AND academic_offering.isactive = 1"
+//                . " AND academic_offering.isactive = 0"
+//                . ";"
+//            )
+//            ->queryAll();
+//        if (count($records) > 0)
+//            return $records;
+//        return false;
+//    }
+    
+    
+    /**
+    * Retrives all cape_subject records related to the given CAPE academic offering
+    * 
+    * @param type $academicofferingid
+    * @return boolean
+    * 
+    * Author: Laurence Charles
+    * Date Created: 15/02/2016
+    * Date Last Modified: 15/02/2016
+    */
+   public static function getCapeSubjects($academicofferingid)
+   {
+       $records = CapeSubject::find()
+               ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
+               ->where(['cape_subject.academicofferingid' => $academicofferingid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
+               ->all();
+        if (count($records) > 0)
+            return $records;
+        return false;
+    }
+    
+    
+    /**
+     * Creates backup of a collection of CapeSubjects records
+     * 
+     * @param type $subjects
+     * @return array
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/02/2016
+     * Date Last Modified: 15/02/2016
+     */
+    public static function backUp($subjects)
+    {
+        $saved = array();
+         
+        foreach ($subjects as $subject)
+        {
+            $temp = NULL;
+            $temp = new CapeSubject();
+            $temp->cordinatorid = $subject->cordinatorid;
+            $temp->academicofferingid = $subject->academicofferingid;
+            $temp->subjectname = $subject->subjectname;
+            $temp->unitcount = $subject->unitcount;
+            $temp->capacity = $subject->capacity;
+            $temp->isactive = $subject->isactive;
+            $temp->isdeleted = $subject->isdeleted;
+            array_push($saved, $temp);      
+        }
+        return $saved;
+    }
+    
+    
+    /**
+     * Restores the backed up CapeSubjects to the database
+     * 
+     * @param type $subjects
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/02/2016
+     * Date Last Modified: 15/02/2016
+     */
+    public static function restore($subjects)
+    {
+        foreach ($subjects as $subject)
+        {
+            $subject->save();     
+        }
+    }
+    
+    
+    
 }
