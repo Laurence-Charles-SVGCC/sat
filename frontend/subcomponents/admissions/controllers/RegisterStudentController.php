@@ -114,13 +114,21 @@ class RegisterStudentController extends \yii\web\Controller
            $offerid = $request->post('offerid');
            $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
-           if (!$applicant){ $applicant = new Applicant; }
+           if (!$applicant)
+           { 
+               $applicant = new Applicant;   
+           }
            $applicant->load(Yii::$app->request->post());
            if ($applicant->save())
            {
-               $new_student = False;
+               $new_student = false;
                $student = Student::findOne(['personid' => $applicant->personid]);
-               if (!$student){ $student = new Student(); $new_student = True; }
+               if (!$student)
+               { 
+                   $student = new Student(); 
+                   $new_student = true; 
+                   
+                }
                $user = User::findOne(['personid' => $applicant->personid]);
                $student->personid = $applicant->personid;
                $student->applicantname = $user ? $user->username : Null;
@@ -199,7 +207,7 @@ class RegisterStudentController extends \yii\web\Controller
                    }
                    else
                    {
-                       Yii::$app->session->setFlash('error', 'Student Registration could not be added');
+                       Yii::$app->session->setFlash('error', 'Student Registration could not be added' . 'offer=' . $offerid);
                    }
                    
                }
