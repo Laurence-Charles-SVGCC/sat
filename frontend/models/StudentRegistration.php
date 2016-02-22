@@ -47,7 +47,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'registrationdate'], 'required'],
+            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'currentlevel', 'registrationdate'], 'required'],
             [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'receivedpicture', 'cardready', 'cardcollected', 'isactive', 'isdeleted'], 'integer'],
             [['registrationdate'], 'safe']
         ];

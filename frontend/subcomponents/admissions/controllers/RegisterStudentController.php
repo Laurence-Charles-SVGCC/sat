@@ -207,7 +207,7 @@ class RegisterStudentController extends \yii\web\Controller
                    }
                    else
                    {
-                       Yii::$app->session->setFlash('error', 'Student Registration could not be added' . 'offer=' . $offerid);
+                       Yii::$app->session->setFlash('error', 'Student Registration could not be added');
                    }
                    
                }
