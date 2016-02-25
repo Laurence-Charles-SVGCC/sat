@@ -166,7 +166,7 @@ class ApplicationPeriodController extends Controller
                 {
                     $save_flag = $period->save();
                     if($save_flag == true)
-                        return $this->redirect(['admisssions/manage-application-period']);
+                        return $this->redirect(['admissions/manage-application-period']);
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record. Please try again.');
                 }

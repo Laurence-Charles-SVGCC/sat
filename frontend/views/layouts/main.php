@@ -122,6 +122,9 @@ else
                     <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
                     <?php endif; ?>
+                    <?php if (Yii::$app->user->can('registerStudent')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Register Student</a></li>
+                    <?php endif; ?>
                     
                     <!--
                     <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
@@ -161,13 +164,12 @@ else
                             <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
-                            <?php if (Yii::$app->user->can('searchApplicant')): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>DASGS/DTVE (2015/2016) <br/> Applicants</a></li>
-                            <?php endif; ?>
                             <?php if (Yii::$app->user->can('students') || Yii::$app->user->can('viewAllStudentOptions')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
                             <?php endif; ?>
-
+                            <?php if (Yii::$app->user->can('searchApplicant')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>DASGS/DTVE (2015/2016) <br/> Applicants</a></li>
+                            <?php endif; ?>
                             <?php if (Yii::$app->user->can('viewAllStudentOptions') || Yii::$app->user->can('viewAcademicHolds')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds'])?>"><i class="fa fa-circle-o"></i>View Active Academic Holds</a></li>
                             <?php endif; ?>
