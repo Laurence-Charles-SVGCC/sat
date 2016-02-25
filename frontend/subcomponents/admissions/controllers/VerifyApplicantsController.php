@@ -247,7 +247,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * Handles actions from the display: add more certificates, save all as verified
      * and save changes.
     * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 18/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
+    * Last Modified: 18/07/2015 by Gamal Crichton | 20/02/2016 by L.Charles
     */
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
@@ -333,6 +333,9 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
                 $all_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0]));
                 $verified_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0, 'isverified' => 1]));
+                /*
+                 * If all certifications are verified then all application statuses are set to "Pending'
+                 */
                 if ($all_certs == $verified_certs)
                 {
                     $pending = ApplicationStatus::findOne(['name' => 'pending']);
@@ -342,6 +345,22 @@ class VerifyApplicantsController extends \yii\web\Controller
                         foreach($applications as $application)
                         {
                             $application->applicationstatusid = $pending->applicationstatusid;
+                            $application->save();
+                        }
+                    }
+                }
+                /*
+                 * If all certifications are not verified then all application statuses are reset to "Unverified'
+                 */
+                else
+                {
+                    $unverified = ApplicationStatus::findOne(['name' => 'Unverified']);
+                    if ($unverified)
+                    {
+                        $applications = Application::findAll(['personid' => $applicantid]);
+                        foreach($applications as $application)
+                        {
+                            $application->applicationstatusid = $unverified->applicationstatusid;
                             $application->save();
                         }
                     }

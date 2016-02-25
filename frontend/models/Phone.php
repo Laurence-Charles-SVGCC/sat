@@ -63,4 +63,25 @@ class Phone extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
+    
+    
+    /**
+     * Retruns a phone record
+     * 
+     * @param type $id
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/02/2016
+     * Date Lastt Modified: 23/02/2016
+     */
+    public static function findPhone($id)
+    {
+        $model = Phone::find()
+                ->where(['personid' => $id])
+                ->one();
+        if ($model) 
+            return $model;
+        return false;
+    }
 }

@@ -72,4 +72,32 @@ class EmployeeDepartment extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Person::className(), ['personid' => 'personid']);
     }
+    
+    
+    
+    /**
+     * Returns the division id of the user
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 21/02/2016
+     * Date Last Modified: 21/02/2016
+     */
+    public static function getUserDivision()
+    {
+        $emp_department = EmployeeDepartment::findOne(['personid' => Yii::$app->user->getId()]);
+        if ($emp_department)
+        {
+            $department = $emp_department->getDepartment()->one();
+            if ($department)
+            {
+                $division_id = $department->divisionid;
+                return $division_id;
+            }
+        }
+        return false;
+    }
+    
+    
 }

@@ -5,6 +5,7 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use frontend\models\EmployeeTitle;
+use frontend\models\ApplicationPeriod;
 
 use frontend\models\Employee;
 
@@ -108,23 +109,22 @@ else
                     <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
                   </a>
                   <ul class="treeview-menu">
-                     
                     
-                        
-                      
-                      
-                    <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                    <!--
                     <?php if (Yii::$app->user->can('Registrar')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])?>"><i class="fa fa-circle-o"></i>Manage Application Periods</a></li> 
                     <?php endif; ?>
-                    <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                    <?php if (Yii::$app->user->can('verifyApplicants')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
                     <?php endif; ?>
-                    <?php if (Yii::$app->user->can('reviewApplications')): ?>
+                    <?php if (Yii::$app->user->can('reviewApplications')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                     <?php endif; ?>
-                    -->
+                    <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::openPeriodExists()==true): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
+                    <?php endif; ?>
+                    
+                    <!--
+                    <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                     
                     <?php if (Yii::$app->user->can('viewApplicationPeriod')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
@@ -135,11 +135,13 @@ else
                     <?php if (Yii::$app->user->can('reviewApplications')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
                     <?php endif; ?>
-                    <?php if (Yii::$app->user->can('viewOffer')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
-                    <?php endif; ?>
                     <?php if (Yii::$app->user->can('searchApplicant')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
+                    <?php endif; ?>
+                    
+                    
+                    <?php if (Yii::$app->user->can('viewOffer')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
                     <?php endif; ?>
                     <?php if (Yii::$app->user->can('registerStudent')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Register Student</a></li>
@@ -147,17 +149,21 @@ else
                     <?php if (Yii::$app->user->can('studentCard')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
+                    -->
                   </ul>
                   <?php endif; ?>
                 </li>
 
-
+                <br/>
                 <?php if (Yii::$app->user->can('students')): ?>
                     <li class="active treeview">
                         <a href="">
                             <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
+                            <?php if (Yii::$app->user->can('searchApplicant')): ?>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>DASGS/DTVE (2015/2016) <br/> Applicants</a></li>
+                            <?php endif; ?>
                             <?php if (Yii::$app->user->can('students') || Yii::$app->user->can('viewAllStudentOptions')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
                             <?php endif; ?>
@@ -170,6 +176,7 @@ else
                 <?php endif; ?>
 
 
+                <br/>
                 <?php if (Yii::$app->user->can('gradebook')): ?>
                     <li class="active treeview">
                         <a href="">
@@ -188,7 +195,7 @@ else
                     </li>
                 <?php endif; ?>
 
-
+                <br/>
                 <?php if (Yii::$app->user->can('payments')): ?>
                 <li class="active treeview">
                   <a href="">
@@ -213,7 +220,7 @@ else
                 <?php endif; ?>
 
 
-
+                <!--
                 <?php if (Yii::$app->user->can('programmes')): ?>
                 <li class="active treeview">
                   <a href="">
@@ -254,7 +261,7 @@ else
                       </ul>
                     </li>
                 <?php endif; ?>
-
+                -->
 
               </ul>
             </section>

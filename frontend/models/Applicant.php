@@ -206,6 +206,55 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 19/02/2016
+     * Date Last Modified: 19/02/2016 | 23/02/2016
+     */
+    public static function getActiveApplicants($division_id)
+    {
+        // retrieves all applicant records
+        if ($division_id == 1)
+        {
+            $applicants = Applicant::find()
+                    ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
+                            ])
+                    ->groupBy('applicant.personid')
+                    ->all();
+        }
+        
+        // retrieves applicants based on division they applied to
+        else
+        {
+            $applicants = Applicant::find()
+                    ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.divisionid' => $division_id,  'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
+                            ])
+                    ->groupBy('applicant.personid')
+                    ->all();
+        }
+        if (count($applicants) > 0)
+            return $applicants;
+        return false;
+    }
+    
+    
+    /**
+     * Returns a list of applicant for a particular academic year
+     * 
+     * @param type $academic_year
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 19/02/2016
      * Date Last Modified: 19/02/2016
      */
     public static function getApplicantsByYear($academic_year, $division_id)
@@ -242,6 +291,154 @@ class Applicant extends \yii\db\ActiveRecord
         if (count($applicants) > 0)
             return $applicants;
         return false;
+    }
+    
+    
+    /**
+     * 
+     * @param type $personid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/02/2016
+     * Date Last Modified: 24/02/2016
+     */
+    public static function getApplicantInformation($personid)
+    {
+        $combined = array();
+        $keys = array();
+        $values = array();
+        array_push($keys, "prog");
+        array_push($keys, "status");
+        $applications = Application::find()
+                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
+                            ])
+                    ->all();
+        $count = count($applications);
+        
+        if ($count == 1)
+            $application_status = $applications[0]->applicationstatusid;
+        
+        elseif ($count == 2)
+        {
+            //if rejected
+            if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                $application_status = 6;
+            
+            //if pending
+            elseif(
+                        ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
+                  )
+                $application_status = 3;
+            
+            //if shortlisted
+            elseif(
+                        ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
+                  )
+                    $application_status = 4;
+            
+            //if borderlined
+            elseif(
+                        ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
+                  )
+                    $application_status = 7;
+            
+            //if interview-offer
+            elseif(
+                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
+                  )
+                    $application_status = 8;
+            
+            //if offer
+            elseif(
+                        ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
+                  )
+                    $application_status = 9;
+            
+            //is reject of conditional offer
+            elseif(
+                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                  )
+                    $application_status =10;
+        }
+        
+        elseif ($count == 3)
+        {
+            //if rejected
+            if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                $application_status = 6;
+            
+            //if pending
+            elseif(
+                        ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                  )
+                    $application_status = 3;
+            
+            //if shortlisted
+            elseif(
+                        ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                  )
+                    $application_status = 4;
+            
+            //if borderlined
+            elseif(
+                        ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
+                  )
+                    $application_status = 7;
+            
+            //if interview-offer
+            if(
+                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
+                  )
+                    $application_status = 8;
+            
+            //if offer
+            elseif(
+                        ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                  )
+            $application_status = 9;
+            
+            //is reject of conditional offer
+            if(
+                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+                  )
+                $application_status =10;
+        }
+        
+        $target = Application::getTarget($applications, $application_status);
+        $programme_record = ProgrammeCatalog::find()
+                            ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                            ->where(['academic_offering.academicofferingid' => $target->academicofferingid])
+                            ->one();
+        $name = $programme_record->getFullName();
+        
+        array_push($values, $name);
+        array_push($values, $application_status);
+        
+        $combined = array_combine($keys, $values);
+        return $combined;
     }
     
     
@@ -387,7 +584,7 @@ class Applicant extends \yii\db\ActiveRecord
             
             /* If applicant has 2 applications; they are considered shortlisted if; 
              * Application 1 -> Shortlisted | Rejected
-             * Application 2 -> Pending     | Shortlisted
+             * Application 2 -> Pending    | Shortlisted
              */
             elseif($count == 2)
             {
@@ -447,7 +644,7 @@ class Applicant extends \yii\db\ActiveRecord
             
             /* If applicant has 2 applications; they are considered borderline if; 
              * Application 1 -> Borderline  | Rejected
-             * Application 2 -> Pending     | Borderline
+             * Application 2 -> Pending   | Borderline
              */
             elseif($count == 2)
             {
@@ -507,12 +704,12 @@ class Applicant extends \yii\db\ActiveRecord
             
             /* If applicant has 2 applications; they are considered interview-offer if; 
              * Application 1 -> InterviewOffer  | Rejected
-             * Application 2 -> Pending         | InterviewOffer
+             * Application 2 -> Rejected        | InterviewOffer
              */
             elseif($count == 2)
             {
                 if(
-                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 3)
+                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
                   )
                     return true;
@@ -520,14 +717,14 @@ class Applicant extends \yii\db\ActiveRecord
             
             /* If applicant has 3 applications; they are considered interview-offer if; 
              * Application 1 -> InterviewOffer  | Rejected         | Rejected
-             * Application 2 -> Pending         | InterviewOffer   | Rejected
-             * Application 3 -> Pending         | Pending          | InterviewOffer
+             * Application 2 -> Rejected        | InterviewOffer   | Rejected
+             * Application 3 -> Rejected        | Rejected         | InterviewOffer
              */
             elseif($count == 3)
             {
                 if(
-                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 3)
+                        ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
                   )
                     return true;
@@ -672,65 +869,126 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applicants = array();
         
-        $apps = self::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
+//        $apps = self::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
+        $apps = self::getActiveApplicants($division_id);
         
-        foreach($apps as $key => $app)
+        if ($apps)
         {
-            // If seeking 'Rejected'
-            if ($status_id == 6)        
+            foreach($apps as $key => $app)
             {
-                if(self::isRejected($app->personid) == false)
-                    unset($apps[$key]);
+                // If seeking 'Rejected'
+                if ($status_id == 6)        
+                {
+                    if(self::isRejected($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+                // If seeking 'Pending'
+                elseif ($status_id == 3)        
+                {
+                    if(self::isPending($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+                // If seeking 'Shortlisted'
+                elseif ($status_id == 4)        
+                {
+                    if(self::isShortlisted($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+
+                // If seeking 'Borderline'
+                elseif ($status_id == 7)        
+                {
+                    if(self::isBorderline($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+                // If seeking 'InterviewOffer'
+                elseif ($status_id == 8)        
+                {
+                    if(self::isInterviewOffer($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+                // If seeking 'Offer'
+                elseif ($status_id == 9)        
+                {
+                    if(self::isOffer($app->personid) == false)
+                        unset($apps[$key]);
+                }
+
+                // If seeking 'RejectedConditionalOffer'
+                elseif ($status_id == 10)        
+                {
+                    if(self::isRejectedConditionalOffer($app->personid) == false)
+                        unset($apps[$key]);
+                }
             }
-            
-            // If seeking 'Pending'
-            elseif ($status_id == 3)        
-            {
-                if(self::isPending($app->personid) == false)
-                    unset($apps[$key]);
-            }
-            
-            // If seeking 'Shortlisted'
-            elseif ($status_id == 4)        
-            {
-                if(self::isShortlisted($app->personid) == false)
-                    unset($apps[$key]);
-            }
-            
-            
-            // If seeking 'Borderline'
-            elseif ($status_id == 7)        
-            {
-                if(self::isBorderline($app->personid) == false)
-                    unset($apps[$key]);
-            }
-            
-            // If seeking 'InterviewOffer'
-            elseif ($status_id == 8)        
-            {
-                if(self::isInterviewOffer($app->personid) == false)
-                    unset($apps[$key]);
-            }
-            
-            // If seeking 'Offer'
-            elseif ($status_id == 9)        
-            {
-                if(self::isOffer($app->personid) == false)
-                    unset($apps[$key]);
-            }
-            
-            // If seeking 'RejectedConditionalOffer'
-            elseif ($status_id == 10)        
-            {
-                if(self::isRejectedConditionalOffer($app->personid) == false)
-                    unset($apps[$key]);
-            }
+            $applicants = $apps;
         }
-        $applicants = $apps;
+        return $applicants;
     }
     
     
-    
+    /**
+     * Returns an array indicating the status [empty or populated] of the variabe fields[sponsorname, nationalsports, otherssports, clubs, otherinterests
+     * 
+     * @return array
+     * 
+     * Author: Laurence Charles
+     * Date Created: ??
+     * Date Last Modified: 10/11/2015
+     */
+    public function variableDetails()
+    {
+        $details = array();
+        if (is_null($this->sponsorname) == false  && strcmp($this->sponsorname,"") !=0)
+        {
+            array_push($details, 1);
+        }
+        else
+        {
+            array_push($details, 0);
+        }
+        
+        if (is_null($this->nationalsports) == false  && strcmp($this->nationalsports,"") !=0){
+            array_push($details, 1);
+        }
+        else{
+            array_push($details, 0);
+        }
+        
+        if (is_null($this->othersports) == false  && strcmp($this->othersports,"") !=0)
+        {
+            array_push($details, 1);
+        }
+        else
+        {
+            array_push($details, 0);
+        }
+        
+        if (is_null($this->clubs) == false  && strcmp($this->clubs,"") !=0)
+        {
+            array_push($details, 1);
+        }
+        else
+        {
+            array_push($details, 0);
+        }
+        
+        if (is_null($this->otherinterests) == false  && strcmp($this->otherinterests,"") !=0)
+        {
+            array_push($details, 1);
+        }
+        else
+        {
+            array_push($details, 0);
+        }
+        
+        return $details;
+    }
   
     
 }

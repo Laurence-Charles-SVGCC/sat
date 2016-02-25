@@ -155,7 +155,7 @@ class CsecQualification extends \yii\db\ActiveRecord
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton  | 19/02/2016 Laurence Charles
     */
-    public function getSubjectsPassedCount($applicantid)
+    public static function getSubjectsPassedCount($applicantid)
     {
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
@@ -171,7 +171,7 @@ class CsecQualification extends \yii\db\ActiveRecord
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton | 19/02/2016 Laurence Charles
     */
-    public function getSubjectGradesCount($applicantid, $grade)
+    public static function getSubjectGradesCount($applicantid, $grade)
     {
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
@@ -187,7 +187,7 @@ class CsecQualification extends \yii\db\ActiveRecord
     * Created: 4/08/2015 by Gamal Crichton
     * Last Modified: 4/08/2015 by Gamal Crichton
     */
-    private function hasEnglish($certificates)
+    public static function hasEnglish($certificates)
     {
         $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
         if ($exam_body)
@@ -216,7 +216,7 @@ class CsecQualification extends \yii\db\ActiveRecord
     * Created: 4/08/2015 by Gamal Crichton
     * Last Modified: 4/08/2015 by Gamal Crichton
     */
-    private function hasMath($certificates)
+    public static function hasMath($certificates)
     {
         $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
         if ($exam_body)
@@ -239,4 +239,85 @@ class CsecQualification extends \yii\db\ActiveRecord
         }
         return False;
     }
+    
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles 23/02/2016
+    */
+    public static function getSubjects($personid)
+    {
+        return CsecQualification::find()
+                    ->where(['personid' => $personid, 'isverified' => 1, 'isdeleted' => 0])
+                    ->all();
+    }
+    
+    
+    /*
+    * Purpose: Gets all csec_subjects an applicants has passed
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    public static function getPossibleDuplicate($personid, $candidateno, $year)
+    {
+        try{
+            $origcandidateno = $candidateno;
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return False;
+        } 
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+        {
+            return False;
+        }
+        $groups = CsecQualification::find()
+                    ->where(['candidatenumber' => $candidateno, /*'isverified' => 1,*/ 'isdeleted' => 0,
+                        'year' => $year])
+                    ->groupBy('personid')
+                    ->all();
+        if (count($groups) == 1)
+        {
+            return False;
+        }
+        else
+        {
+            $dups = array();
+            foreach ($groups as $group)
+            {
+                if ($group->personid != $personid)
+                {
+                    $dups[] = $group->personid;
+                }
+            }
+            return $dups;
+        }
+    }
+    
+    
+    /*
+    * Purpose: Determines if applicant has applied before
+    * Created: 27/07/2015 by Gamal Crichton
+    * Last Modified: 27/07/2015 by Gamal Crichton
+    */
+    public static function getPossibleReapplicant($candidateno, $year)
+    {
+        try{
+            $origcandidateno = $candidateno;
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return False;
+        } 
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+        {
+            return False;
+        }
+        
+        $reapplicant = Yii::$app->cms_db->createCommand(
+                "select certificate_id from applicants_certificates where year = $year and candidate_no = $candidateno")
+                ->queryOne();
+        return $reapplicant ? True : False;
+    }
+    
+    
 }

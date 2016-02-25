@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="custom_body">
-            <h1><?= Html::encode($this->title) ?></h1>
+            <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             
             <!-- Dashboard buttons -->
               <div class="box">

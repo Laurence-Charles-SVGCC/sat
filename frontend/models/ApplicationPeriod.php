@@ -216,6 +216,123 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
         }
         
         
+        
+        /**
+         * Returns an array of active 'application period' records
+         * 
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 11/02/2016
+         * Date Last Modified: 11/02/2016
+         */
+        public static function getActivePeriods()
+        {
+            $db = Yii::$app->db;
+            $periods = $db->createCommand(
+                    " SELECT application_period.applicationperiodid AS 'id',"
+                    . " application_period.name AS 'name',"
+                    . " division.abbreviation AS 'division',"
+                    . " academic_year.title AS 'year',"
+                    . " application_period.onsitestartdate AS 'onsitestartdate'," 
+                    . " application_period.onsiteenddate AS 'onsiteenddate'," 
+                    . " application_period.offsitestartdate AS 'offsitestartdate'," 
+                    . " application_period.offsiteenddate AS 'offsiteenddate',"
+                    . " application_period_type.name AS 'type',"
+                    . " applicationperiod_status.name AS 'status',"
+                    . " employee.title AS 'emptitle',"
+                    . " employee.firstname AS 'firstname',"
+                    . " employee.lastname AS 'lastname'"
+                    . " FROM application_period" 
+                    . " JOIN division"
+                    . " ON application_period.divisionid = division.divisionid"
+                    . " JOIN academic_year"
+                    . " ON application_period.academicyearid = academic_year.academicyearid"
+                    . " JOIN application_period_type"
+                    . " ON application_period.applicationperiodtypeid = application_period_type.applicationperiodtypeid"
+                    . " JOIN applicationperiod_status"
+                    . " ON application_period.applicationperiodstatusid = applicationperiod_status.applicationperiodstatusid"
+                    . " JOIN employee"
+                    . " ON application_period.personid = employee.personid" 
+                    . " WHERE application_period.isactive = 1"
+                    . " AND application_period.isdeleted = 0"
+                    . " AND application_period.applicationperiodstatusid = 5;"
+                )
+                ->queryAll();
+            
+            return $periods;
+        }
+        
+        
+        
+        /**
+         * Returns an array of all 'application period' records
+         * 
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 11/02/2016
+         * Date Last Modified: 11/02/2016
+         */
+        public static function getAllApplicationPeriods()
+        {
+            $db = Yii::$app->db;
+            $periods = $db->createCommand(
+                    " SELECT application_period.applicationperiodid AS 'id',"
+                    . " application_period.name AS 'name',"
+                    . " division.abbreviation AS 'division',"
+                    . " academic_year.title AS 'year',"
+                    . " application_period.onsitestartdate AS 'onsitestartdate'," 
+                    . " application_period.onsiteenddate AS 'onsiteenddate'," 
+                    . " application_period.offsitestartdate AS 'offsitestartdate'," 
+                    . " application_period.offsiteenddate AS 'offsiteenddate',"
+                    . " application_period_type.name AS 'type',"
+                    . " applicationperiod_status.name AS 'status',"
+                    . " employee.title AS 'emptitle',"
+                    . " employee.firstname AS 'firstname',"
+                    . " employee.lastname AS 'lastname'"
+                    . " FROM application_period" 
+                    . " JOIN division"
+                    . " ON application_period.divisionid = division.divisionid"
+                    . " JOIN academic_year"
+                    . " ON application_period.academicyearid = academic_year.academicyearid"
+                    . " JOIN application_period_type"
+                    . " ON application_period.applicationperiodtypeid = application_period_type.applicationperiodtypeid"
+                    . " JOIN applicationperiod_status"
+                    . " ON application_period.applicationperiodstatusid = applicationperiod_status.applicationperiodstatusid"
+                    . " JOIN employee"
+                    . " ON application_period.personid = employee.personid" 
+                    . " WHERE application_period.isdeleted = 0;"
+                )
+                ->queryAll();
+            
+            return $periods;
+        }
+        
+        
+        /**
+         * Return true if their is an open application period
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 24/02/2016
+         * Date Last Modified: 24/02/2016
+         */
+        public static function openPeriodExists()
+        {
+            $periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0, 'applicationperiodstatusid' => 5])
+                    ->all();
+            if (count($periods) > 0)
+                return true;
+            return false;
+        }
+        
+        
+        
+        
+        
        
         
         

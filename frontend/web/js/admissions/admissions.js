@@ -172,3 +172,61 @@ function showUpdateButton()
 }
 
 
+/**
+ * Handles search method functinonality.
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 24/02/2016
+ * Date Last Modified: 24/02/2016
+ */
+function checkSearchHow()
+{
+//    alert ("oye");
+    var search_by = document.getElementsByName('search_how');
+    if (search_by[0].checked == true)           //if by applicantid
+    {   
+        if (document.getElementsByName("FirstName_field")[0] != null)
+            document.getElementsByName("FirstName_field")[0].value = "";
+ 
+        if (document.getElementsByName("LastName_field")[0] != null)
+            document.getElementsByName("LastName_field")[0].value = ""; 
+           
+        if (document.getElementsByName("email_field")[0] != null)
+            document.getElementsByName("email_field")[0].value = ""; 
+        
+        document.getElementById("applicantid").style.display = "block";       
+        document.getElementById("name").style.display = "none";
+        document.getElementById("email").style.display = "none";
+    } 
+    else if (search_by[1].checked == true)           //if by student name
+    {         
+        if (document.getElementsByName("applicantid_field")[0] != null)
+            document.getElementsByName("applicantid_field")[0].value = "";
+        
+        if (document.getElementsByName("email_field")[0] != null)
+            document.getElementsByName("email_field")[0].value = ""; 
+               
+        document.getElementById("applicantid").style.display = "none";       
+        document.getElementById("name").style.display = "block";
+        document.getElementById("email").style.display = "none";
+    }
+    else if (search_by[2].checked == true)           //if by email address
+    {        
+        if (document.getElementsByName("applicantid_field")[0] != null)
+            document.getElementsByName("applicantid_field")[0].value = "";
+        
+        if (document.getElementsByName("FirstName_field")[0] != null)
+            document.getElementsByName("FirstName_field")[0].value = "";
+ 
+        if (document.getElementsByName("LastName_field")[0] != null)
+            document.getElementsByName("LastName_field")[0].value = ""; 
+        
+        document.getElementById("applicantid").style.display = "none";       
+        document.getElementById("name").style.display = "none";
+        document.getElementById("email").style.display = "block";
+    } 
+}
+
+

@@ -147,4 +147,26 @@ class Address extends \yii\db\ActiveRecord
         return false;
     }
     
+
+    /**
+     * Returns address record
+     * 
+     * @param type $id
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 29/12/2015
+     * Date Last Modified: 29/12/2015
+     */
+    public static function getAddress($id, $type)
+    {
+        $address = Address::find()
+                ->where(['personid' => $id , 'addresstypeid'=> $type])
+                ->one();
+        if (is_null($address)== true) 
+            return false;
+        return $address;
+    }
+    
 }

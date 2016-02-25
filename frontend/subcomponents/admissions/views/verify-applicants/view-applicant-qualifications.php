@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="custom_body">
-            <h1><?= Html::encode($this->title) ?></h1>
+            <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
             <?php $form = ActiveForm::begin(); ?>
                   <table id="certificate_table" class="table table-bordered table-striped" style="width:95%; margin: 0 auto;">

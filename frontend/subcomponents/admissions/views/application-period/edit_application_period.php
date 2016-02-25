@@ -16,8 +16,8 @@
     
     $status = [
         '' => 'Select Status',
-        4 => 'active',
-        5 => 'close'
+        5 => 'active',
+        6 => 'close'
     ];
     
     $type = [

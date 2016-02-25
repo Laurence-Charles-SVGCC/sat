@@ -5,7 +5,9 @@
     use Yii;
     use yii\web\Controller;
     use yii\base\Model;
+    use yii\data\ArrayDataProvider;
     
+    use common\models\User;
     use frontend\models\ApplicationPeriod;
     use frontend\models\AcademicYear;
     use frontend\models\ProgrammeCatalog;
@@ -14,6 +16,9 @@
     use frontend\models\CapeGroup;
     use frontend\models\CapeSubjectGroup;
     use frontend\models\AcademicOffering;
+    use frontend\models\EmployeeDepartment;
+    use frontend\models\Email;
+    use frontend\models\Applicant;
 
 class AdmissionsController extends Controller
 {
@@ -31,41 +36,11 @@ class AdmissionsController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 08/02/2016
-     * Date Last Modified: 08/02/2016
+     * Date Last Modified: 08/02/2016 | 23/02/2016
      */
     public function actionManageApplicationPeriod()
     {
-//        $periods = ApplicationPeriod::getAllPeriods();
-        $db = Yii::$app->db;
-        $periods = $db->createCommand(
-                " SELECT application_period.applicationperiodid AS 'id',"
-                . " application_period.name AS 'name',"
-                . " division.abbreviation AS 'division',"
-                . " academic_year.title AS 'year',"
-                . " application_period.onsitestartdate AS 'onsitestartdate'," 
-                . " application_period.onsiteenddate AS 'onsiteenddate'," 
-                . " application_period.offsitestartdate AS 'offsitestartdate'," 
-                . " application_period.offsiteenddate AS 'offsiteenddate',"
-                . " application_period_type.name AS 'type',"
-                . " applicationperiod_status.name AS 'status',"
-                . " employee.title AS 'emptitle',"
-                . " employee.firstname AS 'firstname',"
-                . " employee.lastname AS 'lastname'"
-                . " FROM application_period" 
-                . " JOIN division"
-                . " ON application_period.divisionid = division.divisionid"
-                . " JOIN academic_year"
-                . " ON application_period.academicyearid = academic_year.academicyearid"
-                . " JOIN application_period_type"
-                . " ON application_period.applicationperiodtypeid = application_period_type.applicationperiodtypeid"
-                . " JOIN applicationperiod_status"
-                . " ON application_period.applicationperiodstatusid = applicationperiod_status.applicationperiodstatusid"
-                . " JOIN employee"
-                . " ON application_period.personid = employee.personid" 
-                . " WHERE application_period.isactive = 1"
-                . " AND application_period.isdeleted = 0;"
-            )
-            ->queryAll();
+        $periods = ApplicationPeriod::getAllApplicationPeriods();
         
         if (count($periods) == 0)
             $container = false;
@@ -812,6 +787,153 @@ class AdmissionsController extends Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured when confirming application period settings.');
             return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
         }
+    }
+    
+    
+    /**
+     * Facilitates search for current applicants
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/02/2016
+     * Date Last Modified: 24/02/2016
+     */
+    public function actionFindCurrentApplicant()
+    {
+        $division_id = EmployeeDepartment::getUserDivision();
+        
+        $dataProvider = null;
+        $app_ids = null;
+        $info_string = null;
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $app_id = $request->post('applicantid_field');
+            $email = $request->post('email_field');
+            $firstname = $request->post('FirstName_field');
+            $lastname = $request->post('LastName_field');
+        
+            //if user initiates search based on applicantid
+            if ($app_id)
+            {
+                $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
+                $cond_arr['applicant.personid'] = $user? $user->personid : null;
+                $info_string = $info_string .  " Applicant ID: " . $app_id;
+            }    
+
+            //if user initiates search based on applicant name    
+            if ($firstname)
+            {
+                $cond_arr['applicant.firstname'] = $firstname;
+                $info_string = $info_string .  " First Name: " . $firstname; 
+            }
+            if ($lastname)
+            {
+                $cond_arr['applicant.lastname'] = $lastname;
+                $info_string = $info_string .  " Last Name: " . $lastname;
+            }        
+
+            //if user initiates search based on applicant email
+            if ($email)
+            {
+                $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+                $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+                $info_string = $info_string .  " Email: " . $email;
+            }
+
+
+            if (empty($cond_arr))
+            {
+                Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+            }
+            else
+            {
+                $cond_arr['applicant.isactive'] = 1;
+                $cond_arr['applicant.isdeleted'] = 0;
+                $cond_arr['academic_offering.isactive'] = 1;
+                $cond_arr['academic_offering.isdeleted'] = 0;
+                $cond_arr['application_period.isactive'] = 1;
+                $cond_arr['application_period.applicationperiodstatusid'] = 5;
+                $cond_arr['application.isactive'] = 1;
+                $cond_arr['application.isdeleted'] = 0;
+                $cond_arr['application.applicationstatusid'] = [3,4,5,6,7,8,9,10];
+
+
+                /*
+                 *  If DASGS or DTVE, both divisions are searched
+                 *  This is because applicants may apply to both divisions
+                 */
+                if ($division_id == 4  || $division_id == 5 )
+                    $cond_arr['application.division'] = [4,5];
+
+                /*
+                 *  If DTE or DNE the applicants are constrained to each division
+                 */
+                elseif ($division_id == 6  || $division_id == 7 )
+                    $cond_arr['application.division'] = $divsion_id;
+
+                $applicants = Applicant::find()
+                            ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                            ->where($cond_arr)
+                            ->groupBy('applicant.personid')
+                            ->all();
+
+                if (empty($applicants))
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No user found matching this criteria.');
+                }
+                else
+                {
+                    $data = array();
+                    foreach ($applicants as $applicant)
+                    {
+                        $app = array();
+                        $user = $applicant->getPerson()->one();
+
+                        $app['username'] = $user ? $user->username : '';
+                        $app['applicantid'] = $applicant->applicantid;
+                        $app['firstname'] = $applicant->firstname;
+                        $app['middlename'] = $applicant->middlename;
+                        $app['lastname'] = $applicant->lastname;
+                        $app['gender'] = $applicant->gender;
+                        $app['dateofbirth'] = $applicant->dateofbirth;
+                        
+                        $info = Applicant::getApplicantInformation($applicant->personid);
+                        
+                        $app['programme'] = $info["prog"];
+                        $app['application_status'] = $info["status"];
+                        
+                        $data[] = $app;
+                    }
+                    $dataProvider = new ArrayDataProvider([
+                        'allModels' => $data,
+                        'pagination' => [
+                            'pageSize' => 100,
+                        ],
+                        'sort' => [
+                            'attributes' => ['applicantid', 'firstname', 'lastname'],
+                            ]
+                    ]);
+                }
+            }
+        }
+        
+        /*
+         * Determines the current application under consideration for an applicant 
+         * and their current status
+         */
+        
+        
+        return $this->render('find_current_applicant',
+            [
+            'dataProvider' => $dataProvider,
+            'result_users' => $app_ids,
+            'info_string' => $info_string,
+        ]);
     }
     
     

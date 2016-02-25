@@ -6,6 +6,7 @@ use Yii;
 use common\models\User;
 use frontend\models\Applicant;
 use frontend\models\AcademicYear;
+use frontend\models\CsecQualification;
 
 /**
  * This is the model class for table "application".
@@ -313,7 +314,7 @@ class Application extends \yii\db\ActiveRecord
                 ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                ->where(['application_period.isactive' => 1,
+                ->where(['application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
                         'academic_year.iscurrent' => 1,
                         'application.isdeleted' => 0,
                         'applicant.isexternal' => 1,
@@ -355,7 +356,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
                             'csec_qualification.isdeleted' => 0,
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
@@ -417,9 +417,8 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.isactive' => 1, 
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
@@ -451,7 +450,7 @@ class Application extends \yii\db\ActiveRecord
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
                             'academic_year.iscurrent' => 1,
                             'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.isactive' => 1, 
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
@@ -483,7 +482,7 @@ class Application extends \yii\db\ActiveRecord
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
                             'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.isactive' => 1, 
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
@@ -514,7 +513,7 @@ class Application extends \yii\db\ActiveRecord
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
                             'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.isactive' => 1, 
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
@@ -545,7 +544,7 @@ class Application extends \yii\db\ActiveRecord
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
                             'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 0, 'csec_qualification.isverified' => 0, 'csec_qualification.isdeleted' => 0,
-                            'application_period.isactive' => 1, 
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
@@ -767,7 +766,7 @@ class Application extends \yii\db\ActiveRecord
         
         for ($i = 0 ; $i < $count ; $i++)
         {
-            if($application[$i]->applicationid == $application->applicationid)
+            if($applications[$i]->applicationid == $application->applicationid)
                 return $i;
         }
         return false;
@@ -775,75 +774,35 @@ class Application extends \yii\db\ActiveRecord
     
     
     /**
-     * Retrieves applicants based on the current application status 
+     * Determines the existence of Nursing Assistant applications
      * 
-     * @param type $status_id
-     * @param type $division_id
+     * @param type $id
+     * @return boolean
      * 
      * Author: Laurence Charles
-     * Date Created: 19/02/2016
-     * Date Last Modified: 19/02/2016
+     * Date Created: 04/02/2016
+     * Date Last Modified: 04/02/2016
      */
-//    public static function getByStatus($status_id, $division_id)
-//    {
-//        $applicants = array();
-//        
-//        $apps = Applicant::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
-//        
-//        foreach($apps as $key => $app)
-//        {
-//            // If seeking 'Rejected'
-//            if ($status_id == 6)        
-//            {
-//                if(Applicant::isRejected($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            // If seeking 'Pending'
-//            elseif ($status_id == 3)        
-//            {
-//                if(Applicant::isPending($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            // If seeking 'Shortlisted'
-//            elseif ($status_id == 4)        
-//            {
-//                if(Applicant::isShortlisted($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            
-//            // If seeking 'Borderline'
-//            elseif ($status_id == 7)        
-//            {
-//                if(Applicant::isBorderline($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            // If seeking 'InterviewOffer'
-//            elseif ($status_id == 8)        
-//            {
-//                if(Applicant::isInterviewOffer($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            // If seeking 'Offer'
-//            elseif ($status_id == 9)        
-//            {
-//                if(Applicant::isOffer($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//            
-//            // If seeking 'RejectedConditionalOffer'
-//            elseif ($status_id == 10)        
-//            {
-//                if(Applicant::isRejectedConditionalOffer($app->personid) == false)
-//                    unset($apps[$key]);
-//            }
-//        }
-//        $applicants = $apps;
-//    }
-    
+    public static function hasMidwiferyApplication($id){
+        $db = Yii::$app->db;
+        $query = $db->createCommand(
+                "SELECT *"
+                . " FROM application"
+                . " JOIN academic_offering"
+                . " ON application.academicofferingid = academic_offering.academicofferingid"
+                . " JOIN programme_catalog"
+                . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                . " WHERE programme_catalog.name = 'Midwifery'"
+                . " AND academic_offering.isactive = 1"
+                . " AND academic_offering.isdeleted = 0"
+                . " AND application.isactive = 1"
+                . " AND application.isdeleted = 0"
+                . " AND application.personid=" . $id . ";"
+                )
+                ->queryAll();
+        if (count($query) >0)
+            return true;
+        return false;
+    }    
     
 }

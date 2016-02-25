@@ -108,8 +108,12 @@ class CsecCentre extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['academic_year.iscurrent' => 1, 'application_period.isactive' => 1, 'csec_centre.isdeleted' => 0, 'csec_centre.isactive' => 1, 'application.isdeleted' => 0,
-                        'csec_qualification.isdeleted' => 0, 'academic_offering.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+                    ->where(['application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                                'csec_centre.isdeleted' => 0, 'csec_centre.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                                'csec_qualification.isdeleted' => 0,
+                                'academic_offering.isdeleted' => 0
+                            ])
                     ->all();
         if (count($centres) > 0)
             return $centres;

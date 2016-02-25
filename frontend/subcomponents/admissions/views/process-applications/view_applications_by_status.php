@@ -4,6 +4,7 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     use yii\helpers\ArrayHelper;
+    use yii\grid\GridView;
 
     //$type = ucfirst($type);
     $this->title = $status_name;
@@ -22,7 +23,7 @@
         </div>
         
         <div class="custom_body">
-            <h1><?= Html::encode($this->title) ?></h1>
+            <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <?php $form = ActiveForm::begin(
                     [
                         'action' => Url::to(['review-applications/update-view']),
@@ -63,9 +64,11 @@
                             'value' => function($row) use ($application_status)
                                 {
                                     $middlename = $row['middlename'] ? $row['middlename'] : "";
-                                   return Html::a($row['applicantid'], 
-                                           Url::to(['process-applications/view-applicant-certificates', 'applicantid' => $row['applicantid'],
-                                                    'applicationid' => $row['applicationid'], 'programme' => $row['programme'], 'application_status' => $application_status
+                                   return Html::a($row['username'], 
+                                           Url::to(['process-applications/view-applicant-certificates',
+                                                    'applicantid' => $row['applicantid'],
+                                                    'programme' => $row['programme'], 
+                                                    'application_status' => $application_status
                                                    ]));
                                 }
                         ],

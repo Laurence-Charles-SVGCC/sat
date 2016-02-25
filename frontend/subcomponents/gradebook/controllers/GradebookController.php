@@ -141,10 +141,10 @@
             if (Yii::$app->request->post())
             {
                 $request = Yii::$app->request;
-                $divisionid = $request->post('division_choice');
-                $studentid = $request->post('studentid_field');
-                $firstname = $request->post('firstname_field');
-                $lastname = $request->post('lastname_field');
+                $divisionid = $request->post('applicantid_field');
+                $studentid = $request->post('email_field');
+                $firstname = $request->post('FirstName_field');
+                $lastname = $request->post('LastName_field');
                 
                 //if user initiates search based on programme
                 if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
