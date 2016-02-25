@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
             
             <?php else:?>
                 <br/><div class="alert alert-info" role="alert" style="width: 90%; margin: 0 auto; font-size:20px; text-align:center">
-                    <p>There are no active application periods.</p>
+                    <p>There are no current applications, pending verification.</p>
                 </div>
             <?php endif;?>
         </div>
