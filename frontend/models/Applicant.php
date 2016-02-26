@@ -295,6 +295,7 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
+     * Gets the programme and applicantion status of an applicant
      * 
      * @param type $personid
      * 

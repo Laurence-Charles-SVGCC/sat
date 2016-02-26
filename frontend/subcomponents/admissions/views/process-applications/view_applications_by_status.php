@@ -24,6 +24,11 @@
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
+            
+            <?php if ($status_name == "InterviewOffer"):?>
+                <a class="btn btn-success glyphicon glyphicon-list-alt" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/generate-conditional-offer-list']);?> role="button">  Generate Interviewee List</a>
+            <?php endif;?>
+            
             <?php $form = ActiveForm::begin(
                     [
                         'action' => Url::to(['review-applications/update-view']),
