@@ -20,8 +20,9 @@
         "yiisoft/yii2-swiftmailer": "^2.0@dev",
         "2amigos/yii2-date-picker-widget": "~1.0",
         "wbraganca/yii2-dynamicform": "*",
-        "phpoffice/phpexcel": "*",
-        "kartik-v/yii2-widget-depdrop": "@dev"
+        "kartik-v/yii2-widget-depdrop": "@dev",
+        "kartik-v/yii2-export": "*",
+        "kartik-v/yii2-mpdf": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

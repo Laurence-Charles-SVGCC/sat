@@ -4,7 +4,9 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     use yii\helpers\ArrayHelper;
-    use yii\grid\GridView;
+//    use yii\grid\GridView;
+    use kartik\grid\GridView;
+    use kartik\export\ExportMenu;
 
     //$type = ucfirst($type);
     $this->title = $status_name;
@@ -24,10 +26,92 @@
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
+           
+            <?php 
+                $gridColumns = [
+                    ['class' => 'kartik\grid\SerialColumn'],
+                    [
+                        'format' => 'html',
+                        'label' => 'Applicant ID',
+                        'value' => function($row) use ($application_status)
+                            {
+                                $middlename = $row['middlename'] ? $row['middlename'] : "";
+                               return Html::a($row['username'], 
+                                       Url::to(['process-applications/view-applicant-certificates',
+                                                'applicantid' => $row['applicantid'],
+                                                'programme' => $row['programme'], 
+                                                'application_status' => $application_status
+                                               ]));
+                            }
+                    ],
+                    [
+                        'attribute' => 'firstname',
+                        'format' => 'text',
+                        'label' => 'First Name'
+                    ],
+                    [
+                        'attribute' => 'middlename',
+                        'format' => 'text',
+                        'label' => 'Middle Name(s)'
+                    ],
+                    [
+                        'attribute' => 'lastname',
+                        'format' => 'text',
+                        'label' => 'Last Name'
+                    ],
+                    [
+                        'attribute' => 'programme',
+                        'format' => 'text',
+                        'label' => 'Programme'
+                    ],
+                    [
+                        'attribute' => 'subjects_no',
+                        'format' => 'text',
+                        'label' => 'No. of Subjects'
+                    ],
+                    [
+                        'attribute' => 'ones_no',
+                        'format' => 'text',
+                        'label' => 'No. of Ones'
+                    ],
+                    [
+                        'attribute' => 'twos_no',
+                        'format' => 'text',
+                        'label' => 'No. of Twos'
+                    ],
+                    [
+                        'attribute' => 'threes_no',
+                        'format' => 'text',
+                        'label' => 'No. of Threes'
+                    ],
+                ];
             
-            <?php if ($status_name == "InterviewOffer"):?>
-                <a class="btn btn-success glyphicon glyphicon-list-alt" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/generate-conditional-offer-list']);?> role="button">  Generate Interviewee List</a>
-            <?php endif;?>
+            
+                if ($status_name == "InterviewOffer")   
+                {
+                    echo "<div style = 'margin-left: 2.5%;'>";
+                        echo ExportMenu::widget([
+                            'dataProvider' => $dataProvider,
+                            'columns' => $gridColumns,
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_CSV => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false
+                            ],
+                        ]);
+                    echo "</div>";
+                }
+            ?>
             
             <?php $form = ActiveForm::begin(
                     [
@@ -62,62 +146,7 @@
                     'dataProvider' => $dataProvider,
                     //'filterModel' => $searchModel,
                     'options' => ['style' => 'width: 95%; margin: 0 auto;'],
-                    'columns' => [
-                        [
-                            'format' => 'html',
-                            'label' => 'Applicant ID',
-                            'value' => function($row) use ($application_status)
-                                {
-                                    $middlename = $row['middlename'] ? $row['middlename'] : "";
-                                   return Html::a($row['username'], 
-                                           Url::to(['process-applications/view-applicant-certificates',
-                                                    'applicantid' => $row['applicantid'],
-                                                    'programme' => $row['programme'], 
-                                                    'application_status' => $application_status
-                                                   ]));
-                                }
-                        ],
-                        [
-                            'attribute' => 'firstname',
-                            'format' => 'text',
-                            'label' => 'First Name'
-                        ],
-                        [
-                            'attribute' => 'middlename',
-                            'format' => 'text',
-                            'label' => 'Middle Name(s)'
-                        ],
-                        [
-                            'attribute' => 'lastname',
-                            'format' => 'text',
-                            'label' => 'Last Name'
-                        ],
-                        [
-                            'attribute' => 'programme',
-                            'format' => 'text',
-                            'label' => 'Programme'
-                        ],
-                        [
-                            'attribute' => 'subjects_no',
-                            'format' => 'text',
-                            'label' => 'No. of Subjects'
-                        ],
-                        [
-                            'attribute' => 'ones_no',
-                            'format' => 'text',
-                            'label' => 'No. of Ones'
-                        ],
-                        [
-                            'attribute' => 'twos_no',
-                            'format' => 'text',
-                            'label' => 'No. of Twos'
-                        ],
-                        [
-                            'attribute' => 'threes_no',
-                            'format' => 'text',
-                            'label' => 'No. of Threes'
-                        ],
-                    ],
+                    'columns' => $gridColumns,
                 ]); 
             ?>
         </div>
