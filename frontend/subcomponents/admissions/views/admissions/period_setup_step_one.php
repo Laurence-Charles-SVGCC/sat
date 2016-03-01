@@ -60,6 +60,32 @@
                     As you are intending to create a new application period for DASGS/DTVE full-time intake, you will not be required to create a new academic year record.</br>
                 </p> 
                 
+                <p id="dasgs-part" style="display:none">
+                    As you are intending to create a new application period for DASGS part-time intake, you will not be required to create a new academic year record.
+                </p>
+                
+                <p id="dtve-part" style="display:none">
+                    As you are intending to create a new application period for DTVE part-time intake, you will not be required to create a new academic year record.
+                </p>
+                
+                <p id="dte" style="display:none">
+                    As you are intending to create a new application period for DTE full-time intake, you may require the creation of a new academic year record.
+                </p>
+                
+                <p id="dte-part" style="display:none">
+                    As you are intending to create a new application period for DTE part-time intake, you will not be required to create a new academic year record.
+                </p>
+                
+                <p id="dne" style="display:none">
+                    As you are intending to create a new application period for DNE full-time intake, you may require the creation of a new academic year record.
+                </p>
+                
+                <p id="dne-part" style="display:none">
+                    As you are intending to create a new application period for DNE part-time intake, you will not be required to create a new academic year record.
+                </p>
+                
+                
+                
                 <p id="new-year-question" style="display:none">
                     Do you wish to create a new academic year?
                     <?= Html::radioList('new-year', NULL, $options, ['class'=> 'form-field', 'onclick'=> 'toggleAcademicYearForm()', 'style' => 'display:none' ,'id' => 'new-year-needed']);?>               
@@ -97,29 +123,7 @@
                     ActiveForm::end();    
                 ?>
                 
-                <p id="dasgs-part" style="display:none">
-                    As you are intending to create a new application period for DASGS part-time intake, you will not be required to create a new academic year record.
-                </p>
                 
-                <p id="dtve-part" style="display:none">
-                    As you are intending to create a new application period for DTVE part-time intake, you will not be required to create a new academic year record.
-                </p>
-                
-                <p id="dte" style="display:none">
-                    As you are intending to create a new application period for DTE full-time intake, you may require the creation of a new academic year record.
-                </p>
-                
-                <p id="dte-part" style="display:none">
-                    As you are intending to create a new application period for DTE part-time intake, you will not be required to create a new academic year record.
-                </p>
-                
-                <p id="dne" style="display:none">
-                    As you are intending to create a new application period for DNE full-time intake, you may require the creation of a new academic year record.
-                </p>
-                
-                <p id="dne-part" style="display:none">
-                    As you are intending to create a new application period for DNE part-time intake, you will not be required to create a new academic year record.
-                </p>
                 
                 <div id="buttons" style="display:none">
                     <br/><hr>
@@ -127,12 +131,9 @@
                     <?= Html::a(' Next',['admissions/period-setup-step-one', 'reuse_year' => 1], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-tick pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
                 </div>
             </div>
-            
-           
         </div>
     </div>
 </div>
 
 
-admissions/period-setup-step-one
 

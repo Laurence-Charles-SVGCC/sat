@@ -132,7 +132,10 @@ function toggleAcademicYearForm()
     var new_year = document.getElementsByName('new-year');
     
     if (new_year[0].checked == true)
+    {
         document.getElementById("create-academic-year-form").style.display = "block";
+        document.getElementById("buttons").style.display = "none";
+    }
     else
     {
         document.getElementById("create-academic-year-form").style.display = "none";
