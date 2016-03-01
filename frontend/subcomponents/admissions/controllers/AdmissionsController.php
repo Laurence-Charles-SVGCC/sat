@@ -790,7 +790,7 @@ class AdmissionsController extends Controller
     {
         $save_flag = false;
         $period = ApplicationPeriod::getIncompletePeriod();
-        $period->applicationperiodstatus = 5;
+        $period->applicationperiodstatusid = 5;
         $period->isactive = 1;
         $period->isdeleted = 0;
         $save_flag = $period->save();
