@@ -57,7 +57,7 @@
                 </p>
                 
                 <p id="dasgs-dtve" style="display:none">
-                    As you are intending to create a new application period for DASGS/DTVE full-time intake, you may require the creation of a new academic year record.</br>
+                    As you are intending to create a new application period for DASGS/DTVE full-time intake, you will not be required to create a new academic year record.</br>
                 </p> 
                 
                 <p id="new-year-question" style="display:none">
@@ -69,8 +69,6 @@
                     $form = ActiveForm::begin([
                         'id' => 'create-academic-year-form',
                         'options' => [
-//                                            'class' => 'form-layout'
-//                                    'class' => 'form-inline',
                             'style' => 'display:none',
                         ],
                     ]);
@@ -108,7 +106,7 @@
                 </p>
                 
                 <p id="dte" style="display:none">
-                    As you are intending to create a new application period for DTE full-time intake, you will not be required to create a new academic year record.
+                    As you are intending to create a new application period for DTE full-time intake, you may require the creation of a new academic year record.
                 </p>
                 
                 <p id="dte-part" style="display:none">
@@ -116,7 +114,7 @@
                 </p>
                 
                 <p id="dne" style="display:none">
-                    As you are intending to create a new application period for DNE full-time intake, you will not be required to create a new academic year record.
+                    As you are intending to create a new application period for DNE full-time intake, you may require the creation of a new academic year record.
                 </p>
                 
                 <p id="dne-part" style="display:none">

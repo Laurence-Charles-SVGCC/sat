@@ -21,20 +21,23 @@ function toggleAcademicYearMessage()
     if (division_question[0].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "block";
-        document.getElementById("new-year-question").style.display = "block";
-        document.getElementById("new-year-needed").style.display = "block";
+        document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "none";
+        document.getElementById("new-year-needed").style.display = "none";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "none";
         document.getElementById("dte-part").style.display = "none";
         document.getElementById("dne").style.display = "none";
         document.getElementById("dne-part").style.display = "none";
-        document.getElementById("buttons").style.display = "none";
+        document.getElementById("buttons").style.display = "block";
     }
     else if (division_question[1].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "none";
         document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "none";
+        document.getElementById("new-year-needed").style.display = "none";
         document.getElementById("dasgs-part").style.display = "block";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "none";
@@ -47,6 +50,8 @@ function toggleAcademicYearMessage()
     {
         document.getElementById("dasgs-dtve").style.display = "none";
         document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "none";
+        document.getElementById("new-year-needed").style.display = "none";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "block";
         document.getElementById("dte").style.display = "none";
@@ -58,19 +63,22 @@ function toggleAcademicYearMessage()
     else if (division_question[3].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "none";
-        document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "block";
+        document.getElementById("new-year-needed").style.display = "block";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "block";
         document.getElementById("dte-part").style.display = "none";
         document.getElementById("dne").style.display = "none";
         document.getElementById("dne-part").style.display = "none";
-        document.getElementById("buttons").style.display = "block";
+        document.getElementById("buttons").style.display = "none";
     }
     else if (division_question[4].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "none";
         document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "none";
+        document.getElementById("new-year-needed").style.display = "none";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "none";
@@ -82,19 +90,22 @@ function toggleAcademicYearMessage()
     else if (division_question[5].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "none";
-        document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "block";
+        document.getElementById("new-year-needed").style.display = "block";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "none";
         document.getElementById("dte-part").style.display = "none";
         document.getElementById("dne").style.display = "block";
         document.getElementById("dne-part").style.display = "none";
-        document.getElementById("buttons").style.display = "block";
+        document.getElementById("buttons").style.display = "none";
     }
     else if (division_question[6].checked == true)
     {
         document.getElementById("dasgs-dtve").style.display = "none";
         document.getElementById("create-academic-year-form").style.display = "none";
+        document.getElementById("new-year-question").style.display = "none";
+        document.getElementById("new-year-needed").style.display = "none";
         document.getElementById("dasgs-part").style.display = "none";
         document.getElementById("dtve-part").style.display = "none";
         document.getElementById("dte").style.display = "none";
