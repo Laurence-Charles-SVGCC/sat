@@ -90,7 +90,7 @@
                 
                 <?php if ($period->applicationperiodstatusid == 4 ):?>  
                     </br><p id="confirm-configuration">
-                        <?= Html::a('Complete Setup', ['addmissions/period-setup-confirm', 'recordid' => $period->applicationperiodid], ['class' => 'btn btn-block btn-lg btn-info']) ?>
+                        <?= Html::a('Complete Setup', ['admissions/period-setup-confirm', 'recordid' => $period->applicationperiodid], ['class' => 'btn btn-block btn-lg btn-info']) ?>
                     </p> 
                 <?php endif;?>  
                 

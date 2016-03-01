@@ -786,19 +786,29 @@ class AdmissionsController extends Controller
      * Date Created: 10/02/2016
      * Date Last Modified: 16/02/2016
      */
-    public function actionPeriodSetupConfirm()
+    public function actionPeriodSetupConfirm($recordid)
     {
         $save_flag = false;
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $period->applicationperiodstatusid = 5;
-        $period->isactive = 1;
-        $period->isdeleted = 0;
-        $save_flag = $period->save();
-        if($save_flag == true)
-           return $this->redirect(['manage-application-period']);
+        $period = ApplicationPeriod::find()
+                ->where(['applicationperiodid' => $recordid])
+                ->one();
+        if($period)
+        {
+            $period->applicationperiodstatusid = 5;
+            $period->isactive = 1;
+            $period->isdeleted = 0;
+            $save_flag = $period->save();
+            if($save_flag == true)
+               return $this->redirect(['manage-application-period']);
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when confirming application period settings.');
+                return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
+            }
+        }
         else
         {
-            Yii::$app->getSession()->setFlash('error', 'Error occured when confirming application period settings.');
+            Yii::$app->getSession()->setFlash('error', 'Error occured when loading application period record.');
             return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
         }
     }
