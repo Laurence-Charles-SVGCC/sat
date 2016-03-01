@@ -442,8 +442,17 @@ class AdmissionsController extends Controller
             $groups_save_flag = false;
 
             $offerings_load_flag = Model::loadMultiple($offerings, $post_data);
-            $subjects_load_flag = Model::loadMultiple($cape_subjects, $post_data);
-            $groups_load_flag = Model::loadMultiple($subject_groups, $post_data);
+            
+            if($period->divisionid == 4)
+            {
+                $subjects_load_flag = Model::loadMultiple($cape_subjects, $post_data);
+                $groups_load_flag = Model::loadMultiple($subject_groups, $post_data);
+            }
+            else
+            {
+                $subjects_load_flag = true;
+                $groups_load_flag = true;
+            }
             
             if($offerings_load_flag == true  &&  $subjects_load_flag == true  &&  $groups_load_flag == true)
             {
@@ -466,7 +475,7 @@ class AdmissionsController extends Controller
                             
                             //Checkbox for this programme is ticked
                             $ao_model = new AcademicOffering();
-                            $ao_model->programmecatalogid = $all_programmes[$index]["id"];
+                            $ao_model->programmecatalogid = $programmes[$index]["id"];
                             $ao_model->academicyearid = $year->academicyearid;
                             $ao_model->applicationperiodid = $period->applicationperiodid;
                             $ao_model->spaces = $offering->spaces;
@@ -495,42 +504,46 @@ class AdmissionsController extends Controller
                     
                     $cape_model = NULL;
                     $cape_selected = false;
-                    foreach ($cape_subjects as $cape_subject)
+                    
+                    if($period->divisionid == 4)
                     {
-                        //if checkbox is 'checked'
-                        if ($cape_subject->subjectname != false)
+                        foreach ($cape_subjects as $cape_subject)
                         {
-                            $cape_check = true;
-                            $cape_selected = true;
-                            
-                            if ($saved_cape_offering == false)  //if no CAPE academic-offering exists it must be created
+                            //if checkbox is 'checked'
+                            if ($cape_subject->subjectname != false)
                             {
-                                $cape_model = new AcademicOffering();
-                                $cape_model->programmecatalogid = 10;
-                                $cape_model->academicyearid = $year->academicyearid;
-                                $cape_model->applicationperiodid = $period->applicationperiodid;
-                                $cape_model->spaces = NULL;
-                                $cape_model->interviewneeded = 0;
-                                $save_flag = $cape_model->save();
-                                if($save_flag == false)
+                                $cape_check = true;
+                                $cape_selected = true;
+
+                                if ($saved_cape_offering == false)  //if no CAPE academic-offering exists it must be created
                                 {
-                                    $transaction->rollBack();
-                                    if($saved_offerings == true)    //if previous offering exist in database
+                                    $cape_model = new AcademicOffering();
+                                    $cape_model->programmecatalogid = 10;
+                                    $cape_model->academicyearid = $year->academicyearid;
+                                    $cape_model->applicationperiodid = $period->applicationperiodid;
+                                    $cape_model->spaces = NULL;
+                                    $cape_model->interviewneeded = 0;
+                                    $save_flag = $cape_model->save();
+                                    if($save_flag == false)
                                     {
-                                        AcademicOffering::restore($offering_copy);
+                                        $transaction->rollBack();
+                                        if($saved_offerings == true)    //if previous offering exist in database
+                                        {
+                                            AcademicOffering::restore($offering_copy);
+                                        }
+                                        Yii::$app->getSession()->setFlash('error', 'CAPE Academic Offering was not saved.');
+                                        return $this->render('period_setup_step_three', [
+                                            'period' => $period,
+                                            'programmes' => $programmes,
+    //                                        'all_programmes' => $all_programmes,
+                                            'subjects' => $subjects,
+                                            'offerings' => $offerings,
+                                            'cape_subjects' => $cape_subjects,
+                                        ]);
                                     }
-                                    Yii::$app->getSession()->setFlash('error', 'CAPE Academic Offering was not saved.');
-                                    return $this->render('period_setup_step_three', [
-                                        'period' => $period,
-                                        'programmes' => $programmes,
-//                                        'all_programmes' => $all_programmes,
-                                        'subjects' => $subjects,
-                                        'offerings' => $offerings,
-                                        'cape_subjects' => $cape_subjects,
-                                    ]);
                                 }
+                                break;
                             }
-                            break;
                         }
                     }
                     
