@@ -21,10 +21,21 @@ $this->params['breadcrumbs'][] = $this->title;
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-            <?php $form = ActiveForm::begin(
-                [
-                    'action' => Url::to(['admissions/find-current-applicant']),
-                ]); 
+            <?php 
+                if($status == "pending")
+                {
+                    $form = ActiveForm::begin(
+                    [
+                        'action' => Url::to(['admissions/find-current-applicant', 'status' => $status]),
+                    ]); 
+                }
+                elseif ($status == "successful")
+                {
+                    $form = ActiveForm::begin(
+                    [
+                        'action' => Url::to(['admissions/find-successful-applicant', 'status' => $status]),
+                    ]); 
+                }
             ?>
             
                 <div class="center_content general_text">
@@ -70,62 +81,30 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>
                     </div>
                 </div> 
-            
-           
             <?php ActiveForm::end(); ?>
-            <?php if ($dataProvider) : ?>
+            
+            
+            <?php if ($status == "pending"  && $dataProvider == true) : ?>
                 <h3><?= "Search results for: " . $info_string ?></h3>
-                
-                <?= GridView::widget([
-                    'dataProvider' => $dataProvider,
-                    //'filterModel' => $searchModel,
-                    'options' => ['style' => 'width: 95%; margin: 0 auto;'],
-                    'columns' => [
-                        ['class' => 'yii\grid\SerialColumn'],
-                        [
-                            'format' => 'html',
-                            'label' => 'Applicant ID',
-                            'value' => function($row)
-                                {
-                                   return Html::a($row['username'], 
-                                                    Url::to(['process-applications/view-applicant-certificates',
-                                                             'applicantid' => $row['applicantid'],
-                                                             'programme' => $row['programme'], 
-                                                             'application_status' => $row['application_status']
-                                                            ])
-                                                );
-                                                   
-                                }
-                        ],
-                        [
-                            'attribute' => 'firstname',
-                            'format' => 'text',
-                            'label' => 'First Name'
-                        ],
-                        [
-                            'attribute' => 'middlename',
-                            'format' => 'text',
-                            'label' => 'Middle Name(s)'
-                        ],
-                        [
-                            'attribute' => 'lastname',
-                            'format' => 'text',
-                            'label' => 'Last Name'
-                        ],
-                        [
-                            'attribute' => 'gender',
-                            'format' => 'text',
-                            'label' => 'Gender'
-                        ],
-                        [
-                            'attribute' => 'dateofbirth',
-                            'format' => 'text',
-                            'label' => 'Date of Birth'
-                        ],
-                    ],
-                ]); ?>
+                <?= $this->render('pending_applicants_results', [
+                                    'dataProvider' => $dataProvider,
+                                    'info_string' => $info_string,
+                                    'status' => $status,
+                                    ]
+                                ) 
+                ?>
+            
+            <?php elseif ($status == "successful"  && $dataProvider == true) : ?>
+                <h3><?= "Search results for: " . $info_string ?></h3>
+                <?= $this->render('successful_applicants_results', [
+                                    'dataProvider' => $dataProvider,
+                                    'info_string' => $info_string,
+                                    'status' => $status,
+                                    ]
+                                ) 
+                ?>
             <?php endif; ?>
-                
+            
         </div>
     </div>
 </div>

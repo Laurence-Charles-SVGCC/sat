@@ -971,7 +971,15 @@
             ]);
         }
         
-       
+        
+        
+        public function actionGenerateConditionalOfferList()
+        {
+            
+        }
+        
+        
+
         
     }
 

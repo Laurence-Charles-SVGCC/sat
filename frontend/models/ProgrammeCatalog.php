@@ -266,6 +266,29 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns programme_catalog record based on applicationid
+     * 
+     * @param type $applicationid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public static function getApplicantProgramme($applicationid)
+    {
+        $programme = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->where(['application.applicationid' => $applicationid])
+                ->one();
+        if ($programme)
+            return $programme;
+        return false;
+    }
+    
+    
     
     
 }

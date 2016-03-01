@@ -36,7 +36,7 @@
                         'value' => function($row) use ($application_status)
                             {
                                 $middlename = $row['middlename'] ? $row['middlename'] : "";
-                               return Html::a($row['username'], 
+                                return Html::a($row['username'], 
                                        Url::to(['process-applications/view-applicant-certificates',
                                                 'applicantid' => $row['applicantid'],
                                                 'programme' => $row['programme'], 

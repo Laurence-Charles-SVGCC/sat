@@ -1026,7 +1026,7 @@ class StudentController extends Controller
     
     
     /**
-     * Renders the 'Student Listing view and process form submission
+     * Renders the 'Student Listing' view and process form submission
      * 
      * @return type
      * 

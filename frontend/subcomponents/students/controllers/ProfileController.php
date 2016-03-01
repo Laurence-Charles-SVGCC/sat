@@ -1187,7 +1187,7 @@
         
         
         /**
-         * Updates a compulsory relative 
+         * Updates a medical condition
          * 
          * @param type $personid
          * @param type $studentregistrationid

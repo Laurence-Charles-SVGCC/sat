@@ -108,6 +108,7 @@ class AdmissionsController extends Controller
         {
             $save_flag = false;
             $personid = Yii::$app->user->identity->personid;
+            $period = new ApplicationPeriod();
             
             $period->applicationperiodtypeid = 1;
             $period->applicationperiodstatusid = 1;
@@ -799,12 +800,11 @@ class AdmissionsController extends Controller
      * Date Created: 24/02/2016
      * Date Last Modified: 24/02/2016
      */
-    public function actionFindCurrentApplicant()
+    public function actionFindCurrentApplicant($status)
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
         $dataProvider = null;
-        $app_ids = null;
         $info_string = null;
         
         if (Yii::$app->request->post())
@@ -912,7 +912,7 @@ class AdmissionsController extends Controller
                     $dataProvider = new ArrayDataProvider([
                         'allModels' => $data,
                         'pagination' => [
-                            'pageSize' => 100,
+                            'pageSize' => 25,
                         ],
                         'sort' => [
                             'attributes' => ['applicantid', 'firstname', 'lastname'],
@@ -922,16 +922,138 @@ class AdmissionsController extends Controller
             }
         }
         
-        /*
-         * Determines the current application under consideration for an applicant 
-         * and their current status
-         */
+        
+        return $this->render('find_current_applicant', 
+            [
+            'dataProvider' => $dataProvider,
+            'status' => $status,
+            'info_string' => $info_string,
+        ]);
+    }
+    
+    
+    /**
+     * Facilitates search for applicant successful in the currently open application periods.
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionFindSuccessfulApplicant($status)
+    {
+        $dataProvider = null;
+        $info_string = null;
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $app_id = $request->post('applicantid_field');
+            $email = $request->post('email_field');
+            $firstname = $request->post('FirstName_field');
+            $lastname = $request->post('LastName_field');
+        
+            //if user initiates search based on applicantid
+            if ($app_id)
+            {
+                $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
+                $cond_arr['applicant.personid'] = $user? $user->personid : null;
+                $info_string = $info_string .  " Applicant ID: " . $app_id;
+            }    
+
+            //if user initiates search based on applicant name    
+            if ($firstname)
+            {
+                $cond_arr['applicant.firstname'] = $firstname;
+                $info_string = $info_string .  " First Name: " . $firstname; 
+            }
+            if ($lastname)
+            {
+                $cond_arr['applicant.lastname'] = $lastname;
+                $info_string = $info_string .  " Last Name: " . $lastname;
+            }        
+
+            //if user initiates search based on applicant email
+            if ($email)
+            {
+                $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+                $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+                $info_string = $info_string .  " Email: " . $email;
+            }
+
+
+            if (empty($cond_arr))
+            {
+                Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+            }
+            else
+            {
+                $cond_arr['applicant.isactive'] = 1;
+                $cond_arr['applicant.isdeleted'] = 0;
+                $cond_arr['academic_offering.isactive'] = 1;
+                $cond_arr['academic_offering.isdeleted'] = 0;
+                $cond_arr['application_period.isactive'] = 1;
+                $cond_arr['application_period.applicationperiodstatusid'] = 5;
+                $cond_arr['application.isactive'] = 1;
+                $cond_arr['application.isdeleted'] = 0;
+                $cond_arr['application.applicationstatusid'] = 9;
+                $cond_arr['offer.isactive'] = 1;  
+                $cond_arr['offer.isdeleted'] = 0;
+                $cond_arr['offer.ispublished'] = 1;
+
+                $applicants = Applicant::find()
+                            ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                            ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                            ->where($cond_arr)
+                            ->groupBy('applicant.personid')
+                            ->all();
+
+                if (empty($applicants))
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No successful applicants found matching this criteria.');
+                }
+                else
+                {
+                    $data = array();
+                    foreach ($applicants as $applicant)
+                    {
+                        $app = array();
+                        $user = $applicant->getPerson()->one();
+
+                        $app['username'] = $user ? $user->username : '';
+                        $app['applicantid'] = $applicant->applicantid;
+                        $app['firstname'] = $applicant->firstname;
+                        $app['middlename'] = $applicant->middlename;
+                        $app['lastname'] = $applicant->lastname;
+                       
+                        $offer = Offer::getActiveOffer($applicant->personid);
+                        $target_programme = ProgrammeCatalog::getApplicantProgramme($offer->applicationid);
+                        $programme_name = $target_programme->getFullName();
+                        $app['programme_name'] = $programme_name;
+                        
+                        $data[] = $app;
+                    }
+                    $dataProvider = new ArrayDataProvider([
+                        'allModels' => $data,
+                        'pagination' => [
+                            'pageSize' => 25,
+                        ],
+                        'sort' => [
+                            'attributes' => ['applicantid', 'firstname', 'lastname'],
+                            ]
+                    ]);
+                }
+            }
+        }
         
         
         return $this->render('find_current_applicant',
             [
             'dataProvider' => $dataProvider,
-            'result_users' => $app_ids,
+            'status' => $status,
             'info_string' => $info_string,
         ]);
     }

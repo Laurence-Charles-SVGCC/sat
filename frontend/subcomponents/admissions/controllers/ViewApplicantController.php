@@ -226,6 +226,13 @@ class ViewApplicantController extends \yii\web\Controller
           {
               return $this->redirect(Url::to(['view-applicant/publish-decision', 'applicantusername' => $applicantusername]));
           }
+          
+          //Laurence Charles implementation
+          if ($request->post('applicant_profile') === '')
+          {
+              return $this->redirect(Url::to(['view-applicant/applicant-profile', 'applicantusername' => $applicantusername]));
+          }
+          
       }
   }
   
@@ -752,5 +759,1370 @@ class ViewApplicantController extends \yii\web\Controller
 
           return $this->redirect(Yii::$app->request->referrer);
       } 
+      
+      
+      
+      
+    /**
+     * Prepares and renders 'applicant_profile'
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/12/2015
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionApplicantProfile($applicantusername)
+    {
+        $user = User::findOne(['username' =>$applicantusername]);
+        $personid = $user->personid;
+        $applicant= Applicant::findByPersonID($personid);
+        $student = Student::getStudent($personid);
+        $user = User::getUser($personid);
+
+        $phone = Phone::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+
+        $email = Email::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+
+        $permanentaddress = Address::findAddress($personid, 1);
+        $residentaladdress = Address::findAddress($personid, 2);
+        $postaladdress = Address::findAddress($personid, 3);
+
+        /************************* Relations ************************************/
+        $old_beneficiary = false;       //old apply implementation
+        $new_beneficiary = false;       //new apply implementation
+        $spouse = false;
+        $mother = false;
+        $father = false;
+        $nextofkin = false;
+        $old_emergencycontact = false;  //old apply implementation
+        $new_emergencycontact = false;  //new apply implementation
+        $guardian = false;
+
+        $old_beneficiary = Relation::getRelationRecord($personid, 6);
+        $new_beneficiary = CompulsoryRelation::getRelationRecord($personid, 6);
+        $old_emergencycontact = Relation::getRelationRecord($personid, 4);
+        $new_emergencycontact = CompulsoryRelation::getRelationRecord($personid, 4);
+        $spouse = Relation::getRelationRecord($personid, 7);
+        $mother = Relation::getRelationRecord($personid, 1);
+        $father = Relation::getRelationRecord($personid, 2);
+        $nextofkin = Relation::getRelationRecord($personid, 3);
+        $guardian = Relation::getRelationRecord($personid, 5);
+
+        /************************ Medical Conditions *****************************/
+        $medicalConditions = MedicalCondition::getMedicalConditions($personid);
+
+        /************************* Institutions **********************************/
+        $preschools = PersonInstitution::getPersonInsitutionRecords($personid, 1);
+        $preschoolNames = array();
+        if ($preschools!=false)
+        {
+            foreach ($preschools as $preschool)
+            {
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $preschool->institutionid])
+                        ->one();     
+                $name = $record->name;
+                array_push($preschoolNames, $name);          
+            }
+        }
+
+        $primaryschools = PersonInstitution::getPersonInsitutionRecords($personid, 2);
+        $primaryschoolNames = array();
+        if ($primaryschools!=false)
+        {
+            foreach ($primaryschools as $primaryschool)
+            {
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $primaryschool->institutionid])
+                        ->one();     
+                $name = $record->name;
+                array_push($primaryschoolNames, $name); 
+            }
+        }
+
+        $secondaryschools = PersonInstitution::getPersonInsitutionRecords($personid, 3);
+        $secondaryschoolNames = array();
+        if ($secondaryschools!=false)
+        {
+            foreach ($secondaryschools as $secondaryschool)
+            {
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $secondaryschool->institutionid])
+                        ->one();       
+                $name = $record->name;
+                array_push($secondaryschoolNames, $name); 
+            }
+        }
+
+        $tertiaryschools = PersonInstitution::getPersonInsitutionRecords($personid, 4);
+        $tertiaryschoolNames = array();
+        if ($tertiaryschools!=false)
+        {
+            foreach ($tertiaryschools as $tertiaryschool)
+            {
+                $name = NULL;
+                $record = NULL;
+                $record = Institution::find()
+                        ->where(['institutionid' => $tertiaryschool->institutionid])
+                        ->one();  
+                $name = $record->name;
+                array_push($tertiaryschoolNames, $name); 
+            }
+        }
+
+        /****************************** Qualifications ***************************/
+        $qualifications = CsecQualification::getQualifications($personid);
+        $qualificationDetails = array();
+
+        if ($qualifications != false)
+        {
+            $keys = ['centrename', 'examinationbody', 'subject', 'proficiency', 'grade'];
+            foreach ($qualifications as $qualification)
+            {
+                $values = array();
+                $combined = array();
+                $centre = CsecCentre::find()
+                        ->where(['cseccentreid' => $qualification->cseccentreid])
+                        ->one();
+                array_push($values, $centre->name);
+                $examinationbody = ExaminationBody::find()
+                        ->where(['examinationbodyid' => $qualification->examinationbodyid])
+                        ->one();
+                array_push($values, $examinationbody->abbreviation);
+                $subject = Subject::find()
+                        ->where(['subjectid' => $qualification->subjectid])
+                        ->one();
+                array_push($values, $subject->name);
+                $proficiency = ExaminationProficiencyType::find()
+                        ->where(['examinationproficiencytypeid' => $qualification->examinationproficiencytypeid])
+                        ->one();
+                array_push($values, $proficiency->name);
+                $grade = ExaminationGrade::find()
+                        ->where(['examinationgradeid' => $qualification->examinationgradeid])
+                        ->one();
+                array_push($values, $grade->name);
+                $combined = array_combine($keys,$values);
+                array_push($qualificationDetails, $combined);
+                $values = NULL;
+                $combined = NULL;
+            }
+        }
+
+        /****************************** Applications ***************************/
+        $applications = Application::getApplications($personid);
+        $first = array();
+        $firstDetails = array();
+        $second = array();
+        $secondDetails = array();
+        $third = array();
+        $thirdDetails = array();
+
+        $db = Yii::$app->db;
+        foreach($applications as $application)
+        {
+            $capeSubjects = NULL;
+            $isCape = NULL;
+            $division = NULL;
+            $programme = NULL;
+            $d = NULL;
+            $p = NULL;
+            if ($application->ordering == 1)
+            {
+                array_push($first, $application);
+                $isCape = Application::isCape($application->academicofferingid);
+                if ($isCape == true)
+                {
+                  $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                  array_push($first, $capeSubjects);
+                }
+                $d = Division::find()
+                        ->where(['divisionid' => $application->divisionid])
+                        ->one();
+//                    $division = $d->name;
+                $division = $d->abbreviation;
+                array_push($firstDetails, $division);
+
+                $p = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                    . " FROM  academic_offering "
+                    . " JOIN programme_catalog"
+                    . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                    . " JOIN qualification_type"
+                    . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                    . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryAll();
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($firstDetails, $fullname);
+
+                $academic_year = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid AS 'academicofferingid',"
+                        . " academic_year.title AS 'title'"
+                        . " FROM  academic_offering"
+                        . " JOIN academic_year"
+                        . " ON academic_offering.academicyearid = academic_year.academicyearid"
+                        . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryOne();
+                $year = $academic_year["title"];
+                array_push($firstDetails, $year);
+
+            }
+
+            else if ($application->ordering == 2)
+            {
+                array_push($second, $application);
+                $isCape = Application::isCapeApplication($application->academicofferingid);
+                if ($isCape == true)
+                {
+                    $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                    array_push($second, $capeSubjects);
+                }
+                $d = Division::find()
+                    ->where(['divisionid' => $application->divisionid])
+                    ->one();
+//                    $division = $d->name;
+                $division = $d->abbreviation;
+                array_push($secondDetails, $division);
+
+                $p = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                    . " FROM  academic_offering "
+                    . " JOIN programme_catalog"
+                    . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                    . " JOIN qualification_type"
+                    . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                    . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryAll();
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($secondDetails, $fullname);
+
+                $academic_year = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid AS 'academicofferingid',"
+                        . " academic_year.title AS 'title'"
+                        . " FROM  academic_offering"
+                        . " JOIN academic_year"
+                        . " ON academic_offering.academicyearid = academic_year.academicyearid"
+                        . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryOne();
+                $year = $academic_year["title"];
+                array_push($secondDetails, $year);
+            }
+            else if ($application->ordering == 3)
+            {
+                array_push($third, $application);
+                $isCape = Application::isCapeApplication($application->academicofferingid);
+                if ($isCape == true)
+                {
+                    $capeSubjects = ApplicationCapesubject::getRecords($application->applicationid);
+                    array_push($third, $capeSubjects);
+                }
+                $d = Division::find()
+                    ->where(['divisionid' => $application->divisionid])
+                    ->one();
+//                    $division = $d->name;
+                $division = $d->abbreviation;
+                array_push($thirdDetails, $division);
+
+                $p = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation"
+                    . " FROM  academic_offering "
+                    . " JOIN programme_catalog"
+                    . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                    . " JOIN qualification_type"
+                    . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                    . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryAll();
+
+                $specialization = $p[0]["specialisation"];
+                $qualification = $p[0]["abbreviation"];
+                $programme = $p[0]["name"];
+                $fullname = $qualification . " " . $programme . " " . $specialization;
+                array_push($thirdDetails, $fullname);
+
+                $academic_year = $db->createCommand(
+                    "SELECT academic_offering.academicofferingid AS 'academicofferingid',"
+                        . " academic_year.title AS 'title'"
+                        . " FROM  academic_offering"
+                        . " JOIN academic_year"
+                        . " ON academic_offering.academicyearid = academic_year.academicyearid"
+                        . " WHERE academic_offering.academicofferingid = " . $application->academicofferingid . " ;"
+                    )
+                    ->queryOne();
+                $year = $academic_year["title"];
+                array_push($thirdDetails, $year);
+
+            }
+        }
+
+        /********************************* Offers ******************************/
+        $offers = Offer::getOffers($personid);
+
+        /****************************************************************************/
+        return $this->render('applicant_profile',[
+            //models for profile tab
+            'user' =>  $user,
+            'applicant' => $applicant,
+            'student' => $student,
+            'phone' => $phone,
+            'email' => $email,
+            'permanentaddress' => $permanentaddress,
+            'residentaladdress' => $residentaladdress,
+            'postaladdress' => $postaladdress,
+            'old_beneficiary' => $old_beneficiary,
+            'new_beneficiary' => $new_beneficiary,
+            'mother' => $mother,
+            'father' => $father,
+            'nextofkin' => $nextofkin,
+            'old_emergencycontact' => $old_emergencycontact,
+            'new_emergencycontact' => $new_emergencycontact,
+            'guardian' =>  $guardian,                   
+            'spouse' => $spouse,
+            'student_status' => $student_status,
+            'academic_status' => $academic_status,
+
+            //models for addtional information tab
+            'medicalConditions' => $medicalConditions,
+
+            //models for academic institutions tab
+            'preschools' => $preschools,
+            'preschoolNames' => $preschoolNames,
+            'primaryschools' => $primaryschools,
+            'primaryschoolNames' => $primaryschoolNames,
+            'secondaryschools' => $secondaryschools,
+            'secondaryschoolNames' => $secondaryschoolNames,
+            'tertiaryschools' => $tertiaryschools,
+            'tertiaryschoolNames' => $tertiaryschoolNames,
+
+            //models for qualifications tab
+            'qualifications' => $qualifications,
+            'qualificationDetails' => $qualificationDetails,
+
+            //models for appplications and offers tab
+            'first' => $first,
+            'firstDetails' =>$firstDetails,
+            'second' => $second,
+            'secondDetails' =>$secondDetails,
+            'third' => $third,
+            'thirdDetails' =>$thirdDetails,
+            'offers' => $offers,
+        ]);
+    }
+    
+    
+    /**
+     * Updates 'General' section of Applicant Profile
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/12/2015
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditGeneral($personid)
+    {
+        $applicant = Applicant::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $applicant_load_flag = false;
+            $applicant_save_flag = false;
+
+            $applicant_load_flag = $applicant->load($post_data); 
+            if ($applicant_load_flag == true)
+            {
+                $applicant_save_flag = $applicant->save();
+                if ($applicant_save_flag == true)
+                {
+                    self::actionApplicantProfile($user->username);
+                }
+                else
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
+            }
+            else
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load applicant model. Please try again.');    
+        }
+
+
+        return $this->render('edit_general', [
+                    'user' => $user,
+                    'applicant' => $applicant
+        ]);
+    }
+    
+    
+    /**
+     * Updates 'Contact Details' section of Applicant Profile
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/12/2015
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditContactDetails($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $phone = Phone::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        $email = Email::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            if ($phone == true && $email == true  && $student == true)
+            {
+                //load flags
+                $phone_load_flag = false;
+                $email_load_flag = false;
+
+                //validation flags
+                $phone_valid_flag = false;
+                $email_valid_flag = false;
+                
+                //save flags
+                $phone_save_flag = false;
+                $email_save_flag = false;
+                
+                $phone_load_flag = $phone->load($post_data);
+                $email_load_flag = $email->load($post_data);
+                
+                if ($phone_load_flag == true && $email_load_flag == true)
+                {
+                    $phone_valid_flag = $phone->validate();
+                    $email_valid_flag = $email->validate();
+
+                    if ($phone_valid_flag == true && $email_valid_flag == true)
+                    {
+                        $transaction = \Yii::$app->db->beginTransaction();
+                        try 
+                        {
+                            $phone_save_flag = $phone->save();
+                            $email_save_flag = $email->save();
+
+                            if ($phone_save_flag == true && $email_save_flag == true)
+                            {
+                                $transaction->commit();
+                                self::actionApplicantProfile($user->username);
+                            }
+                            else
+                            {
+                                $transaction->rollBack();
+                                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                            }
+
+                        }catch (Exception $e) 
+                        {
+                            $transaction->rollBack();
+                        }
+                    }
+                    else
+                    {
+                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                    }                       
+                }
+                else
+                {
+                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                }    
+            }
+            else
+            {
+                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+            }
+        }
+
+        return $this->render('edit_contact_details', [
+                    'phone' => $phone,
+                    'email' => $email,
+        ]);
+    }
+    
+    
+    /**
+     * Updates 'Addresses' section of Applicant Profile
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/12/2015
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditAddresses($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $permanentaddress = Address::findAddress($personid, 1);
+        $residentaladdress = Address::findAddress($personid, 2);
+        $postaladdress = Address::findAddress($personid, 3);
+        $addresses = [$permanentaddress, $residentaladdress, $postaladdress];
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            if ($permanentaddress == true && $residentaladdress == true  && $postaladdress == true)
+            {
+                $addresses_load_flag = false;       //load flags                                      
+                $addresses_valid_flag = false;      //validation flags                                   
+                $addresses_save_flag = false;       //save flags
+
+                $addresses_load_flag = Model::loadMultiple($addresses, $post_data);
+
+                if ($addresses_load_flag == true)
+                {
+                    $addresses_valid_flag = Model::validateMultiple($addresses);
+
+                    if ($addresses_valid_flag == true)
+                    {
+                        $transaction = \Yii::$app->db->beginTransaction();
+                        try 
+                        {
+                            foreach ($addresses as $address)
+                            {
+                                $addresses_save_flag = $address->save();
+                                if ($addresses_save_flag == false)          //if Address model save operation failed 
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                                    return $this->render('edit_addresses', [
+                                                'addresses' => $addresses,
+                                    ]);                                       
+                                }
+                            }
+                            if ($addresses_save_flag == true)
+                            {
+                                $transaction->commit();
+                                self::actionApplicantProfile($user->username);
+                            }                               
+                        }catch (Exception $e) 
+                        {
+                            $transaction->rollBack();
+                        }
+                    }
+                    else
+                    {
+                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                    }                       
+                }
+                else
+                {
+                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+                }    
+            }
+            else
+            {
+                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update information. Please try again.');
+            }
+        }
+
+        return $this->render('edit_addresses', [
+                    'addresses' => $addresses,
+        ]);        
+    }
+    
+    
+    /**
+     * Updates an optional relative
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/12/2015
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditOptionalRelative($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $relative = Relation::find()
+                    ->where(['relationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($relative == false)
+        {
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to locate record. Please try again.');
+            self::actionApplicantProfile($user->username);
+        }
+
+        $relative_type = RelationType::find()
+                    ->where(['relationtypeid' => $relative->relationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        $relation_name = ucwords($relative_type->name);
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $relative->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $relative->validate();
+                if($validation_flag == true)
+                {
+                    $save_flag = $relative->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+
+        return $this->render('edit_optional_relative', [
+                    'personid' => $personid,
+                    'relative' => $relative,
+                    'relation_name' => $relation_name,
+        ]); 
+    }
+    
+    
+    /**
+     * Deletes an optional relative 
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionDeleteOptionalRelative($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $relative = Relation::find()
+                    ->where(['relationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($relative == true)
+        {
+            $save_flag = false;
+            $relative->isdeleted = 1;
+            $save_flag = $relative->save();
+            if($save_flag == true)
+            {
+                self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');             
+        }
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured locating record. Please try again.');
+        
+        
+        self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Updates a compulsory relative 
+     * 
+     * @param type $personid
+     * @param type $studentregistrationid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditCompulsoryRelative($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $relative = CompulsoryRelation::find()
+                    ->where(['compulsoryrelationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($relative == false)
+        {
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to locate record. Please try again.');
+            self::actionApplicantProfile($user->username);
+        }
+
+        $relative_type = RelationType::find()
+                    ->where(['relationtypeid' => $relative->relationtypeid,   'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        $relation_name = ucwords($relative_type->name);
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $relative->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $relative->validate();
+                if($validation_flag == true)
+                {
+                    $save_flag = $relative->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+
+        return $this->render('edit_compulsory_relative', [
+                    'personid' => $personid,
+                    'relative' => $relative,
+                    'relation_name' => $relation_name,
+        ]); 
+    }
+    
+    
+    /**
+     * Creates an optional relation 
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 03/01/2016
+     */
+    public function actionAddOptionalRelative($personid, $studentregistrationid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $relative = new Relation();
+        $relative->personid = $personid;
+
+        $beneficiary = false;       
+        $spouse = false;
+        $mother = false;
+        $father = false;
+        $nextofkin = false;
+        $emergencycontact = false;
+        $guardian = false;
+
+        $mother = Relation::getRelationRecord($personid, 1);
+        $father = Relation::getRelationRecord($personid, 2);
+        $nextofkin = Relation::getRelationRecord($personid, 3);
+        $emergencycontact = Relation::getRelationRecord($personid, 4);
+        $guardian = Relation::getRelationRecord($personid, 5);
+        $beneficiary = Relation::getRelationRecord($personid, 6);
+        $spouse = Relation::getRelationRecord($personid, 7);
+
+        //customizes the realtion arrays
+        $optional_relations = array();  
+        $keys = array();
+        $values = array();
+        array_push($keys, "");
+        array_push($values, "Select Relation Type");
+
+        if ($mother == false)
+        {
+            array_push($keys, 1);
+            array_push($values, "Mother");
+        } 
+        if ($father == false)
+        {
+            array_push($keys, 2);
+            array_push($values, "Father");
+        }
+
+        if ($nextofkin == false)
+        {
+            array_push($keys, 3);
+            array_push($values, "Next Of Kin");
+        }
+
+        if ($emergencycontact == false)
+        {
+            array_push($keys, 4);
+            array_push($values, "Emergency Contact");
+        }
+
+        if ($guardian == false)
+        {
+            array_push($keys, 5);
+            array_push($values, "Guardian");
+        }
+
+        if ($beneficiary == false)
+        {
+            array_push($keys, 6);
+            array_push($values, "Beneficiary");
+        }
+
+        if ($spouse == false)
+        {
+            array_push($keys, 7);
+            array_push($values, "Spouse");
+        }
+
+        $optional_relations = array_combine($keys, $values);
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $relative->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $relative->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $relative->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+
+        return $this->render('add_optional_relative', [
+                    'personid' => $personid,
+                    'relative' => $relative,
+                    'optional_relations' => $optional_relations,
+        ]); 
+    }
+    
+    
+    /**
+     * Deletes a medical condition
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 03/01/2016
+     */
+    public function actionDeleteMedicalCondition($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $condition = MedicalCondition::find()
+                    ->where(['medicalconditionid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($condition == true)
+        {
+            $save_flag = false;
+            $condition->isdeleted = 1;
+            $save_flag = $condition->save();
+            if($save_flag == true)
+            {
+                self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting medical condition record. Please try again.');      
+        }
+
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving medical condition record. Please try again.');
+        
+        self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Updates a medical condition
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditMedicalCondition($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $condition = MedicalCondition::find()
+                    ->where(['medicalconditionid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($condition == false)
+        {
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve medical condition record. Please try again.');
+            self::actionApplicantProfile($user->username);
+        }
+
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $condition->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $condition->validate();
+                if($validation_flag == true)
+                {
+                    $save_flag = $condition->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update medical condition record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate  medical condition record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load medical condition record. Please try again.');              
+        }
+
+        return $this->render('edit_medical condition', [
+                    'personid' => $personid, 
+                    'condition' => $condition,
+        ]); 
+    }
+    
+    
+    /**
+     * Creates a medical condition record 
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionAddMedicalCondition($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $condition = new MedicalCondition();
+        $condition->personid = $personid;
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $condition->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $condition->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $condition->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save medical condition record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate medical condition  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load medical condition  record. Please try again.');              
+        }
+
+        return $this->render('add_medical_condition', [
+                    'personid' => $personid,
+                    'condition' => $condition,
+        ]); 
+    }
+    
+    
+    /**
+     * Creates a qualification record 
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionAddQualification($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $qualification = new CsecQualification();
+        $qualification->personid = $personid;
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $qualification->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $qualification->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+        }
+
+        return $this->render('add_csec_qualificiation', [
+                    'personid' => $personid,
+                    'qualification' => $qualification,
+        ]); 
+    }
+
+
+    /**
+     * Deletes a qualification
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionDeleteQualification($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $qualification = CsecQualification::find()
+                    ->where(['csecqualificationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($qualification == true)
+        {
+            $save_flag = false;
+            $qualification->isdeleted = 1;
+            $save_flag = $qualification->save();
+            if($save_flag == true)
+            {
+                self::actionApplicantProfile($user->username);
+            }
+            else
+            Yii::$app->getSession()->setFlash('error', 'Error occured deleting qualification record. Please try again.');               
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving qualification record. Please try again.');
+            
+        
+        self::actionApplicantProfile($user->username);
+    }
+
+
+    /**
+     * Updates a qualification record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditQualification($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $qualification = CsecQualification::find()
+                    ->where(['csecqualificationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+
+        if ($qualification == false)
+        {          
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve qualification record. Please try again.');
+            self::actionApplicantProfile($user->username);
+        }
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $qualification->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $qualification->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+        }
+
+        return $this->render('edit_csec_qualificiation', [
+                    'personid' => $personid, 
+                    'qualification' => $qualification,
+        ]); 
+    }
+    
+    
+    /**
+     * Deletes personinstitutiton record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionDeleteSchool($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $school = PersonInstitution::find()
+                ->where(['personinstitutionid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($school == true)
+        {
+            $save_flag = false;
+            $school->isdeleted = 1;
+            $save_flag = $school->save();
+            if($save_flag == true)
+            {
+                self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting school record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving school record. Please try again.');
+            
+        
+        self::actionApplicantProfile($user->username);
+    }
+
+
+    /**
+     * Updates personinstitutiton record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @param type $levelid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionEditSchool($personid, $recordid, $levelid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $school = PersonInstitution::find()
+                ->where(['personinstitutionid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+
+        if ($school == false)
+        {          
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve institution record. Please try again.');
+            self::actionApplicantProfile($user->username);
+        }
+
+        $institution = Institution::find()
+                    ->where(['institutionid' => $school->institutionid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        $school_name = $institution->name;
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $school->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $school->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $school->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save institution record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate institution  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load institution  record. Please try again.');              
+        }
+
+        return $this->render('edit_school', [
+                    'personid' => $personid,
+                    'school' => $school,
+                    'levelid' => $levelid,
+                    'school_name' => $school_name,
+        ]);
+    }
+
+
+    /**
+     * Adds new personinstitutiton record
+     * 
+     * @param type $personid
+     * @param type $levelid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/01/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionAddSchool($personid, $levelid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $school = new PersonInstitution();
+        $school->personid = $personid;
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $school->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $school->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $school->save();
+                    if($save_flag == true)
+                    {
+                        self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save institution record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate institution  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load institution  record. Please try again.');              
+        }
+
+        return $this->render('add_school', [
+                    'personid' => $personid,
+                    'school' => $school,
+                    'levelid' => $levelid,
+        ]);
+    }
+    
+    
+    
 
 }

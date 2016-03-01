@@ -215,5 +215,29 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
+    
+    
+    /**
+     * Returns the current of an successful applicant
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public static function getActiveOffer($personid)
+    {
+        $offer = Offer::find()
+                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                ->where(['offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9, 'application.personid' => $personid
+                        ])
+                ->one();
+        if ($offer)
+            return $offer;
+        return false;
+    }
    
 }

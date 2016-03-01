@@ -25,6 +25,100 @@ class RegisterStudentController extends \yii\web\Controller
         return $this->render('index');
     }
     
+    
+    public function actionViewProspectiveStudent($applicantid, $programme)
+    {
+        $applicant = Applicant::find()
+                        ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            
+        $username = $applicant->getPerson()->one()->username;
+        
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->where(['application_period.applicationperiodstatusid' => 5,   'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $applicant->personid])
+                        ->all();
+        
+        $application_container = array();
+        $target_application = null;
+        
+        foreach($applications as $application)
+        {
+
+            $combined = array();
+            $keys = array();
+            $values = array();
+
+            array_push($keys, "application");
+            array_push($keys, "istarget");
+            array_push($keys, "division");
+            array_push($keys, "programme");
+
+            array_push($values, $application);
+            
+            $offer = Offer::getActiveOffer($applicant->personid);
+            
+            //if this application is the same as the one that is associated with current offer
+            if ($application->applicationid == $offer->applicationid)
+            {
+                $istarget = true;
+                $target_application = $application;
+            }
+            else
+                $istarget = false;
+            array_push($values, $istarget);
+            
+            $division = Division::find()
+                            ->where(['divisionid' => $application->divisionid])
+                            ->one()
+                            ->abbreviation;
+            array_push($values, $division);
+            
+            $cape_subjects_names = array();
+            $cape_subjects = ApplicationCapesubject::find()
+                        ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                        ->where(['application.applicationid' => $application->applicationid,
+                                'application.isactive' => 1,
+                                'application.isdeleted' => 0]
+                                )
+                        ->all();
+
+            $programme_record = ProgrammeCatalog::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                        ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->where(['application.applicationid' => $application->applicationid])
+                        ->one();
+
+            foreach ($cape_subjects as $cs) 
+            { 
+                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+            }
+
+            $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+            array_push($values, $programme_name);
+
+            $combined = array_combine($keys, $values);
+            array_push($application_container, $combined);  
+        }
+        
+        
+        return $this->render('prospective_student',
+                    [
+                        'username' => $username,
+                        'applicant' => $applicant,
+                        'applications' => $applications,
+                        'application_container' => $application_container,
+                        'applicationid' => $target_application->applicationid,
+                        'target_application' => $target_application,
+                        'programme' => $programme,
+                    ]);
+        
+        
+        
+    }
+    
     /*
     * Purpose: Responds to user indicating they want to register an applicant.
      * Does prelinary checks to ensure that applicant can be registered
