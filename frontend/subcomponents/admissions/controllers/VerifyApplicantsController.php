@@ -297,7 +297,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             {
                 if ($request->post('CsecQualification'))
                 {
-                    $verify_all = $request->post('verified') === '' ? True : False;
+                    $verify_all = $request->post('verified') === '' ? true : false;
                     $qualifications = $request->post('CsecQualification');
                     foreach ($qualifications as $qual)
                     {
@@ -366,23 +366,25 @@ class VerifyApplicantsController extends \yii\web\Controller
                     }
                 }
                 
+                
                 //redirect
-                if (strcasecmp($type, "pending"))
+                if (strcasecmp($type, "pending")==0)
                 {
-                    self::actionViewPending($cseccentreid, $centrename);
+                    return self::actionViewPending($cseccentreid, $centrename);
                 }
-                if (strcasecmp($type, "queried"))
+                elseif (strcasecmp($type, "queried")==0)
                 {
-                    self::actionViewQueried($cseccentreid, $centrename);
+                    return self::actionViewQueried($cseccentreid, $centrename);
                 }
-                if (strcasecmp($type, "all"))
+                elseif (strcasecmp($type, "all")==0)
                 {
-                    self::actionViewAll($cseccentreid, $centrename);
+                    return self::actionViewAll($cseccentreid, $centrename);
                 }
-                if (strcasecmp($type, "verified"))
+                elseif (strcasecmp($type, "verified")==0)
                 {
-                    self::actionViewVerified($cseccentreid, $centrename);
+                    return self::actionViewVerified($cseccentreid, $centrename);
                 }
+                
             }
         }
         

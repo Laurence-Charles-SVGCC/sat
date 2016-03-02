@@ -589,15 +589,9 @@
                 if($new_status == 9)
                 {
                     // create offer
-                    $application = Application::findOne(['applicationid' => $applicationid]);
-                    
                     $offer = new Offer();
                     $offer->applicationid = $applicationid;
-//                    $academic_offering = AcademicOffering::find()
-//                                ->where(['academicofferingid' => $application, 'isactive' => 1, 'isdeleted' => 0])
-//                                ->one();
-//                    if ($academic_offering->interviewneeded == 1)
-//                        $offer->offertypeid = 2;
+                    $offer->offertypeid = 1;
                     $offer->issuedby = Yii::$app->user->getId();
                     $offer->issuedate = date("Y-m-d");
                     $offer->save();

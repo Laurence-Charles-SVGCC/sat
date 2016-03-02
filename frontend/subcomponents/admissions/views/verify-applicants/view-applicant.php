@@ -47,9 +47,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             {
                                 $user = User::findOne(['personid' => $model->personid]);
                                 $username = $user ? $user->username : $model->personid;
-                                return Html::a($username, 
-                                       Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
-                                           'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
+                                
+                                if (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Applicant::isVerified($user->personid) == false)
+                                {
+                                    return Html::a($username, 
+                                           Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
+                                               'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
+                                }
+                                else
+                                {
+                                    return $username;
+                                }
                             }
                     ],
                     [

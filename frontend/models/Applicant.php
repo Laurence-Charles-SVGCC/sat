@@ -7,6 +7,7 @@ use common\models\User;
 use frontend\models\Application;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
+use frontend\models\CsecQualification;
 
 /**
  * This is the model class for table "applicant".
@@ -1147,6 +1148,40 @@ class Applicant extends \yii\db\ActiveRecord
         
         $combined = array_combine($keys, $values);
         return $combined;
+    }
+    
+    
+    /**
+     * Returns 'true' if an applicant is verified
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 01/03/2016
+     * Date Last Modified: 01/03/2016
+     */
+    public static function isVerified($personid)
+    {
+        $qualifications = CsecQualification::find()
+                    ->innerJoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['csec_qualification.personid' => $personid,
+                            'application.isactive' => 1, 'application.isdeleted' => 0,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2
+                            ])
+                    ->all();
+        $all_verified = true;
+        foreach($qualifications as $qualification)
+        {
+            if ($qualification->isverified == 0)
+                $all_verified = false;
+        }
+        
+        return $all_verified;
     }
   
     

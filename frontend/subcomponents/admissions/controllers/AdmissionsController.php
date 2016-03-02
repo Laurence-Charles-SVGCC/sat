@@ -170,6 +170,18 @@ class AdmissionsController extends Controller
         
         if ($reuse_year == 1)
         {
+            /*
+             * If openeing a full time application period for DASGS or DTVE the academic year must be updated
+             */
+            if($period->divisionid == 4  ||  $period->divisionid == 5  && ($period->applicationperiodtypeid == 1))
+            {
+                $new_year = AcademicYear::getMostRecentlyCreatedYear();
+                if($new_year == true)
+                {
+                    $new_year->iscurrent = 1;
+                    $new_year->save();
+                }
+            }
             $period->applicationperiodstatusid = 2;
             $period_save_flag = $period->save();
             if($period_save_flag == true)
@@ -187,8 +199,9 @@ class AdmissionsController extends Controller
             $year_load_flag = $new_year->load($post_data);
             if($year_load_flag == true)
             {
-                $new_year->iscurrent = 1;
-                $current_year->iscurrent = 0;
+                $new_year->iscurrent = 0;
+//                $new_year->iscurrent = 1;
+//                $current_year->iscurrent = 0;
                 $period->applicationperiodstatusid = 2;
                 
                 $new_year_save_flag = $new_year->save();
@@ -309,16 +322,16 @@ class AdmissionsController extends Controller
 //            $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
         }
         
-        elseif ($period->divisionid == 5)
-        {
-           $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid);
-//           $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-        }
-        
         elseif ($period->divisionid == 6)
         {
             $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid);
 //            $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
+        }
+        
+        elseif ($period->divisionid == 7)
+        {
+           $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid);
+//           $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
         }
         
         //process programmes

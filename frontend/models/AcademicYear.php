@@ -184,4 +184,27 @@ class AcademicYear extends \yii\db\ActiveRecord
         return false;
     }
     
+    
+    /**
+     * Returns the last created academic year
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 01/03/2016
+     * Date Last Modified: 01/03/2016
+     */
+    public static function getMostRecentlyCreatedYear()
+    {
+        $years = AcademicYear::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        $count = count($years);
+        if ($count > 0)
+        {
+            return $years[($count-1)];
+        }
+        return false;
+    }
+    
 }

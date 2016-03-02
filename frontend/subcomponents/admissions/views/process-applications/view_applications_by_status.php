@@ -87,7 +87,7 @@
                 ];
             
             
-                if ($status_name == "InterviewOffer")   
+                if ($status_name == "InterviewOffer"  ||  $status_name == "Offer")   
                 {
                     echo "<div style = 'margin-left: 2.5%;'>";
                         echo ExportMenu::widget([
@@ -103,7 +103,7 @@
 
                             'exportConfig' => [
                                 ExportMenu::FORMAT_TEXT => false,
-                                ExportMenu::FORMAT_CSV => false,
+//                                ExportMenu::FORMAT_CSV => false,
                                 ExportMenu::FORMAT_HTML => false,
                                 ExportMenu::FORMAT_EXCEL => false,
                                 ExportMenu::FORMAT_EXCEL_X => false

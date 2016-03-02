@@ -85,7 +85,6 @@
                 </p>
                 
                 
-                
                 <p id="new-year-question" style="display:none">
                     Do you wish to create a new academic year?
                     <?= Html::radioList('new-year', NULL, $options, ['class'=> 'form-field', 'onclick'=> 'toggleAcademicYearForm()', 'style' => 'display:none' ,'id' => 'new-year-needed']);?>               

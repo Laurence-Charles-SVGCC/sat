@@ -315,7 +315,6 @@ class Application extends \yii\db\ActiveRecord
                 ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                 ->where(['application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
-                        'academic_year.iscurrent' => 1,
                         'application.isdeleted' => 0,
                         'applicant.isexternal' => 1,
                         'academic_offering.isdeleted' => 0,
@@ -385,7 +384,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
                             'csec_qualification.isdeleted' => 0,
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
@@ -448,7 +446,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
@@ -480,7 +477,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
@@ -511,7 +507,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
@@ -542,7 +537,6 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'academic_year.iscurrent' => 1,
                             'csec_qualification.isqueried' => 0, 'csec_qualification.isverified' => 0, 'csec_qualification.isdeleted' => 0,
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
