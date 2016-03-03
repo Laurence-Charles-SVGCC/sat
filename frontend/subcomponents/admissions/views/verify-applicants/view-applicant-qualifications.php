@@ -3,13 +3,14 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
 
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationGrade;
 use frontend\models\CsecCentre;
-use yii\helpers\ArrayHelper;
+use frontend\models\PostSecondaryQualification;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -123,11 +124,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ])->textInput(); ?>
                                 </td>
                                 
-                                <td width= 5%>
+                                <td width= 5% style="text-align:center">
                                     <?= $form->field($model, "[$key]isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
                                 </td>
                                 
-                                <td width= 5%>
+                                <td width= 5% style="text-align:center">
                                     <?= $form->field($model, "[$key]isqueried")->checkbox(['label' => NULL]); ?>
                                 </td>
                                 
@@ -142,17 +143,76 @@ $this->params['breadcrumbs'][] = $this->title;
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                  </table><br/>
-
+                </table><br/>
+                
                 <div style="margin-left:2.5%;" class="form-group">
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-                        <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                     <?php endif; ?>
+                    
                     <?php if (Yii::$app->user->can('addCertificate')): ?>
                         <?= Html::submitButton('Add Subjects', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
                         <?= Html::dropDownList('add_more_value', 1, 
                                 array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
+                    <?php endif; ?>
+                </div>  
+                    
+                <?php if(PostSecondaryQualification::getPostSecondaryQualifications($model->personid) == true) :?>
+                    <br/><fieldset style="margin-left:2.5%; width:95%">
+                        <legend><strong>Post Secondary Degree</strong></legend>
+                        <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
+                            <thead>
+                                <tr>
+                                    <th>Name of Degree</th>
+                                    <th>Awarding Institution</th>
+                                    <th>Year Awarded</th>
+                                    <th>Verified</th>
+                                    <th>Queried</th>
+                                    <th>Action</th>
+                                </tr>
+                            <thead>
+
+                            <tbody>    
+                                <tr>
+                                    <td width=30% style="vertical-align:middle">
+                                        <?= $form->field($post_qualification, 'name')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                    </td>
+
+                                    <td width=30%  style="vertical-align:middle">
+                                        <?= $form->field($post_qualification, 'awardinginstitution')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                    </td>
+
+                                    <td width=30%  style="vertical-align:middle">
+                                        <?= $form->field($post_qualification, 'yearawarded')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                    </td>
+
+                                    <td width=5% style="vertical-align:middle; text-align:center">
+                                        <?= $form->field($post_qualification, "isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
+                                    </td>
+
+                                    <td width=5% style="vertical-align:middle; text-align:center">
+                                        <?= $form->field($post_qualification, "isqueried")->checkbox(['label' => NULL]); ?>
+                                    </td>
+
+                                    <td style="vertical-align:middle">
+                                        <?= Html::a(' Delete', 
+                                                    ['post-secondary-qualification', 'recordid' => $post_qualification->postsecondaryqualificationid], 
+                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                        'style' => 'margin-right:20px',
+                                                    ]);
+                                        ?>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table><br/>
+                    </fieldset>
+                <?php endif;?>
+
+                     
+                <div style="margin-left:2.5%;" class="form-group">
+                    <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
+                        <br/><?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                        <?= Html::submitButton('Save As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                     <?php endif; ?>
                 </div>
 

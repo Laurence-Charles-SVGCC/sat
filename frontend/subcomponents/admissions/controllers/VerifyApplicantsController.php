@@ -10,6 +10,7 @@ use frontend\models\CsecQualification;
 use frontend\models\ApplicationStatus;
 use frontend\models\Application;
 use frontend\models\CsecCentre;
+use frontend\models\PostSecondaryQualification;
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -251,11 +252,18 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
+//        $is_new_qualification = false;
+//        $post_qualification = false; 
+        $post_qualification = PostSecondaryQualification::find()
+                ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+            
         if (Yii::$app->request->post())
         {
             $qualifications = CsecQualification::find()
                             ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                             ->all();
+            
             $request = Yii::$app->request;
             if ($request->post('add_more') === '')
             {
@@ -295,6 +303,31 @@ class VerifyApplicantsController extends \yii\web\Controller
             }
             else 
             {
+                if ($post_qualification == true)        //if post secondary qualification record exists
+                {
+                    $post_secondary_save_flag = false;
+                    $post_secondary_load_flag = false;
+
+                    if ($post_qualification == true)
+                    {
+                        $post_secondary_load_flag = $post_qualification->load(Yii::$app->request->post);
+                        if ($post_secondary_load_flag == true)
+                        {
+                            $post_secondary_save_flag = $post_qualification->save();
+                            if ($post_secondary_save_flag == false)
+                            {
+                                Yii::$app->getSession()->setFlash('error', 'Error updating post secondary qualification record.');
+                                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+                            }
+                        }
+                        else
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'Error loading updating post secondary qualification recrord.');
+                            return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+                        }
+                    }
+                }
+                
                 if ($request->post('CsecQualification'))
                 {
                     $verify_all = $request->post('verified') === '' ? true : false;
@@ -314,6 +347,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                             //Save as verified submit button
                             $cert->isverified = 1;
                             $cert->isqueried = 0;
+                            if($post_qualification)
+                            {
+                                $post_qualification->isverified = 1;
+                                $post_qualification->isqueried = 0;
+                            }
                         }
                         else
                         {
@@ -333,6 +371,18 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
                 $all_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0]));
                 $verified_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isdeleted' => 0, 'isverified' => 1]));
+                
+                /*
+                 * If post secondary qualification exists then both previous counts must take it into consideration
+                 */
+                if ($post_qualification)
+                {
+                    $all_certs++;
+                    if ($post_qualification->isverified == 1)
+                        $verified_certs++;
+                }
+                
+                
                 /*
                  * If all certifications are verified then all application statuses are set to "Pending'
                  */
@@ -412,6 +462,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'centreid' => $cseccentreid,
                     'type' => $type,
                     'isexternal' => $applicant_model->isexternal,
+                    'post_qualification' => $post_qualification,
                 ]);
     }
     
@@ -444,6 +495,30 @@ class VerifyApplicantsController extends \yii\web\Controller
       
         return $this->redirect(\Yii::$app->request->getReferrer());
         
+    }
+    
+    
+    /**
+     * Deletes 'Post Secondary Qualification' qualification
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/03/2016
+     * Date Last Modified: 02/03/2016
+     */
+    public function actionDeletePostSecondaryQualification($recordid)
+    {
+        $save_flag = false;
+
+        $qualification = PostSecondaryQualification::find()
+                    ->where(['postsecondaryqualificationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        $qualification->isactive = 0;
+        $qualification->isdeleted = 1;
+        $save_flag = $qualification->save();
+
+        return $this->redirect(\Yii::$app->request->getReferrer());
     }
     
     

@@ -185,7 +185,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
                                     
                                     /*
-                                     * If user is a member of "DASGS", "DTVE" they have abulity to change any application status directly above the one under
+                                     * If user is a member of "DASGS", "DTVE" they have ability to change any application status directly above the one under
                                      * current consideration if the current application is pending and the previous application is a programme offered by their division.
                                      */
                                     else
@@ -206,7 +206,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>";
                                                         $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationstatusid);
                                                         $status_count = count($statuses[0]);
-                                                        
                                                         for ($k = 0 ; $k < $status_count ; $k++)
                                                         {
                                                             $hyperlink = Url::toRoute(['/subcomponents/admissions/process-applications/update-application-status', 
@@ -217,7 +216,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                                                                 'old_status' => $target_application->applicationstatusid,
                                                                                                 'divisionid' => $application_container[$i]["application"]->divisionid,
                                                                                              ]);
-                                                            echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";      
+                                                            echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";
                                                         }
                                                     echo "</ul>";
                                                 echo "</div>";
