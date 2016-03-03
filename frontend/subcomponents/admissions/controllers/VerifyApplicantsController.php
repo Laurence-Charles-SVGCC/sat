@@ -4,6 +4,7 @@ namespace app\subcomponents\admissions\controllers;
 
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\web\Request;
 use common\controllers\DatabaseWrapperController;
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
@@ -310,7 +311,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 
                     if ($post_qualification == true)
                     {
-                        $post_secondary_load_flag = $post_qualification->load(Yii::$app->request->post);
+                        $post_secondary_load_flag = $post_qualification->load(Yii::$app->request->post());
                         if ($post_secondary_load_flag == true)
                         {
                             $post_secondary_save_flag = $post_qualification->save();
@@ -351,6 +352,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                             {
                                 $post_qualification->isverified = 1;
                                 $post_qualification->isqueried = 0;
+                                $post_qualification->save();
                             }
                         }
                         else
