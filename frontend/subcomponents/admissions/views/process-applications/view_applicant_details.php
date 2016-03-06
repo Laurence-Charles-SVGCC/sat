@@ -11,6 +11,7 @@
     use frontend\models\CapeSubject;
     use frontend\models\NursingAdditionalInfo;
     use frontend\models\TeachingAdditionalInfo;
+    use frontend\models\PostSecondaryQualification;
 
     $this->title = 'Applicant Details';
     $this->params['breadcrumbs'][] = $this->title;
@@ -888,6 +889,34 @@
                                 }
                             }
                         ?>   
+                    </fieldset>
+                <?php endif;?>
+                    
+                
+                <?php if (PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true):?>
+                    <br/><fieldset>
+                        <p style="color:green; font-size:21px;"><strong>Post Secondary Qualification</strong></p>
+                        <table class='table table-hover' style='margin: 0 auto; font-size:18px;'>
+                            <tr>
+                                <th style='width:50%'><strong>Name of Degree</strong></th>
+                                <td style='width:50%'><?= $qualification->name; ?></td>
+                            </tr>
+
+                            <tr>
+                               <th style='width:50%'><strong>Awarding Institution</strong></th>
+                               <td style='width:50%'><?= $qualification->awardinginstitution;?></td>
+                            </tr>
+
+                            <tr>
+                                <th style='width:50%'><strong>Year Degree Awarded</strong></th>
+                                <td style='width:50%'><?= $qualification->yearawarded;?></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                <?php else:?>
+                    <br/><fieldset>
+                        <p style="color:green; font-size:21px;"><strong>Post Secondary Qualification</strong></p>
+                        <p><strong>Applicant did not indicate they have a Post-Secondary Degree.</strong></p></br>
                     </fieldset>
                 <?php endif;?>
                 

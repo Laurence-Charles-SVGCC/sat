@@ -153,6 +153,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
                     <?php endif; ?>
                     
+                    <?php if (PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == false):?>
+                        <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
+                    <?php endif; ?>
+                    
                     <?php if (Yii::$app->user->can('addCertificate')): ?>
                         <?= Html::submitButton('Add Certificates', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
                         <?= Html::dropDownList('add_more_value', 1, 
@@ -213,7 +217,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                      
                 <div style="margin-left:2.5%;" class="form-group">
-                    <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
+                    <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()  && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
                         <br/><?= Html::submitButton('Update Degree', ['class' => 'btn btn-primary']) ?>
                         <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                     <?php endif; ?>

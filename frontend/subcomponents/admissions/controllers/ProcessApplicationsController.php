@@ -48,6 +48,7 @@
     use frontend\models\TeachingExperience;
     use frontend\models\TeachingAdditionalInfo;
     use frontend\models\NursePriorCertification;
+    use frontend\models\PostSecondaryQualification;
 
     class ProcessApplicationsController extends \yii\web\Controller
     { 
@@ -252,14 +253,6 @@
                         ->all();
             
             $certificates = CsecQualification::getSubjects($applicant->personid);
-            $subjects_passed = CsecQualification::getSubjectsPassedCount($applicant->personid);
-            $has_english = CsecQualification::hasEnglish($certificates);
-            $has_math = CsecQualification::hasMath($certificates);
-            
-            $offers = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->where(['application.personid' => $applicant->personid, 'offer.isdeleted' => 0])
-                    ->all();
             
             $application_container = array();
             
@@ -323,36 +316,8 @@
                 $combined = array_combine($keys, $values);
                 array_push($application_container, $combined);
             }
-            
-            // Prepares error message if appropriate
-            $error_mess = 'Applicant: ';
+           
 
-            if (!$has_math)
-            {
-                $error_mess = $error_mess . 'Did not pass CSEC Math!  ';
-            }
-            if (!$has_english)
-            {
-                $error_mess = $error_mess . 'Did not pass CSEC English Language!  ';
-            } 
-            if ( $subjects_passed < 5)
-            {
-                $error_mess = $error_mess . 'Passed less than 5 CSEC Subjects!  ';
-            }
-            if ( count($offers) == 1)
-            {
-                $error_mess = $error_mess . 'Has an offer.  ';
-            }
-            if ( count($offers) > 1)
-            {
-                $error_mess = $error_mess . 'Has multiple offers!  ';
-            }
-
-            if (!$has_english || !$has_math || $subjects_passed < 5 || $offers)
-            {
-                Yii::$app->session->setFlash('error', $error_mess);
-            }
-            
             /*Get possible duplicates. needs work to deal with multiple years of certificates, 
              * but should catch majority
              */
@@ -396,10 +361,10 @@
             $spaces = 0;
             $cape_info = array();
             $cape = false;
-            $ao = $target_application ? AcademicOffering::findOne(['academicofferingid' => $application->academicofferingid]) : NULL;
+            $ao = $target_application ? AcademicOffering::findOne(['academicofferingid' => $target_application->academicofferingid]) : NULL;
             if ($ao)
             {
-                $cape_prog = ProgrammeCatalog::findOne(['name' => 'cape']);
+                $cape_prog = ProgrammeCatalog::findOne(['name' => 'CAPE']);
                 $cape = $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : False;
 
                 if ($cape)
@@ -427,7 +392,9 @@
                     $offers_made = count(Offer::find()
                             ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->where(['academic_offering.academicofferingid' => $ao->academicofferingid])
+                            ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
+                                    'application.isactive' => 1, 'application.isdeleted' => 0,
+                                    'academic_offering.academicofferingid' => $ao->academicofferingid])
                             ->all());
 
                     $spaces = $ao->spaces;
@@ -604,19 +571,25 @@
                  */
                 if($new_status == 10)
                 {
-                    // delete offer on file
-                    $offer = Offer::find()
-                            ->where(['applicationid' => $applicationid])
-                            ->one();
-                    if($offer)
-                        $offer->delete();
+                    /*
+                     * If applicant was previously issued an offer,
+                     * then at that offer is deleted
+                     */
+                    if ($old_status == 9)
+                    {
+                        $offer = Offer::find()
+                                ->where(['applicationid' => $applicationid])
+                                ->one();
+                        if($offer)
+                            $offer->delete();
+                    }
                     
                     //updates subsequent applications
                     if($count - $position > 1)
                     {
                         for ($i = $position+1 ; $i < $count ; $i++)
                         {
-                           $applications[$i]->applicationstatusid = 3;
+                           $applications[$i]->applicationstatusid = 6;
                            $applications[$i]->save();
                         }
                     }
@@ -633,7 +606,6 @@
                 }
                 
                 
-            
             
             }
             /*
@@ -921,6 +893,10 @@
             $criminalrecord = CriminalRecord::getCriminalRecord($id);
             $nurseExperience = NurseWorkExperience::getNurseWorkExperience($id);
             $teachingExperiences = TeachingExperience::getTeachingExperiences($id);
+            
+            $qualification = PostSecondaryQualification::find()
+                        ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
 
             return $this->render('view_applicant_details', [
                 'applicant' => $applicant,
@@ -959,6 +935,7 @@
                 'nurseExperience' => $nurseExperience,
                 'teachingExperiences' => $teachingExperiences,
                 'certificates' => $certificates,
+                'qualification' => $qualification,
                 
                 'programme' => $programme,
                 'application_status' => $application_status,

@@ -239,5 +239,30 @@ class Offer extends \yii\db\ActiveRecord
             return $offer;
         return false;
     }
+    
+    
+    /**
+     * Returns an array of offers
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasRecords($personid)
+    {
+        $offers = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
+                            ])
+                    ->all();
+        if (count($offers) > 0)
+            return true;
+        return false;
+    }
+        
    
 }

@@ -800,4 +800,27 @@ class Application extends \yii\db\ActiveRecord
     }    
     
     
+    /**
+     * Returns a count of the applicants for current active application periods
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/03/2016
+     * Date Last Modified: 05/03/2016
+     */
+    public static function countActiveApplications()
+    {
+        $applicants = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->groupby('application.personid')
+                        ->count();
+            return $applicants;
+    }
+    
 }

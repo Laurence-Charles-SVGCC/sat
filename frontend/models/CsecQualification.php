@@ -155,11 +155,11 @@ class CsecQualification extends \yii\db\ActiveRecord
     * Created: 27/07/2015 by Gamal Crichton
     * Last Modified: 27/07/2015 by Gamal Crichton  | 19/02/2016 Laurence Charles
     */
-    public static function getSubjectsPassedCount($applicantid)
+    public static function getSubjectsPassedCount($personid)
     {
         return CsecQualification::find()
                     ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
-                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                    ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
                             'examination_grade.ordering' => [1, 2, 3]
                             ])
                     ->count();
@@ -202,13 +202,13 @@ class CsecQualification extends \yii\db\ActiveRecord
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
                         {
-                                return True;
+                                return true;
                         }
                     }
                 }
             }
         }
-        return False;
+        return false;
     }
     
     /*
@@ -231,13 +231,13 @@ class CsecQualification extends \yii\db\ActiveRecord
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
                         {
-                            return True;
+                            return true;
                         }
                     }
                 }
             }
         }
-        return False;
+        return false;
     }
     
     
@@ -319,5 +319,359 @@ class CsecQualification extends \yii\db\ActiveRecord
         return $reapplicant ? True : False;
     }
     
+    
+    /**
+     * Determines if student passed CSEC English
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasCsecEnglish($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $english = Subject::findOne(['name' => 'English Language', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($english)
+            {
+                foreach($certificates as $cert)
+                {
+                    if ($cert->subjectid == $english->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if student passed CSEC Math 
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasCsecMathematics($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $math = Subject::findOne(['name' => 'Mathematics', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($math)
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $math->subjectid && $cert)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Determines if student passed CSEC Social Studies
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasCsecSocialStudies($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $math = Subject::findOne(['name' => 'Social Studies', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($math)
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $math->subjectid && $cert)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if student passed CSEC Social Studies
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasCsecCaribbeanHistory($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $math = Subject::findOne(['name' => 'Caribbean History', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($math)
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $math->subjectid && $cert)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if student passed CSEC Geography
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasCsecGeography($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
+        if ($exam_body)
+        {
+            $math = Subject::findOne(['name' => 'Geography', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
+            if ($math)
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $math->subjectid && $cert)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines number of csec_subjects an applicants has passed
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Gamal Crichton | Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasFiveCsecPasses($personid)
+    {
+        $record_count = CsecQualification::find()
+                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
+                    ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                            'examination_grade.ordering' => [1, 2, 3]
+                            ])
+                    ->count();
+        if ($record_count > 0)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Determines if applicant satisfied DTE's Relevant Science entry requirement
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasDteRelevantSciences($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        if (count($certificates)>0)
+        {
+            $has_integrated_science = false;
+            $has_biology = false;
+            $has_chemistry = false;
+            $has_physics = false;
+            $has_agricultural_science1 = false;
+            $has_agricultural_science2 = false;
+
+            $integrated_science = Subject::findOne(['name' => 'Integrated Science', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $biology = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $agricultural_science1 = Subject::findOne(['name' => 'Agricultural Science (Double Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $agricultural_science2 = Subject::findOne(['name' => 'Agricultural Science (Single Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+
+            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && ($agricultural_science1 == true || $agricultural_science2 == true))
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $integrated_science->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_integrated_science = true;
+                    }
+                    
+                    if ($cert->subjectid == $biology->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_biology = true;
+                    }
+                    
+                    if ($cert->subjectid == $chemistry->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_chemistry = true;
+                    }
+                    
+                    if ($cert->subjectid == $physics->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_physics = true;
+                    }
+                    
+                    if ($cert->subjectid == $agricultural_science->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_agricultural_science = true;
+                    }
+                }
+            }
+            
+            if($has_integrated_science == true && $has_biology == true && $has_chemistry == true && $has_physics == true && ($has_agricultural_science1 == true || $has_agricultural_science2 == true))
+                return true;
+        }
+        return false;
+    }
+    
+    
+    
+    /**
+     * Determines if applicant satisfied DNE's Relevant Science entry requirement
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/03/2016
+     * Date Last Modified: 03/03/2016
+     */
+    public static function hasDneRelevantSciences($personid)
+    {
+        $certificates = self::getSubjects($personid);
+        
+        if (count($certificates)>0)
+        {
+            $has_integrated_science = false;
+            $has_biology = false;
+            $has_chemistry = false;
+            $has_physics = false;
+            $has_human_and_social_biology = false;
+
+            $integrated_science = Subject::findOne(['name' => 'Integrated Science', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $biology = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $human_and_social_biology = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+
+            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true)
+            {
+                foreach($certificates as $cert)
+                {                 
+                    if ($cert->subjectid == $integrated_science->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_integrated_science = true;
+                    }
+                    
+                    if ($cert->subjectid == $biology->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_biology = true;
+                    }
+                    
+                    if ($cert->subjectid == $chemistry->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_chemistry = true;
+                    }
+                    
+                    if ($cert->subjectid == $physics->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_physics = true;
+                    }
+                    
+                    if ($cert->subjectid == $human_and_social_biology->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_human_and_social_biology = true;
+                    }
+                }
+            }
+            
+            if($has_integrated_science == true && $has_biology == true && $has_chemistry == true && $has_physics == true && $has_human_and_social_biology == true)
+                return true;
+        }
+        return false;
+    }
     
 }

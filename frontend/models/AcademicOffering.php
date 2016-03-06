@@ -358,6 +358,30 @@ class AcademicOffering extends \yii\db\ActiveRecord
     {
         $offering->save();     
     }
+    
+    
+    /**
+     * Returns true is programme requires interview
+     * 
+     * @param type $applicationid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/03/2016
+     * Date Last Modified: 05/03/2016
+     */
+    public static function requiresInterview($applicationid)
+    {
+        $record = AcademicOffering::find()
+                ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationid' => $applicationid, 
+                        ])
+                ->one();
+        if ($record)
+            return true;
+        return false;
+    }
        
        
        

@@ -1,21 +1,22 @@
 <?php
 
-use yii\widgets\ActiveForm;
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-use frontend\models\ExaminationBody;
-use frontend\models\ExaminationProficiencyType;
-use frontend\models\Subject;
-use frontend\models\ExaminationGrade;
-use frontend\models\ApplicationStatus;
-use frontend\models\EmployeeDepartment;
+    use frontend\models\ExaminationBody;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\Subject;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\ApplicationStatus;
+    use frontend\models\EmployeeDepartment;
+    use frontend\models\Offer;
+    use frontend\models\CsecQualification;
 
-
-$this->title = 'Application  Review Dashboard';
-//$this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Application  Review Dashboard';
+    //$this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="verify-applicants-index">
     <div class = "custom_wrapper">
@@ -26,6 +27,53 @@ $this->params['breadcrumbs'][] = $this->title;
                 <img src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar" class="pull-right">
             </a>    
         </div>
+        
+        <!-- Offer Flag-->
+        <?php if (Offer::hasRecords($applicant->personid) == true):?>
+            <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant has an offer";?>
+            </p>
+        <?php endif;?>
+           
+        <!-- No English Flag-->
+        <?php if (CsecQualification::hasCsecEnglish($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant did not pass CSEC English Language";?>
+            </p>
+        <?php endif;?>
+            
+        <!-- No Mathematics Flag-->
+        <?php if (CsecQualification::hasCsecMathematics($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant did not pass CSEC Mathematics";?>
+            </p>
+        <?php endif;?>
+            
+        <!-- Has Less Than 5 Subjects Flag-->
+        <?php if (CsecQualification::hasFiveCsecPasses($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant does not have 5 CSEC passes";?>
+            </p>
+        <?php endif;?>
+        
+        <!-- DTE Relevant Science Subjects Flag-->
+        <?php if ($applicant->applicantintentid == 4):?>
+            <?php if (CsecQualification::hasDteRelevantSciences($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                </p>
+            <?php endif;?>
+        <?php endif;?> 
+         
+        <!-- DNE Relevant Science Subjects Flag-->
+        <?php if ($applicant->applicantintentid == 6):?>
+            <?php if (CsecQualification::hasDneRelevantSciences($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                </p>
+            <?php endif;?>
+        <?php endif;?> 
+        
         
         <div class="custom_body">
             <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2>
@@ -120,6 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div><br/>
             
             <div>
+                <h2 class="custom_h2">Applications</h2>
                 <table class='table table-condensed' style="width: 95%; margin: 0 auto;">
                     <tr>
                         <th>Active</th>
@@ -158,13 +207,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if($application_container[$i]["application"]->ordering <= $target_application->ordering)
                                         {
                                             echo "<td>";                                  
-                                                echo "<div class='dropdown'>
-                                                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                    echo "Update Status...";
-                                                    echo "<span class='caret'></span>";
+                                                echo "<div class='dropdown'>";
+                                                    echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                        echo "Update Status...";
+                                                        echo "<span class='caret'></span>";
                                                     echo "</button>";
-                                                    echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>";
-                                                        $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationstatusid);
+                                                    echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                        $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
                                                         $status_count = count($statuses[0]);
                                                         for ($k = 0 ; $k < $status_count ; $k++)
                                                         {
@@ -204,7 +253,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                       echo "<span class='caret'></span>";
                                                     echo "</button>";
                                                     echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>";
-                                                        $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationstatusid);
+                                                        $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
                                                         $status_count = count($statuses[0]);
                                                         for ($k = 0 ; $k < $status_count ; $k++)
                                                         {

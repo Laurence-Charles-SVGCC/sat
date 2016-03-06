@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use frontend\modelsAcademicOffering;
+
 /**
  * This is the model class for table "application_status".
  *
@@ -67,7 +69,7 @@ class ApplicationStatus extends \yii\db\ActiveRecord
      * Date Created : 23/02/2016
      * Date Last Modified: 23/02/2016
      */
-    public static function generateAvailableStatuses($current_status_id)
+    public static function generateAvailableStatuses($applicationid, $current_status_id)
     {
         $ids = array();
         $names = array();
@@ -78,13 +80,14 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($ids, 3);
             array_push($ids, 4);
             array_push($ids, 7);
-            array_push($ids, 8);
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($ids, 8);
             
             array_push($names, "Pending");
             array_push($names, "Shortlist");
             array_push($names, "Borderline");
-            array_push($names, "Conditional Offer");
-            
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($names, "Conditional Offer");
             array_push($container, $ids);
             array_push($container, $names);
         }
@@ -93,12 +96,14 @@ class ApplicationStatus extends \yii\db\ActiveRecord
         {
             array_push($ids, 4);
             array_push($ids, 7);
-            array_push($ids, 8);
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($ids, 8);
             array_push($ids, 6);
             
             array_push($names, "Shortlist");
             array_push($names, "Borderline");
-            array_push($names, "Conditional Offer");
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($names, "Conditional Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
@@ -109,12 +114,14 @@ class ApplicationStatus extends \yii\db\ActiveRecord
         {
             array_push($ids, 3);
             array_push($ids, 7);
-            array_push($ids, 8);
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($ids, 8);
             array_push($ids, 6);
             
             array_push($names, "Pending");
             array_push($names, "Borderline");
-            array_push($names, "Conditional Offer");
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($names, "Conditional Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
@@ -125,12 +132,14 @@ class ApplicationStatus extends \yii\db\ActiveRecord
         {
             array_push($ids, 3);
             array_push($ids, 4);
-            array_push($ids, 8);
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($ids, 8);
             array_push($ids, 6);
             
             array_push($names, "Pending");
             array_push($names, "Shortlist");
-            array_push($names, "Conditional Offer");
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($names, "Conditional Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
@@ -159,8 +168,35 @@ class ApplicationStatus extends \yii\db\ActiveRecord
         
         elseif ($current_status_id == 9)        //if offer
         {
-            array_push($ids, 10);
-            array_push($names, "Reject Conditional Interview");
+            /*
+             * If it's a programme that requires interview, then once an offer is
+             * given the only possible action susequent to this is th rejection
+             * of this conditional offer
+             */
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+            {
+                array_push($ids, 10);
+                array_push($names, "Reject Conditional Interview");
+            }
+            
+            /*
+             * If it's a programme that doesn't require interview, then more
+             * options are available to the user
+             */
+            else
+            {
+                array_push($ids, 3);
+                array_push($ids, 4);
+                array_push($ids, 7);
+                array_push($ids, 6);
+                
+                array_push($names, "Pending");
+                array_push($names, "Shortlist");
+                array_push($names, "Borderline");
+                array_push($names, "Reject");
+            }
+            
+            
             
             array_push($container, $ids);
             array_push($container, $names);

@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
+use frontend\models\Application;
+
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -20,7 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <span class="custom_module_label">Welcome to the Admissions Management System</span> 
                 <img src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar" class="pull-right">
             </a>    
-        </div>
+        </div><br/>
+        
+        <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+            <strong>Total Application Received: <?= Application::countActiveApplications();?></strong>
+        </p>
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
