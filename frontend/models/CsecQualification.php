@@ -582,11 +582,18 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_physics = true;
                     }
                     
-                    if ($cert->subjectid == $agricultural_science->subjectid)
+                    if ($cert->subjectid == $agricultural_science1->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
-                            $has_agricultural_science = true;
+                            $has_agricultural_science1 = true;
+                    }
+                    
+                    if ($cert->subjectid == $agricultural_science2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_agricultural_science2 = true;
                     }
                 }
             }

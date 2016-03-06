@@ -25,6 +25,7 @@ use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationGrade;
 use common\models\User;
+ use frontend\models\EmployeeDepartment;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -46,24 +47,32 @@ class OfferController extends Controller
     /*
     * Purpose: Gets offer information for a particular division for active application periods
     * Created: 29/07/2015 by Gii
-    * Last Modified: 29/07/2015 by Gamal Crichton
+    * Last Modified: 29/07/2015 by Gamal Crichton | Laurence Charles (05/03/2016)
     */
     public function actionIndex()
     {
-        $division_id = Yii::$app->session->get('divisionid');
-        
+        $division_id = $division_id = EmployeeDepartment::getUserDivision();
         
         $division = Division::findOne(['divisionid' => $division_id ]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
-            'offer.isactive' => 1);
+        
+//        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+//            'offer.isactive' => 1);
+        $offer_cond['application_period.isactive'] = 1;
+        $offer_cond['application_period.applicationperiodstatusid'] = 5;
+        $offer_cond['offer.isdeleted'] = 0;
+        $offer_cond['offer.isactive'] = 1;
         
         if ($division_id && $division_id == 1)
         {
             $app_period_name = "All Active Application Periods";
             $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'offer.isactive' => 1);
+        }
+        elseif ($division_id && $division_id != 1)
+        {
+            $offer_cond['application_period.divisionid'] = $division_id;
         }
         
         $offers = Offer::find()
@@ -76,7 +85,7 @@ class OfferController extends Controller
         $english_req = self::getHasEnglish($offers);
         $subjects_req = self::getSubjectsPassed($offers);
         $message = '';
-        $offer_issues = False;
+        $offer_issues = false;
         if ($multiple_offers)
         {
             $message = $message . ' Multiple Offers to single applicant. ';
@@ -92,7 +101,7 @@ class OfferController extends Controller
         if ($message != '')
         {
             Yii::$app->session->setFlash('error', 'Offer issues: ' . $message . ' Click Button below for details.');
-            $offer_issues = True;
+            $offer_issues = true;
         }
         
         $data = array();
@@ -162,7 +171,7 @@ class OfferController extends Controller
             $capes[$c->capesubjectid] = $c->subjectname;
         }
 
-        return $this->render('index', [
+        return $this->render('index2', [
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
@@ -170,6 +179,126 @@ class OfferController extends Controller
             'cape_subjects' => $capes,
             'offer_issues' => $offer_issues,
         ]);
+//        $division_id = Yii::$app->session->get('divisionid');
+//        
+//        
+//        $division = Division::findOne(['divisionid' => $division_id ]);
+//        $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
+//        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
+//        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
+//        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+//            'offer.isactive' => 1);
+//        
+//        if ($division_id && $division_id == 1)
+//        {
+//            $app_period_name = "All Active Application Periods";
+//            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'offer.isactive' => 1);
+//        }
+//        
+//        $offers = Offer::find()
+//                ->joinWith('application')
+//                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+//                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+//                ->where($offer_cond)
+//                ->all();
+//        $multiple_offers = self::getMultipleOffers($offers);
+//        $english_req = self::getHasEnglish($offers);
+//        $subjects_req = self::getSubjectsPassed($offers);
+//        $message = '';
+//        $offer_issues = False;
+//        if ($multiple_offers)
+//        {
+//            $message = $message . ' Multiple Offers to single applicant. ';
+//        }
+//        if ($english_req)
+//        {
+//            $message = $message . ' Offers to applicants without CSEC English. ';
+//        }
+//        if ($subjects_req)
+//        {
+//            $message = $message . ' Offers to applicants without minimum requirements. ';
+//        }
+//        if ($message != '')
+//        {
+//            Yii::$app->session->setFlash('error', 'Offer issues: ' . $message . ' Click Button below for details.');
+//            $offer_issues = True;
+//        }
+//        
+//        $data = array();
+//        foreach ($offers as $offer)
+//        {
+//            $cape_subjects_names = array();
+//            $application = $offer->getApplication()->one();
+//            $applicant = Applicant::findOne(['personid' => $application->personid]);
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+//            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+//            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+//            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+//            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+//            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+//            
+//            $offer_data = array();
+//            $offer_data['offerid'] = $offer->offerid;
+//            $offer_data['applicationid'] = $offer->applicationid;
+//            $offer_data['firstname'] = $applicant->firstname;
+//            $offer_data['lastname'] = $applicant->lastname;
+//            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+//            $offer_data['issuedby'] = $issuername;
+//            $offer_data['issuedate'] = $offer->issuedate;
+//            $offer_data['revokedby'] = $revokername;
+//            $offer_data['ispublished'] = $offer->ispublished;
+//            
+//            $data[] = $offer_data;
+//        }
+//        
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 40,
+//            ],
+//        ]);
+//        
+//        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
+//        if ($division_id && $division_id == 1)
+//        {
+//            $prog_cond = array('application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
+//        }
+//        $programmes = ProgrammeCatalog::find()
+//                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+//                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+//                ->where($prog_cond)
+//                ->all();
+//        $progs = array(0 => 'None');
+//        foreach ($programmes as $programme)
+//        {
+//            $progs[$programme->programmecatalogid] = $programme->getFullName();
+//        }
+//        
+//        $cape_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+//        if ($division_id && $division_id == 1)
+//        {
+//            $cape_cond = array('application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
+//        }
+//        $cape = CapeSubject::find()
+//                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
+//                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+//                ->where($cape_cond)
+//                ->all();
+//        $capes = array(0 => 'None');
+//        foreach ($cape as $c)
+//        {
+//            $capes[$c->capesubjectid] = $c->subjectname;
+//        }
+//
+//        return $this->render('index', [
+//            'dataProvider' => $dataProvider,
+//            'divisionabbr' => $division_abbr,
+//            'applicationperiodname' => $app_period_name,
+//            'programmes' => $progs,
+//            'cape_subjects' => $capes,
+//            'offer_issues' => $offer_issues,
+//        ]);
     }
     
     
@@ -1263,4 +1392,135 @@ class OfferController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    
+    
+    
+    /**
+     * Return a listing of all successful applicant who have been awarded an offer
+     * but it has not been published as yet.
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 05/03/2016
+     */
+    public function actionFindSuccessfulApplicant($status)
+    {
+        $dataProvider = null;
+        $info_string = null;
+        
+        //if user initiates search based on applicantid
+        if ($app_id)
+        {
+            $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
+            $cond_arr['applicant.personid'] = $user? $user->personid : null;
+            $info_string = $info_string .  " Applicant ID: " . $app_id;
+        }    
+
+        //if user initiates search based on applicant name    
+        if ($firstname)
+        {
+            $cond_arr['applicant.firstname'] = $firstname;
+            $info_string = $info_string .  " First Name: " . $firstname; 
+        }
+        if ($lastname)
+        {
+            $cond_arr['applicant.lastname'] = $lastname;
+            $info_string = $info_string .  " Last Name: " . $lastname;
+        }        
+
+        //if user initiates search based on applicant email
+        if ($email)
+        {
+            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+            $info_string = $info_string .  " Email: " . $email;
+        }
+
+
+        if (empty($cond_arr))
+        {
+            Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+        }
+        else
+        {
+            $cond_arr['applicant.isactive'] = 1;
+            $cond_arr['applicant.isdeleted'] = 0;
+            $cond_arr['academic_offering.isactive'] = 1;
+            $cond_arr['academic_offering.isdeleted'] = 0;
+            $cond_arr['application_period.isactive'] = 1;
+            $cond_arr['application_period.applicationperiodstatusid'] = 5;
+            $cond_arr['application.isactive'] = 1;
+            $cond_arr['application.isdeleted'] = 0;
+            $cond_arr['application.applicationstatusid'] = 9;
+            $cond_arr['offer.isactive'] = 1;  
+            $cond_arr['offer.isdeleted'] = 0;
+            if ($status = "published")
+                $cond_arr['offer.ispublished'] = 1;
+            if ($status = "awaiting_published")
+                $cond_arr['offer.ispublished'] = 0;
+            if ($status = "all")
+                $cond_arr['offer.ispublished'] = [0,1];
+            
+            
+
+            $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->where($cond_arr)
+                        ->groupBy('applicant.personid')
+                        ->all();
+
+            if (empty($applicants))
+            {
+                Yii::$app->getSession()->setFlash('error', 'No successful applicants found matching this criteria.');
+            }
+            else
+            {
+                $data = array();
+                foreach ($applicants as $applicant)
+                {
+                    $app = array();
+                    $user = $applicant->getPerson()->one();
+
+                    $app['username'] = $user ? $user->username : '';
+                    $app['applicantid'] = $applicant->applicantid;
+                    $app['firstname'] = $applicant->firstname;
+                    $app['middlename'] = $applicant->middlename;
+                    $app['lastname'] = $applicant->lastname;
+
+                    $offer = Offer::getActiveOffer($applicant->personid);
+                    $target_programme = ProgrammeCatalog::getApplicantProgramme($offer->applicationid);
+                    $programme_name = $target_programme->getFullName();
+                    $app['programme_name'] = $programme_name;
+
+                    $data[] = $app;
+                }
+                $dataProvider = new ArrayDataProvider([
+                    'allModels' => $data,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'attributes' => ['applicantid', 'firstname', 'lastname'],
+                        ]
+                ]);
+            }
+        }
+   
+        
+        
+        return $this->render('find_current_applicant',
+            [
+            'dataProvider' => $dataProvider,
+            'status' => $status,
+            'info_string' => $info_string,
+        ]);
+    }
+    
+    
+    
 }

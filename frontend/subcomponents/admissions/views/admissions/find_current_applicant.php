@@ -21,27 +21,25 @@ $this->params['breadcrumbs'][] = $this->title;
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-            <?php 
-                if($status == "pending")
-                {
-                    $form = ActiveForm::begin(
+            <?php
+                $form = ActiveForm::begin(
                     [
                         'action' => Url::to(['admissions/find-current-applicant', 'status' => $status]),
                     ]); 
-                }
-                elseif ($status == "successful")
-                {
-                    $form = ActiveForm::begin(
-                    [
-                        'action' => Url::to(['admissions/find-successful-applicant', 'status' => $status]),
-                    ]); 
-                }
             ?>
             
                 <div class="center_content general_text">
-                    <p>
-                        Welcome. This application facilitates the management of all student grades.  
-                    </p> 
+                    <?php if ($status == "pending"):?>
+                        <p>
+                            Welcome. This module facilitates the search for all applicants associated 
+                            with the current open application periods.  
+                        </p>
+                    <?php else:?>
+                        <p>
+                            Welcome. This module facilitates the search for applicants who have been 
+                            given an offer. 
+                        </p> 
+                    <?php endif;?>
 
                     <div>
                         There are two ways in which you can navigate this application.

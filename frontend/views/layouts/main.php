@@ -113,20 +113,43 @@ else
                     <?php if (Yii::$app->user->can('Registrar')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])?>"><i class="fa fa-circle-o"></i>Manage Application Periods</a></li> 
                     <?php endif; ?>
+                    <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::openPeriodExists()==true): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
+                    <?php endif; ?>
                     <?php if (Yii::$app->user->can('verifyApplicants')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
                     <?php endif; ?>
                     <?php if (Yii::$app->user->can('reviewApplications')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                     <?php endif; ?>
+                    <!--
                     <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::openPeriodExists()==true): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Pending Registrants</a></li>
                     <?php endif; ?>
+                        
+                    <?php if (Yii::$app->user->can('publishOffer')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-offer-package-dashboard'])?>"><i class="fa fa-circle-o"></i>Prepare Offer Package</a></li>
+                    <?php endif; ?>-->
+                    <?php if (Yii::$app->user->can('viewOffer')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
+                    <?php endif; ?>
+                    
                     <!--
                     <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Register Applicant</a></li>
                     <?php endif; ?>    
                     -->    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     
                     <!--
