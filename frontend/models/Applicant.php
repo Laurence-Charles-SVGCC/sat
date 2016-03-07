@@ -1183,6 +1183,272 @@ class Applicant extends \yii\db\ActiveRecord
         
         return $all_verified;
     }
+    
+    
+    /**
+     * Returns an array of all applicant with multiple offers
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 06/03/2016 (Laurence Charless)
+     */
+    public static function getMultipleOffers($offers, $details = False)
+    {
+        $offerids = array();
+        $personids = array();
+        $offenderids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            if ($applicant && in_array($applicant->personid, $personids))
+            {
+                if ($details)
+                    $offenderids[] = $applicant->personid;
+                else
+                    return true;
+            }
+            else if ($applicant)
+                $personids[] = $applicant->personid;
+            
+            $certificates = CsecQualification::getSubjects($applicant->personid);
+            if ($certificates)
+            {
+                $division_id = EmployeeDepartment::getUserDivision();
+                $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                if ($dups)
+                {
+                    foreach($dups as $dup)
+                    {
+                        $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                        if ($user)
+                        {
+                            $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
+                                'application.personid' => $user->personid);
+
+                            if ($division_id && $division_id == 1)
+                                $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
+                           
+                            $offers = Offer::find()
+                                    ->joinWith('application')
+                                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                    ->where($offer_cond)
+                                    ->all();
+                            if ($details)
+                                $offenderids[] = $user->personid;
+                            else
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
+        foreach($offenderids as $offenderid)
+        {
+            $offs = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.personid' => $offenderid, 'offer.isdeleted' => 0, 'application.isdeleted' => 0])
+                    ->all();
+            foreach($offs as $off)
+            {
+                $offerids[] = $off;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    /**
+     * Returns an array of all applicants that were given offers but don't have 
+     * CSEC English Language pass
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 06/03/2016 (Laurence Charles)
+     */
+    public static function getAcceptedWithoutEnglish($offers, $details = false)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $has_english = CsecQualification::hasCsecEnglish($applicant->personid);
+            if (!$has_english)
+            {
+                if ($details)
+                    $offerids[] = $offer;
+                else
+                    return true;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    /**
+     * Returns an array of all applicants that were given offers but don't have 
+     * CSEC Mathematics pass
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/03/2016 
+     * Date Last Modified: 06/03/2016 
+     */
+    public static function getAcceptedWithoutMath($offers, $details = false)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $has_math = CsecQualification::hasCsecMathematics($applicant->personid);
+            if (!$has_math)
+            {
+                if ($details)
+                    $offerids[] = $offer;
+                else
+                    return true;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    /**
+     * Returns an array of all applicants that were given offers but don't have 
+     * the required DTE Relevant science
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/03/2016
+     * Date Last Modified: 06/03/2016
+     */
+    public static function getAcceptedWithoutDteScienceCriteria($offers, $details = false)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $has_relevant_science = CsecQualification::hasDteRelevantSciences($applicant->personid);
+            if (!$has_relevant_science)
+            {
+                if ($details)
+                    $offerids[] = $offer;
+                else
+                    return true;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    /**
+     * Returns an array of all applicants that were given offers but don't have 
+     * the required DNE Relevant science
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/03/2016
+     * Date Last Modified: 06/03/2016
+     */
+    public static function getAcceptedWithoutDneScienceCriteria($offers, $details = false)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $has_relevant_science = CsecQualification::hasDneRelevantSciences($applicant->personid);
+            if (!$has_relevant_science)
+            {
+                if ($details)
+                    $offerids[] = $offer;
+                else
+                    return true;
+            }
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Returns an array of all applicants that were given offers but don't have 
+     * 5 CSEC Passes
+     * 
+     * @param type $offers
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 06/03/2016 (Laurence Charless)
+     */
+    public static function getAcceptedWithoutFivePasses($offers, $details = False)
+    {
+        $offerids = array();
+        foreach($offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->one();
+            $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
+            if ($minimum_subjects_passed == true)
+            {
+                if ($details)
+                    $offerids[] = $offer;
+                else
+                    return true;
+            }        
+        }
+        return count($offerids) > 0 ? $offerids : false;
+    }
   
     
 }

@@ -24,8 +24,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </a>    
         </div><br/>
         
-        <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-            <strong>Total Application Received: <?= Application::countActiveApplications();?></strong>
+        <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;"> 
+            <span class="pull-left"><strong >Total Applications Received: <?= Application::countActiveApplications();?></strong></span>
+            <span class="pull-right"><strong>Total Applications Verified: <?= Application::countVerifiedApplications();?></strong></span>
         </p>
         
         <div class="custom_body">
@@ -34,7 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php if ($dataProvider == true):?>
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
-                    //'filterModel' => $searchModel,
                     'options' => [
                             'style' => 'width:95%; margin: 0 auto;'
                         ],

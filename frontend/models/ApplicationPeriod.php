@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use frontend\models\Division;
 
 /**
  * This is the model class for table "application_period".
@@ -328,6 +329,76 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
                 return true;
             return false;
         }
+        
+        
+        /**
+         * Return array of open application period
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 06/03/2016
+         * Date Last Modified: 06/03/2016
+         */
+        public static function getOpenPeriod()
+        {
+            $periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/])
+                    ->all();
+            if (count($periods) > 0)
+                return $periods;
+            return false;
+        }
+        
+        
+        /**
+         * Return array of open application period IDs
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 06/03/2016
+         * Date Last Modified: 06/03/2016
+         */
+        public static function getOpenPeriodIDs()
+        {
+            $periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/])
+                    ->all();
+            if (count($periods) > 0)
+            {
+                $ids = array();
+                foreach($periods as $period)
+                {
+                    array_push($ids, $period->divisionid);
+                }
+                return $ids;
+            }
+            return false;
+        }
+        
+        
+        /**
+         * Returns the name of each division associated ith a particular division
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 06/03/2016
+         * Date Last Modified: 06/03/2016
+         */
+        public function getDivisionName()
+        {
+            $division = Division::find()
+                    ->where(['divisionid' => $this->divisionid])
+                    ->one();
+            if($division)
+                return $division->name;
+            return false;
+        }
+        
+        
+        
         
         
         

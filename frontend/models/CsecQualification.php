@@ -249,7 +249,7 @@ class CsecQualification extends \yii\db\ActiveRecord
     public static function getSubjects($personid)
     {
         return CsecQualification::find()
-                    ->where(['personid' => $personid, 'isverified' => 1, 'isdeleted' => 0])
+                    ->where(['personid' => $personid, 'isverified' => 1, 'isactive' => 1, 'isdeleted' => 0])
                     ->all();
     }
     
@@ -261,16 +261,15 @@ class CsecQualification extends \yii\db\ActiveRecord
     */
     public static function getPossibleDuplicate($personid, $candidateno, $year)
     {
-        try{
+        try
+        {
             $origcandidateno = $candidateno;
             $candidateno = intval($candidateno);
         } catch (Exception $ex) {
             return False;
         } 
         if ($candidateno == 0 || strlen($origcandidateno) != 10 )
-        {
-            return False;
-        }
+            return false;
         $groups = CsecQualification::find()
                     ->where(['candidatenumber' => $candidateno, /*'isverified' => 1,*/ 'isdeleted' => 0,
                         'year' => $year])
@@ -334,20 +333,16 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $certificates = self::getSubjects($personid);
         
-        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-        if ($exam_body)
+        $english = Subject::findOne(['name' => 'English Language', 'examinationbodyid' => 3, 'isactive' => 1, 'isdeleted' => 0]);
+        if ($english)
         {
-            $english = Subject::findOne(['name' => 'English Language', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-            if ($english)
+            foreach($certificates as $cert)
             {
-                foreach($certificates as $cert)
+                if ($cert->subjectid == $english->subjectid)
                 {
-                    if ($cert->subjectid == $english->subjectid)
-                    {
-                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->ordering, array(1,2,3)))
-                            return true;
-                    }
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
                 }
             }
         }
@@ -369,21 +364,17 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $certificates = self::getSubjects($personid);
         
-        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-        if ($exam_body)
+        $math = Subject::findOne(['name' => 'Mathematics', 'examinationbodyid' => 3, 'isactive' => 1, 'isdeleted' => 0]);
+        if ($math)
         {
-            $math = Subject::findOne(['name' => 'Mathematics', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-            if ($math)
-            {
-                foreach($certificates as $cert)
-                {                 
-                    if ($cert->subjectid == $math->subjectid && $cert)
+            foreach($certificates as $cert)
+            {                 
+                if ($cert->subjectid == $math->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
                     {
-                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->ordering, array(1,2,3)))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -405,20 +396,16 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $certificates = self::getSubjects($personid);
         
-        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-        if ($exam_body)
+        $social_studies = Subject::findOne(['name' => 'Social Studies', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+        if ($social_studies)
         {
-            $math = Subject::findOne(['name' => 'Social Studies', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-            if ($math)
-            {
-                foreach($certificates as $cert)
-                {                 
-                    if ($cert->subjectid == $math->subjectid && $cert)
-                    {
-                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->ordering, array(1,2,3)))
-                            return true;
-                    }
+            foreach($certificates as $cert)
+            {                 
+                if ($cert->subjectid == $social_studies->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
                 }
             }
         }
@@ -440,20 +427,16 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $certificates = self::getSubjects($personid);
         
-        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-        if ($exam_body)
+        $caribbean_history = Subject::findOne(['name' => 'Caribbean History', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+        if ($caribbean_history)
         {
-            $math = Subject::findOne(['name' => 'Caribbean History', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-            if ($math)
-            {
-                foreach($certificates as $cert)
-                {                 
-                    if ($cert->subjectid == $math->subjectid && $cert)
-                    {
-                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->ordering, array(1,2,3)))
-                            return true;
-                    }
+            foreach($certificates as $cert)
+            {                 
+                if ($cert->subjectid == $caribbean_history->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
                 }
             }
         }
@@ -475,20 +458,16 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $certificates = self::getSubjects($personid);
         
-        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-        if ($exam_body)
+        $geography = Subject::findOne(['name' => 'Geography', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+        if ($geography)
         {
-            $math = Subject::findOne(['name' => 'Geography', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-            if ($math)
-            {
-                foreach($certificates as $cert)
-                {                 
-                    if ($cert->subjectid == $math->subjectid && $cert)
-                    {
-                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-                        if (in_array($exam_grade->ordering, array(1,2,3)))
-                            return true;
-                    }
+            foreach($certificates as $cert)
+            {                 
+                if ($cert->subjectid == $geography->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
                 }
             }
         }

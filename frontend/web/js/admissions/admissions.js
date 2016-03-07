@@ -244,3 +244,111 @@ function checkSearchHow()
 }
 
 
+/**
+ * Handles the offer filteration mechanism.
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 06/03/2016
+ * Date Last Modified: 06/03/2016
+ */
+function filterOffer()
+{
+    var search_by = document.getElementsByName('offer_filter');
+    if (search_by[0].checked == true)           //if no filter
+    {  
+        document.getElementById("offer-division-field").selectedIndex = 0;
+        document.getElementById("offer-programme-field").selectedIndex = 0;  
+        document.getElementById("offer-cape-field").selectedIndex = 0;  
+        
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "none";
+    } 
+    
+    if (search_by[1].checked == true)           //if by division
+    {  
+        document.getElementById("offer-programme-field").selectedIndex = 0;  
+        document.getElementById("offer-cape-field").selectedIndex = 0;  
+        
+        document.getElementById("offer-division").style.display = "block";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "none";
+    } 
+    else if (search_by[2].checked == true)           //if by programme
+    {         
+        document.getElementById("offer-division-field").selectedIndex = 0;
+        document.getElementById("offer-cape-field").selectedIndex = 0;
+               
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "block";
+        document.getElementById("offer-cape").style.display = "none";
+    }
+    else if (search_by[3].checked == true)           //if by CAPE subject
+    {        
+        document.getElementById("offer-division-field").selectedIndex = 0;  
+        document.getElementById("offer-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "block";
+    }
+}
+
+
+/**
+ * Toggles the 'Filter' button for divisional filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 06/03/2016
+ * Date Last Modified: 06/03/2016
+ */
+function showFilterButton1()
+{
+    var button = document.getElementById("offer-division-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('divisional-filter-button').style.display = "block"; 
+   else
+       document.getElementById('divisional-filter-button').style.display = "none"; 
+}
+
+
+/**
+ * Toggles the 'Filter' button for programme filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 06/03/2016
+ * Date Last Modified: 06/03/2016
+ */
+function showFilterButton2()
+{
+    var button = document.getElementById("offer-programme-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('programme-filter-button').style.display = "block"; 
+   else
+       document.getElementById('programme-filter-button').style.display = "none"; 
+}
+
+
+/**
+ * Toggles the 'Filter' button for cape subject filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 06/03/2016
+ * Date Last Modified: 06/03/2016
+ */
+function showFilterButton3()
+{
+    var button = document.getElementById("offer-cape-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('cape-filter-button').style.display = "block"; 
+   else
+       document.getElementById('cape-filter-button').style.display = "none"; 
+}

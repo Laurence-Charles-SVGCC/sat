@@ -823,4 +823,30 @@ class Application extends \yii\db\ActiveRecord
             return $applicants;
     }
     
+    
+    /**
+     * Returns a count of the applicants that have been verified
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/03/2016
+     * Date Last Modified: 06/03/2016
+     */
+    public static function countVerifiedApplications()
+    {
+        $applicants = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9],
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->groupby('application.personid')
+                        ->count();
+            return $applicants;
+    }
+    
+    
+    
 }
