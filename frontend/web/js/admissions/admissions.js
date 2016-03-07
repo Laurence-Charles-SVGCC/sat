@@ -265,6 +265,7 @@ function filterOffer()
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "block";
     } 
     
     if (search_by[1].checked == true)           //if by division
@@ -275,6 +276,7 @@ function filterOffer()
         document.getElementById("offer-division").style.display = "block";       
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "none";
     } 
     else if (search_by[2].checked == true)           //if by programme
     {         
@@ -284,6 +286,7 @@ function filterOffer()
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "block";
         document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "none";
     }
     else if (search_by[3].checked == true)           //if by CAPE subject
     {        
@@ -293,6 +296,7 @@ function filterOffer()
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "block";
+        document.getElementById("offer-home").style.display = "none";
     }
 }
 

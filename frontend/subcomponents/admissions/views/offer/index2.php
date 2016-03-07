@@ -66,6 +66,10 @@
                                 <?= Html::radioList('offer_filter', null, $filter_criteria, ['class'=> 'form_field', 'onclick'=> 'filterOffer();']);?>
                                 
                             </p>
+                            
+                            <div id="offer-home" style="display:none">
+                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer']);?> role="button">  Remove Filter</a>
+                            </div>
 
                             <div id="offer-division" style="display:none">
                                 <?= Html::label( 'Divisions',  'programme'); ?>

@@ -408,7 +408,7 @@ class Application extends \yii\db\ActiveRecord
      */
     public static function centreApplicantsVerifiedCount($cseccentreid)
     {
-        $count = Application::find()
+        $applicants = Application::find()
                     ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -420,9 +420,15 @@ class Application extends \yii\db\ActiveRecord
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
-                    ->count();
-        
-        return $count;
+                    ->all();
+        foreach ($applicants as $key => $applicant)
+        {
+            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
+            {
+                unset($applicants[$key]);
+            }
+        }
+        return count($applicants);
     }
     
     
@@ -452,7 +458,13 @@ class Application extends \yii\db\ActiveRecord
                             'academic_offering.isdeleted' => 0])
                     ->groupby('application.personid')
                     ->all();
-        
+        foreach ($applicants as $key => $applicant)
+        {
+            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
+            {
+                unset($applicants[$key]);
+            }
+        }
         return $applicants;
     }
     

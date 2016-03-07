@@ -1353,18 +1353,29 @@ class Applicant extends \yii\db\ActiveRecord
         $offerids = array();
         foreach($offers as $offer)
         {
-            $applicant = Applicant::find()
-                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
-                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
-                    ->one();
-            $has_relevant_science = CsecQualification::hasDteRelevantSciences($applicant->personid);
-            if (!$has_relevant_science)
+            $application = Application::find()
+                        ->where(['applicationid' => $offer->applicationid])
+                        ->one();
+            if ($application == false)
+                continue;
+            else
             {
-                if ($details)
-                    $offerids[] = $offer;
-                else
-                    return true;
+                if($application->divisionid == 6)
+                {
+                    $applicant = Applicant::find()
+                            ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                            ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                            ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                            ->one();
+                    $has_relevant_science = CsecQualification::hasDteRelevantSciences($applicant->personid);
+                    if (!$has_relevant_science)
+                    {
+                        if ($details)
+                            $offerids[] = $offer;
+                        else
+                            return true;
+                    }
+                }
             }
         }
         return count($offerids) > 0 ? $offerids : false;
@@ -1388,18 +1399,29 @@ class Applicant extends \yii\db\ActiveRecord
         $offerids = array();
         foreach($offers as $offer)
         {
-            $applicant = Applicant::find()
-                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
-                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
-                    ->one();
-            $has_relevant_science = CsecQualification::hasDneRelevantSciences($applicant->personid);
-            if (!$has_relevant_science)
+            $application = Application::find()
+                        ->where(['applicationid' => $offer->applicationid])
+                        ->one();
+            if ($application == false)
+                continue;
+            else
             {
-                if ($details)
-                    $offerids[] = $offer;
-                else
-                    return true;
+                if($application->divisionid == 7)
+                {
+                    $applicant = Applicant::find()
+                            ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                            ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                            ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                            ->one();
+                    $has_relevant_science = CsecQualification::hasDneRelevantSciences($applicant->personid);
+                    if (!$has_relevant_science)
+                    {
+                        if ($details)
+                            $offerids[] = $offer;
+                        else
+                            return true;
+                    }
+                }
             }
         }
         return count($offerids) > 0 ? $offerids : false;
