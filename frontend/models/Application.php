@@ -579,6 +579,20 @@ class Application extends \yii\db\ActiveRecord
         {
             $target_application = $applications[($count-1)];
         }
+        
+        
+        elseif ($application_status == 2)   //if unverifed
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid==2)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+        
             
         elseif ($application_status == 3)   //if pending
         {
@@ -678,7 +692,19 @@ class Application extends \yii\db\ActiveRecord
         {
             $target_application = $applications[($count-1)];
         }
-            
+         
+        elseif ($application_status == 2)   //if unnverified
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid==2)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+        
         elseif ($application_status == 3)   //if pending
         {
             foreach($applications as $application)

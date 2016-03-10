@@ -28,52 +28,58 @@
             </a>    
         </div>
         
-        <!-- Offer Flag-->
-        <?php if (Offer::hasRecords($applicant->personid) == true):?>
-            <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                <?= "Applicant has an offer";?>
-            </p>
-        <?php endif;?>
-           
-        <!-- No English Flag-->
-        <?php if (CsecQualification::hasCsecEnglish($applicant->personid) == false):?>
-            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                <?= "Applicant did not pass CSEC English Language";?>
-            </p>
-        <?php endif;?>
-            
-        <!-- No Mathematics Flag-->
-        <?php if (CsecQualification::hasCsecMathematics($applicant->personid) == false):?>
-            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                <?= "Applicant did not pass CSEC Mathematics";?>
-            </p>
-        <?php endif;?>
-            
-        <!-- Has Less Than 5 Subjects Flag-->
-        <?php if (CsecQualification::hasFiveCsecPasses($applicant->personid) == false):?>
-            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                <?= "Applicant does not have 5 CSEC passes";?>
-            </p>
-        <?php endif;?>
-        
-        <!-- DTE Relevant Science Subjects Flag-->
-        <?php if ($applicant->applicantintentid == 4):?>
-            <?php if (CsecQualification::hasDteRelevantSciences($applicant->personid) == false):?>
-                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+        <?php if ($application_status > 2):?>
+            <!-- Offer Flag-->
+            <?php if (Offer::hasRecords($applicant->personid) == true):?>
+                <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant has an offer";?>
                 </p>
             <?php endif;?>
-        <?php endif;?> 
-         
-        <!-- DNE Relevant Science Subjects Flag-->
-        <?php if ($applicant->applicantintentid == 6):?>
-            <?php if (CsecQualification::hasDneRelevantSciences($applicant->personid) == false):?>
+
+            <!-- No English Flag-->
+            <?php if (CsecQualification::hasCsecEnglish($applicant->personid) == false):?>
                 <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                    <?= "Applicant did not pass CSEC English Language";?>
                 </p>
             <?php endif;?>
-        <?php endif;?> 
-        
+
+            <!-- No Mathematics Flag-->
+            <?php if (CsecQualification::hasCsecMathematics($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant did not pass CSEC Mathematics";?>
+                </p>
+            <?php endif;?>
+
+            <!-- Has Less Than 5 Subjects Flag-->
+            <?php if (CsecQualification::hasFiveCsecPasses($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant does not have 5 CSEC passes";?>
+                </p>
+            <?php endif;?>
+
+            <!-- DTE Relevant Science Subjects Flag-->
+            <?php if ($applicant->applicantintentid == 4):?>
+                <?php if (CsecQualification::hasDteRelevantSciences($applicant->personid) == false):?>
+                    <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                        <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                    </p>
+                <?php endif;?>
+            <?php endif;?> 
+
+            <!-- DNE Relevant Science Subjects Flag-->
+            <?php if ($applicant->applicantintentid == 6):?>
+                <?php if (CsecQualification::hasDneRelevantSciences($applicant->personid) == false):?>
+                    <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                        <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                    </p>
+                <?php endif;?>
+            <?php endif;?> 
+        <?php else:?>
+            <!-- Applicant's certificates have not been verified-->
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant's certificates have not been verified yet.";?>
+            </p>    
+        <?php endif;?>
         
         <div class="custom_body">
             <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2>
@@ -171,22 +177,26 @@
                 <h2 class="custom_h2">Applications</h2>
                 <table class='table table-condensed' style="width: 95%; margin: 0 auto;">
                     <tr>
-                        <th>Active</th>
+                        <?php if ($application_status > 2):?>
+                            <th>Active</th>
+                        <?php endif;?>
                         <th>Priority</th>
                         <th>Division</th>
                         <th>Programme</th>
                         <th>Status</th>
-                        <?php if (Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean')): ?>
+                        <?php if (Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean') && $application_status > 2): ?>
                             <th>Action</th>
                         <?php endif;?>
                     </tr>
                     
                     <?php for($i = 0 ; $i< count($application_container) ; $i++): ?>
                         <tr>
-                            <?php if($application_container[$i]["istarget"] == true):?>
-                                <td> <i class="fa fa-hand-o-right"></i> </td>
-                            <?php else:?>
-                                <td></td>
+                            <?php if ($application_status > 2):?>
+                                <?php if($application_container[$i]["istarget"] == true):?>
+                                    <td> <i class="fa fa-hand-o-right"></i> </td>
+                                <?php else:?>
+                                    <td></td>
+                                <?php endif;?>
                             <?php endif;?>
                             
                             <td> <?= $application_container[$i]["application"]->ordering ?> </td>
@@ -195,8 +205,8 @@
                             <td> <?= $application_container[$i]["status"] ?> </td>
                             
                             <?php
-                                // User must be a Dan or Deputy Dean to be able to change the status of an applicant's application
-                                if (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean'))
+                                // User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
+                                if ((Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean'))  && $application_status > 2)
                                 {
                                     /*
                                      * If user is a member of "All Divisions", "DTE" or "DNE" they have ability to change the application status
