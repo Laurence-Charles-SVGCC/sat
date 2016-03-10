@@ -23,8 +23,8 @@ use frontend\models\Reference;
  * @property integer $hasotherapplications
  * @property string $otherapplicationsinfo
  * @property integer $hascriminalrecord
- * @property string $applicantmotivation1
- * @property string $applicantmotivation2
+ * @property string $applicationmotivation1
+ * @property string $applicationmotivation2
  * @property string $additionalcomments
  * @property string $memberorganisations
  * @property string $exclusionreason
@@ -51,10 +51,10 @@ class NursingAdditionalInfo extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'childcount', 'brothercount', 'sistercount', 'yearcompletedschool', 'hasworked', 'isworking', 'hasnursingexperience', 'hasotherapplications', 'hascriminalrecord', 'applicantmotivation1', 'applicantmotivation2'], 'required'],
+            [['personid', 'childcount', 'brothercount', 'sistercount', 'yearcompletedschool', 'hasworked', 'isworking', 'hasnursingexperience', 'hasotherapplications', 'hascriminalrecord', 'applicationmotivation1', 'applicationmotivation2'], 'required'],
             [['personid', 'childcount', 'brothercount', 'sistercount', 'hasworked', 'isworking', 'hasnursingexperience', 'hasotherapplications', 'hascriminalrecord', 'ismember', 'repeatapplicant'], 'integer'],
             ['yearcompletedschool', 'match', 'pattern' => '/^\d{4}$/'],
-            [['otherapplicationsinfo', 'applicantmotivation1', 'applicantmotivation2', 'additionalcomments', 'memberorganisations', 'exclusionreason'], 'string'],
+            [['otherapplicationsinfo', 'applicationmotivation1', 'applicationmotivation2', 'additionalcomments', 'memberorganisations', 'exclusionreason'], 'string'],
             [['childages', 'yearcompletedschool', 'previousyears'], 'string', 'max' => 45]
         ];
     }
@@ -78,8 +78,8 @@ class NursingAdditionalInfo extends \yii\db\ActiveRecord
             'hasotherapplications' => 'Hasotherapplications',
             'otherapplicationsinfo' => 'Otherapplicationsinfo',
             'hascriminalrecord' => 'Hascriminalrecord',
-            'applicantmotivation1' => 'Applicantmotivation1',
-            'applicantmotivation2' => 'Applicantmotivation2',
+            'applicationmotivation1' => 'Applicationmotivation1',
+            'applicationmotivation2' => 'Applicationmotivation2',
             'additionalcomments' => 'Additionalcomments',
             'ismember' => 'Is Member',
             'memberorganisations' => 'Member Organisations',
@@ -123,8 +123,8 @@ class NursingAdditionalInfo extends \yii\db\ActiveRecord
         $this->hasotherapplications = 0;
         $this->otherapplicationsinfo = NULL;
         $this->hascriminalrecord = 0;
-        $this->applicantmotivation1 = "Enter Motivation";
-        $this->applicantmotivation2 = "Enter Motivation";
+        $this->applicationmotivation1 = "Enter Motivation";
+        $this->applicationmotivation2 = "Enter Motivation";
         $this->additionalcomments = "Anything else?";
     }
     
@@ -365,8 +365,8 @@ class NursingAdditionalInfo extends \yii\db\ActiveRecord
                && $model->hasworked !== NULL && strcmp($model->hasworked,"") != 0
                && $model->isworking !== NULL && strcmp($model->isworking,"") != 0
                && $model->hascriminalrecord !== NULL && strcmp($model->hascriminalrecord,"") != 0
-               && $model->applicantmotivation1 !== NULL && strcmp($model->applicantmotivation1,"") != 0
-               && $model->applicantmotivation2 !== NULL && strcmp($model->applicantmotivation2,"") != 0
+               && $model->applicationmotivation1 !== NULL && strcmp($model->applicationmotivation1,"") != 0
+               && $model->applicationmotivation2 !== NULL && strcmp($model->applicationmotivation2,"") != 0
                && Reference::checkReferences($id) == true       
               )
                 return true;

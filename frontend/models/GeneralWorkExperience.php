@@ -44,8 +44,6 @@ class GeneralWorkExperience extends \yii\db\ActiveRecord
             [['role', 'employer'], 'string', 'max' => 100],
             [['salary'], 'string', 'max' => 15],
             [['natureofduties', 'employeraddress'], 'string'],
-//            ['enddate', 'default', 'value' => null],
-//            ['salary', 'default', 'value' => null],
         ];
     }
 

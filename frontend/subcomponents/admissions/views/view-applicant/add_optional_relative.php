@@ -11,6 +11,7 @@
     use yii\bootstrap\ActiveForm;
     use yii\bootstrap\ActiveField;
 
+    $this->title = 'Add Relative';
 ?>
 
     <div class="site-index">
@@ -69,7 +70,7 @@
 
                         echo "</table>"; 
 
-                        echo Html::a(' Cancel',['view-applicant/applicant-profile', '$applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
                         echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
 
                     ActiveForm::end();    

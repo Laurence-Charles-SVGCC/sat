@@ -82,13 +82,9 @@ class NurseWorkExperience extends \yii\db\ActiveRecord
                  ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                  ->one();
         if ($model)
-        {
             return $model;
-        }
         else
-        {
             return false;
-        }
     }
     
     

@@ -10,6 +10,8 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
+    
+    $this->title = 'Edit General';
 ?>
 
 
@@ -99,7 +101,7 @@
 
                             echo "<br/>";
 
-                            echo Html::a(' Cancel',['view-applicant/applicant-profile', '$applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                            echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
                             echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
 
 

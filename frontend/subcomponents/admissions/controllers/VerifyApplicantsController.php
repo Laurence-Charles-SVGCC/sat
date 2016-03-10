@@ -455,11 +455,14 @@ class VerifyApplicantsController extends \yii\web\Controller
         $applicant_model = Applicant::find()
                         ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
+        
+        $username = $applicant_model->getPerson()->one()->username;
        
         return $this->render('view-applicant-qualifications',
                 [
                     'dataProvider' => $dataProvider,
                     'applicant' => $applicant_model,
+                    'username' => $username,
                     'centrename' => $centrename,
                     'centreid' => $cseccentreid,
                     'type' => $type,

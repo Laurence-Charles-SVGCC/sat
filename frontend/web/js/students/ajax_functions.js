@@ -57,6 +57,12 @@ function AddCsecQualificationAjaxFunction(e)
                 /***************************** Handles Subject dropdownlist **************************/
                 var subject = document.getElementById('csecqualification-subjectid');
 
+                //Remove the options from 2nd dropdown list except 'select' option
+                for(j=subject.options.length-1; j>0; j--)
+                {
+                    subject.options.remove(j);
+                }
+                
                 //Adding new options
                 for (i=0;i<myarray.subjects.length;i++)
                 {
@@ -69,6 +75,12 @@ function AddCsecQualificationAjaxFunction(e)
                 /************************** Handles Proficiency Dropdownlist **************************/
                 var proficiency = document.getElementById('csecqualification-examinationproficiencytypeid');
 
+                //Remove the options from 2nd dropdown list except 'select' option
+                for(j=proficiency.options.length-1; j>0; j--)
+                {
+                    proficiency.options.remove(j);
+                }
+                
                 //Adding new options
                 for (i=0;i<myarray.proficiencies.length;i++)
                 {
@@ -80,7 +92,13 @@ function AddCsecQualificationAjaxFunction(e)
 
                 /****************************** Handles Garde dropdownlist ****************************/
                 var grade = document.getElementById('csecqualification-examinationgradeid');
-
+                
+                //Remove the options from 2nd dropdown list except 'select' option
+                for(j=grade.options.length-1; j>0; j--)
+                {
+                    grade.options.remove(j);
+                }
+                
                 //Adding new options
                 for (i=0;i<myarray.grades.length;i++)
                 {
@@ -115,11 +133,11 @@ function AddCsecQualificationAjaxFunction(e)
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
     
     //For live sat implementation
-    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+//    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
     
     
     //For local implementation
-//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
 
     var exam_body = document.getElementById(targetID).value;
 
@@ -201,6 +219,7 @@ function EditCsecQualificationAjaxFunction(e)
 
                 /************************** Handles Proficiency Dropdownlist **************************/
                 var proficiency = document.getElementById('csecqualification-examinationproficiencytypeid');
+                
                 //Remove the options from 2nd dropdown list except 'select' option
                 for(j=proficiency.options.length-1; j>0; j--)
                 {
@@ -218,6 +237,7 @@ function EditCsecQualificationAjaxFunction(e)
 
                 /****************************** Handles Garde dropdownlist ****************************/
                 var grade = document.getElementById('csecqualification-examinationgradeid');
+                
                 //Remove the options from 2nd dropdown list except 'select' option
                 for(j=grade.options.length-1; j>0; j--)
                 {

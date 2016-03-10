@@ -129,9 +129,9 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-offer-package-dashboard'])?>"><i class="fa fa-circle-o"></i>Prepare Offer Package</a></li>
                     <?php endif; ?>
                     <?php if (Yii::$app->user->can('viewOffer')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
-                    <?php endif; ?>
-                    -->
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
+                    <?php endif; ?>-->
+                   
                     
                     <!--
                     <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::openPeriodExists()==true): ?>

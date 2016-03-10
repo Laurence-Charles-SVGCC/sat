@@ -284,7 +284,9 @@
             </div>
             
             <div><br/>
-                <a class="btn btn-success glyphicon glyphicon-folder-open" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/view-applicant-details', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status]);?> role="button">  View Applicant Details</a>
+                <a class="btn btn-success glyphicon glyphicon-folder-open" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/view-applicant-details', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status]);?> role="button">  View Application Snapshot</a>
+                
+                <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  Modify Applicant Details</a>
             </div>
             
                 

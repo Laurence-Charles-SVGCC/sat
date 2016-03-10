@@ -3,6 +3,9 @@
 namespace app\subcomponents\admissions\controllers;
 
 use Yii;
+use yii\helpers\Url;
+use yii\base\Model;
+
 use common\models\User;
 use frontend\models\Applicant;
 use frontend\models\Application;
@@ -10,7 +13,6 @@ use yii\data\ArrayDataProvider;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\Offer;
-use yii\helpers\Url;
 use frontend\models\PersonInstitution;
 use frontend\models\Institution;
 use frontend\models\Phone;
@@ -26,6 +28,18 @@ use frontend\models\ExaminationBody;
 use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationGrade;
+use frontend\models\CompulsoryRelation;
+use frontend\models\RelationType;
+use frontend\models\GeneralWorkExperience;
+use frontend\models\Reference;
+use frontend\models\TeachingAdditionalInfo;
+use frontend\models\TeachingExperience;
+use frontend\models\NursingAdditionalInfo;
+use frontend\models\NurseWorkExperience;
+use frontend\models\NursePriorCertification;
+use frontend\models\CriminalRecord;
+use frontend\models\ApplicationStatus;
+
 
 class ViewApplicantController extends \yii\web\Controller
 {
@@ -777,7 +791,6 @@ class ViewApplicantController extends \yii\web\Controller
         $user = User::findOne(['username' =>$applicantusername]);
         $personid = $user->personid;
         $applicant= Applicant::findByPersonID($personid);
-        $student = Student::getStudent($personid);
         $user = User::getUser($personid);
 
         $phone = Phone::find()
@@ -815,6 +828,21 @@ class ViewApplicantController extends \yii\web\Controller
 
         /************************ Medical Conditions *****************************/
         $medicalConditions = MedicalCondition::getMedicalConditions($personid);
+        
+        /************************ Additional Details *****************************/
+        $genral_work_experience = GeneralWorkExperience::getGeneralWorkExperiences($personid);
+        $references = Reference::getReferences($personid);
+        $teaching = TeachingExperience::getTeachingExperiences($personid);
+        $nursing = NurseWorkExperience::getNurseWorkExperience($personid);
+        $nursing_certification = NursePriorCertification::getCertifications($personid);
+        $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
+        $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
+        $info = Applicant::getApplicantInformation($personid);
+        $status_id = $info['status'];
+        $status = ApplicationStatus::find()
+                ->where(['applicationstatusid' => $status_id])
+                ->one();
+        $applicant_status = $status->name;
 
         /************************* Institutions **********************************/
         $preschools = PersonInstitution::getPersonInsitutionRecords($personid, 1);
@@ -1085,7 +1113,6 @@ class ViewApplicantController extends \yii\web\Controller
             //models for profile tab
             'user' =>  $user,
             'applicant' => $applicant,
-            'student' => $student,
             'phone' => $phone,
             'email' => $email,
             'permanentaddress' => $permanentaddress,
@@ -1100,11 +1127,17 @@ class ViewApplicantController extends \yii\web\Controller
             'new_emergencycontact' => $new_emergencycontact,
             'guardian' =>  $guardian,                   
             'spouse' => $spouse,
-            'student_status' => $student_status,
-            'academic_status' => $academic_status,
 
             //models for addtional information tab
             'medicalConditions' => $medicalConditions,
+            'general_work_experience' => $genral_work_experience,
+            'references' => $references,
+            'teaching' => $teaching,
+            'nursing' => $nursing,
+            'nursing_certification' => $nursing_certification,
+            'nursinginfo' => $nursinginfo,
+            'teachinginfo' => $teachinginfo,
+            'applicant_status' => $applicant_status,
 
             //models for academic institutions tab
             'preschools' => $preschools,
@@ -1162,7 +1195,7 @@ class ViewApplicantController extends \yii\web\Controller
                 $applicant_save_flag = $applicant->save();
                 if ($applicant_save_flag == true)
                 {
-                    self::actionApplicantProfile($user->username);
+                    return self::actionApplicantProfile($user->username);
                 }
                 else
                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
@@ -1173,8 +1206,8 @@ class ViewApplicantController extends \yii\web\Controller
 
 
         return $this->render('edit_general', [
-                    'user' => $user,
-                    'applicant' => $applicant
+            'user' => $user,
+            'applicant' => $applicant
         ]);
     }
     
@@ -1204,7 +1237,7 @@ class ViewApplicantController extends \yii\web\Controller
         
         if ($post_data = Yii::$app->request->post())
         {
-            if ($phone == true && $email == true  && $student == true)
+            if ($phone == true && $email == true  && $user == true)
             {
                 //load flags
                 $phone_load_flag = false;
@@ -1237,7 +1270,7 @@ class ViewApplicantController extends \yii\web\Controller
                             if ($phone_save_flag == true && $email_save_flag == true)
                             {
                                 $transaction->commit();
-                                self::actionApplicantProfile($user->username);
+                                return self::actionApplicantProfile($user->username);
                             }
                             else
                             {
@@ -1267,8 +1300,9 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_contact_details', [
-                    'phone' => $phone,
-                    'email' => $email,
+            'user' => $user,
+            'phone' => $phone,
+            'email' => $email,
         ]);
     }
     
@@ -1328,7 +1362,7 @@ class ViewApplicantController extends \yii\web\Controller
                             if ($addresses_save_flag == true)
                             {
                                 $transaction->commit();
-                                self::actionApplicantProfile($user->username);
+                                return self::actionApplicantProfile($user->username);
                             }                               
                         }catch (Exception $e) 
                         {
@@ -1352,7 +1386,8 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_addresses', [
-                    'addresses' => $addresses,
+            'user' => $user,
+            'addresses' => $addresses,
         ]);        
     }
     
@@ -1379,7 +1414,7 @@ class ViewApplicantController extends \yii\web\Controller
         if ($relative == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to locate record. Please try again.');
-            self::actionApplicantProfile($user->username);
+            return self::actionApplicantProfile($user->username);
         }
 
         $relative_type = RelationType::find()
@@ -1402,7 +1437,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $relative->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
@@ -1415,9 +1450,10 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_optional_relative', [
-                    'personid' => $personid,
-                    'relative' => $relative,
-                    'relation_name' => $relation_name,
+            'user' => $user,
+            'personid' => $personid,
+            'relative' => $relative,
+            'relation_name' => $relation_name,
         ]); 
     }
     
@@ -1445,10 +1481,11 @@ class ViewApplicantController extends \yii\web\Controller
         {
             $save_flag = false;
             $relative->isdeleted = 1;
+            $relative->isactive = 0;
             $save_flag = $relative->save();
             if($save_flag == true)
             {
-                self::actionApplicantProfile($user->username);
+                return self::actionApplicantProfile($user->username);
             }
             else
                 Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');             
@@ -1457,7 +1494,7 @@ class ViewApplicantController extends \yii\web\Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured locating record. Please try again.');
         
         
-        self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($user->username);
     }
     
     
@@ -1484,7 +1521,7 @@ class ViewApplicantController extends \yii\web\Controller
         if ($relative == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to locate record. Please try again.');
-            self::actionApplicantProfile($user->username);
+            return self::actionApplicantProfile($user->username);
         }
 
         $relative_type = RelationType::find()
@@ -1507,7 +1544,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $relative->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
@@ -1520,9 +1557,10 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_compulsory_relative', [
-                    'personid' => $personid,
-                    'relative' => $relative,
-                    'relation_name' => $relation_name,
+            'user' => $user,
+            'personid' => $personid,
+            'relative' => $relative,
+            'relation_name' => $relation_name,
         ]); 
     }
     
@@ -1537,7 +1575,7 @@ class ViewApplicantController extends \yii\web\Controller
      * Date Created: 03/01/2016
      * Date Last Modified: 03/01/2016
      */
-    public function actionAddOptionalRelative($personid, $studentregistrationid)
+    public function actionAddOptionalRelative($personid)
     {
         $user = User::find()
                 ->where(['personid' => $personid])
@@ -1628,7 +1666,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $relative->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
@@ -1641,9 +1679,10 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('add_optional_relative', [
-                    'personid' => $personid,
-                    'relative' => $relative,
-                    'optional_relations' => $optional_relations,
+            'user' => $user,
+            'personid' => $personid,
+            'relative' => $relative,
+            'optional_relations' => $optional_relations,
         ]); 
     }
     
@@ -1670,11 +1709,12 @@ class ViewApplicantController extends \yii\web\Controller
         if ($condition == true)
         {
             $save_flag = false;
+            $condition->isactive = 0;
             $condition->isdeleted = 1;
             $save_flag = $condition->save();
             if($save_flag == true)
             {
-                self::actionApplicantProfile($user->username);
+                return self::actionApplicantProfile($user->username);
             }
             else
                 Yii::$app->getSession()->setFlash('error', 'Error occured deleting medical condition record. Please try again.');      
@@ -1683,7 +1723,7 @@ class ViewApplicantController extends \yii\web\Controller
         else
             Yii::$app->getSession()->setFlash('error', 'Error occured retrieving medical condition record. Please try again.');
         
-        self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($user->username);
     }
     
     
@@ -1709,7 +1749,7 @@ class ViewApplicantController extends \yii\web\Controller
         if ($condition == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve medical condition record. Please try again.');
-            self::actionApplicantProfile($user->username);
+            return self::actionApplicantProfile($user->username);
         }
 
 
@@ -1728,7 +1768,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $condition->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update medical condition record. Please try again.');
@@ -1741,8 +1781,9 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_medical condition', [
-                    'personid' => $personid, 
-                    'condition' => $condition,
+            'user' => $user,
+            'personid' => $personid, 
+            'condition' => $condition,
         ]); 
     }
     
@@ -1782,7 +1823,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $condition->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save medical condition record. Please try again.');
@@ -1795,8 +1836,9 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('add_medical_condition', [
-                    'personid' => $personid,
-                    'condition' => $condition,
+            'user' => $user,
+            'personid' => $personid,
+            'condition' => $condition,
         ]); 
     }
     
@@ -1836,7 +1878,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $qualification->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
@@ -1849,8 +1891,9 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('add_csec_qualificiation', [
-                    'personid' => $personid,
-                    'qualification' => $qualification,
+            'user' => $user,
+            'personid' => $personid,
+            'qualification' => $qualification,
         ]); 
     }
 
@@ -1879,10 +1922,11 @@ class ViewApplicantController extends \yii\web\Controller
         {
             $save_flag = false;
             $qualification->isdeleted = 1;
+            $qualification->isactive = 0;
             $save_flag = $qualification->save();
             if($save_flag == true)
             {
-                self::actionApplicantProfile($user->username);
+                return self::actionApplicantProfile($user->username);
             }
             else
             Yii::$app->getSession()->setFlash('error', 'Error occured deleting qualification record. Please try again.');               
@@ -1891,7 +1935,7 @@ class ViewApplicantController extends \yii\web\Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured retrieving qualification record. Please try again.');
             
         
-        self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($user->username);
     }
 
 
@@ -1919,7 +1963,7 @@ class ViewApplicantController extends \yii\web\Controller
         if ($qualification == false)
         {          
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve qualification record. Please try again.');
-            self::actionApplicantProfile($user->username);
+            return self::actionApplicantProfile($user->username);
         }
 
         if ($post_data = Yii::$app->request->post())
@@ -1938,7 +1982,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $qualification->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
@@ -1951,8 +1995,9 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_csec_qualificiation', [
-                    'personid' => $personid, 
-                    'qualification' => $qualification,
+            'user' => $user,
+            'personid' => $personid, 
+            'qualification' => $qualification,
         ]); 
     }
     
@@ -1980,11 +2025,12 @@ class ViewApplicantController extends \yii\web\Controller
         if ($school == true)
         {
             $save_flag = false;
+            $school->isactive = 0;
             $school->isdeleted = 1;
             $save_flag = $school->save();
             if($save_flag == true)
             {
-                self::actionApplicantProfile($user->username);
+                return self::actionApplicantProfile($user->username);
             }
             else
                 Yii::$app->getSession()->setFlash('error', 'Error occured deleting school record. Please try again.');              
@@ -1993,7 +2039,7 @@ class ViewApplicantController extends \yii\web\Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured retrieving school record. Please try again.');
             
         
-        self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($user->username);
     }
 
 
@@ -2022,7 +2068,7 @@ class ViewApplicantController extends \yii\web\Controller
         if ($school == false)
         {          
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve institution record. Please try again.');
-            self::actionApplicantProfile($user->username);
+            return self::actionApplicantProfile($user->username);
         }
 
         $institution = Institution::find()
@@ -2046,7 +2092,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $school->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save institution record. Please try again.');
@@ -2059,10 +2105,11 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('edit_school', [
-                    'personid' => $personid,
-                    'school' => $school,
-                    'levelid' => $levelid,
-                    'school_name' => $school_name,
+            'user' => $user,
+            'personid' => $personid,
+            'school' => $school,
+            'levelid' => $levelid,
+            'school_name' => $school_name,
         ]);
     }
 
@@ -2103,7 +2150,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $school->save();
                     if($save_flag == true)
                     {
-                        self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save institution record. Please try again.');
@@ -2116,10 +2163,613 @@ class ViewApplicantController extends \yii\web\Controller
         }
 
         return $this->render('add_school', [
-                    'personid' => $personid,
-                    'school' => $school,
-                    'levelid' => $levelid,
+            'user' => $user,
+            'personid' => $personid,
+            'school' => $school,
+            'levelid' => $levelid,
         ]);
+    }
+    
+    
+    /**
+     * Creates or Updates 'general_work_experience' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/03/2016
+     * Date Last Modified: 09/03/2016
+     */
+    public function actionGeneralWorkExperience($personid, $recordid = Null)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = Null;
+        $action = Null;
+                
+        if ($recordid == Null)
+        {
+            $experience = new GeneralWorkExperience();
+            $action = "create";
+        }
+        else
+        {
+            $experience = GeneralWorkExperience::find()
+                        ->where(['generalworkexperienceid' => $recordid])
+                        ->one();
+            $action = "update";
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $experience->load($post_data);
+            if($load_flag == true)
+            {
+                $experience->personid = $personid;
+                $validation_flag = $experience->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $experience->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        
+        return $this->render('general_work_experience', [
+            'user' => $user,
+            'personid' => $personid,
+            'experience' => $experience,
+            'action' => $action,
+        ]);
+    }
+    
+    /**
+     * Deletes 'GeneralWorkExperience' record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/03/2016
+     * Date Last Modified: 07/03/2016
+     */
+    public function actionDeleteGeneralWorkExperience($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = GeneralWorkExperience::find()
+                        ->where(['generalworkexperienceid' => $recordid])
+                        ->one();
+        if ($experience == true)
+        {
+            $save_flag = false;
+            $experience->isactive = 0;
+            $experience->isdeleted = 1;
+            $save_flag = $experience->save();
+            if($save_flag == true)
+            {
+                return self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+            
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    
+    /**
+     * Updates 'Reference' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/03/2016
+     * Date Last Modified: 09/03/2016
+     */
+    public function actionEditReference($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $reference = Reference::find()
+                    ->where(['referenceid' => $recordid])
+                    ->one();
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $reference->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $reference->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $reference->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        
+        return $this->render('edit_reference', [
+            'user' => $user,
+            'personid' => $personid,
+            'reference' => $reference,
+            'action' => $action,
+        ]);
+    }
+    
+    
+    /**
+     * Creates of Updates 'NurseWorkExperience' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/03/2016
+     * Date Last Modified: 09/03/2016
+     */
+    public function actionNurseWorkExperience($personid, $recordid = Null)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        if ($recordid == Null)
+        {
+            $nurseExperience = new NurseWorkExperience();
+            $action = "create";
+        }
+        else
+        {
+            $nurseExperience = NurseWorkExperience::find()
+                    ->where(['nurseworkexperienceid' => $recordid])
+                    ->one();
+            $action = "update";
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $nurseExperience->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $nurseExperience->validate();
+
+                if($validation_flag == true)
+                {
+                    $nurseExperience->personid = $personid;
+                    $save_flag = $nurseExperience->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        
+        return $this->render('edit_nurse_work_experience', [
+            'user' => $user,
+            'personid' => $personid,
+            'nurseExperience' => $nurseExperience,
+            'action' => $action,
+        ]);
+    }
+    
+    
+    /**
+     * Deletes 'NurseWorkExperience' record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/03/2016
+     * Date Last Modified: 07/03/2016
+     */
+    public function actionDeleteNurseWorkExperience($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = NurseWorkExperience::find()
+                        ->where(['generalworkexperienceid' => $recordid])
+                        ->one();
+        if ($experience == true)
+        {
+            $save_flag = false;
+            $experience->isactive = 0;
+            $experience->isdeleted = 1;
+            $save_flag = $experience->save();
+            if($save_flag == true)
+            {
+                return self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+            
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Creates or Updates 'NursePriorCertification' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/03/2016
+     * Date Last Modified: 09/03/2016
+     */
+    public function actionNurseCertification($personid, $recordid = Null)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = Null;
+        $action = Null;
+                
+        if ($recordid == Null)
+        {
+            $experience = new NursePriorCertification();
+            $action = "create";
+        }
+        else
+        {
+            $experience = NursePriorCertification::find()
+                        ->where(['nursepriorcertificationid' => $recordid])
+                        ->one();
+            $action = "update";
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $experience->load($post_data);
+            if($load_flag == true)
+            {
+                $experience->personid = $personid;
+                $validation_flag = $experience->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $experience->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        return $this->render('nurse_certification', [
+            'user' => $user,
+            'personid' => $personid,
+            'experience' => $experience,
+            'action' => $action,
+        ]);
+    }
+    
+    
+    /**
+     * Deletes 'NursePriorCertification' record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/03/2016
+     * Date Last Modified: 07/03/2016
+     */
+    public function actionDeleteNurseCertification($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = NursePriorCertification::find()
+                        ->where(['nursepriorcertificationid' => $recordid])
+                        ->one();
+        if ($experience == true)
+        {
+            $save_flag = false;
+            $experience->isactive = 0;
+            $experience->isdeleted = 1;
+            $save_flag = $experience->save();
+            if($save_flag == true)
+            {
+                return self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+            
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Updates "NursingAdditionalInfo' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/03/2016
+     * Date Last Modified: 10/03/2016
+     */
+    public function actionUpdateNursingInformation($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $nursinginfo->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $nursinginfo->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $nursinginfo->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate Additional Nursing Information record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
+        }
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Creates or Updates 'TeacherExperience' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/03/2016
+     * Date Last Modified: 09/03/2016
+     */
+    public function actionTeacherExperience($personid, $recordid = Null)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = Null;
+        $action = Null;
+                
+        if ($recordid == Null)
+        {
+            $experience = new TeachingExperience();
+            $action = "create";
+        }
+        else
+        {
+            $experience = TeachingExperience::find()
+                        ->where(['teachingexperienceid' => $recordid])
+                        ->one();
+            $action = "update";
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $experience->load($post_data);
+            if($load_flag == true)
+            {
+                $experience->personid = $personid;
+                $validation_flag = $experience->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $experience->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        
+        return $this->render('teacher_experience', [
+            'user' => $user,
+            'personid' => $personid,
+            'experience' => $experience,
+            'action' => $action,
+        ]);
+    }
+    
+    
+    /**
+     * Deletes 'TeachingExperience' record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/03/2016
+     * Date Last Modified: 10/03/2016
+     */
+    public function actionDeleteTeacherExperience($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $experience = TeachingExperience::find()
+                        ->where(['teachingexperienceid' => $recordid])
+                        ->one();
+        if ($experience == true)
+        {
+            $save_flag = false;
+            $experience->isactive = 0;
+            $experience->isdeleted = 1;
+            $save_flag = $experience->save();
+            if($save_flag == true)
+            {
+                return self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+            
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Updates "TeachingAdditionalInfo' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/03/2016
+     * Date Last Modified: 10/03/2016
+     */
+    public function actionUpdateTeachingInformation($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $teachinginfo->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $teachinginfo->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $teachinginfo->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate Additional Nursing Information record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
+        }
+        
+        return self::actionApplicantProfile($user->username);
     }
     
     

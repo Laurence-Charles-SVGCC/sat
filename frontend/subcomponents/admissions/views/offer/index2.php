@@ -41,7 +41,7 @@
         
         <?php if($offer_issues): ?>
             <br/><div style="font-size:16px; width: 95%; margin: 0 auto;">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-issue-details']);?>" 
+                <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home']);?>" 
                    title="Questionable Offers"
                    style="font-size:16px; width: 100%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                     Click Here To Review Questionable Offers

@@ -61,7 +61,7 @@ class OfferController extends Controller
         $offer_cond['application_period.isactive'] = 1;
 //        $offer_cond['application_period.applicationperiodstatusid'] = 5;
         $offer_cond['offer.isdeleted'] = 0;
-        $offer_cond['offer.isactive'] = 1;
+//        $offer_cond['offer.isactive'] = 1;
         
         /*
          * if user has cross divisional authority then all application 
@@ -736,11 +736,6 @@ class OfferController extends Controller
             Yii::$app->session->set('division', $target_division);
             Yii::$app->session->set('programme', $programme);
             Yii::$app->session->set('cape', $cape);
-            
-//            $programme = $request->post('programme');
-//            $cape = $request->post('cape');
-//            Yii::$app->session->set('programme', $programme);
-//            Yii::$app->session->set('cape', $cape);
         }
         else
         {
@@ -759,7 +754,6 @@ class OfferController extends Controller
         $offer_cond['application_period.isactive'] = 1;
 //        $offer_cond['application_period.applicationperiodstatusid'] = 5;
         $offer_cond['offer.isdeleted'] = 0;
-        $offer_cond['offer.isactive'] = 1;
         
         /*
          * if user has cross divisional authority then all application 
@@ -942,327 +936,8 @@ class OfferController extends Controller
             'english_req' => $english_req,
             'subjects_req' => $subjects_req,
         ]);
-    }
-        
-        
-        
-        
-//        $offers = Offer::find()
-//                ->joinWith('application')
-//                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                ->where($offer_cond)
-//                ->all();
-        
-//        $division = Division::findOne(['divisionid' => $division_id ]);
-//        $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
-//        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1]);
-//        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-//        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
-//        
-//        if ($division_id && $division_id == 1)
-//        {
-//            $app_period_name = "All Active Application Periods";
-//            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
-//        }
-        
-//        if (! ($division != 0 && $programme != 0 && $cape != 0))
-//        {
-//            if ($programme != 0)
-//            {
-//                $offer_cond['programme_catalog.programmecatalogid'] = $programme;
-//            }
-//            $offers = Offer::find()
-//                    ->joinWith('application')
-//                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('programme_catalog', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-//                    ->where($offer_cond)
-//                    ->all();
-//            if ($cape != 0)
-//            {
-//                $offer_cond['application_capesubject.capesubjectid'] = $cape;
-//                $offers = Offer::find()
-//                    ->joinWith('application')
-//                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
-//                    ->where($offer_cond)
-//                    ->all();
-//            }
-//        }
-//        else
-//        {
-//            $offers = array();
-//            Yii::$app->session->setFlash('error', 'Select either a divsion, programme OR a CAPE Subject.');
-//        }
-        
-        
-//        $data = array();
-//        foreach ($offers as $offer)
-//        {
-//            $cape_subjects_names = array();
-//            $application = $offer->getApplication()->one();
-//            $applicant = Applicant::findOne(['personid' => $application->personid]);
-//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-//            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
-//            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
-//            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
-//            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
-//            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-//            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
-//            
-//            $offer_data = array();
-//            $offer_data['offerid'] = $offer->offerid;
-//            $offer_data['applicationid'] = $offer->applicationid;
-//            $offer_data['firstname'] = $applicant->firstname;
-//            $offer_data['lastname'] = $applicant->lastname;
-//            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-//            $offer_data['issuedby'] = $issuername;
-//            $offer_data['issuedate'] = $offer->issuedate;
-//            $offer_data['revokedby'] = $revokername;
-//            $offer_data['ispublished'] = $offer->ispublished;
-//            
-//            $data[] = $offer_data;
-//        }
-//        
-//        $dataProvider = new ArrayDataProvider([
-//            'allModels' => $data,
-//            'pagination' => [
-//                'pageSize' => 50,
-//            ],
-//        ]);
-//        
-//        $prog_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'programme_catalog.isdeleted' => 0);
-//        if ($division_id && $division_id == 1)
-//        {
-//            $prog_cond = array('application_period.isactive' => 1);
-//        }
-//        $programmes = ProgrammeCatalog::find()
-//                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-//                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-//                ->where($prog_cond)
-//                ->all();
-//        $progs = array(0 => 'None');
-//        foreach ($programmes as $programme)
-//        {
-//            $progs[$programme->programmecatalogid] = $programme->getFullName();
-//        }
-//        
-//        $cape_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
-//        if ($division_id && $division_id == 1)
-//        {
-//            $cape_cond = array('application_period.isactive' => 1, 'cape_subject.isdeleted' => 0);
-//        }
-//        $cape = CapeSubject::find()
-//                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
-//                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-//                ->where($cape_cond)
-//                ->all();
-//        $capes = array(0 => 'None');
-//        foreach ($cape as $c)
-//        {
-//            $capes[$c->capesubjectid] = $c->subjectname;
-//        }
-//
-//        return $this->render('index', [
-//            'dataProvider' => $dataProvider,
-//            'divisionabbr' => $division_abbr,
-//            'applicationperiodname' => $app_period_name,
-//            'programmes' => $progs,
-//            'cape_subjects' => $capes,
-//            'offer_issues' => Null,
-//        ]);
-//    }
+    } 
     
-//    private function getMultipleOffers($offers, $details = False)
-//    {
-//        $offerids = array();
-//        $personids = array();
-//        $offenderids = array();
-//        foreach($offers as $offer)
-//        {
-//            $applicant = Applicant::find()
-//                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
-//                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-//                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
-//                    ->one();
-//            if ($applicant && in_array($applicant->personid, $personids))
-//            {
-//                if ($details)
-//                {
-//                    $offenderids[] = $applicant->personid;
-//                }
-//                else
-//                {
-//                    return true;
-//                }
-//            }
-//            else if ($applicant)
-//            {
-//                $personids[] = $applicant->personid;
-//            }
-//            
-//            $certificates = self::getSubjects($applicant->personid);
-//            if ($certificates)
-//            {
-//                $division_id = EmployeeDepartment::getUserDivision();
-//                $dups = self::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
-//                if ($dups)
-//                {
-//                    foreach($dups as $dup)
-//                    {
-//                        $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
-//                        if ($user)
-//                        {
-//                            $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
-//                                'application.personid' => $user->personid);
-//
-//                            if ($division_id && $division_id == 1)
-//                            {
-//                                $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
-//                            }
-//
-//                            $offers = Offer::find()
-//                                    ->joinWith('application')
-//                                    ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                                    ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                                    ->where($offer_cond)
-//                                    ->all();
-//                            if ($details)
-//                            {
-//                                $offenderids[] = $user->personid;
-//                            }
-//                            else
-//                            {
-//                                return true;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        foreach($offenderids as $offenderid)
-//        {
-//            $offs = Offer::find()
-//                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
-//                    ->where(['application.personid' => $offenderid, 'offer.isdeleted' => 0, 'application.isdeleted' => 0])
-//                    ->all();
-//            foreach($offs as $off)
-//            {
-//                $offerids[] = $off;
-//            }
-//        }
-//        return count($offerids) > 0 ? $offerids : false;
-//    }
-    
-//    private function getSubjectsPassed($offers, $details = False)
-//    {
-//        $offerids = array();
-//        foreach($offers as $offer)
-//        {
-//            $applicant = Applicant::find()
-//                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
-//                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-//                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
-//                    ->one();
-//            $subjects_passed = self::getSubjectsPassedCount($applicant->personid);
-//            if ($subjects_passed < 5)
-//            {
-//                if ($details)
-//                {
-//                    $offerids[] = $offer;
-//                }
-//                else
-//                {
-//                    return True;
-//                }
-//            }        
-//        }
-//        return count($offerids) > 0 ? $offerids : False;
-//    }
-    
-//    private function getHasEnglish($offers, $details = False)
-//    {
-//        $offerids = array();
-//        foreach($offers as $offer)
-//        {
-//            $applicant = Applicant::find()
-//                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
-//                    ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-//                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
-//                    ->one();
-//            $certificates = self::getSubjects($applicant->personid);
-//            $has_english = self::hasEnglish($certificates);
-//            if (!$has_english)
-//            {
-//                if ($details)
-//                {
-//                    $offerids[] = $offer;
-//                }
-//                else
-//                {
-//                    return True;
-//                }
-//            }
-//        }
-//        return count($offerids) > 0 ? $offerids : False;
-//    }
-    
-    /*
-    * Purpose: Gets all csec_subjects an applicants has passed
-    * Created: 27/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
-    */
-//    private function getSubjects($applicantid)
-//    {
-//        return CsecQualification::find()
-//                    ->where(['personid' => $applicantid, 'isverified' => 1, 'isdeleted' => 0])
-//                    ->all();
-//    }
-    
-    /*
-    * Purpose: Gets all csec_subjects an applicants has passed
-    * Created: 27/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
-    */
-//    private function getSubjectsPassedCount($applicantid)
-//    {
-//        return CsecQualification::find()
-//                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
-//                    ->where(['csec_qualification.personid' => $applicantid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-//                        'examination_grade.ordering' => [1, 2, 3]])
-//                    ->count();
-//    }
-    
-     /*
-    * Purpose: Determins if student passed CSEC Math 
-    * Created: 4/08/2015 by Gamal Crichton
-    * Last Modified: 4/08/2015 by Gamal Crichton
-    */
-//    private function hasEnglish($certificates)
-//    {
-//        $exam_body = ExaminationBody::findOne(['abbreviation' => 'CSEC', 'isdeleted' => 0]);
-//        if ($exam_body)
-//        {
-//            $english = Subject::findOne(['name' => 'english language', 'examinationbodyid' => $exam_body->examinationbodyid, 'isdeleted' => 0]);
-//            if ($english)
-//            {
-//                foreach($certificates as $cert)
-//                {
-//                    if ($cert->subjectid == $english->subjectid)
-//                    {
-//                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
-//                        if (in_array($exam_grade->ordering, array(1,2,3)))
-//                        {
-//                                return True;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return False;
-//    }
     
     /**
      * 
@@ -1272,105 +947,20 @@ class OfferController extends Controller
      * Date Created: ??
      * Date Last Modified: 07/03/2016 (Laurence Charles)
      */
-    public function actionOfferDetailsHome()
+    public function actionOfferDetailsHome($criteria = NULL)
     {
+        $dataProvider = false;
+        
         $division_id = EmployeeDepartment::getUserDivision();
         
-        $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
-        $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
+        $offer_cond['application_period.isdeleted'] = 0;
 //        $offer_cond['application_period.applicationperiodstatusid'] = 5;
         $offer_cond['offer.isdeleted'] = 0;
-        $offer_cond['offer.isactive'] = 1;
         
-        /*
-         * if user has cross divisional authority then all application 
-         * periods are considered
-         */
-        if ($division_id && $division_id == 1)      
-            $app_period_name = "All Active Application Periods";
-        
-        /*
-         * if user's authority is confined to one division division
-         * then only the applocation periods related to that division are considered.
-         */
-        elseif ($division_id && $division_id != 1)
-         $offer_cond['application_period.divisionid'] = $division_id;
-        
-        $offers = Offer::find()
-                ->joinWith('application')
-                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where($offer_cond)
-                ->all();
-        
-        $multiple_offers = Applicant::getMultipleOffers($offers);
-        $subjects_req = Applicant::getAcceptedWithoutFivePasses($offers);
-        $english_req = Applicant::getAcceptedWithoutEnglish($offers);
-        $math_req = Applicant::getAcceptedWithoutMath($offers);
-        
-        $dte_science_req = false;
-        $dne_science_req = false;
-        $open_periods = ApplicationPeriod::getOpenPeriodIDs();
-        if($open_periods == true)
-        {
-            $dte_open = in_array(6, $open_periods);
-            if ($dte_open == true)
-                $dte_science_req = Applicant::getAcceptedWithoutDteScienceCriteria($offers, $details = false);
-            
-            $dne_open = in_array(7, $open_periods);
-            if ($dne_open == true)
-                $dne_science_req = Applicant::getAcceptedWithoutDneScienceCriteria($offers, $details = false);
-        }
-        
-        $offer_issues = false;
-        if ($multiple_offers==true || $english_req==true  || $subjects_req==true  || $math_req==true || $dte_science_req==true  || $dne_science_req==true)
-            $offer_issues = true;
-        
-        
-        return $this->render('questionable-offers-home', [
-            'divisionabbr' => $division_abbr,
-            'applicationperiodname' => $app_period_name,
-            'offer_issues' => $offer_issues,
-            'multiple_offers' => $multiple_offers,
-            'english_req' => $english_req,
-            'math_req' => $math_req,
-            'subjects_req' => $subjects_req,
-            'dte_science_req' => $dte_science_req,
-            'dne_science_req' => $dne_science_req,
-        ]);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * 
-     * @return type
-     * 
-     * Author: Gamal Cricheton
-     * Date Created: ??
-     * Date Last Modified: 07/03/2016 (Laurence Charles)
-     */
-    public function actionOfferIssueDetails()
-    {
-        $division_id = EmployeeDepartment::getUserDivision();
-        
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0, /*'applicationperiodstatusid' => 5*/]);
-        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-        
-        $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.applicationperiodstatusid'] = 5;
-        $offer_cond['offer.isdeleted'] = 0;
-        $offer_cond['offer.isactive'] = 1;
         
         /*
          * if user has cross divisional authority then all application 
@@ -1386,206 +976,297 @@ class OfferController extends Controller
         elseif ($division_id && $division_id != 1)
             $offer_cond['application_period.divisionid'] = $division_id;
         
-        
-//        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0);
-//        
-//        if ($division_id && $division_id == 1)
-//        {
-//            $app_period_name = "All Active Application Periods";
-//            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0);
-//        }
-        
         $offers = Offer::find()
                 ->joinWith('application')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->where($offer_cond)
                 ->all();
+//        $offer_count = count($offers);
+        $multiple_offers = Applicant::getMultipleOffers($offers);
+        $english_req = Applicant::getAcceptedWithoutEnglish($offers);
+        $math_req = Applicant::getAcceptedWithoutMath($offers);
+        $subjects_req = Applicant::getAcceptedWithoutFivePasses($offers);
         
         
-        $mult = Applicant::getMultipleOffers($offers, true);
-        $multiple_offers = $mult ? $mult : array();
-        $mult_offerids = array();
-        foreach($multiple_offers as $off)
+        $open_periods = ApplicationPeriod::getOpenPeriodIDs();
+        if($open_periods == true)
         {
-            $mult_offerids[] = $off->offerid; 
+            $dte_open = in_array(6, $open_periods);
+            if ($dte_open == true)
+                $dte_science_req = Applicant::getAcceptedWithoutDteScienceCriteria($offers);
+            
+            $dne_open = in_array(7, $open_periods);
+            if ($dne_open == true)
+                $dne_science_req = Applicant::getAcceptedWithoutDneScienceCriteria($offers);
         }
+              
         
-        $eng = Applicant::getAcceptedWithoutEnglish($offers, true);
-        $english_req = $eng ? $eng : array();
-        
-        $math = Applicant::getAcceptedWithoutMath($offers, true);
-        $math_req = $math ? $math : array();
-        
-        $subs = Applicant::getAcceptedWithoutFivePasses($offers, true);
-        $subjects_req = $subs ? $subs : array();
-//        $math_req = Applicant::getAcceptedWithoutMath($offers);
-        
-        
-        
-//        $mult = Application::getMultipleOffers($offers, true);
-//        $multiple_offers = $mult ? $mult : array();
-//        $mult_offerids = array();
-//        foreach($multiple_offers as $off)
-//        {
-//            $mult_offerids[] = $off->offerid; 
-//        }
-//        $eng = Application::getHasEnglish($offers, true);
-//        $english_req = $eng ? $eng : array();
-//        $subs = Application::getSubjectsPassed($offers, true);
-//        $subjects_req = $subs ? $subs : array();
+        if ($criteria == "mult")
+        {
+            $mult = Applicant::getMultipleOffers($offers, true);
+            $multiple_offers1 = $mult ? $mult : array();
+            $mult_offerids = array();
+            foreach($multiple_offers1 as $off)
+            {
+                $mult_offerids[] = $off->offerid; 
+            }
+        }
+        elseif ($criteria == "maths")
+        {
+            $math = Applicant::getAcceptedWithoutMath($offers, true);
+            $math_req1 = $math ? $math : array();
+        }
+        elseif ($criteria == "english")
+        {
+            $eng = Applicant::getAcceptedWithoutEnglish($offers, true);
+            $english_req1 = $eng ? $eng : array();
+        }
+        elseif ($criteria == "five_passes")
+        {
+            $subs = Applicant::getAcceptedWithoutFivePasses($offers, true);
+            $subjects_req1 = $subs ? $subs : array();
+        }
+        elseif ($criteria == "dte")
+        {
+            if($open_periods == true)
+            {
+                $dte_open = in_array(6, $open_periods);
+                if ($dte_open == true)
+                {
+                    $teaching = Applicant::getAcceptedWithoutDteScienceCriteria($offers, true);
+                    $dte_science_req1 = $teaching ? $teaching : array();
+                }
+            }
+        }
+        elseif ($criteria == "dne")
+        {
+            if($open_periods == true)
+            {
+                $dte_open = in_array(6, $open_periods);
+                if ($dte_open == true)
+                {
+                    $teaching = Applicant::getAcceptedWithoutDteScienceCriteria($offers, true);
+                    $dte_science_req1 = $teaching ? $teaching : array();
+                }
+            }
+        }
         
         $multiple_offers_data = array();
         $english_req_data = array();
         $math_req_data = array();
         $subjects_req_data = array();
-        foreach ($offers as $offer)
-        {
-            if (!in_array($offer->offerid, $mult_offerids) 
-                    && !in_array($offer, $english_req ) 
-                    && !in_array($offer, $math_req ) 
-                    && !in_array($offer, $subjects_req ))
-            {
-                continue;
-            }
-            $cape_subjects_names = array();
-            $application = $offer->getApplication()->one();
-            $applicant = Applicant::findOne(['personid' => $application->personid]);
-            $username = $applicant->getPerson()->one()->username;
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
-            $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
-            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
-            $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
-            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
-//            
-//            $offer_data = array();
-//            $offer_data['offerid'] = $offer->offerid;
-//            $offer_data['applicationid'] = $offer->applicationid;
-//            $offer_data['firstname'] = $applicant->firstname;
-//            $offer_data['lastname'] = $applicant->lastname;
-//            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-//            $offer_data['issuedby'] = $issuername;
-//            $offer_data['issuedate'] = $offer->issuedate;
-//            $offer_data['revokedby'] = $revokername;
-//            $offer_data['ispublished'] = $offer->ispublished;
-            
-            $offer_data = array();
-            $offer_data['offerid'] = $offer->offerid;
-            $offer_data['applicationid'] = $offer->applicationid;
-            $offer_data['username'] = $username;
-            $offer_data['firstname'] = $applicant->firstname;
-            $offer_data['lastname'] = $applicant->lastname;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-            $offer_data['issuedby'] = $issuername;
-            $offer_data['issuedate'] = $offer->issuedate;
-            $offer_data['revokedby'] = $revokername;
-            $offer_data['revokedate'] = $offer->revokedate ? $offer->revokedate : 'N/A' ;
-            $offer_data['ispublished'] = $offer->ispublished;
-            
-            if (in_array($offer->offerid, $mult_offerids))
-            {
-                 $multiple_offers_data[] = $offer_data;
-            }
-            
-            if (in_array($offer, $english_req))
-            {
-                 $english_req_data[] = $offer_data;
-            }
-            
-            if (in_array($offer, $math_req))
-            {
-                 $math_req_data[] = $offer_data;
-            }
-            
-            if (in_array($offer, $subjects_req))
-            {
-                 $subjects_req_data[] = $offer_data;
-            }
-        }
+        $dte_req_data = array();
+        $dne_req_data = array();
         
-        $multOfferDataProvider = new ArrayDataProvider([
-            'allModels' => $multiple_offers_data,
-            'pagination' => [
-                'pageSize' => 25,
-                ],
-            'sort' => [
-                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
-            ],
-        ]);
         
-        $engReqDataProvider = new ArrayDataProvider([
-            'allModels' => $english_req_data,
-            'pagination' => [
-                'pageSize' => 25,
-            ],
-        ]);
-        
-        $mathReqDataProvider = new ArrayDataProvider([
-            'allModels' => $math_req_data,
-            'pagination' => [
-                'pageSize' => 25,
-            ],
-        ]);
-        
-        $subjectReqsDataProvider = new ArrayDataProvider([
-            'allModels' => $subjects_req_data,
-            'pagination' => [
-                'pageSize' => 25,
-            ],
-        ]);
-        
-//        return $this->render('offer-issues-details',
-        return $this->render('questionable-offers',
-                [
-                    'multOfferDataProvider' => $multOfferDataProvider,
-                    'engReqDataProvider' => $engReqDataProvider,
-                    'mathReqDataProvider' => $mathReqDataProvider,
-                    'subjectReqsDataProvider' => $subjectReqsDataProvider,
-                ]);
-    }
-    
-    /*
-    * Purpose: Gets all csec_subjects an applicants has passed
-    * Created: 27/07/2015 by Gamal Crichton
-    * Last Modified: 27/07/2015 by Gamal Crichton
-    */
-    private function getPossibleDuplicate($applicantid, $candidateno, $year)
-    {
-        try
-        {
-            $origcandidateno = $candidateno;
-            $candidateno = intval($candidateno);
-        } catch (Exception $ex) {
-            return false;
-        } 
-        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
-        {
-            return false;
-        }
-        $groups = CsecQualification::find()
-                    ->where(['candidatenumber' => $candidateno, 'isactive' => 1,
-                            'isdeleted' => 0, 'year' => $year])
-                    ->groupBy('personid')
-                    ->all();
-        if (count($groups) == 1)
-        {
-            return false;
-        }
-        else
-        {
-            $dups = array();
-            foreach ($groups as $group)
+        if ($criteria != NULL)
+        { 
+            foreach ($offers as $offer)
             {
-                if ($group->personid != $applicantid)
+                if ($criteria == "mult")
                 {
-                    $dups[] = $group->personid;
+                    if (!in_array($offer->offerid, $mult_offerids))
+                        continue;
+                }
+                elseif ($criteria == "maths")
+                {
+                    if (!in_array($offer, $math_req1))
+                        continue;
+                }
+                elseif ($criteria == "english")
+                {
+                    if (!in_array($offer, $english_req1))
+                        continue;
+                }
+                elseif ($criteria == "five_passes")
+                {
+                    if (!in_array($offer, $subjects_req1))
+                       continue;
+                }
+                elseif ($criteria == "dte")
+                {
+                    if (!in_array($offer, $dte_science_req1))
+                       continue;
+                }
+                elseif ($criteria == "dne")
+                {
+                    if (!in_array($offer, $dne_science_req1))
+                       continue;
+                }
+                
+
+                $cape_subjects_names = array();
+                $application = $offer->getApplication()->one();
+                $applicant = Applicant::findOne(['personid' => $application->personid]);
+                $username = $applicant->getPerson()->one()->username;
+                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+                $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
+                $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+                $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
+                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                foreach ($cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+
+                $offer_data = array();
+                $offer_data['offerid'] = $offer->offerid;
+                $offer_data['applicationid'] = $offer->applicationid;
+                $offer_data['username'] = $username;
+                $offer_data['firstname'] = $applicant->firstname;
+                $offer_data['lastname'] = $applicant->lastname;
+                $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $offer_data['issuedby'] = $issuername;
+                $offer_data['issuedate'] = $offer->issuedate;
+                $offer_data['revokedby'] = $revokername;
+                $offer_data['revokedate'] = $offer->revokedate ? $offer->revokedate : 'N/A' ;
+                $offer_data['ispublished'] = $offer->ispublished;
+                
+                if ($criteria == "mult")
+                {
+                    if (in_array($offer->offerid, $mult_offerids))
+                    {
+                         $multiple_offers_data[] = $offer_data;
+                    }
+                }
+                elseif ($criteria == "maths")
+                {
+                    if (in_array($offer, $math_req1))
+                    {
+                         $math_req_data[] = $offer_data;
+                    }
+                }
+                elseif ($criteria == "english")
+                {
+                    if (in_array($offer, $english_req1))
+                    {
+                         $english_req_data[] = $offer_data;
+                    }
+                }
+                elseif ($criteria == "five_passes")
+                {
+                    if (in_array($offer, $subjects_req1))
+                    {
+                         $subjects_req_data[] = $offer_data;
+                    }
+                }
+                elseif ($criteria == "dte")
+                {
+                    if (in_array($offer, $dte_science_req1))
+                    {
+                         $dte_req_data[] = $offer_data;
+                    }
+                }
+                elseif ($criteria == "dne")
+                {
+                    if (in_array($offer, $dte_science_req1))
+                    {
+                         $dne_req_data[] = $offer_data;
+                    }
                 }
             }
-            return $dups;
         }
+        
+        $offer_type = "No Choice";
+        if ($criteria == "mult")
+        {
+            $offer_type = "Multiple Offer Recepients";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $multiple_offers_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+        elseif ($criteria == "maths")
+        {
+            $offer_type = "CSEC Mathematics Requirement Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $math_req_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+        elseif ($criteria == "english")
+        {
+            $offer_type = "CSEC English Requirement Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $english_req_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+        elseif ($criteria == "five_passes")
+        {
+            $offer_type = "Minimum Subject Total Entry Requirements Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $subjects_req_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+        elseif ($criteria == "dte")
+        {
+            $offer_type = "DTE Relevant Science Requirement Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $dte_req_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+        elseif ($criteria == "dne")
+        {
+            $offer_type = "DNE Relevant Science Requirement Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $dne_req_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                ],
+            ]);
+        }
+
+        return $this->render('questionable-offers-home', [
+            'applicationperiodname' => $app_period_name,
+            'multiple_offers' => $multiple_offers,
+            'english_req' => $english_req,
+            'math_req' => $math_req,
+            'subjects_req' => $subjects_req,
+            'dte_science_req' => $dte_science_req,
+            'dne_science_req' => $dne_science_req,
+            
+            'dataProvider' => $dataProvider,
+            'offer_type' => $offer_type,
+        ]);
     }
     
     

@@ -298,7 +298,7 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
-     * Gets the programme and applicantion status of an applicant
+     * Gets the programme and applicant status of an applicant
      * 
      * @param type $personid
      * 
@@ -1428,16 +1428,6 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * Returns an array of all applicants that were given offers but don't have 
      * 5 CSEC Passes
@@ -1461,7 +1451,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
                     ->one();
             $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
-            if ($minimum_subjects_passed == true)
+            if (!$minimum_subjects_passed)
             {
                 if ($details)
                     $offerids[] = $offer;

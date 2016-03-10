@@ -149,6 +149,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </fieldset> 
                 
                 <div style="margin-left:2.5%;" class="form-group">
+                    <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  Modify Applicant Details</a>
+           
+                    
+                    
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
                     <?php endif; ?>

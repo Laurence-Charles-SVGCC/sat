@@ -266,7 +266,7 @@ class CsecQualification extends \yii\db\ActiveRecord
             $origcandidateno = $candidateno;
             $candidateno = intval($candidateno);
         } catch (Exception $ex) {
-            return False;
+            return false;
         } 
         if ($candidateno == 0 || strlen($origcandidateno) != 10 )
             return false;
@@ -277,7 +277,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                     ->all();
         if (count($groups) == 1)
         {
-            return False;
+            return false;
         }
         else
         {
@@ -493,7 +493,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                             'examination_grade.ordering' => [1, 2, 3]
                             ])
                     ->count();
-        if ($record_count > 0)
+        if ($record_count >= 5)
             return true;
         return false;
     }
@@ -529,7 +529,7 @@ class CsecQualification extends \yii\db\ActiveRecord
             $agricultural_science1 = Subject::findOne(['name' => 'Agricultural Science (Double Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $agricultural_science2 = Subject::findOne(['name' => 'Agricultural Science (Single Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
 
-            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && ($agricultural_science1 == true || $agricultural_science2 == true))
+            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $agricultural_science1 == true && $agricultural_science2 == true)
             {
                 foreach($certificates as $cert)
                 {                 
@@ -577,7 +577,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                 }
             }
             
-            if($has_integrated_science == true && $has_biology == true && $has_chemistry == true && $has_physics == true && ($has_agricultural_science1 == true || $has_agricultural_science2 == true))
+            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_agricultural_science1 == true || $has_agricultural_science2 == true)
                 return true;
         }
         return false;
@@ -654,7 +654,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                 }
             }
             
-            if($has_integrated_science == true && $has_biology == true && $has_chemistry == true && $has_physics == true && $has_human_and_social_biology == true)
+            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_human_and_social_biology == true)
                 return true;
         }
         return false;
