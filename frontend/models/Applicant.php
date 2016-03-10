@@ -428,7 +428,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
                   )
-                $application_status =10;
+            $application_status =10;
         }
         
         $target = Application::getTarget($applications, $application_status);
