@@ -1896,6 +1896,90 @@ class ViewApplicantController extends \yii\web\Controller
             'qualification' => $qualification,
         ]); 
     }
+    
+    
+    /**
+     * Creates a qualification record from the verification screen
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/03/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public function actionAddQualificationFromVerify($applicantusername, $cseccentreid, $centrename, $type)
+    {
+        $user = User::find()
+                ->where(['username' => $applicantusername, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $qualification = new CsecQualification();
+        $qualification->personid = $user->personid;
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $qualification->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $qualification->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        //redirect
+                        if (strcasecmp($type, "pending")==0)
+                        {
+                            return $this->redirect(['verify-applicants/view-pending', 
+                                                    'cseccentreid' => $cseccentreid, 
+                                                    'centrename' => $centrename
+                                                ]);
+                        }
+                        elseif (strcasecmp($type, "queried")==0)
+                        {
+                            return $this->redirect(['verify-applicants/view-queried', 
+                                                    'cseccentreid' => $cseccentreid, 
+                                                    'centrename' => $centrename
+                                                ]);
+                        }
+                        elseif (strcasecmp($type, "all")==0)
+                        {
+                            return $this->redirect(['verify-applicants/view-all', 
+                                                    'cseccentreid' => $cseccentreid, 
+                                                    'centrename' => $centrename
+                                                ]);
+                        }
+                        elseif (strcasecmp($type, "verified")==0)
+                        {
+                            return $this->redirect(['verify-applicants/view-verified', 
+                                                    'cseccentreid' => $cseccentreid, 
+                                                    'centrename' => $centrename
+                                                ]);
+                        }
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+        }
+
+        return $this->render('add_csec_qualificiation_from_verify', [
+            'user' => $user,
+            'applicantusername' => $applicantusername,
+            'qualification' => $qualification,
+        ]); 
+    }
+    
 
 
     /**

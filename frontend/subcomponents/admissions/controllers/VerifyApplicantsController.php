@@ -253,8 +253,6 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
-//        $is_new_qualification = false;
-//        $post_qualification = false; 
         $post_qualification = PostSecondaryQualification::find()
                 ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
@@ -490,16 +488,12 @@ class VerifyApplicantsController extends \yii\web\Controller
             $save_flag = $cert->save();
 
             if ($save_flag == false)
-            {
                 Yii::$app->session->setFlash('error', 'Certificate could not be deleted');
-            }
         }
         else
             Yii::$app->session->setFlash('error', 'Error retrieving certificate');
-        
       
         return $this->redirect(\Yii::$app->request->getReferrer());
-        
     }
     
     
@@ -510,7 +504,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * 
      * Author: Laurence Charles
      * Date Created: 02/03/2016
-     * Date Last Modified: 02/03/2016
+     * Date Last Modified: 10/03/2016
      */
     public function actionDeletePostSecondaryQualification($recordid)
     {
@@ -519,9 +513,16 @@ class VerifyApplicantsController extends \yii\web\Controller
         $qualification = PostSecondaryQualification::find()
                     ->where(['postsecondaryqualificationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-        $qualification->isactive = 0;
-        $qualification->isdeleted = 1;
-        $save_flag = $qualification->save();
+        if ($qualification)
+        {
+            $qualification->isactive = 0;
+            $qualification->isdeleted = 1;
+            $save_flag = $qualification->save();
+            if ($save_flag == false)
+                    Yii::$app->session->setFlash('error', 'Post Secondary Qualification could not be deleted');
+        }
+        else
+            Yii::$app->session->setFlash('error', 'Error retrieving certificate');
 
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
@@ -530,133 +531,30 @@ class VerifyApplicantsController extends \yii\web\Controller
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*
-    * Purpose: Gets the CSEC Centres relevant to active application periods
-    * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
-    */
-    private function getCurrentCentres()
-    {
-        return DatabaseWrapperController::getCurrentCentres();
-    }
-    
-    /*
-    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-    * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsReceived($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsReceived($cseccentreid);
-    }
-    
-    /*
-    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-     *          who have already been fully verified
-    * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsVerified($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsVerified($cseccentreid);
-    }
-    
-     /*
-    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-     *          who have already been fully verified
-    * Created: 15/07/2015 by Gamal Crichton
-    * Last Modified: 15/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsQueried($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsQueried($cseccentreid);
-    }
-    
-    /*
-    * Purpose: Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-     *          who are still pending
-    * Created: 14/08/2015 by Gamal Crichton
-    * Last Modified: 14/08/2015 by Gamal Crichton
-    */
-    private function centreApplicantsPending($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsPending($cseccentreid);
-    }
-    
-    /*
-    * Purpose: Gets count of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-    * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsReceivedCount($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsReceivedCount($cseccentreid);
-    }
-    
-    /*
-    * Purpose: Gets counts of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-     *          who have already been fully verified
-    * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsVerifiedCount($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsVerifiedCount($cseccentreid);
-    }
-    
-    
-    /*
-    * Purpose: Gets counts of the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
-     *          who have a certificate flagged as to be queried
-    * Created: 16/07/2015 by Gamal Crichton
-    * Last Modified: 16/07/2015 by Gamal Crichton
-    */
-    private function centreApplicantsQueriedCount($cseccentreid)
-    {
-        return DatabaseWrapperController::centreApplicantsQueriedCount($cseccentreid);
-    }
-    
-    private function getExternal()
-    {
-        $data = array();
-        $applications = Application::find()
-                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
-                ->where(['application_period.isactive' => 1, 'application.isdeleted' => 0, 'applicant.isexternal' => 1,
-                    'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
-                ->groupby('application.personid')->all();
-        
-        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);
-        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
-        foreach($applications as $application)
-        {
-            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
-            if (!$qual || $qual->cseccentreid == $cseccentreid)
-            {
-                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-            }
-        }
-        return $data;
-    }
+//    private function getExternal()
+//    {
+//        $data = array();
+//        $applications = Application::find()
+//                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+//                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+//                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+//                ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
+//                ->where(['application_period.isactive' => 1, 'application.isdeleted' => 0, 'applicant.isexternal' => 1,
+//                    'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+//                ->groupby('application.personid')->all();
+//        
+//        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);
+//        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
+//        foreach($applications as $application)
+//        {
+//            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
+//            if (!$qual || $qual->cseccentreid == $cseccentreid)
+//            {
+//                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+//            }
+//        }
+//        return $data;
+//    }
     
 
 }

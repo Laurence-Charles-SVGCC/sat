@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * 'add_scec_qualification' view.  Used for modifying information in the 'General' section of 'Profile' tab
+ * 'add_qualification' from verify view.  Used for modifying information in the 'General' section of 'Profile' tab
  * Author: Laurence Charles
  * Date Created: 28/02/2016
  */
@@ -35,7 +35,7 @@
                 <?php
                     $form = ActiveForm::begin([
                                 //'action' => Url::to(['gradebook/index']),
-                                'id' => 'add-csec-qualification',
+                                'id' => 'add-csec-qualification-from-verify',
                                 'options' => [
                                 ],
                             ]);
@@ -75,10 +75,9 @@
                                 echo "<th style='vertical-align:middle'>Examination Year</th>";
                                 echo "<td>{$form->field($qualification, 'year')->label('')->dropDownList(Yii::$app->params['years'], ['style'=> 'font-size:14px;'])}</td>";
                             echo "</tr>";                     
-                        echo "</table>";
-
-                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+                        echo "</table><br/>";
+                        
+                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success', 'style' => 'width:75%; margin:0 auto;']);
 
                     ActiveForm::end();    
                 ?>

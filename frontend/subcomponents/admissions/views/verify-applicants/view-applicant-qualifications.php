@@ -54,13 +54,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <th>Centre Name</th>
                             <?php endif;?>
                             <th>Examining Body</th>
+                            <th>Candidate #</th>
                             <th>Subject</th>
                             <th>Proficiency</th>
                             <th>Grade</th>
                             <th>Year</th>
                             <th>Verified</th>
                             <th>Queried</th>
-                            <th>Action</th>
+                            <th>Delete</th>
                           </tr>
                         </thead>
 
@@ -69,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <tr>
                                     <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
                                     <?php if($isexternal == 1):?>
-                                        <td width = 15%>
+                                        <td width = 10%>
                                             <?=  $form->field($model, "[$key]cseccentreid", ['options' => [
                                                     'tag'=>'div',
                                                     ],
@@ -88,6 +89,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                                    ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'abbreviation'))?>
                                     </td>
 
+                                    <td width = 10%>
+                                        <?= $form->field($model, "[$key]candidatenumber", ['options' => [
+                                                'tag'=>'div',
+                                                ],
+                                                'template' => '{input}{error}'
+                                            ])->textInput(); ?>
+                                    </td>
+                                    
                                     <td width = 20%> 
                                         <?= $form->field($model, "[$key]subjectid", ['options' => [
                                                 'tag'=>'div',
@@ -135,7 +144,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </td>
 
                                     <td>
-                                        <?= Html::a(' Delete', 
+                                        <?= Html::a(' ', 
                                                     ['delete-certificate', 'certificate_id' => $model->csecqualificationid], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                         'style' => 'margin-right:20px',
@@ -151,7 +160,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div style="margin-left:2.5%;" class="form-group">
                     <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  Modify Applicant Details</a>
            
-                    
+                    <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Qualification</a>
                     
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
@@ -161,11 +170,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                     <?php endif; ?>
                     
-                    <?php if (Yii::$app->user->can('addCertificate')): ?>
+                    <!--<?php if (Yii::$app->user->can('addCertificate')): ?>
                         <?= Html::submitButton('Add Certificates', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
                         <?= Html::dropDownList('add_more_value', 1, 
                                 array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
-                    <?php endif; ?>
+                    <?php endif; ?>-->
                 </div>  
                     
                 <?php if(PostSecondaryQualification::getPostSecondaryQualifications($model->personid) == true) :?>
@@ -179,7 +188,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <th>Year Awarded</th>
                                     <th>Verified</th>
                                     <th>Queried</th>
-                                    <th>Action</th>
+                                    <th>Delete</th>
                                 </tr>
                             <thead>
 
@@ -206,10 +215,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </td>
 
                                     <td style="vertical-align:middle">
-                                        <?= Html::a(' Delete', 
+                                        <?= Html::a(' ', 
                                                     ['post-secondary-qualification', 'recordid' => $post_qualification->postsecondaryqualificationid], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
-                                                        'style' => 'margin-right:20px',
+                                                     'style' => 'margin-right:20px',
                                                     ]);
                                         ?>
                                     </td>

@@ -1176,7 +1176,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                    ->where(['csec_qualification.personid' => $personid,
+                    ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
                             'application.isactive' => 1, 'application.isdeleted' => 0,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
@@ -1187,6 +1187,15 @@ class Applicant extends \yii\db\ActiveRecord
         foreach($qualifications as $qualification)
         {
             if ($qualification->isverified == 0)
+                $all_verified = false;
+            if ($qualification->isqueried == 1)
+                $all_verified = false;
+        }
+        
+        $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($personid);
+        if($post_qualification == true)
+        {
+            if ($post_qualification->isverified == 0 || $post_qualification->isqueried == 1)
                 $all_verified = false;
         }
         
