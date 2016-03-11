@@ -27,3 +27,5 @@ phpunit.phar
 /phpunit.xml
 
 ##Additions Gamal Crichton
+
+frontend/web/js/students/ajax_functions.js
