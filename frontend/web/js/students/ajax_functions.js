@@ -276,7 +276,7 @@ function EditCsecQualificationAjaxFunction(e)
     //For live sat_dev implementation
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
     
-    //Live sat implementation
+    //Live sat implementation on server
     var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
      
        
