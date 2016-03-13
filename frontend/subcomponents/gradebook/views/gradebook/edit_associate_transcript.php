@@ -24,90 +24,86 @@
                 </a>        
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
-                    <h1 class="custom_h1">Edit Course Totals</h1>
-                    
-                    <?php 
-                        if ($course_record == NULL || $course_record == false || $course_summary == NULL || $course_summary == false )
-                        {
-                            echo "<h1 class='custom_h2'>Course can not be editted at this time</h1>";
-                        }
-                        
-                        else
-                        {
-                            $form = ActiveForm::begin([
-                                //'action' => Url::to(['gradebook/index']),
-                                'id' => 'edit-associate-transcript-form',
-                                'options' => [
+            <div class="custom_body">
+                <h1 class="custom_h1">Edit Course Totals</h1>
+
+                <?php 
+                    if ($course_record == NULL || $course_record == false || $course_summary == NULL || $course_summary == false )
+                    {
+                        echo "<h1 class='custom_h2'>Course can not be editted at this time</h1>";
+                    }
+
+                    else
+                    {
+                        $form = ActiveForm::begin([
+                            //'action' => Url::to(['gradebook/index']),
+                            'id' => 'edit-associate-transcript-form',
+                            'options' => [
 //                                    'class' => 'form-layout form-inline'
 //                                    'class' => 'form-inline',
-                                ],
-                            ]);
-                                
-                                echo "<table class='table table-hover table-bordered' style='width:95%; margin: 0 auto;'>";
-                                    echo "<tr>";
-                                        echo "<th>Course Code</th>";
-                                            echo "<td>{$course_summary['code']}</td>";
-                                    echo "</tr>";
+                            ],
+                        ]);
 
-                                    echo "<tr>";
-                                        echo "<th>Course Name</th>";
-                                            echo "<td>{$course_summary['name']}</td>";
-                                    echo "</tr>";
+                            echo "<table class='table table-hover table-bordered' style='width:95%; margin: 0 auto;'>";
+                                echo "<tr>";
+                                    echo "<th>Course Code</th>";
+                                        echo "<td>{$course_summary['code']}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Credits Atempted</th>";
-                                            echo "<td>{$course_summary['credits_attempted']}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Course Name</th>";
+                                        echo "<td>{$course_summary['name']}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Credits Awarded</th>";
-                                            echo "<td>{$course_summary['credits_awarded']}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Credits Atempted</th>";
+                                        echo "<td>{$course_summary['credits_attempted']}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Coursework ({$course_summary['courseworkweight']}%)</th>";
-                                             echo "<td>{$form->field($course_record, 'courseworktotal')->label('')->textInput(['maxlength' => true])}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Credits Awarded</th>";
+                                        echo "<td>{$course_summary['credits_awarded']}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Exam ({$course_summary['examweight']}%)</th>";
-                                             echo "<td>{$form->field($course_record, 'examtotal')->label('')->textInput(['maxlength' => true])}</td>";
+                                echo "<tr>";
+                                    echo "<th>Coursework ({$course_summary['courseworkweight']}%)</th>";
+                                         echo "<td>{$form->field($course_record, 'courseworktotal')->label('')->textInput(['maxlength' => true])}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Final</th>";
-                                            echo "<td>{$course_summary['final']}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Exam ({$course_summary['examweight']}%)</th>";
+                                         echo "<td>{$form->field($course_record, 'examtotal')->label('')->textInput(['maxlength' => true])}</td>";
 
-                                    echo "<tr>";
-                                        echo "<th>Grade</th>";
-                                           echo "<td>{$course_summary['grade']}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Final</th>";
+                                        echo "<td>{$course_summary['final']}</td>";
+                                echo "</tr>";
 
-                                    echo "<tr>";
-                                        echo "<th>Grade Points</th>";
-                                            echo "<td>{$course_summary['gradepoints']}</td>";
-                                    echo "</tr>";
-                                    
-                                    echo "<tr>";
-                                        echo "<th>Status</th>";
-                                            echo "<td>{$course_summary['course_status']}</td>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                    echo "<th>Grade</th>";
+                                       echo "<td>{$course_summary['grade']}</td>";
+                                echo "</tr>";
 
-                                echo "</table>";
-                            
-                                echo "<br/>";
-                                
-                                echo Html::a(' Cancel',['edit-transcript-cancel', 'batchid' => $course_summary['batchid'], 'studentregistrationid' => $course_summary['studentregistrationid']], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                                echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-                                
-                            ActiveForm::end();      
-                        }                    
-                    ?>
-                    
-                    
-                </div>
+                                echo "<tr>";
+                                    echo "<th>Grade Points</th>";
+                                        echo "<td>{$course_summary['gradepoints']}</td>";
+                                echo "</tr>";
+
+                                echo "<tr>";
+                                    echo "<th>Status</th>";
+                                        echo "<td>{$course_summary['course_status']}</td>";
+                                echo "</tr>";
+
+                            echo "</table>";
+
+                            echo "<br/>";
+
+                            echo Html::a(' Cancel',['edit-transcript-cancel', 'batchid' => $course_summary['batchid'], 'studentregistrationid' => $course_summary['studentregistrationid']], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                            echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+
+                        ActiveForm::end();      
+                    }                    
+                ?>
             </div>
         </div>
     </div>

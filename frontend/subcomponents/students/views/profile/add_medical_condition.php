@@ -23,44 +23,41 @@
                 </a>    
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
-                    <h1 class="custom_h1">Add New Medical Condition</h1>
-                    
-                    <?php
-                        $form = ActiveForm::begin([
-                                    //'action' => Url::to(['gradebook/index']),
-                                    'id' => 'add-medical-condition-form',
-                                    'options' => [
-    //                                    'class' => 'form-layout form-inline'
-    //                                    'class' => 'form-inline',
-                                    ],
-                                ]);
-                        
-                            echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                                echo "<tr>";
-                                    echo "<th>Name</th>";
-                                    echo "<td>{$form->field($condition, 'medicalcondition')->label('')->textArea(['rows' => '4'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th>Description</th>";
-                                    echo "<td>{$form->field($condition, 'description')->label('')->textArea(['rows' => '4'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th>Emergency Action</th>";
-                                    echo "<td>{$form->field($condition, 'emergencyaction')->label('')->textArea(['rows' => '4'])}</td>";
-                                echo "</tr>";
-                            echo "</table>"; 
-                            
-                            echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                            echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-    
-                            ActiveForm::end();    
-                    ?>
-                
-                </div>
+            <div class="custom_body"> 
+                <h1 class="custom_h1">Add New Medical Condition</h1>
+
+                <?php
+                    $form = ActiveForm::begin([
+                                //'action' => Url::to(['gradebook/index']),
+                                'id' => 'add-medical-condition-form',
+                                'options' => [
+//                                    'class' => 'form-layout form-inline'
+//                                    'class' => 'form-inline',
+                                ],
+                            ]);
+
+                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
+                            echo "<tr>";
+                                echo "<th>Name</th>";
+                                echo "<td>{$form->field($condition, 'medicalcondition')->label('')->textArea(['rows' => '4'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th>Description</th>";
+                                echo "<td>{$form->field($condition, 'description')->label('')->textArea(['rows' => '4'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th>Emergency Action</th>";
+                                echo "<td>{$form->field($condition, 'emergencyaction')->label('')->textArea(['rows' => '4'])}</td>";
+                            echo "</tr>";
+                        echo "</table>"; 
+
+                        echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+
+                    ActiveForm::end();    
+                ?>
             </div>
         </div>
     </div>

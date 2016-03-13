@@ -29,64 +29,61 @@
                 </a>    
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
-                    <h1 class="custom_h1">Add New Qualification</h1>
-                    
-                    <?php
-                        $form = ActiveForm::begin([
-                                    //'action' => Url::to(['gradebook/index']),
-                                    'id' => 'add-csec-qualification-form',
-                                    'options' => [
-    //                                    'class' => 'form-layout'
-    //                                    'class' => 'form-inline',
-                                    ],
-                                ]);
-                            
-                            echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Examination Centre</th>";
-                                    echo "<td>{$form->field($qualification, 'cseccentreid')->label('')->dropDownList(CsecCentre::processCentres(), ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Candidtate Number</th>";
-                                    echo "<td>{$form->field($qualification, 'candidatenumber')->label('')->textInput(['maxlength' => true, 'style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Examination Body</th>";
-                                    echo "<td>{$form->field($qualification, 'examinationbodyid')->label('')->dropDownList(ExaminationBody::processExaminationBodies(), ['onchange' => 'AddCsecQualificationAjaxFunction(event);', 'style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Subject</th>";
-                                    echo "<td>{$form->field($qualification, 'subjectid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Proficiency</th>";
-                                    echo "<td>{$form->field($qualification, 'examinationproficiencytypeid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Grade</th>";
-                                    echo "<td>{$form->field($qualification, 'examinationgradeid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Examination Year</th>";
-                                    echo "<td>{$form->field($qualification, 'year')->label('')->dropDownList(Yii::$app->params['years'], ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";                     
-                            echo "</table>";
-                
-                            echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                            echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-    
-                        ActiveForm::end();    
-                    ?>
-                
-                </div>
+            <div class="custom_body">
+                <h1 class="custom_h1">Add New Qualification</h1>
+
+                <?php
+                    $form = ActiveForm::begin([
+                                //'action' => Url::to(['gradebook/index']),
+                                'id' => 'add-csec-qualification-form',
+                                'options' => [
+//                                    'class' => 'form-layout'
+//                                    'class' => 'form-inline',
+                                ],
+                            ]);
+
+                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Examination Centre</th>";
+                                echo "<td>{$form->field($qualification, 'cseccentreid')->label('')->dropDownList(CsecCentre::processCentres(), ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Candidtate Number</th>";
+                                echo "<td>{$form->field($qualification, 'candidatenumber')->label('')->textInput(['maxlength' => true, 'style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Examination Body</th>";
+                                echo "<td>{$form->field($qualification, 'examinationbodyid')->label('')->dropDownList(ExaminationBody::processExaminationBodies(), ['onchange' => 'AddCsecQualificationAjaxFunction(event);', 'style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Subject</th>";
+                                echo "<td>{$form->field($qualification, 'subjectid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Proficiency</th>";
+                                echo "<td>{$form->field($qualification, 'examinationproficiencytypeid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Grade</th>";
+                                echo "<td>{$form->field($qualification, 'examinationgradeid')->label('')->dropDownList(['' => 'Select...'], ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Examination Year</th>";
+                                echo "<td>{$form->field($qualification, 'year')->label('')->dropDownList(Yii::$app->params['years'], ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";                     
+                        echo "</table>";
+
+                        echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+
+                    ActiveForm::end();    
+                ?>
             </div>
         </div>
     </div>

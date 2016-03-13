@@ -42,72 +42,68 @@
                 </a>    
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
-                    
-                    <h1 class="custom_h1">Edit <?=$level?> Details</h1>
-                    
-                    <?php
-                        $form = ActiveForm::begin([
-                                    //'action' => Url::to(['gradebook/index']),
-                                    'id' => 'edit-school-form',
-                                    'options' => [
-    //                                    'class' => 'form-layout'
-    //                                    'class' => 'form-inline',
-                                    ],
-                                ]);
-                            
-                            echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Name</th>";
-                                    echo "<td>$school_name</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Start Date</th>";
-                                    echo "<td>{$form->field($school, 'startdate')->label('')->widget(
-                                                            DatePicker::className(), [
-                                                            // inline too, not bad
-                                                                'inline' => false,
-        //                                                      modify template for custom rendering
-                                                                'template' => '{addon}{input}',
-                                                                'clientOptions' => [
-                                                                    'autoclose' => true,
-                                                                    'format' => 'yyyy-mm-dd',                    
-                                                                ]
+            <div class="custom_body"> 
+                <h1 class="custom_h1">Edit <?=$level?> Details</h1>
+
+                <?php
+                    $form = ActiveForm::begin([
+                                //'action' => Url::to(['gradebook/index']),
+                                'id' => 'edit-school-form',
+                                'options' => [
+//                                    'class' => 'form-layout'
+//                                    'class' => 'form-inline',
+                                ],
+                            ]);
+
+                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Name</th>";
+                                echo "<td>$school_name</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Start Date</th>";
+                                echo "<td>{$form->field($school, 'startdate')->label('')->widget(
+                                                        DatePicker::className(), [
+                                                        // inline too, not bad
+                                                            'inline' => false,
+    //                                                      modify template for custom rendering
+                                                            'template' => '{addon}{input}',
+                                                            'clientOptions' => [
+                                                                'autoclose' => true,
+                                                                'format' => 'yyyy-mm-dd',                    
                                                             ]
-                                                        )}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>End Date</th>";
-                                    echo "<td>{$form->field($school, 'enddate')->label('')->widget(
-                                                            DatePicker::className(), [
-                                                            // inline too, not bad
-                                                                'inline' => false,
-        //                                                      modify template for custom rendering
-                                                                'template' => '{addon}{input}',
-                                                                'clientOptions' => [
-                                                                    'autoclose' => true,
-                                                                    'format' => 'yyyy-mm-dd',                    
-                                                                ]
+                                                        ]
+                                                    )}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>End Date</th>";
+                                echo "<td>{$form->field($school, 'enddate')->label('')->widget(
+                                                        DatePicker::className(), [
+                                                        // inline too, not bad
+                                                            'inline' => false,
+    //                                                      modify template for custom rendering
+                                                            'template' => '{addon}{input}',
+                                                            'clientOptions' => [
+                                                                'autoclose' => true,
+                                                                'format' => 'yyyy-mm-dd',                    
                                                             ]
-                                                        )}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle; min-width:400px;'>Has student graduated from this institution?</th>";
-                                    echo "<td>{$form->field($school, 'hasgraduated')->label('')->dropDownList($graduated)}</td>";
-                                echo "</tr>";                     
-                            echo "</table>";
-                
-                            echo Html::a(' Update',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                            echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-    
-                        ActiveForm::end();    
-                    ?>
-                
-                </div>
+                                                        ]
+                                                    )}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle; min-width:400px;'>Has student graduated from this institution?</th>";
+                                echo "<td>{$form->field($school, 'hasgraduated')->label('')->dropDownList($graduated)}</td>";
+                            echo "</tr>";                     
+                        echo "</table>";
+
+                        echo Html::a(' Update',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+
+                    ActiveForm::end();    
+                ?>
             </div>
         </div>
     </div>

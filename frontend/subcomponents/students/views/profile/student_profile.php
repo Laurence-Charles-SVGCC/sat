@@ -36,8 +36,7 @@
                 </a>    
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
+            <div class="custom_body">
                     <h1 class="custom_h1"><?=$student->title . ". " . $student->firstname . " " . $student->middlename . " " . $student->lastname ;?></h1>
                     <div>
                         <!-- Nav tabs -->
@@ -2132,7 +2131,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>

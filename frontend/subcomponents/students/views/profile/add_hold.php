@@ -33,39 +33,36 @@
                 </a>    
             </div>
             
-            <div class="custom_body">                
-                <div class="module_body">
-                    <h1 class="custom_h1">Add New <?=$hold_type?> Hold</h1>
-                    
-                    <?php
-                        $form = ActiveForm::begin([
-                                    //'action' => Url::to(['gradebook/index']),
-                                    'id' => 'add-hold',
-                                    'options' => [
-    //                                    'class' => 'form-layout'
-    //                                    'class' => 'form-inline',
-                                    ],
-                                ]);
-                            
-                            echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Hold Type</th>";
-                                    echo "<td>{$form->field($hold, 'holdtypeid')->label('')->dropDownList(Hold::initializeHoldList($categoryid), ['style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                                
-                                echo "<tr>";
-                                    echo "<th style='vertical-align:middle'>Details</th>";
-                                    echo "<td>{$form->field($hold, 'details')->label('')->textInput(['maxlength' => true, 'style'=> 'font-size:14px;'])}</td>";
-                                echo "</tr>";
-                            echo "</table>";
-                
-                            echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                            echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-    
-                        ActiveForm::end();    
-                    ?>
-                
-                </div>
+            <div class="custom_body">  
+                <h1 class="custom_h1">Add New <?=$hold_type?> Hold</h1>
+
+                <?php
+                    $form = ActiveForm::begin([
+                                //'action' => Url::to(['gradebook/index']),
+                                'id' => 'add-hold',
+                                'options' => [
+//                                    'class' => 'form-layout'
+//                                    'class' => 'form-inline',
+                                ],
+                            ]);
+
+                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Hold Type</th>";
+                                echo "<td>{$form->field($hold, 'holdtypeid')->label('')->dropDownList(Hold::initializeHoldList($categoryid), ['style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+
+                            echo "<tr>";
+                                echo "<th style='vertical-align:middle'>Details</th>";
+                                echo "<td>{$form->field($hold, 'details')->label('')->textInput(['maxlength' => true, 'style'=> 'font-size:14px;'])}</td>";
+                            echo "</tr>";
+                        echo "</table>";
+
+                        echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
+
+                    ActiveForm::end();    
+                ?>
             </div>
         </div>
     </div>
