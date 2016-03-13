@@ -112,7 +112,7 @@
                                                        if($row['wasnotified'] == 0)
                                                        {
                                                             return Html::a("Set to Notified",
-                                                                               Url::to(['profile/student-profile', 
+                                                                               Url::to(['student/view-active-academic-holds', 
                                                                                          'notified' => 1, 
                                                                                         'studentholdid' => $row['studentholdid'],
                                                                                         ])
