@@ -1855,7 +1855,8 @@
                                             }
                                             else
                                             {
-                                               echo "<h4 style=''>Student has an academic holds on record.</h4>";
+//                                               echo "<h4 style=''>Student has an academic holds on record.</h4>";
+                                                echo "Academic hold count = " .count($academic_holds);
                                             }
 //                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
 //                                                    foreach($academic_holds as $academic_hold) 
@@ -1931,12 +1932,12 @@
 //                                                                    echo "<th>Update Hold</th>";
 //                                                                    if ($academic_hold->holdstatus == 1) 
 //                                                                    {
-//                                                                        $resolve_link = Url::toRoute(['/subcomponents/students/profile/resolve-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
+//                                                                        $resolve_link = Url::toRoute(['/subcomponents/students/profile/resolve-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);
 //                                                                        echo "<td style='height:70px;'><a class='btn btn-success glyphicon glyphicon-ok-circle pull-right' href=$resolve_link role='button' style='margin-left:10px;'> Resolve</a></td>";
 //                                                                    }
 //                                                                    else
 //                                                                    {
-//                                                                        $reactivate_link = Url::toRoute(['/subcomponents/students/profile/reactivate-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
+//                                                                        $reactivate_link = Url::toRoute(['/subcomponents/students/profile/reactivate-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);
 //                                                                        echo "<td style='height:70px;'><a class='btn btn-warning glyphicon glyphicon-ban-circle pull-right' href=$reactivate_link role='button' style='margin-left:10px;'> Reactivate</a></td>";
 //                                                                    }
 //                                                                }
