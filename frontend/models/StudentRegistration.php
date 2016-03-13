@@ -236,7 +236,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
      * Author: Laurence Charles
      * Date Created: 
      */
-    public static function getAcademicStatus($studentregistrationid)
+    public static function getAcademicStatusName($studentregistrationid)
     {
         $record = StudentRegistration::find()
                 ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
