@@ -1856,47 +1856,49 @@
                                             else
                                             {
 //                                               echo "<h4 style=''>Student has an academic holds on record.</h4>";
-                                                echo "Academic hold count = " .count($academic_holds);
-                                            }
-//                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
-//                                                    foreach($academic_holds as $academic_hold) 
-//                                                    {
-//                                                        echo "<tr>";
-//                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
-//                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
-//                                                            $academic_rowspan = 3;
-//                                                            if ($academic_hold->holdstatus == 0)
-//                                                                $academic_rowspan = 4;
-//
-//                                                            $delete_academic_link = Url::toRoute(['/subcomponents/students/profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);                                                       
-//
-//                                                            if(Yii::$app->user->can('deleteAcademicHold'))
-//                                                            {
-//                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}";
-//                                                                    echo "<div style='margin-top:20px;'>";
-//                                                                        echo Html::a(' Delete', 
-//                                                                                    ['profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid], 
-//                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
-//                                                                                        'data' => [
-//                                                                                            'confirm' => 'Are you sure you want to delete this item?',
-//                                                                                            'method' => 'post',
-//                                                                                        ],
-//                                                                                     'style' => 'margin-left:10px',
-//                                                                                    ]);
-//                                                                    echo "</div>";
-//                                                                echo "</th>";
-//                                                            }
-//                                                            else
-//                                                            {
-//                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
-//                                                            }
-//
-//                                                            echo "<th>Applied By</th>";
-//                                                            echo "<td>{$applying_officer}</td>";
-//                                                            echo "<th>Date Applied</th>";
-//                                                            echo "<td>{$academic_hold->dateapplied}</td>";
-//                                                        echo "</tr>";
-//
+//                                                echo "Academic hold count = " .count($academic_holds);
+//                                            }
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                    foreach($academic_holds as $academic_hold) 
+                                                    {
+                                                        echo "<tr>";
+                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
+                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
+                                                            $academic_rowspan = 3;
+                                                            if ($academic_hold->holdstatus == 0)
+                                                                $academic_rowspan = 4;
+
+                                                            $delete_academic_link = Url::toRoute(['/subcomponents/students/profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);                                                       
+
+                                                            if(Yii::$app->user->can('deleteAcademicHold'))
+                                                            {
+                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}";
+                                                                    echo "<div style='margin-top:20px;'>";
+                                                                        echo Html::a(' Delete', 
+                                                                                    ['profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid], 
+                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                                                        'data' => [
+                                                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                                                            'method' => 'post',
+                                                                                        ],
+                                                                                     'style' => 'margin-left:10px',
+                                                                                    ]);
+                                                                    echo "</div>";
+                                                                echo "</th>";
+                                                            }
+                                                            else
+                                                            {
+                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
+                                                            }
+
+                                                            echo "<th>Applied By</th>";
+                                                            echo "<td>{$applying_officer}</td>";
+                                                            echo "<th>Date Applied</th>";
+                                                            echo "<td>{$academic_hold->dateapplied}</td>";
+                                                        echo "</tr>";
+                                                    }
+                                                    echo "</table>";
+                                                }
 //                                                        echo "<tr>";
 //                                                            echo "<th>Status</th>";
 //                                                            if ($academic_hold->holdstatus == 1)
@@ -1993,7 +1995,7 @@
                                                             {
                                                                 echo "<th rowspan=$library_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
                                                             }
-                                                            echo "<td>Applied By</td>";
+                                                            echo "<th>Applied By</th>";
                                                             echo "<td>{$applying_officer}</td>";
                                                             echo "<th>Date Applied</th>";
                                                             echo "<td>{$library_hold->dateapplied}</td>";
