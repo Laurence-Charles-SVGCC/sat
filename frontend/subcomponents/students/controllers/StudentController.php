@@ -1383,9 +1383,20 @@ class StudentController extends Controller
         
         
         $dasgs_holds = NULL;
+        $dasgs_provider = NULL;
+        $dasgs_info = array();
+        
         $dtve_holds = NULL;
+        $dtve_provider = NULL;
+        $dtve_info = array();
+        
         $dte_holds =  NULL;
+        $dte_provider = NULL;
+        $dte_info = array();
+        
         $dne_holds = NULL;
+        $dne_provider = NULL;
+        $dne_info = array();
         
         $all_holds = StudentRegistration::getAcademicActiveHolds(1);
         foreach ($all_holds as $all_hold)
@@ -1413,21 +1424,117 @@ class StudentController extends Controller
             ]); 
                   
         
-        
         $dasgs_holds = StudentRegistration::getAcademicActiveHolds(4);
+        foreach ($dasgs_holds as $dasgs_hold)
+        {
+            $dasgs_info['studentholdid'] = $dasgs_hold['studentholdid'];
+            $dasgs_info['studentregistrationid'] = $dasgs_hold['studentregistrationid'];
+            $dasgs_info['personid'] = $dasgs_hold['personid'];
+            $dasgs_info['studentid'] = $dasgs_hold['studentid'];
+            $dasgs_info['firstname'] = $dasgs_hold['firstname'];
+            $dasgs_info['lastname'] = $dasgs_hold['lastname'];
+            $dasgs_info['programme'] = $dasgs_hold['programme'];
+            $dasgs_info['holdtype'] = $dasgs_hold['holdtype'];
+            $dasgs_info['wasnotified'] = $dasgs_hold['wasnotified'];
+            $dasgs_holds_data_container[] = $dasgs_info; 
+        }
+        $dasgs_provider = new ArrayDataProvider([
+                    'allModels' => $dasgs_holds_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                        ]
+            ]); 
+        
+        
         $dtve_holds = StudentRegistration::getAcademicActiveHolds(5);
+        foreach ($dtve_holds as $dtve_hold)
+        {
+            $dtve_info['studentholdid'] = $dtve_hold['studentholdid'];
+            $dtve_info['studentregistrationid'] = $dtve_hold['studentregistrationid'];
+            $dtve_info['personid'] = $dtve_hold['personid'];
+            $dtve_info['studentid'] = $dtve_hold['studentid'];
+            $dtve_info['firstname'] = $dtve_hold['firstname'];
+            $dtve_info['lastname'] = $dtve_hold['lastname'];
+            $dtve_info['programme'] = $dtve_hold['programme'];
+            $dtve_info['holdtype'] = $dtve_hold['holdtype'];
+            $dtve_info['wasnotified'] = $dtve_hold['wasnotified'];
+            $dtve_holds_data_container[] = $dtve_info; 
+        }
+        $dasgs_provider = new ArrayDataProvider([
+                    'allModels' => $dtve_holds_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                        ]
+            ]); 
+        
+        
         $dte_holds =  StudentRegistration::getAcademicActiveHolds(6);
+        foreach ($dte_holds as $dte_hold)
+        {
+            $dte_info['studentholdid'] = $dte_hold['studentholdid'];
+            $dte_info['studentregistrationid'] = $dte_hold['studentregistrationid'];
+            $dte_info['personid'] = $dte_hold['personid'];
+            $dte_info['studentid'] = $dte_hold['studentid'];
+            $dte_info['firstname'] = $dte_hold['firstname'];
+            $dte_info['lastname'] = $dte_hold['lastname'];
+            $dte_info['programme'] = $dte_hold['programme'];
+            $dte_info['holdtype'] = $dte_hold['holdtype'];
+            $dte_info['wasnotified'] = $dte_hold['wasnotified'];
+            $dte_holds_data_container[] = $dte_info; 
+        }
+        $dte_provider = new ArrayDataProvider([
+                    'allModels' => $dte_holds_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                        ]
+            ]); 
+        
+        
         $dne_holds = StudentRegistration::getAcademicActiveHolds(7);
+        foreach ($dne_holds as $dne_hold)
+        {
+            $dne_info['studentholdid'] = $dne_hold['studentholdid'];
+            $dne_info['studentregistrationid'] = $dne_hold['studentregistrationid'];
+            $dne_info['personid'] = $dne_hold['personid'];
+            $dne_info['studentid'] = $dne_hold['studentid'];
+            $dne_info['firstname'] = $dne_hold['firstname'];
+            $dne_info['lastname'] = $dne_hold['lastname'];
+            $dne_info['programme'] = $dne_hold['programme'];
+            $dne_info['holdtype'] = $dne_hold['holdtype'];
+            $dne_info['wasnotified'] = $dne_hold['wasnotified'];
+            $dne_holds_data_container[] = $dne_info; 
+        }
+        $dne_provider = new ArrayDataProvider([
+                    'allModels' => $dne_holds_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                        ]
+            ]); 
    
         
         return $this->render('active_academic_holds', [
             'divisions' => $divisions,
             'all_provider' => $all_provider,
-            'all_holds' => $all_holds,
-            'dasgs_holds' => $dasgs_holds,
-            'dtve_holds' => $dtve_holds,
-            'dte_holds' => $dte_holds,
-            'dne_holds' => $dne_holds,   
+            'dasgs_provider' => $dasgs_provider,
+            'dtve_provider' => $dtve_provider,
+            'dte_provider' => $dte_provider,
+            'dne_provider' => $dne_provider,
         ]);
     }
     
