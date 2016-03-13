@@ -139,7 +139,7 @@
                             
                             <div role="tabpanel" class="tab-pane fade" id="DASGS">                          
                                 <br/>
-                                <?php if ($dasgs):?>
+                                <?php if ($dasgs_provider):?>
                                     <?= GridView::widget([
                                         'dataProvider' => $dasgs,
                                         //'filterModel' => $searchModel,
