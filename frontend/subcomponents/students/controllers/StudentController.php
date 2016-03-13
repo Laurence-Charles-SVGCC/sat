@@ -1380,23 +1380,27 @@ class StudentController extends Controller
         $all_holds = NULL;
         $all_provider = NULL;
         $all_info = array();
-        
+        $all_holds_data_container = array();
         
         $dasgs_holds = NULL;
         $dasgs_provider = NULL;
         $dasgs_info = array();
+        $dasgs_holds_data_container = array();
         
         $dtve_holds = NULL;
         $dtve_provider = NULL;
         $dtve_info = array();
+        $dtve_holds_data_container = array();
         
         $dte_holds =  NULL;
         $dte_provider = NULL;
         $dte_info = array();
+        $dte_holds_data_container = array();
         
         $dne_holds = NULL;
         $dne_provider = NULL;
         $dne_info = array();
+        $dne_holds_data_container = array();
         
         $all_holds = StudentRegistration::getAcademicActiveHolds(1);
         foreach ($all_holds as $all_hold)
