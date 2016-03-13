@@ -1806,7 +1806,7 @@
 
                                                         if ($financial_hold->holdstatus == 0)
                                                         {
-                                                            echo "</tr>";
+                                                            echo "<tr>";
                                                                 $resolving_officer = Employee::getEmployeeName($financial_hold->resolvedby);
                                                                 echo "<th>Resolved By</th>";
                                                                 echo "<td>{$resolving_officer}</td>";
@@ -1814,7 +1814,7 @@
                                                                 echo "<td>{$financial_hold->dateresolved}</td>";
                                                             echo "</tr>";
                                                         }  
-                                                            echo "</tr>";
+                                                            echo "<tr>";
                                                                 echo "<th>Has student been notified?</th>";
                                                                 if ($financial_hold->wasnotified == 1)
                                                                     echo "<td>Yes</td>";
@@ -1842,108 +1842,108 @@
                                         ?>
                                     <?php endif;?>
                                     
-                                    //<?php if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewAcademicHold')):?>
+                                    <?php if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewAcademicHold')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Academic Holds
-                                            //<?php if(Yii::$app->user->can('addAcademicHold')):?>
+                                            <?php if(Yii::$app->user->can('addAcademicHold')):?>
                                                 <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=//<?=Url::toRoute(['/subcomponents/students/profile/add-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'categoryid' => 2]);?> role="button"> Add</a>
-                                            //<?php endif;?>
+                                            <?php endif;?>
                                         </div>
-                                        //<?php 
-//                                            if($academic_holds == false)
-//                                            {
-//                                                echo "<h4 style=''>Student has no academic holds on record.</h4>";
-//                                            }
-//                                            else
-//                                            {
-//                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
-//                                                    foreach($academic_holds as $academic_hold) 
-//                                                    {
-//                                                        echo "<tr>";
-//                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
-//                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
-//                                                            $academic_rowspan = 3;
-//                                                            if ($academic_hold->holdstatus == 0)
-//                                                                $academic_rowspan = 4;
-//
-//                                                            $delete_academic_link = Url::toRoute(['/subcomponents/students/profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);                                                       
-//
-//                                                            if(Yii::$app->user->can('deleteAcademicHold'))
-//                                                            {
-//                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}";
-//                                                                    echo "<div style='margin-top:20px;'>";
-//                                                                        echo Html::a(' Delete', 
-//                                                                                    ['profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid], 
-//                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
-//                                                                                        'data' => [
-//                                                                                            'confirm' => 'Are you sure you want to delete this item?',
-//                                                                                            'method' => 'post',
-//                                                                                        ],
-//                                                                                     'style' => 'margin-left:10px',
-//                                                                                    ]);
-//                                                                    echo "</div>";
-//                                                                echo "</th>";
-//                                                            }
-//                                                            else
-//                                                            {
-//                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
-//                                                            }
-//
-//                                                            echo "<th>Applied By</th>";
-//                                                            echo "<td>{$applying_officer}</td>";
-//                                                            echo "<th>Date Applied</th>";
-//                                                            echo "<td>{$academic_hold->dateapplied}</td>";
-//                                                        echo "</tr>";
-//
-//                                                        echo "<tr>";
-//                                                            echo "<th>Status</th>";
-//                                                            if ($academic_hold->holdstatus == 1)
-//                                                                echo "<td>Active</td>";
-//                                                            else
-//                                                                echo "<td>Resolved</td>";
-//                                                            echo "<th>Notes</th>";
-//                                                            if ($academic_hold->details == NULL  || strcmp($academic_hold->details,"") == 0)
-//                                                                    echo "<td>--</td>";
-//                                                            else
-//                                                               echo "<td>{$academic_hold->details}</td>";
-//                                                        echo "</tr>";
-//
-//                                                        if ($academic_hold->holdstatus == 0)
-//                                                        {
-//                                                            echo "<tr>";
-//                                                                $resolving_officer = Employee::getEmployeeName($academic_hold->resolvedby);
-//                                                                echo "<th>Resolved By</th>";
-//                                                                echo "<td>{$resolving_officer}</td>";
-//                                                                echo "<th>Date Resolved</th>";
-//                                                                echo "<td>{$academic_hold->dateresolved}</td>";
-//                                                            echo "</tr>";
-//                                                        }
-//                                                            echo "<tr>";
-//                                                                echo "<th>Has student been notified?</th>";
-//                                                                if ($academic_hold->wasnotified == 1)
-//                                                                    echo "<td>Yes</td>";
-//                                                                else
-//                                                                    echo "<td>No</td>";
-//                                                                
-//                                                                if(Yii::$app->user->can('resolveReactivateAcademicHold'))
-//                                                                {
-//                                                                    echo "<th>Update Hold</th>";
-//                                                                    if ($academic_hold->holdstatus == 1) 
-//                                                                    {
-//                                                                        $resolve_link = Url::toRoute(['/subcomponents/students/profile/resolve-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
-//                                                                        echo "<td style='height:70px;'><a class='btn btn-success glyphicon glyphicon-ok-circle pull-right' href=$resolve_link role='button' style='margin-left:10px;'> Resolve</a></td>";
-//                                                                    }
-//                                                                    else
-//                                                                    {
-//                                                                        $reactivate_link = Url::toRoute(['/subcomponents/students/profile/reactivate-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
-//                                                                        echo "<td style='height:70px;'><a class='btn btn-warning glyphicon glyphicon-ban-circle pull-right' href=$reactivate_link role='button' style='margin-left:10px;'> Reactivate</a></td>";
-//                                                                    }
-//                                                                }
-//                                                            echo "</tr>";
-//                                                    }
-//                                                echo "</table>";
-//                                            }
-//                                        ?>
-                                    //<?php endif;?>
+                                        <?php 
+                                            if($academic_holds == false)
+                                            {
+                                                echo "<h4 style=''>Student has no academic holds on record.</h4>";
+                                            }
+                                            else
+                                            {
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                    foreach($academic_holds as $academic_hold) 
+                                                    {
+                                                        echo "<tr>";
+                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
+                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
+                                                            $academic_rowspan = 3;
+                                                            if ($academic_hold->holdstatus == 0)
+                                                                $academic_rowspan = 4;
+
+                                                            $delete_academic_link = Url::toRoute(['/subcomponents/students/profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);                                                       
+
+                                                            if(Yii::$app->user->can('deleteAcademicHold'))
+                                                            {
+                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}";
+                                                                    echo "<div style='margin-top:20px;'>";
+                                                                        echo Html::a(' Delete', 
+                                                                                    ['profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid], 
+                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                                                        'data' => [
+                                                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                                                            'method' => 'post',
+                                                                                        ],
+                                                                                     'style' => 'margin-left:10px',
+                                                                                    ]);
+                                                                    echo "</div>";
+                                                                echo "</th>";
+                                                            }
+                                                            else
+                                                            {
+                                                                echo "<th rowspan=$academic_rowspan style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$hold_name}</th>";
+                                                            }
+
+                                                            echo "<th>Applied By</th>";
+                                                            echo "<td>{$applying_officer}</td>";
+                                                            echo "<th>Date Applied</th>";
+                                                            echo "<td>{$academic_hold->dateapplied}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            echo "<th>Status</th>";
+                                                            if ($academic_hold->holdstatus == 1)
+                                                                echo "<td>Active</td>";
+                                                            else
+                                                                echo "<td>Resolved</td>";
+                                                            echo "<th>Notes</th>";
+                                                            if ($academic_hold->details == NULL  || strcmp($academic_hold->details,"") == 0)
+                                                                    echo "<td>--</td>";
+                                                            else
+                                                               echo "<td>{$academic_hold->details}</td>";
+                                                        echo "</tr>";
+
+                                                        if ($academic_hold->holdstatus == 0)
+                                                        {
+                                                            echo "<tr>";
+                                                                $resolving_officer = Employee::getEmployeeName($academic_hold->resolvedby);
+                                                                echo "<th>Resolved By</th>";
+                                                                echo "<td>{$resolving_officer}</td>";
+                                                                echo "<th>Date Resolved</th>";
+                                                                echo "<td>{$academic_hold->dateresolved}</td>";
+                                                            echo "</tr>";
+                                                        }
+                                                            echo "<tr>";
+                                                                echo "<th>Has student been notified?</th>";
+                                                                if ($academic_hold->wasnotified == 1)
+                                                                    echo "<td>Yes</td>";
+                                                                else
+                                                                    echo "<td>No</td>";
+                                                                
+                                                                if(Yii::$app->user->can('resolveReactivateAcademicHold'))
+                                                                {
+                                                                    echo "<th>Update Hold</th>";
+                                                                    if ($academic_hold->holdstatus == 1) 
+                                                                    {
+                                                                        $resolve_link = Url::toRoute(['/subcomponents/students/profile/resolve-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
+                                                                        echo "<td style='height:70px;'><a class='btn btn-success glyphicon glyphicon-ok-circle pull-right' href=$resolve_link role='button' style='margin-left:10px;'> Resolve</a></td>";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        $reactivate_link = Url::toRoute(['/subcomponents/students/profile/reactivate-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);;
+                                                                        echo "<td style='height:70px;'><a class='btn btn-warning glyphicon glyphicon-ban-circle pull-right' href=$reactivate_link role='button' style='margin-left:10px;'> Reactivate</a></td>";
+                                                                    }
+                                                                }
+                                                            echo "</tr>";
+                                                    }
+                                                echo "</table>";
+                                            }
+                                        ?>
+                                    <?php endif;?>
                                     
                                     <?php if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewLibraryHold')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Library Holds
