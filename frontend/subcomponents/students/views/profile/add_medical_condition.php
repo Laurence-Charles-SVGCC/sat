@@ -10,6 +10,7 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
+    $this->title = 'Add Medical Condition';
 ?>
 
     <div class="site-index">

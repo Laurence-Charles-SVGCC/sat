@@ -12,7 +12,8 @@
     use yii\widgets\ActiveForm;
     
     use frontend\models\StudentStatus;
-
+    
+    $this->title = 'Edit General Information';
 ?>
 
 

@@ -10,6 +10,7 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
 
+    $this->title = 'Edit Contact Details';
 ?>
     
     <div class="site-index">

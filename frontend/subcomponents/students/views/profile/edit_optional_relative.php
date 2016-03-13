@@ -10,6 +10,7 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
+    $this->title = 'Edit Relative Details';
 ?>
 
     <div class="site-index">

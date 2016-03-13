@@ -19,6 +19,7 @@
     use frontend\models\CapeSubject;
     use frontend\models\ApplicationCapesubject;
     
+    $this->title = 'Transfer Student';
 ?>
 
     <div class="site-index">

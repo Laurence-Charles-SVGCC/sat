@@ -28,6 +28,8 @@
         $level = "Secondary School";
     elseif($levelid == 4)
         $level = "Tertiary School";
+    
+    $this->title = 'Add Institution';
 ?>
 
     <div class="site-index">

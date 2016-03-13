@@ -11,6 +11,7 @@
     use yii\bootstrap\ActiveForm;
     use yii\bootstrap\ActiveField;
 
+    $this->title = 'Add Relation';
 ?>
 
     <div class="site-index">

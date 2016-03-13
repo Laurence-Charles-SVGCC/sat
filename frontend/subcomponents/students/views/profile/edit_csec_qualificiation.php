@@ -16,6 +16,7 @@
     use frontend\models\ExaminationGrade;
     use frontend\models\Subject;
     
+    $this->title = 'Edit Qualification Details';
 ?>
 
     <div class="site-index">

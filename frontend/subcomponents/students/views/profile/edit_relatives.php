@@ -18,7 +18,8 @@
         'guardian' => 'Guardian',
         'spouse' => 'Spouse'
     ];
-
+    
+    $this->title = 'Edit Relative Details';
 ?>
 
 
@@ -34,7 +35,7 @@
             
             <div class="custom_body" style="min-height:3250px">                
                 <div class="module_body" style="min-height:3150px">
-                    <h1 class="custom_h1">Edit Contact Details</h1>
+                    <h1 class="custom_h1">Edit Relative Details</h1>
                     
                     <?php
                         $form = ActiveForm::begin([

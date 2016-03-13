@@ -20,6 +20,7 @@
     elseif ($categoryid == 3)
         $hold_type = "Library";
     
+    $this->title = 'Add Hold';
 ?>
 
     <div class="site-index">

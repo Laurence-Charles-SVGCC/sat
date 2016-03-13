@@ -28,6 +28,8 @@
         $level = "Secondary School";
     elseif($levelid == 4)
         $level = "Tertiary School";
+    
+    $this->title = 'Edit School Details';
 ?>
 
     <div class="site-index">

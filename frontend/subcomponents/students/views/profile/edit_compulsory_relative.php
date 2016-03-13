@@ -18,6 +18,8 @@
         'guardian' => 'Guardian',
         'spouse' => 'Spouse'
     ];
+    
+    $this->title = 'Edit Relative Details';
 ?>
 
     <div class="site-index">

@@ -21,9 +21,9 @@
     use frontend\models\BatchStudent;
     use frontend\models\StudentRegistration;
     use frontend\models\Hold;
-    
 
     /* @var $this yii\web\View */
+    $this->title = 'Student Profile';
 ?>
 
     <div class="site-index">
@@ -1855,9 +1855,6 @@
                                             }
                                             else
                                             {
-//                                               echo "<h4 style=''>Student has an academic holds on record.</h4>";
-//                                                echo "Academic hold count = " .count($academic_holds);
-//                                            }
                                                 echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                                     foreach($academic_holds as $academic_hold) 
                                                     {

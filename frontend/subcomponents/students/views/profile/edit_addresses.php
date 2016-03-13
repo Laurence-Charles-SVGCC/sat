@@ -11,6 +11,8 @@
     use yii\widgets\ActiveForm;
     
     use frontend\models\Address;
+    
+    $this->title = 'Edit Address';
 ?>
     
     <div class="site-index">
@@ -25,7 +27,7 @@
             
             <div class="custom_body">                
                 <div class="module_body">
-                    <h1 class="custom_h1">Edit General Information</h1>
+                    <h1 class="custom_h1">Edit Address</h1>
                     
                     <?php
                         $form = ActiveForm::begin([
