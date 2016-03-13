@@ -1842,19 +1842,21 @@
                                         ?>
                                     <?php endif;?>
                                     
-                                    <?php //if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewAcademicHold')):?>
-                                        <!--<div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Academic Holds-->
-                                            <?php //if(Yii::$app->user->can('addAcademicHold')):?>
-                                                <!--<a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?//=Url::toRoute(['/subcomponents/students/profile/add-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'categoryid' => 2]);?> role="button"> Add</a>-->
-                                            <?php// endif;?>
-                                        <!--</div>-->
+                                    <?php if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewAcademicHold')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Academic Holds
+                                            <?php if(Yii::$app->user->can('addAcademicHold')):?>
+                                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/add-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'categoryid' => 2]);?> role="button"> Add</a>
+                                            <?php endif;?>
+                                        </div>
                                         <?php 
-//                                            if($academic_holds == false)
-//                                            {
-//                                                echo "<h4 style=''>Student has no academic holds on record.</h4>";
-//                                            }
-//                                            else
-//                                            {
+                                            if($academic_holds == false)
+                                            {
+                                                echo "<h4 style=''>Student has no academic holds on record.</h4>";
+                                            }
+                                            else
+                                            {
+                                               echo "<h4 style=''>Student has an academic holds on record.</h4>";
+                                            }
 //                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
 //                                                    foreach($academic_holds as $academic_hold) 
 //                                                    {
@@ -1942,8 +1944,8 @@
 //                                                    }
 //                                                echo "</table>";
 //                                            }
-//                                        ?>
-                                    <?php //endif;?>
+                                        ?>
+                                    <?php endif;?>
                                     
                                     <?php if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewLibraryHold')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Library Holds
