@@ -103,7 +103,7 @@
                                                             return Html::a($row['wasnotified'],
                                                                                Url::to(['profile/student-profile', 
                                                                                          'personid' => $row['personid'], 
-                                                                                        'studentholdid' => $academic_hold['studentholdid'],
+                                                                                        'studentholdid' => $row['studentholdid'],
                                                                                      ]));
                                                        }
                                                        else
@@ -111,7 +111,7 @@
                                                             return Html::a($row['wasnotified'],
                                                                                  Url::to(['student/view-active-academic-holds', 
                                                                                           'notified' => 0, 
-                                                                                          'studentholdid' => $academic_hold['studentholdid'],
+                                                                                          'studentholdid' => $row['studentholdid'],
                                                                                       ]));
                                                        }
                                                     }
