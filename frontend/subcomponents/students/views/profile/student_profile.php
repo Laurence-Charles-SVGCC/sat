@@ -1909,7 +1909,7 @@
 
                                                         if ($academic_hold->holdstatus == 0)
                                                         {
-                                                            echo "</tr>";
+                                                            echo "<tr>";
                                                                 $resolving_officer = Employee::getEmployeeName($academic_hold->resolvedby);
                                                                 echo "<th>Resolved By</th>";
                                                                 echo "<td>{$resolving_officer}</td>";
@@ -1917,7 +1917,7 @@
                                                                 echo "<td>{$academic_hold->dateresolved}</td>";
                                                             echo "</tr>";
                                                         }
-                                                            echo "</tr>";
+                                                            echo "<tr>";
                                                                 echo "<th>Has student been notified?</th>";
                                                                 if ($academic_hold->wasnotified == 1)
                                                                     echo "<td>Yes</td>";
