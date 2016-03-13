@@ -91,7 +91,18 @@
                                             [
                                                 'attribute' => 'wasnotified',
                                                 'format' => 'text',
-                                                'label' => 'Notification Status'
+                                                'label' => 'Notification Status',
+                                                'value' => function($row)
+                                                        {
+                                                            if($row['wasnotified'] == 0)
+                                                            {
+                                                                return "Notification Pending";
+                                                            }
+                                                            else
+                                                            {
+                                                                return "Notification Sent";
+                                                            }
+                                                        },
                                             ],
                                             [
                                                 'format' => 'html',
@@ -102,7 +113,7 @@
                                                        {
                                                             return Html::a($row['wasnotified'],
                                                                                Url::to(['profile/student-profile', 
-                                                                                         'personid' => $row['personid'], 
+                                                                                         'notified' => 1, 
                                                                                         'studentholdid' => $row['studentholdid'],
                                                                                      ]));
                                                        }
@@ -123,7 +134,7 @@
                                 <?php endif;?>
                                     
                                 
-//                                <?php
+                                <?php
 //                                    if ($all_holds)
 //                                    {
 //                                        echo "<table class='table table-hover' style='width:95%; margin: 0 auto;'>";
