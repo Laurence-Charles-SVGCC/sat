@@ -343,12 +343,12 @@ class StudentRegistration extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created:07/01/2016
-     * Date Last Modified: 07/01/2016
+     * Date Last Modified: 07/01/2016 | 11/03/2016
      */
     public static function getAcademicActiveHolds($divisionid)
     {
         $db = Yii::$app->db;
-        $records = Array();
+        $records = array();
         
         if ($divisionid == 1)           //if all divisions
         {
@@ -426,8 +426,6 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     ->queryAll();
         }
         
-        if (count($records) == 0)
-            return false;
         return $records;     
     }
     
