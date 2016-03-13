@@ -141,7 +141,7 @@
                                 <br/>
                                 <?php if ($dasgs_provider):?>
                                     <?= GridView::widget([
-                                        'dataProvider' => $dasgs,
+                                        'dataProvider' => $dasgs_provider,
                                         //'filterModel' => $searchModel,
                                         'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                                         'columns' => [
