@@ -1845,7 +1845,7 @@
                                     <?php //if(Yii::$app->user->can('viewHoldsData') || Yii::$app->user->can('viewAcademicHold')):?>
                                         <!--<div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Academic Holds-->
                                             <?php //if(Yii::$app->user->can('addAcademicHold')):?>
-                                                <!--<a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/add-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'categoryid' => 2]);?> role="button"> Add</a>-->
+                                                <!--<a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?//=Url::toRoute(['/subcomponents/students/profile/add-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'categoryid' => 2]);?> role="button"> Add</a>-->
                                             <?php// endif;?>
                                         <!--</div>-->
                                         <?php 
