@@ -1863,12 +1863,12 @@
                                                     {
                                                         echo "<tr>";
                                                             echo "<td style=''>Student has an academic holds on record.</td>";
-//                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
-//                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
-//                                                            $academic_rowspan = 3;
-//                                                            if ($academic_hold->holdstatus == 0)
-//                                                                $academic_rowspan = 4;
-//
+                                                            $hold_name = Hold::getHoldName($academic_hold->studentholdid);
+                                                            $applying_officer = Employee::getEmployeeName($academic_hold->appliedby);
+                                                            $academic_rowspan = 3;
+                                                            if ($academic_hold->holdstatus == 0)
+                                                                $academic_rowspan = 4;
+                                                          echo "<td style=''>Student has an academic holds on record.</td>";
 //                                                            $delete_academic_link = Url::toRoute(['/subcomponents/students/profile/delete-hold', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $academic_hold->studentholdid]);                                                       
 //
 //                                                            if(Yii::$app->user->can('deleteAcademicHold'))
