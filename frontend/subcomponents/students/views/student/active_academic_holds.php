@@ -111,19 +111,21 @@
                                                     {
                                                        if($row['wasnotified'] == 0)
                                                        {
-                                                            return Html::a($row['wasnotified'],
+                                                            return Html::a("Set to Notified",
                                                                                Url::to(['profile/student-profile', 
                                                                                          'notified' => 1, 
                                                                                         'studentholdid' => $row['studentholdid'],
-                                                                                     ]));
+                                                                                        ])
+                                                                        );
                                                        }
                                                        else
                                                        {
-                                                            return Html::a($row['wasnotified'],
+                                                            return Html::a("Set to Pending",
                                                                                  Url::to(['student/view-active-academic-holds', 
                                                                                           'notified' => 0, 
                                                                                           'studentholdid' => $row['studentholdid'],
-                                                                                      ]));
+                                                                                      ])
+                                                                          );
                                                        }
                                                     }
                                             ],
