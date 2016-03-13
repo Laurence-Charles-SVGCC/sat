@@ -1402,7 +1402,7 @@ class StudentController extends Controller
             $all_holds_data_container[] = $all_info; 
         }
         $all_provider = new ArrayDataProvider([
-                    'allModels' => $$all_holds_data_container,
+                    'allModels' => $all_holds_data_container,
                     'pagination' => [
                         'pageSize' => 25,
                     ],

@@ -118,6 +118,10 @@
                                             ],
                                         ],
                                     ]);?>
+                                <?php else:?>
+                                    <h4>There are no active academic holds for any students enrolled in the St. Vincent and the Grenadine Community College</h4>
+                                <?php endif;?>
+                                    
                                 
 //                                <?php
 //                                    if ($all_holds)
