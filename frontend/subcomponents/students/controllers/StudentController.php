@@ -1468,7 +1468,7 @@ class StudentController extends Controller
             $dtve_info['wasnotified'] = $dtve_hold['wasnotified'];
             $dtve_holds_data_container[] = $dtve_info; 
         }
-        $dasgs_provider = new ArrayDataProvider([
+        $dtve_provider = new ArrayDataProvider([
                     'allModels' => $dtve_holds_data_container,
                     'pagination' => [
                         'pageSize' => 25,

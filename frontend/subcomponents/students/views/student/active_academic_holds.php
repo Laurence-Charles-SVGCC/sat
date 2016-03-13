@@ -231,7 +231,6 @@
                             
                             <div role="tabpanel" class="tab-pane fade" id="DTVE">                          
                                 <br/>
-                                <?php if ($dtve_provider):?>
                                     <?= GridView::widget([
                                         'dataProvider' => $dtve_provider,
                                         //'filterModel' => $searchModel,
@@ -313,17 +312,13 @@
                                                     }
                                             ],
                                         ],
-                                    ]);?>
-                                <?php else:?>
-                                    <h4>There are no active academic holds for any students enrolled in the Division of Technical and Vocational Education</h4>
-                                <?php endif;?>     
+                                    ]);?>   
                             </div><!--End of DTVE panel-->
                             
                             
                             
                             <div role="tabpanel" class="tab-pane fade" id="DTE">                          
                                 <br/>
-                                <?php if ($dte_provider):?>
                                     <?= GridView::widget([
                                         'dataProvider' => $dte_provider,
                                         //'filterModel' => $searchModel,
@@ -405,17 +400,13 @@
                                                     }
                                             ],
                                         ],
-                                    ]);?>
-                                <?php else:?>
-                                    <h4>There are no active academic holds for any students enrolled in the Division of Teacher Education</h4>
-                                <?php endif;?>       
+                                    ]);?>      
                             </div><!--End of DTE panel-->
                             
                             
                             
                             <div role="tabpanel" class="tab-pane fade" id="DNE">                          
                                 <br/>
-                                <?php if ($dne_provider):?>
                                     <?= GridView::widget([
                                         'dataProvider' => $dne_provider,
                                         //'filterModel' => $searchModel,
@@ -497,10 +488,7 @@
                                                     }
                                             ],
                                         ],
-                                    ]);?>
-                                <?php else:?>
-                                    <h4>There are no active academic holds for any students enrolled in the Division of Nursing Education</h4>
-                                <?php endif;?>      
+                                    ]);?> 
                             </div><!--End of DASGS panel-->
                             
                         </div><!--End of all panels-->
