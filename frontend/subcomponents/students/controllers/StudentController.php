@@ -1378,12 +1378,42 @@ class StudentController extends Controller
                     ->all();
         
         $all_holds = NULL;
+        $all_provider = NULL;
+        $all_info = array();
+        
+        
         $dasgs_holds = NULL;
         $dtve_holds = NULL;
         $dte_holds =  NULL;
         $dne_holds = NULL;
         
         $all_holds = StudentRegistration::getAcademicActiveHolds(1);
+        foreach ($all_holds as $all_hold)
+        {
+            $all_info['studentholdid'] = $all_hold['studentholdid'];
+            $all_info['studentregistrationid'] = $all_hold['studentregistrationid'];
+            $all_info['personid'] = $all_hold['personid'];
+            $all_info['studentid'] = $all_hold['studentid'];
+            $all_info['firstname'] = $all_hold['firstname'];
+            $all_info['lastname'] = $all_hold['lastname'];
+            $all_info['programme'] = $all_hold['programme'];
+            $all_info['holdtype'] = $all_hold['holdtype'];
+            $all_info['wasnotified'] = $all_hold['wasnotified'];
+            $all_holds_data_container[] = $all_info; 
+        }
+        $all_provider = new ArrayDataProvider([
+                    'allModels' => $$all_holds_data_container,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['firstname', 'lastname'],
+                        ]
+            ]); 
+                  
+        
+        
         $dasgs_holds = StudentRegistration::getAcademicActiveHolds(4);
         $dtve_holds = StudentRegistration::getAcademicActiveHolds(5);
         $dte_holds =  StudentRegistration::getAcademicActiveHolds(6);
@@ -1392,6 +1422,7 @@ class StudentController extends Controller
         
         return $this->render('active_academic_holds', [
             'divisions' => $divisions,
+            'all_provider' => $all_provider,
             'all_holds' => $all_holds,
             'dasgs_holds' => $dasgs_holds,
             'dtve_holds' => $dtve_holds,

@@ -8,6 +8,7 @@
 
     use yii\helpers\Html;
     use yii\helpers\Url;
+    use yii\grid\GridView;
     
     use frontend\models\Department;
     
@@ -47,68 +48,139 @@
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane fade in active" id="divisions">                          
                                 <br/>
-                                <?php
-                                    if ($all_holds)
-                                    {
-                                        echo "<table class='table table-hover' style='width:95%; margin: 0 auto;'>";
-                                            echo "<tr>";
-                                                echo "<th>Student ID</th>";
-                                                echo "<th>First Name</th>"; 
-                                                echo "<th>Las Name</th>"; 
-                                                echo "<th>Programme Name</th>"; 
-                                                echo "<th>Hold Type</th>"; 
-                                                echo "<th>Notification Status</th>"; 
-                                            echo "</tr>";
-                                    
-                                            foreach($all_holds as $academic_hold)
-                                            {
-                                                echo "<tr>";
-                                                    $profile_link = Url::toRoute(['/subcomponents/students/profile/student-profile', 'personid' => $academic_hold['personid'], 'studentregistrationid' => $academic_hold['studentregistrationid']]);
-                                                    echo "<td>"
-                                                        . "<a href=$profile_link>{$academic_hold['studentid']}</a>"
-                                                    . "</td>";
-                                                    echo "<td>{$academic_hold['firstname']}</td>";
-                                                    echo "<td>{$academic_hold['lastname']}</td>";
-                                                    echo "<td>{$academic_hold['programme']}</td>";
-                                                    echo "<td>{$academic_hold['holdtype']}</td>";
-                                                    echo "<td>";                                  
-                                                        echo "<div class='dropdown'>
-                                                            <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                                if ($academic_hold['wasnotified'] == 0)
-                                                                    echo "Notification Pending";
-                                                                else
-                                                                    echo "Notification Sent";
-                                                                echo "<span class='caret'></span>";
-                                                            echo "</button>";
-                                                            echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
-                                                                if ($academic_hold['wasnotified'] == 0)
-                                                                {
-                                                                    $update_to_notified = Url::toRoute(['/subcomponents/students/student/view-active-academic-holds',
-                                                                                                            'notified' => 1,
-                                                                                                            'studentholdid' => $academic_hold['studentholdid'],
-                                                                                                         ]);
-                                                                    echo "<li><a href='$update_to_notified'>Set To Notified</a></li>";   
-                                                                }
-                                                                else
-                                                                {
-                                                                    $update_to_pending = Url::toRoute(['/subcomponents/students/student/view-active-academic-holds',
-                                                                                                            'notified' => 0,
-                                                                                                            'studentholdid' => $academic_hold['studentholdid'],
-                                                                                                         ]);
-                                                                    echo "<li><a href='$update_to_pending'>Set To Pending</a></li>";  
-                                                                }
-                                                            echo "</ul>";
-                                                        echo "</div>";
-                                                    echo "</td>"; 
-                                                echo "<tr>";
-                                            }
-                                        echo "</table>";
-                                    }                                                                 
-                                    else
-                                    {
-                                        echo "<h4>There are no active academic holds for any students enrolled in the St. Vincent and the Grenadine Community College</h4>";
-                                    }
-                                ?>       
+                                <?php if ($all_provider):?>
+                                    <?= GridView::widget([
+                                        'dataProvider' => $all_provider,
+                                        //'filterModel' => $searchModel,
+                                        'options' => ['style' => 'width: 95%; margin: 0 auto;'],
+                                        'columns' => [
+                                            ['class' => 'yii\grid\SerialColumn'],
+                                            [
+                                                'format' => 'html',
+                                                'label' => 'Student ID',
+                                                'value' => function($row)
+                                                    {
+                                                       return Html::a($row['studentid'], 
+                                                                          Url::to(['profile/student-profile', 
+                                                                                    'personid' => $row['personid'], 
+                                                                                    'studentregistrationid' => $row['studentregistrationid']
+                                                                                ]));
+                                                    }
+                                            ],
+                                            [
+                                                'attribute' => 'firstname',
+                                                'format' => 'text',
+                                                'label' => 'First Name'
+                                            ],
+                                            [
+                                                'attribute' => 'lastname',
+                                                'format' => 'text',
+                                                'label' => 'Last Name'
+                                            ],
+                                                    
+                                            [
+                                                'attribute' => 'programme',
+                                                'format' => 'text',
+                                                'label' => 'Progamme'
+                                            ],
+                                            [
+                                                'attribute' => 'holdtype',
+                                                'format' => 'text',
+                                                'label' => 'Hold Type'
+                                            ],
+                                            [
+                                                'attribute' => 'wasnotified',
+                                                'format' => 'text',
+                                                'label' => 'Notification Status'
+                                            ],
+                                            [
+                                                'format' => 'html',
+                                                'label' => 'Update Status',
+                                                'value' => function($row)
+                                                    {
+                                                       if($row['wasnotified'] == 0)
+                                                       {
+                                                            return Html::a($row['wasnotified'],
+                                                                               Url::to(['profile/student-profile', 
+                                                                                         'personid' => $row['personid'], 
+                                                                                        'studentholdid' => $academic_hold['studentholdid'],
+                                                                                     ]));
+                                                       }
+                                                       else
+                                                       {
+                                                            return Html::a($row['wasnotified'],
+                                                                                 Url::to(['student/view-active-academic-holds', 
+                                                                                          'notified' => 0, 
+                                                                                          'studentholdid' => $academic_hold['studentholdid'],
+                                                                                      ]));
+                                                       }
+                                                    }
+                                            ],
+                                        ],
+                                    ]);?>
+                                
+//                                <?php
+//                                    if ($all_holds)
+//                                    {
+//                                        echo "<table class='table table-hover' style='width:95%; margin: 0 auto;'>";
+//                                            echo "<tr>";
+//                                                echo "<th>Student ID</th>";
+//                                                echo "<th>First Name</th>"; 
+//                                                echo "<th>Las Name</th>"; 
+//                                                echo "<th>Programme Name</th>"; 
+//                                                echo "<th>Hold Type</th>"; 
+//                                                echo "<th>Notification Status</th>"; 
+//                                            echo "</tr>";
+//                                    
+//                                            foreach($all_holds as $academic_hold)
+//                                            {
+//                                                echo "<tr>";
+//                                                    $profile_link = Url::toRoute(['/subcomponents/students/profile/student-profile', 'personid' => $academic_hold['personid'], 'studentregistrationid' => $academic_hold['studentregistrationid']]);
+//                                                    echo "<td>"
+//                                                        . "<a href=$profile_link>{$academic_hold['studentid']}</a>"
+//                                                    . "</td>";
+//                                                    echo "<td>{$academic_hold['firstname']}</td>";
+//                                                    echo "<td>{$academic_hold['lastname']}</td>";
+//                                                    echo "<td>{$academic_hold['programme']}</td>";
+//                                                    echo "<td>{$academic_hold['holdtype']}</td>";
+//                                                    echo "<td>";                                  
+//                                                        echo "<div class='dropdown'>
+//                                                            <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+//                                                                if ($academic_hold['wasnotified'] == 0)
+//                                                                    echo "Notification Pending";
+//                                                                else
+//                                                                    echo "Notification Sent";
+//                                                                echo "<span class='caret'></span>";
+//                                                            echo "</button>";
+//                                                            echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+//                                                                if ($academic_hold['wasnotified'] == 0)
+//                                                                {
+//                                                                    $update_to_notified = Url::toRoute(['/subcomponents/students/student/view-active-academic-holds',
+//                                                                                                            'notified' => 1,
+//                                                                                                            'studentholdid' => $academic_hold['studentholdid'],
+//                                                                                                         ]);
+//                                                                    echo "<li><a href='$update_to_notified'>Set To Notified</a></li>";   
+//                                                                }
+//                                                                else
+//                                                                {
+//                                                                    $update_to_pending = Url::toRoute(['/subcomponents/students/student/view-active-academic-holds',
+//                                                                                                            'notified' => 0,
+//                                                                                                            'studentholdid' => $academic_hold['studentholdid'],
+//                                                                                                         ]);
+//                                                                    echo "<li><a href='$update_to_pending'>Set To Pending</a></li>";  
+//                                                                }
+//                                                            echo "</ul>";
+//                                                        echo "</div>";
+//                                                    echo "</td>"; 
+//                                                echo "<tr>";
+//                                            }
+//                                        echo "</table>";
+//                                    }                                                                 
+//                                    else
+//                                    {
+//                                        echo "<h4>There are no active academic holds for any students enrolled in the St. Vincent and the Grenadine Community College</h4>";
+//                                    }
+//                                ?>       
                             </div><!--End of all division panel-->
                             
                             
