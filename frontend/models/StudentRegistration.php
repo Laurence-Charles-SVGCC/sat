@@ -228,6 +228,31 @@ class StudentRegistration extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * 
+     * @param type $studentregistrationid
+     * @return string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 
+     */
+    public static function getAcademicStatus($studentregistrationid)
+    {
+        $record = StudentRegistration::find()
+                ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if($record)
+        {
+            $status = AcademicStatus::find()
+                    ->where(['academicstatusid' => $record->academicstatusid])
+                    ->one();
+           if ($status)
+               return $status->name;
+           else 
+               return "Pending";
+        }
+    }
+    
     public static function getUpdatedAcademicStatus($studentregistrationid)
     {
         $db = Yii::$app->db;
