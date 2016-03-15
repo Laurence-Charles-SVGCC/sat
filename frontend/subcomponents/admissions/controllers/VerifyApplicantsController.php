@@ -6,12 +6,14 @@ use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\Request;
 use common\controllers\DatabaseWrapperController;
+
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 use frontend\models\ApplicationStatus;
 use frontend\models\Application;
 use frontend\models\CsecCentre;
 use frontend\models\PostSecondaryQualification;
+use common\models\User;
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -528,6 +530,77 @@ class VerifyApplicantsController extends \yii\web\Controller
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
     
+    
+    /**
+     * Saves "PostSecondaryQualification' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/03/2016
+     * Date Last Modified: 25/05/2016
+     */
+    public function actionAddPostSecondaryQualification($personid, $cseccentreid, $centrename, $type)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $qualification = new PostSecondaryQualification();
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $qualification->load($post_data);
+            if($load_flag == true)
+            {
+                
+                $qualification->personid = $user->personid;
+                $validation_flag = $qualification->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+//                        return self::actionViewApplicantQualifications($user->personid, $centrename, $cseccentreid, $type);
+                        //redirect
+                        if (strcasecmp($type, "pending")==0)
+                        {
+                            return self::actionViewPending($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "queried")==0)
+                        {
+                            return self::actionViewQueried($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "all")==0)
+                        {
+                            return self::actionViewAll($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "verified")==0)
+                        {
+                            return self::actionViewVerified($cseccentreid, $centrename);
+                        }
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+        }
+
+        return $this->render('add_post_secondary_qualificiation', [
+            'user' => $user,
+            'qualification' => $qualification,
+        ]); 
+    }
     
     
     

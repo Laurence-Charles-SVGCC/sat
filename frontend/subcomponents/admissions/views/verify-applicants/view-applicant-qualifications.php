@@ -226,6 +226,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             </tbody>
                         </table><br/>
                     </fieldset>
+                <?php else:?>
+                     <br/><fieldset style="margin-left:2.5%; width:95%">
+                        <legend><strong>Post Secondary Degree</strong></legend>
+                        <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
+                            <tv>
+                                <td>Applicant has not indicated that they have a post secondary degree</td>
+                            </tr>
+                                              
+                            <tr>
+                                <?php
+                                    $add_role = Url::toRoute(['/subcomponents/admissions/verify-applicants/add-post-secondary-qualification', 'personid' => $applicant->personid, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' => $type]);
+                                ?>
+                                <td><a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=$add_role?> role="button"> Add Post Secondary Qualification</a></td>
+                             </tr>
+                        </table> 
                 <?php endif;?>
 
                      

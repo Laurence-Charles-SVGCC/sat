@@ -3022,7 +3022,7 @@
            else
            {
                $criminalrecord = CriminalRecord::find()
-                       ->where(['criminalrecord' => $recordid])
+                       ->where(['criminalrecordid' => $recordid])
                        ->one();
                $action = "update";
            }
@@ -3044,7 +3044,7 @@
                        $save_flag = $criminalrecord->save();
                        if($save_flag == true)
                        {
-                           return self::actionApplicantProfile($user->username);
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
                        }
                        else
                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
@@ -3084,7 +3084,7 @@
                    ->one();
 
            $criminalrecord = CriminalRecord::find()
-                           ->where(['criminalrecord' => $recordid])
+                           ->where(['criminalrecordid' => $recordid])
                            ->one();
            if ($criminalrecord == true)
            {
@@ -3094,7 +3094,7 @@
                $save_flag = $experience->save();
                if($save_flag == true)
                {
-                   return self::actionApplicantProfile($user->username);
+                   return self::actionStudentProfile($user->personid, $studentregistrationid);
                }
                else
                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
