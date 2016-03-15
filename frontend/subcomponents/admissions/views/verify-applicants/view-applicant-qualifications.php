@@ -160,7 +160,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div style="margin-left:2.5%;" class="form-group">
                     <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  Modify Applicant Details</a>
            
-                    <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Qualification</a>
+                    <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Distinct Certificate</a>
                     
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
@@ -171,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php endif; ?>
                     
                     <!--<?php if (Yii::$app->user->can('addCertificate')): ?>
-                        <?= Html::submitButton('Add Certificates', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
+                        <?= Html::submitButton('Add Related Certificates', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
                         <?= Html::dropDownList('add_more_value', 1, 
                                 array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
                     <?php endif; ?>-->
@@ -216,7 +216,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     <td style="vertical-align:middle">
                                         <?= Html::a(' ', 
-                                                    ['post-secondary-qualification', 'recordid' => $post_qualification->postsecondaryqualificationid], 
+                                                    ['delete-post-secondary-qualification', 'recordid' => $post_qualification->postsecondaryqualificationid], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                      'style' => 'margin-right:20px',
                                                     ]);

@@ -18,6 +18,7 @@
     use frontend\models\NursingAdditionalInfo;
     use frontend\models\TeachingAdditionalInfo;
     use frontend\models\NurseWorkExperience;
+    use frontend\models\CriminalRecord;
     
     
     $relation_count = [
@@ -1015,7 +1016,7 @@
                                                         if(Yii::$app->user->can('verifyApplicants'))
                                                         {
                                                             $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
-                                                            echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                            echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Job Role</a></td>";
                                                         }
                                                     echo "</tr>";
                                                 echo "</table>"; 
@@ -1033,7 +1034,7 @@
                                                 $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
                                                 $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
 
-                                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
+                                                echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em'>#$val ";
                                                     if(Yii::$app->user->can('verifyApplicants'))
                                                     {
                                                         echo Html::a(' Delete', 
@@ -1222,7 +1223,7 @@
                                                     echo "<tr>";
                                                         if(NurseWorkExperience::getNurseWorkExperience($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
                                                         {
-                                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/add-nurse-work-experience', 'personid' => $applicant->personid]);
+                                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
                                                             echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                                         }
                                                     echo "</tr>";
@@ -1619,7 +1620,84 @@
                                     <?php endif;?>
                                 </div>
                             <?php endif;?><!--End of Teaching specific information-->
-                        </div>
+                            
+                            
+                            </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                <?php 
+                                    if(Yii::$app->user->can('verifyApplicants'))
+                                    {
+                                        echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Criminal Record</h3>";
+
+                                        if ($criminalrecord==false)
+                                        {
+                                            $val = "Applicant has not indicated that they have criminal record";
+                                            echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                    echo "<tr>";
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                            echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
+                                                        }
+                                                    echo "</tr>";
+                                                echo "</table>"; 
+                                        }
+                                        else
+                                        {
+                                            $val = "";
+                                            $criminalrecordid = $criminalrecord->criminalrecordid;
+                                            $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                            $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+
+                                            echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Details";
+                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                {
+                                                    echo Html::a(' Delete', 
+                                                                    ['delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid], 
+                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                        'data' => [
+                                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                                            'method' => 'post',
+                                                                        ],
+                                                                     'style' => 'margin-left:10px',
+                                                                    ]);
+                                                }
+                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                {
+                                                        echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                }
+                                            echo "</div>";
+                                            
+                                            echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                echo "<tr>";
+                                                    echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing->location}</th>";
+                                                    echo "<th>Nature of Charge</th>";
+                                                    echo "<td colspan='3'>{$criminalrecord->natureofcharge}</td>";
+                                                echo "</tr>";
+
+                                                echo "<tr>";
+                                                    echo "<th>Outcome</th>";
+                                                    echo "<td colspan='3'>{$criminalrecord->outcome}</td>";
+                                                echo "</tr>";
+
+                                                echo "<tr>";
+                                                    echo "<th>Date of Conviction (if applicable)</th>";
+                                                    echo "<td colspan='3'>{$criminalrecord->dateofconviction}</td>";
+                                                echo "</tr>";
+
+                                                echo "<tr>";
+                                                   if(CriminalRecord::getCriminalRecord($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
+                                                    {
+                                                        $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                        echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
+                                                    }
+                                                echo "</tr>";
+                                            echo "</table>"; 
+                                        }
+                                    }
+                                ?>
+                            </div>
+                        </div><!--End of additional information tab-->
                         
                         
 

@@ -49,8 +49,6 @@
     use frontend\models\CapeGroup;
     use frontend\models\StudentStatus;
     use frontend\models\QualificationType;
-    
-    
     use frontend\models\CapeSubjectGroup;
     use frontend\models\ApplicationStatus;
     use frontend\models\RegistrationType;    
@@ -63,7 +61,14 @@
     use frontend\models\BatchStudent;
     use frontend\models\AcademicStatus;
     use frontend\models\BatchStudentCape;
-
+    use frontend\models\GeneralWorkExperience;
+    use frontend\models\Reference;
+    use frontend\models\TeachingExperience;
+    use frontend\models\NurseWorkExperience;
+    use frontend\models\NursePriorCertification;
+    use frontend\models\NursingAdditionalInfo;
+    use frontend\models\TeachingAdditionalInfo;
+    use frontend\models\CriminalRecord;
 
     class ProfileController extends Controller
     {
@@ -124,6 +129,16 @@
             
             /************************ Medical Conditions *****************************/
             $medicalConditions = MedicalCondition::getMedicalConditions($personid);
+            
+            /************************ Additional Details *****************************/
+            $genral_work_experience = GeneralWorkExperience::getGeneralWorkExperiences($personid);
+            $references = Reference::getReferences($personid);
+            $teaching = TeachingExperience::getTeachingExperiences($personid);
+            $nursing = NurseWorkExperience::getNurseWorkExperience($personid);
+            $nursing_certification = NursePriorCertification::getCertifications($personid);
+            $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
+            $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
+            $criminalrecord =  CriminalRecord::getCriminalRecord($personid);
             
             /************************* Institutions **********************************/
             $preschools = PersonInstitution::getPersonInsitutionRecords($personid, 1);
@@ -483,6 +498,17 @@
                 
                 //models for addtional information tab
                 'medicalConditions' => $medicalConditions,
+                
+                //models for addtional information tab
+                'medicalConditions' => $medicalConditions,
+                'general_work_experience' => $genral_work_experience,
+                'references' => $references,
+                'teaching' => $teaching,
+                'nursing' => $nursing,
+                'nursing_certification' => $nursing_certification,
+                'nursinginfo' => $nursinginfo,
+                'teachinginfo' => $teachinginfo,
+                'criminalrecord' => $criminalrecord,
                 
                 //models for academic institutions tab
                 'preschools' => $preschools,
@@ -2314,7 +2340,771 @@
             ]); 
         }
         
-    
+        
+        /**
+        * Creates or Updates 'general_work_experience' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 09/03/2016
+        * Date Last Modified: 09/03/2016
+        */
+       public function actionGeneralWorkExperience($personid, $recordid = Null)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = Null;
+           $action = Null;
+
+           if ($recordid == Null)
+           {
+               $experience = new GeneralWorkExperience();
+               $action = "create";
+           }
+           else
+           {
+               $experience = GeneralWorkExperience::find()
+                           ->where(['generalworkexperienceid' => $recordid])
+                           ->one();
+               $action = "update";
+           }
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $experience->load($post_data);
+               if($load_flag == true)
+               {
+                   $experience->personid = $personid;
+                   $validation_flag = $experience->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $experience->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+
+           return $this->render('general_work_experience', [
+               'user' => $user,
+               'personid' => $personid,
+               'experience' => $experience,
+               'action' => $action,
+           ]);
+       }
+
+       /**
+        * Deletes 'GeneralWorkExperience' record
+        * 
+        * @param type $personid
+        * @param type $recordid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 07/03/2016
+        * Date Last Modified: 07/03/2016
+        */
+       public function actionDeleteGeneralWorkExperience($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = GeneralWorkExperience::find()
+                           ->where(['generalworkexperienceid' => $recordid])
+                           ->one();
+           if ($experience == true)
+           {
+               $save_flag = false;
+               $experience->isactive = 0;
+               $experience->isdeleted = 1;
+               $save_flag = $experience->save();
+               if($save_flag == true)
+               {
+                   return self::actionStudentProfile($user->personid, $studentregistrationid);
+               }
+               else
+                   Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+           }            
+           else
+               Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+
+
+
+       /**
+        * Updates 'Reference' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 09/03/2016
+        * Date Last Modified: 09/03/2016
+        */
+       public function actionEditReference($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $reference = Reference::find()
+                       ->where(['referenceid' => $recordid])
+                       ->one();
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $reference->load($post_data);
+               if($load_flag == true)
+               {
+                   $validation_flag = $reference->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $reference->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+
+           return $this->render('edit_reference', [
+               'user' => $user,
+               'personid' => $personid,
+               'reference' => $reference,
+               'action' => $action,
+           ]);
+       }
+
+
+       /**
+        * Creates of Updates 'NurseWorkExperience' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 09/03/2016
+        * Date Last Modified: 09/03/2016
+        */
+       public function actionNurseWorkExperience($personid, $recordid = Null)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           if ($recordid == Null)
+           {
+               $nurseExperience = new NurseWorkExperience();
+               $action = "create";
+           }
+           else
+           {
+               $nurseExperience = NurseWorkExperience::find()
+                       ->where(['nurseworkexperienceid' => $recordid])
+                       ->one();
+               $action = "update";
+           }
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $nurseExperience->load($post_data);
+               if($load_flag == true)
+               {
+                   $validation_flag = $nurseExperience->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $nurseExperience->personid = $personid;
+                       $save_flag = $nurseExperience->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+
+           return $this->render('edit_nurse_work_experience', [
+               'user' => $user,
+               'personid' => $personid,
+               'nurseExperience' => $nurseExperience,
+               'action' => $action,
+           ]);
+       }
+
+
+       /**
+        * Deletes 'NurseWorkExperience' record
+        * 
+        * @param type $personid
+        * @param type $recordid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 07/03/2016
+        * Date Last Modified: 07/03/2016
+        */
+       public function actionDeleteNurseWorkExperience($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = NurseWorkExperience::find()
+                           ->where(['nurseworkexperienceid' => $recordid])
+                           ->one();
+           if ($experience == true)
+           {
+               $save_flag = false;
+               $experience->isactive = 0;
+               $experience->isdeleted = 1;
+               $save_flag = $experience->save();
+               if($save_flag == true)
+               {
+                   return self::actionStudentProfile($user->personid, $studentregistrationid);
+               }
+               else
+                   Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+           }            
+           else
+               Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+
+
+       /**
+        * Creates or Updates 'NursePriorCertification' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 09/03/2016
+        * Date Last Modified: 09/03/2016
+        */
+       public function actionNurseCertification($personid, $recordid = Null)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = Null;
+           $action = Null;
+
+           if ($recordid == Null)
+           {
+               $experience = new NursePriorCertification();
+               $action = "create";
+           }
+           else
+           {
+               $experience = NursePriorCertification::find()
+                           ->where(['nursepriorcertificationid' => $recordid])
+                           ->one();
+               $action = "update";
+           }
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $experience->load($post_data);
+               if($load_flag == true)
+               {
+                   $experience->personid = $personid;
+                   $validation_flag = $experience->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $experience->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+           return $this->render('nurse_certification', [
+               'user' => $user,
+               'personid' => $personid,
+               'experience' => $experience,
+               'action' => $action,
+           ]);
+       }
+
+
+       /**
+        * Deletes 'NursePriorCertification' record
+        * 
+        * @param type $personid
+        * @param type $recordid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 07/03/2016
+        * Date Last Modified: 07/03/2016
+        */
+       public function actionDeleteNurseCertification($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = NursePriorCertification::find()
+                           ->where(['nursepriorcertificationid' => $recordid])
+                           ->one();
+           if ($experience == true)
+           {
+               $save_flag = false;
+               $experience->isactive = 0;
+               $experience->isdeleted = 1;
+               $save_flag = $experience->save();
+               if($save_flag == true)
+               {
+                   return self::actionStudentProfile($user->personid, $studentregistrationid);
+               }
+               else
+                   Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+           }            
+           else
+               Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+
+
+       /**
+        * Updates "NursingAdditionalInfo' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 10/03/2016
+        * Date Last Modified: 10/03/2016
+        */
+       public function actionUpdateNursingInformation($personid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $nursinginfo->load($post_data);
+               if($load_flag == true)
+               {
+                   $validation_flag = $nursinginfo->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $nursinginfo->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate Additional Nursing Information record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
+           }
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+
+
+       /**
+        * Creates or Updates 'TeacherExperience' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 09/03/2016
+        * Date Last Modified: 09/03/2016
+        */
+       public function actionTeacherExperience($personid, $recordid = Null)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = Null;
+           $action = Null;
+
+           if ($recordid == Null)
+           {
+               $experience = new TeachingExperience();
+               $action = "create";
+           }
+           else
+           {
+               $experience = TeachingExperience::find()
+                           ->where(['teachingexperienceid' => $recordid])
+                           ->one();
+               $action = "update";
+           }
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $experience->load($post_data);
+               if($load_flag == true)
+               {
+                   $experience->personid = $personid;
+                   $validation_flag = $experience->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $experience->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+
+           return $this->render('teacher_experience', [
+               'user' => $user,
+               'personid' => $personid,
+               'experience' => $experience,
+               'action' => $action,
+           ]);
+       }
+
+
+       /**
+        * Deletes 'TeachingExperience' record
+        * 
+        * @param type $personid
+        * @param type $recordid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 10/03/2016
+        * Date Last Modified: 10/03/2016
+        */
+       public function actionDeleteTeacherExperience($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $experience = TeachingExperience::find()
+                           ->where(['teachingexperienceid' => $recordid])
+                           ->one();
+           if ($experience == true)
+           {
+               $save_flag = false;
+               $experience->isactive = 0;
+               $experience->isdeleted = 1;
+               $save_flag = $experience->save();
+               if($save_flag == true)
+               {
+                   return self::actionStudentProfile($user->personid, $studentregistrationid);
+               }
+               else
+                   Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+           }            
+           else
+               Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+
+
+       /**
+        * Updates "TeachingAdditionalInfo' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 10/03/2016
+        * Date Last Modified: 10/03/2016
+        */
+       public function actionUpdateTeachingInformation($personid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
+           
+           $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $teachinginfo->load($post_data);
+               if($load_flag == true)
+               {
+                   $validation_flag = $teachinginfo->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $save_flag = $teachinginfo->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionStudentProfile($user->personid, $studentregistrationid);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate Additional Nursing Information record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
+           }
+
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+       }
+       
+       
+       /**
+        * Creates of Updates 'CriminalRecord' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 15/03/2016
+        * Date Last Modified: 15/03/2016
+        */
+       public function actionCriminalRecord($personid, $recordid = Null)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           if ($recordid == Null)
+           {
+               $criminalrecord = new CriminalRecord();
+               $action = "create";
+           }
+           else
+           {
+               $criminalrecord = CriminalRecord::find()
+                       ->where(['criminalrecord' => $recordid])
+                       ->one();
+               $action = "update";
+           }
+
+           if ($post_data = Yii::$app->request->post())
+           {
+               $load_flag = false;
+               $validation_flag = false;
+               $save_flag = false;
+
+               $load_flag = $criminalrecord->load($post_data);
+               if($load_flag == true)
+               {
+                   $validation_flag = $criminalrecord->validate();
+
+                   if($validation_flag == true)
+                   {
+                       $criminalrecord->personid = $personid;
+                       $save_flag = $criminalrecord->save();
+                       if($save_flag == true)
+                       {
+                           return self::actionApplicantProfile($user->username);
+                       }
+                       else
+                           Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                   }
+                   else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+               }
+               else
+                       Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+           }
+
+
+           return $this->render('edit_criminal_record', [
+               'user' => $user,
+               'personid' => $personid,
+               'criminalrecord' => $criminalrecord,
+               'action' => $action,
+           ]);
+       }
+
+
+       /**
+        * Deletes 'CriminalRecord' record
+        * 
+        * @param type $personid
+        * @param type $recordid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 15/03/2016
+        * Date Last Modified: 15/03/2016
+        */
+       public function actionDeleteCriminalRecord($personid, $recordid)
+       {
+           $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+
+           $criminalrecord = CriminalRecord::find()
+                           ->where(['criminalrecord' => $recordid])
+                           ->one();
+           if ($criminalrecord == true)
+           {
+               $save_flag = false;
+               $criminalrecord->isactive = 0;
+               $criminalrecord->isdeleted = 1;
+               $save_flag = $experience->save();
+               if($save_flag == true)
+               {
+                   return self::actionApplicantProfile($user->username);
+               }
+               else
+                   Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+           }            
+           else
+               Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+
+
+           return self::actionApplicantProfile($user->username);
+       }
         
         
     }

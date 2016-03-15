@@ -961,9 +961,681 @@
                             
                             
                             <div role="tabpanel" class="tab-pane fade" id="additional_details">                              
-                                <h2 class="custom_h2">Additional Details</h2>
-                                </br>
-                                <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                                </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php 
+                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        {
+                                            echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>General Work Experience</h3>";
+                                            if ($general_work_experience == false)
+                                            {
+                                                $val = "Applicant has not indicated that they have prior general work experience";
+                                                echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                        echo "<tr>";
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                                                echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Job Role</a></td>";
+                                                            }
+                                                        echo "</tr>";
+                                                    echo "</table>"; 
+                                            }
+                                            else
+                                            {
+                                                for($i = 0 ; $i < count($general_work_experience) ; $i++) 
+                                                {
+                                                    $val = $i+1;
+                                                    $generalworkexperienceid = $general_work_experience[$i]->generalworkexperienceid;
+                                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
+                                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
+
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            echo Html::a(' Delete', 
+                                                                            ['delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid], 
+                                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                'data' => [
+                                                                                    'confirm' => 'Are you sure you want to delete this item?',
+                                                                                    'method' => 'post',
+                                                                                ],
+                                                                             'style' => 'margin-left:10px',
+                                                                            ]);
+                                                        }
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                        }
+                                                    echo "</div>";
+
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                        echo "<tr>";
+                                                            echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$general_work_experience[$i]->role}</th>";
+                                                            echo "<th>Employer</th>";
+                                                            echo "<td>{$general_work_experience[$i]->employer}</td>";
+                                                            echo "<th>Employer Address</th>";
+                                                            echo "<td>{$general_work_experience[$i]->employeraddress}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            echo "<th>Nature of Duties</th>";
+                                                            echo "<td>{$general_work_experience[$i]->natureofduties}</td>";
+                                                            echo "<th>Salary</th>";
+                                                            echo "<td>{$general_work_experience[$i]->salary}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            echo "<th>Start Date</th>";
+                                                            echo "<td>{$general_work_experience[$i]->startdate}</td>";
+                                                            echo "<th>End Date</th>";
+                                                            echo "<td style='height:65px'>{$general_work_experience[$i]->enddate}</td>";
+                                                        echo "</tr>";
+                                                    echo "</table>"; 
+                                                }
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                    if(Yii::$app->user->can('verifyApplicants'))
+                                                    {
+                                                        $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                                        echo "<tr>";
+                                                            echo "<td></td>";
+                                                            echo "<td></td>";
+                                                            echo "<td></td>";
+                                                            echo "<td></td>";
+                                                            echo "<td><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Job Role</a></td>";
+                                                        echo "</tr>";
+                                                    }     
+                                                echo "</table>"; 
+                                            }
+                                        }
+                                    ?>
+                                </div>
+
+
+                                </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php 
+                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        {
+                                            echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>References</h3>";
+
+                                            if ($references==false)
+                                            {
+                                                echo "</br><div style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>Student has not indicated that they have prior general work experience</div>";
+                                            }
+                                            else
+                                            {
+                                                for($i = 0 ; $i < count($references) ; $i++) 
+                                                {
+                                                    $val = $i+1;
+                                                    $referenceid = $references[$i]->referenceid;
+                                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
+
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
+                                                        
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                                echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                        }
+                                                    echo "</div>";
+
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                            echo "<tr>";
+                                                                $fullname = $references[$i]->title . ". " . $references[$i]->firstname . " " . $references[$i]->lastname;
+                                                                echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$fullname}</th>";
+                                                                echo "<th>Address</th>";
+                                                                echo "<td>{$references[$i]->address}</td>";
+                                                                echo "<th>Occupation</th>";
+                                                                echo "<td>{$references[$i]->occupation}</td>";
+                                                            echo "</tr>";
+
+                                                            echo "<tr>";
+                                                                echo "<th>Contact Number</th>";
+                                                                echo "<td>{$references[$i]->contactnumber}</td>";
+                                                            echo "</tr>";
+                                                        echo "</table>";                     
+                                                }
+                                            }
+                                        }
+                                    ?>
+                                </div>
+
+
+                                <?php if($applicant->applicantintentid==6):?>
+                                    </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php 
+                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            {
+                                                echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Experience</h3>";
+
+                                                if ($nursing==false)
+                                                {
+                                                    $val = "Applicant has not indicated that they have prior nursing experience";
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                            echo "<tr>";
+                                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                                {
+                                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                                }
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                }
+                                                else
+                                                {
+                                                    $val = "";
+                                                    $nurseworkexperienceid = $nursing->nurseworkexperienceid;
+                                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+                                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Experience Details";
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            echo Html::a(' Delete', 
+                                                                            ['delete-nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid], 
+                                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                'data' => [
+                                                                                    'confirm' => 'Are you sure you want to delete this item?',
+                                                                                    'method' => 'post',
+                                                                                ],
+                                                                             'style' => 'margin-left:10px',
+                                                                            ]);
+                                                        }
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                                echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                        }
+                                                    echo "</div>";
+
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                        echo "<tr>";
+                                                            echo "<th rowspan='5' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing->location}</th>";
+                                                            echo "<th>Nature of Duties</th>";
+                                                            echo "<td colspan='3'>{$nursing->natureoftraining}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            echo "<th>Tenure Period</th>";
+                                                            echo "<td colspan='3'>{$nursing->tenureperiod}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            echo "<th>Departure Reason (if applicable)</th>";
+                                                            echo "<td colspan='3'>{$nursing->departreason}</td>";
+                                                        echo "</tr>";
+
+                                                        echo "<tr>";
+                                                            if(NurseWorkExperience::getNurseWorkExperience($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                                echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                            }
+                                                        echo "</tr>";
+                                                    echo "</table>"; 
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+
+                                    </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php 
+                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            {
+                                                echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Certification</h3>";
+
+                                                if ($nursing_certification==false)
+                                                {
+                                                    $val = "Applicant has not indicated that they have prior nursing cetificates";
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                            echo "<tr>";
+                                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                                {
+                                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid]);
+                                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                                }
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                }
+                                                else
+                                                {
+                                                    for($i = 0 ; $i < count($nursing_certification) ; $i++) 
+                                                    {
+                                                        $val = $i+1;
+                                                        $nursecertificationid = $nursing_certification[$i]->nursepriorcertificationid;
+                                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+                                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+
+                                                        echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val";
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                echo Html::a(' Delete', 
+                                                                                ['delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid], 
+                                                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                    'data' => [
+                                                                                        'confirm' => 'Are you sure you want to delete this item?',
+                                                                                        'method' => 'post',
+                                                                                    ],
+                                                                                 'style' => 'margin-left:10px',
+                                                                                ]);
+                                                            }
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                    echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                            }
+                                                        echo "</div>";
+
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                            echo "<tr>";
+                                                                echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing_certification[$i]->certification}</th>";
+                                                                echo "<th>Institution</th>";
+                                                                echo "<td colspan='3'>{$nursing_certification[$i]->institutionname}</td>";
+                                                            echo "</tr>";
+
+                                                            echo "<tr>";
+                                                                echo "<th>Dates of Training</th>";
+                                                                echo "<td colspan='3'>{$nursing_certification[$i]->datesoftraining}</td>";
+                                                            echo "</tr>";
+
+                                                            echo "<tr>";
+                                                                echo "<th>Length of Training</th>";
+                                                                echo "<td colspan='3'>{$nursing_certification[$i]->lengthoftraining}</td>";
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                    }
+
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                        if(Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid]);
+                                                            echo "<tr>";
+
+                                                                echo "<td colspan='3'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Certificate</a></td>";
+                                                            echo "</tr>";
+                                                        }     
+                                                    echo "</table>"; 
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+
+
+                                    </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php if(Yii::$app->user->can('verifyApplicants')):?>
+                                            <h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Additional Information</h3>
+                                            <?php 
+                                                $form = yii\bootstrap\ActiveForm::begin([
+                                                    'action' => Url::to(['view-applicant/update-nursing-information', 'personid' => $applicant->personid]),
+                                                    'id' => 'nursing-info-form',
+                                                    'enableAjaxValidation' => false,
+                                                    'enableClientValidation' => true,
+                                                    'validateOnSubmit' => true,
+                                                    'validateOnBlur' => true,
+                                                    'successCssClass' => 'alert in alert-block fade alert-success',
+                                                    'errorCssClass' => 'alert in alert-block fade alert-error',
+                                                    'options' => [
+                                                        'class' => 'form-layout',
+                                                        'style' => 'margin-top:30px; margin-bottom:30px; width:95%',
+                                                    ],
+
+                                                ])
+                                            ?>
+
+                                            <fieldset >
+                                                <legend>Family Information</legend>
+                                                <?= $form->field($nursinginfo, 'childcount')->label("How many children do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'childCount', 'onchange'=> 'checkChildCount();']);?>
+
+                                                <?php if (NursingAdditionalInfo::hasChildren($applicant->personid) == true):?>
+                                                    <div id="ages">
+                                                        <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                    </div>
+                                                <?php else :?>
+                                                    <div id="ages" style="display:none">
+                                                        <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                    </div>
+                                                <?php endif ;?>
+
+                                                <?= $form->field($nursinginfo, 'brothercount')->label("How many brothers do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'brotherCount']);?>
+
+                                                <?= $form->field($nursinginfo, 'sistercount')->label("How many sisters do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'sisterCount']);?>
+                                            </fieldset><br>
+
+                                            <fieldset >
+                                                <legend>Work Experience</legend>
+                                                <?= $form->field($nursinginfo, 'yearcompletedschool')->label('Year school was completed: *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+
+                                                <?= $form->field($nursinginfo, 'hasworked')->label("Have you worked since leaving school? *", ['class'=> 'form-label'])->inline()->radioList($has_worked, ['id' => 'hasWorked', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
+
+                                                <?= $form->field($nursinginfo, 'isworking')->label("Are you currently employed? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'isWorking', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
+
+                                                <div id="has-other-applications">
+                                                    <?= $form->field($nursinginfo, 'hasotherapplications')->label("Are you currently awaiting any application responses? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'hasOtherApplications', 'onclick' => 'showOtherApplicationDetails();']);?>
+                                                </div>
+
+                                                <?php if (NursingAdditionalInfo::hasOtherApplications($applicant->personid) == true):?>
+                                                    <div id="other-applications-info">
+                                                        <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
+                                                    </div>
+                                                <?php else :?>
+                                                    <div id="other-applications-info" style="display:none">
+                                                        <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
+                                                    </div>
+                                                <?php endif ;?>
+
+                                                <?= $form->field($nursinginfo, 'hasnursingexperience')->label("Do you have had any previous nursing or nurse related training? *", ['class'=> 'form-label'])->inline()->radioList($nursing_experience, ['id' => 'nurse-work']);?>
+                                            </fieldset></br>
+
+                                            <fieldset >
+                                                <legend>Other</legend>
+                                                <!-- Is organization member radiolist -->
+                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
+                                                    <?= $form->field($nursinginfo, 'ismember')->label("Are you a member of a professional organisation? *", ['class'=> 'form-label'])->inline()->radioList($is_organisational_member, ['class'=> 'form-field', 'onclick' => 'toggleOrganisationDetails();']);?>
+                                                <?php endif;?>
+
+                                                <!-- Organization details -->
+                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == true):?>
+                                                    <div id="member-organisations" style="display:block">  
+                                                        <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                                    </div>
+                                                <?php else:?>
+                                                    <div id="member-organisations" style="display:none">
+                                                         <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <!--Reason for not joining organization-->
+                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == false):?>
+                                                    <div id="exclusion-reason" style="display:block">  
+                                                        <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                                    </div>
+                                                <?php else:?>
+                                                    <div id="exclusion-reason" style="display:none">
+                                                         <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <!-- Is repeat applicant radiolist -->
+                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
+                                                    <?= $form->field($nursinginfo, 'repeatapplicant')->label("Have you applied for entry into this course previously? *", ['class'=> 'form-label'])->inline()->radioList($is_repeat_applicant, ['class'=> 'form-field', 'onclick' => 'togglePreviousYears();']);?>
+                                                <?php endif;?>
+
+                                                <!-- Previous years -->
+                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::hasPreviousApplication($applicant->personid) == true):?>
+                                                    <div id="previous-years" style="display:block">                                
+                                                <?php else:?>
+                                                    <div id="previous-years" style="display:none">
+                                                <?php endif; ?>
+                                                         <?= $form->field($nursinginfo, 'previousyears')->label('If yes, state when?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                    </div>
+
+                                                <?= $form->field($nursinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
+
+                                                </br><p>State two (2) reasons why you wish to do enroll in your programme of choice.
+                                                <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+
+                                                <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+
+                                                <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
+                                            </fieldset></br>
+
+                                            <div class="form-group">
+                                                <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
+                                            </div>
+                                        <?php yii\bootstrap\ActiveForm::end(); ?> 
+                                        <?php endif;?>
+                                    </div>
+                                <?php endif;?><!--End of Nursing specific information-->
+
+
+
+                                <?php if($applicant->applicantintentid==4):?>
+                                    </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php 
+                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            {
+                                                echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Teaching Experience</h3>";
+                                                if ($teaching == false)
+                                                {
+                                                    $val = "Applicant has not indicated that they have prior teaching experience";
+                                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                            echo "<tr>";
+                                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                                {
+                                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
+                                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                                }
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                }
+                                                else
+                                                {
+                                                    for($i = 0 ; $i < count($teaching) ; $i++) 
+                                                    {
+                                                        $val = $i+1;
+                                                        $teacherexperienceid = $teaching[$i]->teachingexperienceid;
+                                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+                                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+
+                                                        echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                echo Html::a(' Delete', 
+                                                                                ['delete-teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid], 
+                                                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                    'data' => [
+                                                                                        'confirm' => 'Are you sure you want to delete this item?',
+                                                                                        'method' => 'post',
+                                                                                    ],
+                                                                                 'style' => 'margin-left:10px',
+                                                                                ]);
+                                                            }
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                    echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                            }
+                                                        echo "</div>";
+
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                            echo "<tr>";
+                                                                echo "<th rowspan='4' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$teaching[$i]->institutionname}</th>";
+                                                                echo "<th>Address</th>";
+                                                                echo "<td>{$teaching[$i]->address}</td>";
+                                                                echo "<th>Start Date</th>";
+                                                                echo "<td>{$teaching[$i]->startdate}</td>";
+                                                            echo "</tr>";
+
+                                                            echo "<tr>";
+                                                                echo "<th>Date of Appointment</th>";
+                                                                echo "<td>{$teaching[$i]->dateofappointment}</td>";
+                                                                echo "<th>End Date</th>";
+                                                                echo "<td>{$teaching[$i]->enddate}</td>";
+                                                            echo "</tr>";
+
+                                                            echo "<tr>";
+                                                                echo "<th>Class/Form</th>";
+                                                                echo "<td>{$teaching[$i]->classtaught}</td>";
+                                                                echo "<th>Subject(s)</th>";
+                                                                echo "<td style='height:65px'>{$teaching[$i]->subject}</td>";
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                    }
+                                                        echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                            echo "<tr>";
+                                                                if(Yii::$app->user->can('verifyApplicants'))
+                                                                {
+                                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
+                                                                    echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button' > Add Teaching Role</a></td>";
+                                                                }
+                                                            echo "</tr>";
+                                                        echo "</table>"; 
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+
+
+                                    </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php if(Yii::$app->user->can('verifyApplicants')):?>
+                                            <h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Teaching Additional Information</h3>
+                                            <?php 
+                                                $form = yii\bootstrap\ActiveForm::begin([
+                                                    'action' => Url::to(['view-applicant/update-teaching-information', 'personid' => $applicant->personid]),
+                                                    'id' => 'teaching-info-form',
+                                                    'enableAjaxValidation' => false,
+                                                    'enableClientValidation' => true,
+                                                    'validateOnSubmit' => true,
+                                                    'validateOnBlur' => true,
+                                                    'successCssClass' => 'alert in alert-block fade alert-success',
+                                                    'errorCssClass' => 'alert in alert-block fade alert-error',
+                                                    'options' => [
+                                                        'class' => 'form-layout',
+                                                        'style' => 'margin-top:30px; margin-bottom:30px; width:95%',
+                                                    ],
+
+                                                ])
+                                            ?>
+
+                                            <fieldset >
+                                                <legend>Family Information</legend>
+                                                <?= $form->field($teachinginfo, 'childcount')->label("How many children do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'childCount', 'onchange'=> 'checkChildCount();']);?>
+
+                                                <?php if (TeachingAdditionalInfo::hasChildren($applicant->personid) == true):?>
+                                                    <div id="ages">
+                                                        <?= $form->field($teachinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                    </div>
+                                                <?php else :?>
+                                                    <div id="ages" style="display:none">
+                                                        <?= $form->field($teachinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                    </div>
+                                                <?php endif ;?>
+
+                                                <?= $form->field($teachinginfo, 'brothercount')->label("How many brothers do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'brotherCount']);?>
+
+                                                <?= $form->field($teachinginfo, 'sistercount')->label("How many sisters do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'sisterCount']);?>
+                                            </fieldset></br>
+
+                                            <fieldset >
+                                                <legend>Work Experience</legend>
+                                                <?= $form->field($teachinginfo, 'yearcompletedschool')->label('Year school was completed: *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+
+                                                <?= $form->field($teachinginfo, 'hasworked')->label("Have you worked since leaving school? *", ['class'=> 'form-label'])->inline()->radioList($has_worked, ['id' => 'hasWorked', 'onclick' => 'showTeacherGeneralWorkExperience();']);?>
+
+                                                <?= $form->field($teachinginfo, 'isworking')->label("Are you currently employed? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'isWorking', 'onclick' => 'showTeacherGeneralWorkExperience();']);?>
+
+                                                <?= $form->field($teachinginfo, 'hasteachingexperience')->label("Do you have had any previous teaching experience? *", ['class'=> 'form-label'])->inline()->radioList($teaching_experience, ['teacher-experience', 'onclick' => 'showTeachingExperience();']);?>
+                                            </fieldset></br>
+
+                                            <fieldset >
+                                                <legend>Other</legend>              
+                                                <?= $form->field($teachinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
+
+                                                </br><p>State two (2) reasons why you wish to enroll in the Division of Teacher Education.
+                                                <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+
+                                                <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>             
+                                            </fieldset></br>
+
+                                            <fieldset >
+                                                <legend>Financial Information</legend> 
+                                                <?= $form->field($teachinginfo, 'benefactor')->label("How will your studies be financed? *", ['class'=> 'form-label'])->inline()->radioList($financing_options, ['onclick' => 'showBenefactorDetails();']);?>
+
+                                                <div id="benefactor-details" style="display:none;">
+                                                    <?= $form->field($teachinginfo, 'benefactordetails')->label('Specify Financer', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                                </div>
+
+                                                <?= $form->field($teachinginfo, 'appliedforloan')->label("Have you applied for Student Loan? *", ['class'=> 'form-label'])->inline()->radioList($student_loan);?>
+
+                                                <?= $form->field($teachinginfo, 'sponsorship')->label("Have you requested? *", ['class'=> 'form-label'])->inline()->radioList($sponsorship_request, ['onclick' => 'showSponsorNames();']);?>               
+
+                                                <div id="sponsor-names" style="display:none;">
+                                                    <?= $form->field($teachinginfo, 'sponsorname')->label("If you are sponsored please state the organization(s).", ['class'=> 'form-label'])->textArea(['rows' => '2']) ?>
+                                                </div>
+                                            </fieldset></br>
+
+                                            <div class="form-group">
+                                                <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
+                                            </div>
+                                            <?php yii\bootstrap\ActiveForm::end(); ?> 
+                                        <?php endif;?>
+                                    </div>
+                                <?php endif;?><!--End of Teaching specific information-->
+                                
+                                
+                                </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php 
+                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        {
+                                            echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Criminal Record</h3>";
+
+                                            if ($criminalrecord==false)
+                                            {
+                                                $val = "Applicant has not indicated that they have criminal record";
+                                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                        echo "<tr>";
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                                echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
+                                                            }
+                                                        echo "</tr>";
+                                                    echo "</table>"; 
+                                            }
+                                            else
+                                            {
+                                                $val = "";
+                                                $criminalrecordid = $criminalrecord->criminalrecordid;
+                                                $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                                $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+
+                                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Details";
+                                                    if(Yii::$app->user->can('verifyApplicants'))
+                                                    {
+                                                        echo Html::a(' Delete', 
+                                                                        ['delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid], 
+                                                                        ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                            'data' => [
+                                                                                'confirm' => 'Are you sure you want to delete this item?',
+                                                                                'method' => 'post',
+                                                                            ],
+                                                                         'style' => 'margin-left:10px',
+                                                                        ]);
+                                                    }
+                                                    if(Yii::$app->user->can('verifyApplicants'))
+                                                    {
+                                                            echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
+                                                    }
+                                                echo "</div>";
+
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
+                                                    echo "<tr>";
+                                                        echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing->location}</th>";
+                                                        echo "<th>Nature of Charge</th>";
+                                                        echo "<td colspan='3'>{$criminalrecord->natureofcharge}</td>";
+                                                    echo "</tr>";
+
+                                                    echo "<tr>";
+                                                        echo "<th>Outcome</th>";
+                                                        echo "<td colspan='3'>{$criminalrecord->outcome}</td>";
+                                                    echo "</tr>";
+
+                                                    echo "<tr>";
+                                                        echo "<th>Date of Conviction (if applicable)</th>";
+                                                        echo "<td colspan='3'>{$criminalrecord->dateofconviction}</td>";
+                                                    echo "</tr>";
+
+                                                    echo "<tr>";
+                                                       if(CriminalRecord::getCriminalRecord($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
+                                                        {
+                                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                            echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
+                                                        }
+                                                    echo "</tr>";
+                                                echo "</table>"; 
+                                            }
+                                        }
+                                    ?>
+                                </div>
                             </div>
                             
                             

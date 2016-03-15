@@ -837,6 +837,7 @@ class ViewApplicantController extends \yii\web\Controller
         $nursing_certification = NursePriorCertification::getCertifications($personid);
         $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
         $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
+        $criminalrecord =  CriminalRecord::getCriminalRecord($personid);
         $info = Applicant::getApplicantInformation($personid);
         $status_id = $info['status'];
         $status = ApplicationStatus::find()
@@ -1138,6 +1139,7 @@ class ViewApplicantController extends \yii\web\Controller
             'nursinginfo' => $nursinginfo,
             'teachinginfo' => $teachinginfo,
             'applicant_status' => $applicant_status,
+            'criminalrecord' => $criminalrecord,
 
             //models for academic institutions tab
             'preschools' => $preschools,
@@ -2511,7 +2513,7 @@ class ViewApplicantController extends \yii\web\Controller
                 ->one();
         
         $experience = NurseWorkExperience::find()
-                        ->where(['generalworkexperienceid' => $recordid])
+                        ->where(['nurseworkexperienceid' => $recordid])
                         ->one();
         if ($experience == true)
         {
@@ -2852,6 +2854,115 @@ class ViewApplicantController extends \yii\web\Controller
             else
                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
         }
+        
+        return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Creates of Updates 'CriminalRecord' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/03/2016
+     * Date Last Modified: 15/03/2016
+     */
+    public function actionCriminalRecord($personid, $recordid = Null)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        if ($recordid == Null)
+        {
+            $criminalrecord = new CriminalRecord();
+            $action = "create";
+        }
+        else
+        {
+            $criminalrecord = CriminalRecord::find()
+                    ->where(['criminalrecordid' => $recordid])
+                    ->one();
+            $action = "update";
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $criminalrecord->load($post_data);
+            if($load_flag == true)
+            {
+                $validation_flag = $criminalrecord->validate();
+
+                if($validation_flag == true)
+                {
+                    $criminalrecord->personid = $personid;
+                    $save_flag = $criminalrecord->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+        }
+       
+        
+        return $this->render('edit_criminal_record', [
+            'user' => $user,
+            'personid' => $personid,
+            'criminalrecord' => $criminalrecord,
+            'action' => $action,
+        ]);
+    }
+    
+    
+    /**
+     * Deletes 'CriminalRecord' record
+     * 
+     * @param type $personid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/03/2016
+     * Date Last Modified: 15/03/2016
+     */
+    public function actionDeleteCriminalRecord($personid, $recordid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        $criminalrecord = CriminalRecord::find()
+                        ->where(['criminalrecordid' => $recordid])
+                        ->one();
+        if ($criminalrecord == true)
+        {
+            $save_flag = false;
+            $criminalrecord->isactive = 0;
+            $criminalrecord->isdeleted = 1;
+            $save_flag = $experience->save();
+            if($save_flag == true)
+            {
+                return self::actionApplicantProfile($user->username);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
+        }            
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
+            
         
         return self::actionApplicantProfile($user->username);
     }
