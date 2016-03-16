@@ -558,8 +558,8 @@
                             </fieldset>
                                 
                             <h3 style="text-align:center">Other</h3>
-                                <?= $form->field($nursinginfo, 'applicantmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3', 'readonly' => true]) ?>
-                                <?= $form->field($nursinginfo, 'applicantmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3', 'readonly' => true]) ?>
+                                <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3', 'readonly' => true]) ?>
+                                <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3', 'readonly' => true]) ?>
                                 <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5', 'readonly' => true]) ?>  
                                 
                                 <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
