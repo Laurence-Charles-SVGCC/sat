@@ -177,7 +177,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Html::dropDownList('add_more_value', 1, 
                                 array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
                     <?php endif; ?>-->
-                </div>  
+                </div> 
+                
+                
+
+                
+                
                     
                 <?php if(PostSecondaryQualification::getPostSecondaryQualifications($model->personid) == true) :?>
                     <br/><fieldset style="margin-left:2.5%; width:95%">
