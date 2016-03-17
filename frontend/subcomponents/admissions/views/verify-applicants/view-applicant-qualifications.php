@@ -45,14 +45,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
             <?php $form = ActiveForm::begin(); ?>
-                <br/><fieldset style="margin-left:2.5%; width:95%">
+                <br/><fieldset style="width:100%">
                     <legend><strong>Certificate Results</strong></legend>
                     <table id="certificate_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
                         <thead>
                           <tr>
-                            <?php if($isexternal == 1):?>
-                                <th>Centre Name</th>
-                            <?php endif;?>
+                            <th>Centre Name</th>
                             <th>Examining Body</th>
                             <th>Candidate #</th>
                             <th>Subject</th>
@@ -67,20 +65,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <tbody>
                             <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
+                                <?php if($model->cseccentreid != $centreid):?>
+                                <tr style="opacity:0.5">
+                                <?php else:?>
                                 <tr>
+                                <?php endif;?>
                                     <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
-                                    <?php if($isexternal == 1):?>
-                                        <td width = 10%>
-                                            <?=  $form->field($model, "[$key]cseccentreid", ['options' => [
-                                                    'tag'=>'div',
-                                                    ],
-                                                    'template' => '{input}{error}'
-                                                ])->dropDownList(
-                                                        ArrayHelper::map(CsecCentre::find()->all(), 'cseccentreid', 'name'))?>
-                                        </td>
-                                    <?php endif;?>
+                                    
+                                    <td width = 22.5%>
+                                        <?=  $form->field($model, "[$key]cseccentreid", ['options' => [
+                                                'tag'=>'div',
+                                                ],
+                                                'template' => '{input}{error}'
+                                            ])->dropDownList(
+                                                    ArrayHelper::map(CsecCentre::find()->all(), 'cseccentreid', 'name'))?>
+                                    </td>
+                                   
 
-                                    <td width = 15%>
+                                    <td width = 10%>
                                         <?=  $form->field($model, "[$key]examinationbodyid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
@@ -107,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                            ->all(), 'subjectid', 'name')) ?>
                                     </td>
 
-                                    <td width = 15%>
+                                    <td width = 10%>
                                         <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
@@ -117,7 +119,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                            ->all(), 'examinationproficiencytypeid', 'name')) ?>
                                     </td>
 
-                                    <td width = 15%> 
+                                    <td width = 10%> 
                                         <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
@@ -127,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                            ->all(), 'examinationgradeid', 'name')); ?>
                                     </td>
 
-                                    <td width = 10%>
+                                    <td width = 7.5%>
                                         <?= $form->field($model, "[$key]year", ['options' => [
                                                 'tag'=>'div',
                                                 ],
@@ -160,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div style="margin-left:2.5%;" class="form-group">
                     <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  Modify Applicant Details</a>
            
-                    <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Distinct Certificate</a>
+                    <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>
                     
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
                         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -97,7 +97,8 @@ class VerifyApplicantsController extends \yii\web\Controller
             $amt_received = Application::centreApplicantsReceivedCount($centre_id);
             $amt_verified = Application::centreApplicantsVerifiedCount($centre_id);
             $amt_queried = Application::centreApplicantsQueriedCount($centre_id);
-            $amt_pending = $amt_received - ($amt_verified + $amt_queried);
+//            $amt_pending = $amt_received - ($amt_verified + $amt_queried);
+            $amt_pending = Application::centreApplicantsPendingCount($centre_id);
         }
 
         return $this->render('centre-details',
@@ -128,7 +129,9 @@ class VerifyApplicantsController extends \yii\web\Controller
             $data = array();
             foreach(Application::centreApplicantsReceived($cseccentreid) as $application)
             {
-                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+                $data[] = Applicant::find()
+                        ->where(['personid' => $application->personid])
+                        ->one();
             }
         }
         $dataProvider = new ArrayDataProvider([
@@ -391,7 +394,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                  */
                 if ($all_certs == $verified_certs)
                 {
-                    $pending = ApplicationStatus::findOne(['name' => 'pending']);
+                    $pending = ApplicationStatus::findOne(['name' => 'Pending']);
                     if ($pending)
                     {
                         $applications = Application::findAll(['personid' => $applicantid]);
