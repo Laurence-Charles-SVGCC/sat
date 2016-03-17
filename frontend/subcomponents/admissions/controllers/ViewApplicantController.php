@@ -2422,7 +2422,6 @@ class ViewApplicantController extends \yii\web\Controller
             'user' => $user,
             'personid' => $personid,
             'reference' => $reference,
-            'action' => $action,
         ]);
     }
     
