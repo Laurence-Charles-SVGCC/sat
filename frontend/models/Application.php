@@ -479,7 +479,7 @@ class Application extends \yii\db\ActiveRecord
              * are verified then they are removed from "pending"
              */
             $all_certs = CsecQualification::find()
-                    ->where(['personid' => $applicant->personid])
+                    ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->all();
             $cert_count = count($all_certs);
             $verified_count = 0;
