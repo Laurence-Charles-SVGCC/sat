@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\bootstrap\Modal;
 
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
@@ -11,6 +12,7 @@ use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationGrade;
 use frontend\models\CsecCentre;
 use frontend\models\PostSecondaryQualification;
+use frontend\models\CsecQualification;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -43,7 +45,6 @@ $this->params['breadcrumbs'][] = $this->title;
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-            <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
             <?php $form = ActiveForm::begin(); ?>
                 <br/><fieldset style="width:100%">
                     <legend><strong>Certificate Results</strong></legend>
@@ -64,16 +65,26 @@ $this->params['breadcrumbs'][] = $this->title;
                         </thead>
 
                         <tbody>
-                            <?php foreach ($dataProvider->getModels() as $key=>$model): ?>
-                                <?php if($model->cseccentreid != $centreid):?>
+                            <?php
+                                $id = $applicant->personid;
+                                $csecqualifications = $dataProvider->getModels();
+                                $qual_limit = count($csecqualifications);
+                            ?>
+                            
+                            <?= Html::hiddenInput('record_count', $record_count); ?>
+                            <?= Html::hiddenInput('qual_limit', $qual_limit); ?>
+                            
+                            <?php for ($j=0 ; $j<$record_count ; $j++): ?>
+                                <?php if($csecqualifications[$j]->cseccentreid != $centreid):?>
                                 <tr style="opacity:0.5">
                                 <?php else:?>
                                 <tr>
                                 <?php endif;?>
-                                    <?= Html::activeHiddenInput($model, "[$key]csecqualificationid"); ?>
+                                    <?= Html::activeHiddenInput($csecqualifications[$j], "[$j]csecqualificationid"); ?>
+                                    <?= Html::activeHiddenInput($csecqualifications[$j], "[$j]personid"); ?>
                                     
                                     <td width = 22.5%>
-                                        <?=  $form->field($model, "[$key]cseccentreid", ['options' => [
+                                        <?=  $form->field($csecqualifications[$j], "[$j]cseccentreid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
@@ -83,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                    
 
                                     <td width = 10%>
-                                        <?=  $form->field($model, "[$key]examinationbodyid", ['options' => [
+                                        <?=  $form->field($csecqualifications[$j], "[$j]examinationbodyid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
@@ -92,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </td>
 
                                     <td width = 10%>
-                                        <?= $form->field($model, "[$key]candidatenumber", ['options' => [
+                                        <?= $form->field($csecqualifications[$j], "[$j]candidatenumber", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
@@ -100,37 +111,37 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </td>
                                     
                                     <td width = 20%> 
-                                        <?= $form->field($model, "[$key]subjectid", ['options' => [
+                                        <?= $form->field($csecqualifications[$j], "[$j]subjectid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
                                             ])->dropDownList(
-                                                   ArrayHelper::map(Subject::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ArrayHelper::map(Subject::find()->where(['examinationbodyid' => $csecqualifications[$j]->examinationbodyid])
                                                            ->all(), 'subjectid', 'name')) ?>
                                     </td>
 
                                     <td width = 10%>
-                                        <?= $form->field($model, "[$key]examinationproficiencytypeid", ['options' => [
+                                        <?= $form->field($csecqualifications[$j], "[$j]examinationproficiencytypeid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
                                             ])->dropDownList(
-                                                   ArrayHelper::map(ExaminationProficiencyType::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ArrayHelper::map(ExaminationProficiencyType::find()->where(['examinationbodyid' => $csecqualifications[$j]->examinationbodyid])
                                                            ->all(), 'examinationproficiencytypeid', 'name')) ?>
                                     </td>
 
                                     <td width = 10%> 
-                                        <?= $form->field($model, "[$key]examinationgradeid", ['options' => [
+                                        <?= $form->field($csecqualifications[$j], "[$j]examinationgradeid", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
                                             ])->dropDownList(
-                                                   ArrayHelper::map(ExaminationGrade::find()->where(['examinationbodyid' => $model->examinationbodyid])
+                                                   ArrayHelper::map(ExaminationGrade::find()->where(['examinationbodyid' => $csecqualifications[$j]->examinationbodyid])
                                                            ->all(), 'examinationgradeid', 'name')); ?>
                                     </td>
 
                                     <td width = 7.5%>
-                                        <?= $form->field($model, "[$key]year", ['options' => [
+                                        <?= $form->field($csecqualifications[$j], "[$j]year", ['options' => [
                                                 'tag'=>'div',
                                                 ],
                                                 'template' => '{input}{error}'
@@ -138,23 +149,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </td>
 
                                     <td width= 5% style="text-align:center">
-                                        <?= $form->field($model, "[$key]isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
+                                        <?= $form->field($csecqualifications[$j], "[$j]isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
                                     </td>
 
                                     <td width= 5% style="text-align:center">
-                                        <?= $form->field($model, "[$key]isqueried")->checkbox(['label' => NULL]); ?>
+                                        <?= $form->field($csecqualifications[$j], "[$j]isqueried")->checkbox(['label' => NULL]); ?>
                                     </td>
 
                                     <td>
                                         <?= Html::a(' ', 
-                                                    ['delete-certificate', 'certificate_id' => $model->csecqualificationid], 
+                                                    ['delete-certificate', 'certificate_id' => $csecqualifications[$j]->csecqualificationid], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                         'style' => 'margin-right:20px',
                                                     ]);
                                         ?>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endfor; ?>
                         </tbody>
                     </table><br/>
                 </fieldset> 
@@ -165,7 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>
                     
                     <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
-                        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update Certificates', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                        <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary']) ?>
                     <?php endif; ?>
                     
                     <?php if (PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == false):?>
@@ -180,11 +191,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div> 
                 
                 
-
-                
+                <?php
+                    Modal::begin([
+                        'header' => '<h2>Notification</h2>',
+                        'id' => 'modal-no-more-qualifications',
+                        'size' => 'modal-md',
+                    ]);
+                    echo "<p><strong>No records are present to be removed. If you would have previously deleted records, click "
+                    . "save to finalize the operation</strong>.</p>";
+                    Modal::end();
+                ?>
+            
+                <?php
+                    Modal::begin([
+                        'header' => '<h2>Notification</h2>',
+                        'id' => 'modal-too-many-qualifications',
+                        'size' => 'modal-md',
+                    ]);
+                    echo "<p><strong>You have reached your record limit. No more records can be entered.</strong>.</p>";
+                    Modal::end();
+                ?>
                 
                     
-                <?php if(PostSecondaryQualification::getPostSecondaryQualifications($model->personid) == true) :?>
+                <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true) :?>
                     <br/><fieldset style="margin-left:2.5%; width:95%">
                         <legend><strong>Post Secondary Degree</strong></legend>
                         <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
@@ -259,6 +288,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
             <?php ActiveForm::end(); ?>
+            
+                       
+            
         </div>
     </div>
 </div>

@@ -94,7 +94,7 @@ class ExaminationGrade extends \yii\db\ActiveRecord
         array_push($keys, '');
 //        array_push($keys, '25');        //valid examinationgradeid
         $values = array();
-        array_push($values, 'Select...');
+        array_push($values, 'Select Grade');
 //        array_push($values, 'Pending');
         $combined = array();
         

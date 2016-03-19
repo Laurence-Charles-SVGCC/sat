@@ -105,8 +105,14 @@
                                 echo "</tr>";
                                 
                                 echo "<tr>";
-                                    echo "<th>Creator</th>";                                                      
-                                    echo "<td colspan='3'>{$period["creator"]}</td>";
+                                    echo "<th>Last Updated By</th>";                                                      
+                                    echo "<td>{$period["creator"]}</td>";
+                                    
+                                    echo "<th>Is Complete</th>"; 
+                                    if ($period["iscomplete"] == 1)
+                                        echo "<td>Yes</td>";
+                                    else
+                                        echo "<td>No</td>";
                                 echo "</tr>";
                             }
                         echo "</table>";

@@ -82,7 +82,7 @@ class ExaminationBody extends \yii\db\ActiveRecord
             $combined = array();
             
             array_push($keys, '');     //set to '1000' to ensure default value passes validation
-            array_push($values, 'Select...');
+            array_push($values, 'Select Exam');
             
             foreach($records as $record)
             {

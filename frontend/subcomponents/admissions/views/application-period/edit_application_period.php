@@ -20,6 +20,12 @@
         6 => 'close'
     ];
     
+    $iscomplete = [
+        '' => 'Choose Status...',
+        0 => 'No',
+        1 => 'Yes'
+    ];
+    
     $type = [
         '' => 'Select Type',
         1 => 'Full-time Enrollment',
@@ -95,6 +101,11 @@
                         echo "<tr>";
                             echo "<th style='vertical-align:middle;'>Status</th>";
                             echo "<td>{$form->field($period, 'applicationperiodstatusid')->label('', ['class'=> 'form-label'])->dropDownList($status)}</td>";
+                        echo "</tr>";
+                        
+                        echo "<tr>";
+                            echo "<th style='vertical-align:middle;'>Is Complete</th>";
+                            echo "<td>{$form->field($period, 'iscomplete')->label('', ['class'=> 'form-label'])->dropDownList($iscomplete)}</td>";
                         echo "</tr>";
                     echo "</table>"; 
 

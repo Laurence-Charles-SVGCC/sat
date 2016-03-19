@@ -209,7 +209,7 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 19/02/2016
-     * Date Last Modified: 19/02/2016 | 23/02/2016
+     * Date Last Modified: 19/02/2016 | 23/02/2016 | 20/03/2016
      */
     public static function getActiveApplicants($division_id)
     {
@@ -222,7 +222,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
                             ])
                     ->groupBy('applicant.personid')
@@ -238,7 +238,7 @@ class Applicant extends \yii\db\ActiveRecord
                      ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.divisionid' => $division_id,  'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
                             ])
                     ->groupBy('applicant.personid')
@@ -304,7 +304,7 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 24/02/2016
-     * Date Last Modified: 24/02/2016
+     * Date Last Modified: 24/02/2016 | 20/03/2016
      */
     public static function getApplicantInformation($personid)
     {
@@ -318,7 +318,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
 //                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
                         'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10]
                             ])
@@ -1011,7 +1011,7 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 28/02/2016
-     * Date Last Modified: 28/02/2016
+     * Date Last Modified: 28/02/2016 | 20/03/2016
      */
     public static function getSuccessfulApplicantInformation($personid)
     {
@@ -1032,7 +1032,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
                             ])
                     ->all();
@@ -1168,7 +1168,7 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 01/03/2016
-     * Date Last Modified: 01/03/2016
+     * Date Last Modified: 01/03/2016 | 20/03/2016
      */
     public static function isVerified($personid)
     {
@@ -1179,7 +1179,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
                             'application.isactive' => 1, 'application.isdeleted' => 0,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2
                             ])
                     ->all();

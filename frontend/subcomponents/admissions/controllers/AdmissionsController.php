@@ -60,6 +60,8 @@ class AdmissionsController extends Controller
             array_push($keys, 'type');
             array_push($keys, 'status');
             array_push($keys, 'creator');
+            array_push($keys, 'iscomplete');
+            
 
             foreach ($periods as $period)
             {
@@ -77,7 +79,8 @@ class AdmissionsController extends Controller
                 array_push($values, $period["type"]);
                 array_push($values, $period["status"]);
                 $creator = $period["emptitle"] . ". " . $period["firstname"] . " " . $period["lastname"];       
-                array_push($values, $creator );
+                array_push($values, $creator);
+                array_push($values, $period["iscomplete"]);
                 $row = array_combine($keys, $values);
                 array_push($container, $row);
 
@@ -891,7 +894,8 @@ class AdmissionsController extends Controller
                 $cond_arr['academic_offering.isactive'] = 1;
                 $cond_arr['academic_offering.isdeleted'] = 0;
                 $cond_arr['application_period.isactive'] = 1;
-                $cond_arr['application_period.applicationperiodstatusid'] = 5;
+//                $cond_arr['application_period.applicationperiodstatusid'] = 5;
+                $cond_arr['application_period.iscomplete'] = 0;
                 $cond_arr['application.isactive'] = 1;
                 $cond_arr['application.isdeleted'] = 0;
                 if ($status == "pending")

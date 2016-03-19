@@ -21,6 +21,7 @@ use frontend\models\Division;
  * @property string $offsiteenddate
  * @property integer $isactive
  * @property interger $isdeleted
+ * @property interger $iscomplete
  */
 class ApplicationPeriod extends \yii\db\ActiveRecord
 {    
@@ -39,7 +40,7 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
     {
         return [
             [['divisionid', 'personid', 'academicyearid', 'name', 'onsitestartdate', 'offsitestartdate', 'applicationperiodstatusid', 'applicationperiodtypeid'], 'required'],
-            [['divisionid', 'personid', 'academicyearid', 'isactive', 'isdeleted', 'applicationperiodstatusid', 'applicationperiodtypeid'], 'integer'],
+            [['divisionid', 'personid', 'academicyearid', 'isactive', 'isdeleted', 'iscomplete', 'applicationperiodstatusid', 'applicationperiodtypeid'], 'integer'],
             [['onsitestartdate', 'onsiteenddate', 'offsitestartdate', 'offsiteenddate'], 'safe'],
             [['name'], 'string', 'max' => 45]
         ];
@@ -60,6 +61,7 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
             'offsiteenddate' => 'Off-Campus End Date',
             'applicationperiodstatusid' => 'applicationperiodstatusid',
             'applicationperiodtypeid' => 'applicationperiodtypeid',
+            'iscomplete' => 'Is Complete',
         ];
     }
     
@@ -287,6 +289,7 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
                     . " application_period.onsiteenddate AS 'onsiteenddate'," 
                     . " application_period.offsitestartdate AS 'offsitestartdate'," 
                     . " application_period.offsiteenddate AS 'offsiteenddate',"
+                    . " application_period.iscomplete AS 'iscomplete',"
                     . " application_period_type.name AS 'type',"
                     . " applicationperiod_status.name AS 'status',"
                     . " employee.title AS 'emptitle',"

@@ -356,3 +356,222 @@ function showFilterButton3()
    else
        document.getElementById('cape-filter-button').style.display = "none"; 
 }
+
+
+/**
+ * Add an additional CsecQualification Record
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 17/03/2016
+ * Date Last Modified: 17/03/2016
+ */
+function addNewCertificate()
+{
+    var found = false;
+    var status = null;
+    
+    var record_count_array = document.getElementsByName("record_count");
+    var record_count = parseInt(record_count_array[0].value);
+
+    var qual_limit_array = document.getElementsByName("qual_limit");
+    var qual_limit = parseInt(qual_limit_array[0].value);
+
+    
+    var i = record_count;
+
+    var lastStatus = document.getElementById("qualification[" + (qual_limit-1) + "]").style.display;
+
+    if (lastStatus == "block")          //if record limit has been reached
+    {
+        $('#modal-too-many-qualifications').modal('show');       
+    }
+    else                                //if record limit has not been reached
+    {  
+
+        while (i < qual_limit && found == false)
+        {
+            status = document.getElementById("qualification[" + i + "]").style.display;
+
+            if (status == "none")
+            {
+                //Initializes all field to blank
+                document.getElementById("csecqualification-" + i + "-cseccentreid").selectedIndex = 0;
+                document.getElementById("csecqualification-" + i + "-candidatenumber").value = "";
+                document.getElementById("csecqualification-" + i + "-examinationbodyid").selectedIndex = 0;
+                document.getElementById("csecqualification-" + i + "-subjectid").selectedIndex = 0;
+                document.getElementById("csecqualification-" + i + "-examinationproficiencytypeid").selectedIndex = 0;
+                document.getElementById("csecqualification-" + i + "-year").selectedIndex = 0;
+                document.getElementById("csecqualification-" + i + "-examinationgradeid").selectedIndex = 0;
+
+                //Reveals initialized fileds
+                document.getElementById("save-new-certifcates").style.display = "block";        //reveals 'save' button
+                document.getElementById("qualification[" + i + "]").style.display = "block";
+                found = true;
+            }
+            i++;        
+        }
+    }   
+}
+
+
+/**
+ * Remove a CsecQualification Record
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 17/03/2016
+ * Date Lat Modified: 17/03/2016
+ */
+function removeNewCertificate()
+{
+    var found = false;
+    var status = null;
+    var record_count_array = document.getElementsByName("record_count");
+    var record_count = parseInt(record_count_array[0].value);
+    var qual_limit_array = document.getElementsByName("qual_limit");
+    var qual_limit = parseInt(qual_limit_array[0].value);
+    
+    var i = record_count;
+    
+    var firstStatus = document.getElementById("qualification[" + record_count + "]").style.display;
+    
+    if (firstStatus == "none")
+    {
+        $('#modal-no-more-qualifications').modal('show');       
+    }
+    else
+    {
+        //Exception case has to be used when record limit has been reached.
+        var lastStatus = document.getElementById("qualification[" + (qual_limit-1) + "]").style.display;
+        if (lastStatus == "block")          //if record limit has been reached
+        {
+            //alter record in some manner for identification by action to omit saving
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-cseccentreid").selectedIndex = 0;
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-candidatenumber").value = "";
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-examinationbodyid").selectedIndex = 0;
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-subjectid").selectedIndex = 0;
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-examinationproficiencytypeid").selectedIndex = 0;
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-year").selectedIndex = 0;
+            document.getElementById("csecqualification-" + (qual_limit-1) + "-examinationgradeid").selectedIndex = 0;
+
+            //hide what was the last valid record
+            document.getElementById("qualification[" + (qual_limit-1) + "]").style.display="none";
+        }
+        else                                //When displayed records are between indeexes 0 and limit-1
+        {
+            while (i < qual_limit && found == false)
+            {
+                status = document.getElementById("qualification[" + i + "]").style.display;
+                if (status == "none"){
+                    var j = i -1;
+
+                    //alter record in some manner for identification by action to omit saving
+                    document.getElementById("csecqualification-" + j + "-cseccentreid").selectedIndex = 0;
+                    document.getElementById("csecqualification-" + j + "-candidatenumber").value = "";
+                    document.getElementById("csecqualification-" + j + "-examinationbodyid").selectedIndex = 0;
+                    document.getElementById("csecqualification-" + j + "-subjectid").selectedIndex = 0;
+                    document.getElementById("csecqualification-" + j + "-examinationproficiencytypeid").selectedIndex = 0;
+                    document.getElementById("csecqualification-" + j + "-year").selectedIndex = 0;
+                    document.getElementById("csecqualification-" + j + "-examinationgradeid").selectedIndex = 0;
+                    
+                    //hide what was the last valid record
+                    document.getElementById("qualification[" + j + "]").style.display="none";
+
+                    found = true;
+                }
+                i++;
+            }
+        }
+        
+        var updatedFirstStatus = document.getElementById("qualification[" + record_count + "]").style.display;
+        if (updatedFirstStatus == "none")
+        {
+            document.getElementById("save-new-certifcates").style.display = "none";
+        }
+        
+    }
+}
+
+
+
+/**
+ * Populates fields with dummy data to trick clientside validation [these recrods are not saved to database]
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 17/03/2016
+ * Date Last Modified: 17/03/2016
+ */
+function generateQualificationBlanks()
+{
+    var record_count_array = document.getElementsByName("record_count");
+    var record_count = parseInt(record_count_array[0].value);
+    var qual_limit_array = document.getElementsByName("qual_limit");
+    var qual_limit = parseInt(qual_limit_array[0].value);
+    
+    var i;
+    for (i = record_count ; i < qual_limit ; i++)
+    {
+        var e1 = document.getElementById("csecqualification-" + i + "-cseccentreid");
+        var cseccentreid = e1.options[e1.selectedIndex].value;
+        
+        var e2 = document.getElementById("csecqualification-" + i + "-examinationbodyid");
+        var examinationbodyid = e2.options[e2.selectedIndex].value;
+        
+        var e3 = document.getElementById("csecqualification-" + i + "-subjectid");
+        var subjectid = e3.options[e3.selectedIndex].value;
+        
+        var e4 = document.getElementById("csecqualification-" + i + "-examinationproficiencytypeid");
+        var examinationproficiencytypeid = e4.options[e4.selectedIndex].value;
+        
+        var e5 = document.getElementById("csecqualification-" + i + "-examinationgradeid");
+        var examinationgradeid = e5.options[e5.selectedIndex].value;
+        
+        var candidatenumber = document.getElementById("csecqualification-" + i + "-candidatenumber").value;
+        
+        var e6 = document.getElementById("csecqualification-" + i + "-year");
+        var year = e6.options[e6.selectedIndex].value;
+    
+        //If model is untouched them it must 'be dummified'
+        if (
+            (cseccentreid == null || cseccentreid == "")
+            && (examinationbodyid == null || examinationbodyid == "")
+            && (subjectid == null || subjectid == "")
+            && (examinationproficiencytypeid == null || examinationproficiencytypeid == "")
+            && (examinationgradeid == null || examinationgradeid == "" )
+            && (candidatenumber == null || candidatenumber == "")
+            && (year == null || year == "")
+            
+        ){
+            //Sets dummy records
+            document.getElementById("csecqualification-" + i + "-cseccentreid").selectedIndex = 1;
+            document.getElementById("csecqualification-" + i + "-candidatenumber").value = "00000";
+            document.getElementById("csecqualification-" + i + "-examinationbodyid").selectedIndex = 1;
+            
+            var optn1 = document.createElement("OPTION");
+            optn1.value = "1";      //must correspond to valid subjectid
+            optn1.text = "Mathematics";
+            document.getElementById("csecqualification-" + i + "-subjectid").options.add(optn1);
+            document.getElementById("csecqualification-" + i + "-subjectid").selectedIndex = 1;
+            
+            var optn2 = document.createElement("OPTION");
+            optn2.value = "1";      //must correspond to valid examinationproficiencytypeid
+            optn2.text = "General";
+            document.getElementById("csecqualification-" + i + "-examinationproficiencytypeid").options.add(optn2);
+            document.getElementById("csecqualification-" + i + "-examinationproficiencytypeid").selectedIndex = 1;
+            
+            var optn3 = document.createElement("OPTION");
+            optn3.value = "1";      //must correspond to valid examinationproficiencytypeid
+            optn3.text = "I";
+            document.getElementById("csecqualification-" + i + "-examinationgradeid").options.add(optn3);
+            document.getElementById("csecqualification-" + i + "-examinationgradeid").selectedIndex = 1;
+            
+            //last year
+            document.getElementById("qualification-" + i + "-year").selectedIndex = 47;
+        }
+    }
+}

@@ -72,7 +72,7 @@ class Subject extends \yii\db\ActiveRecord
         $keys = array();
         array_push($keys, '');
         $values = array();
-        array_push($values, 'Select...');
+        array_push($values, 'Select Subject');
         $combined = array();
         
         if($qualification == false)

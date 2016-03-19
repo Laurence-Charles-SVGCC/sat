@@ -55,11 +55,11 @@ class OfferController extends Controller
         
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/]);
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 5*/]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.applicationperiodstatusid'] = 5;
+//        $offer_cond['application_period.isocmplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
 //        $offer_cond['offer.isactive'] = 1;
         
@@ -748,11 +748,11 @@ class OfferController extends Controller
         
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/]);
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 0*/]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.applicationperiodstatusid'] = 5;
+//        $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
         
         /*
@@ -953,12 +953,12 @@ class OfferController extends Controller
         
         $division_id = EmployeeDepartment::getUserDivision();
         
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/]);
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 0*/]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.isdeleted'] = 0;
-//        $offer_cond['application_period.applicationperiodstatusid'] = 5;
+//        $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
         
         
@@ -1443,7 +1443,7 @@ class OfferController extends Controller
             $cond_arr['academic_offering.isactive'] = 1;
             $cond_arr['academic_offering.isdeleted'] = 0;
             $cond_arr['application_period.isactive'] = 1;
-            $cond_arr['application_period.applicationperiodstatusid'] = 5;
+            $cond_arr['application_period.iscomplete'] = 0;
             $cond_arr['application.isactive'] = 1;
             $cond_arr['application.isdeleted'] = 0;
             $cond_arr['application.applicationstatusid'] = 9;

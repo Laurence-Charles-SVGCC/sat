@@ -72,7 +72,7 @@ class ExaminationProficiencyType extends \yii\db\ActiveRecord
         $keys = array();
         array_push($keys, '');
         $values = array();
-        array_push($values, 'Select...');
+        array_push($values, 'Select Proficiency');
         $combined = array();
         
         if($qualification == false)

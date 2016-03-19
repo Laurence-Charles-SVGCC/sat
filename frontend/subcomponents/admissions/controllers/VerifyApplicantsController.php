@@ -5,15 +5,23 @@ namespace app\subcomponents\admissions\controllers;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\Request;
+use yii\helpers\Json;
 use common\controllers\DatabaseWrapperController;
 
+use common\models\User;
 use frontend\models\Applicant;
 use frontend\models\CsecQualification;
 use frontend\models\ApplicationStatus;
 use frontend\models\Application;
 use frontend\models\CsecCentre;
 use frontend\models\PostSecondaryQualification;
-use common\models\User;
+use frontend\models\Subject;
+use frontend\models\ExaminationProficiencyType;
+use frontend\models\ExaminationGrade;
+use frontend\models\ExaminationBody;
+
+
+
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -338,36 +346,40 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $qualifications = $request->post('CsecQualification');
                     foreach ($qualifications as $qual)
                     {
-                        $cert = CsecQualification::find()
-                                ->where(['csecqualificationid' => $qual['csecqualificationid']])
-                                ->one();
-                        $cert->examinationbodyid = $qual['examinationbodyid'];
-                         $cert->candidatenumber = $qual['candidatenumber'];
-                        $cert->year = $qual['year'];
-                        $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
-                        $cert->subjectid = $qual['subjectid'];
-                        $cert->examinationgradeid = $qual['examinationgradeid'];
-                        if ($verify_all)
+                        if ($qual['personid'] == true)
                         {
-                            //Save as verified submit button
-                            $cert->isverified = 1;
-                            $cert->isqueried = 0;
-                            if($post_qualification)
+                            $cert = CsecQualification::find()
+                                    ->where(['csecqualificationid' => $qual['csecqualificationid']])
+                                    ->one();
+
+                            $cert->examinationbodyid = $qual['examinationbodyid'];
+                            $cert->candidatenumber = $qual['candidatenumber'];
+                            $cert->year = $qual['year'];
+                            $cert->examinationproficiencytypeid = $qual['examinationproficiencytypeid'];
+                            $cert->subjectid = $qual['subjectid'];
+                            $cert->examinationgradeid = $qual['examinationgradeid'];
+                            if ($verify_all)
                             {
-                                $post_qualification->isverified = 1;
-                                $post_qualification->isqueried = 0;
-                                $post_qualification->save();
+                                //Save as verified submit button
+                                $cert->isverified = 1;
+                                $cert->isqueried = 0;
+                                if($post_qualification)
+                                {
+                                    $post_qualification->isverified = 1;
+                                    $post_qualification->isqueried = 0;
+                                    $post_qualification->save();
+                                }
                             }
-                        }
-                        else
-                        {
-                            //Update submit button
-                            $cert->isverified = $qual['isverified'];
-                            $cert->isqueried = $qual['isqueried'];
-                        }
-                        if (!$cert->save())
-                        {
-                            Yii::$app->getSession()->setFlash('error', 'Could not add Certificate: ' . $qual['subjectid'] . ' ' . $qual['grade']);
+                            else
+                            {
+                                //Update submit button
+                                $cert->isverified = $qual['isverified'];
+                                $cert->isqueried = $qual['isqueried'];
+                            }
+                            if (!$cert->save())
+                            {
+                                Yii::$app->getSession()->setFlash('error', 'Could not add Certificate: ' . $qual['subjectid'] . ' ' . $qual['grade']);
+                            }
                         }
                     }
                 }
@@ -443,11 +455,70 @@ class VerifyApplicantsController extends \yii\web\Controller
                 
             }
         }
+        $qualifications = CsecQualification::find()
+                            ->where(['personid' => $applicantid, 'isdeleted' => 0])
+                            ->all();
+        $record_count = CsecQualification::find()
+                            ->where(['personid' => $applicantid, 'isdeleted' => 0])
+                            ->count();
+        
+        for ($k=0; $k<10; $k++)
+        {
+            $temp = new CsecQualification();
+            
+            $centres = CsecCentre::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            $temp->cseccentreid = $centres[0]->cseccentreid;
+            
+            $temp->candidatenumber = "00000";
+            
+//            $temp->personid = $qualifications[0]->personid;
+            
+            $bodies = ExaminationBody::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            foreach ($bodies as $key => $body) 
+            {
+                $subs = Subject::find()
+                        ->where(['examinationbodyid' => $body->examinationbodyid , 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                $profs = ExaminationProficiencyType::find()
+                        ->where(['examinationbodyid' => $body->examinationbodyid , 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                $grds = ExaminationGrade::find()
+                        ->where(['examinationbodyid' => $body->examinationbodyid , 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                if (count($subs)==0 || count($profs)==0 || count($grds)==0)
+                {
+                    $temp->examinationbodyid = $bodies[$key]->examinationbodyid;
+                    break;
+                }  
+            }
+            
+            $subjects = Subject::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            $temp->subjectid = $subjects[0]->subjectid;
+            
+            $proficiencies = ExaminationProficiencyType::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            $temp->examinationproficiencytypeid = $proficiencies[0]->examinationproficiencytypeid;
+            
+            $grades = ExaminationGrade::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            $temp->examinationgradeid = $grades[0]->examinationgradeid;
+            
+            $temp->year = "1970";
+            
+            $qualifications[] = $temp;
+            $temp = NULL;
+        }
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => CsecQualification::find()
-                            ->where(['personid' => $applicantid, 'isdeleted' => 0])
-                            ->all(),
+            'allModels' => $qualifications,
             'pagination' => [
                 'pageSize' => 20,
             ],
@@ -462,6 +533,8 @@ class VerifyApplicantsController extends \yii\web\Controller
         
         $username = $applicant_model->getPerson()->one()->username;
        
+//        $record_count = count($qualifications);
+                
         return $this->render('view-applicant-qualifications',
                 [
                     'dataProvider' => $dataProvider,
@@ -472,6 +545,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'type' => $type,
                     'isexternal' => $applicant_model->isexternal,
                     'post_qualification' => $post_qualification,
+                    'record_count' => $record_count,
                 ]);
     }
     
@@ -606,32 +680,116 @@ class VerifyApplicantsController extends \yii\web\Controller
     }
     
     
-    
-    
-//    private function getExternal()
-//    {
-//        $data = array();
-//        $applications = Application::find()
-//                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-//                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                ->leftjoin('application_history', '`application_history`.`applicationid` = `application`.`applicationid`')
-//                ->where(['application_period.isactive' => 1, 'application.isdeleted' => 0, 'applicant.isexternal' => 1,
-//                    'academic_offering.isdeleted' => 0, 'application_history.applicationstatusid' => [2,3,4,5,6,7,8,9]])
-//                ->groupby('application.personid')->all();
-//        
-//        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);
-//        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
-//        foreach($applications as $application)
-//        {
-//            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
-//            if (!$qual || $qual->cseccentreid == $cseccentreid)
-//            {
-//                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-//            }
-//        }
-//        return $data;
-//    }
-    
+    /**
+     * Handles 'examination_body' dropdownlist of 'add_csecqualification' view
+     * 
+     * @param type $exam_body_id
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/03/2016
+     * Date Last Modified: 18/03/2016
+     */
+    public function actionExaminationBodyDependants($exam_body_id, $index)
+    {
+        $subjects = Subject::getSubjectList($exam_body_id);      
+        $proficiencies = ExaminationProficiencyType::getExaminationProficiencyList($exam_body_id);
+        $grades = ExaminationGrade::getExaminationGradeList($exam_body_id);
+        $pass = NULL;
 
+        if (count($subjects)>0  && count($proficiencies)>0  && count($grades)>0)    //if subjects related to examination body exist
+        {     
+            $pass = 1;
+            echo Json::encode(['recordid' => $index, 'subjects' => $subjects, 'proficiencies' => $proficiencies, 'grades' => $grades, 'pass' => $pass]);       //return json encoded array of subjects    
+        }
+        else
+        {
+            $pass = 0;
+            echo Json::encode(['recordid' => $index, 'pass'=> $pass]);
+        }    
+    }
+    
+    
+    /**
+     * Saves CsecQualifcation
+     * 
+     * @param type $personid
+     * @param type $centrename
+     * @param type $centreid
+     * @param type $type
+     * @param type $record_count
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/03/2016
+     * Date Last Modified: 18/03/2016
+     */
+    public function actionSaveNewQualifications($personid, $centrename, $centreid, $type, $record_count)
+    {
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+
+            if ($request->post('CsecQualification'))
+            {
+                $qualifications = $request->post('CsecQualification');
+                $total_qualifications = count($qualifications);
+                
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    for ($i=$record_count ; $i<$total_qualifications ; $i++)
+                    {
+                        $save_flag = false;
+//                        $temp = new Csec
+                        
+                        if($qualifications[$i]->isValid() == true)
+                        {
+                            $qualifications[$i]->personid = $personid;
+                            if ($qualifications[$i]->validate() == false)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                $save_flag = $qualifications[$i]->save();
+                                if ($save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error saving certificates. Please try again');
+                                }
+                            }
+                        }
+                    }
+                    $transaction->commit();
+                    
+                    //redirect
+                    if (strcasecmp($type, "pending")==0)
+                    {
+                        return self::actionViewPending($centreid, $centrename);
+                    }
+                    elseif (strcasecmp($type, "queried")==0)
+                    {
+                        return self::actionViewQueried($centreid, $centrename);
+                    }
+                    elseif (strcasecmp($type, "all")==0)
+                    {
+                        return self::actionViewAll($centreid, $centrename);
+                    }
+                    elseif (strcasecmp($type, "verified")==0)
+                    {
+                        return self::actionViewVerified($centreid, $centrename);
+                    }
+                    
+                } catch (Exception $ex) 
+                {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+                }  
+            }
+        }
+    }
+    
+    
+    
 }

@@ -68,7 +68,7 @@ class CsecCentre extends \yii\db\ActiveRecord
         $keys = array();
         array_push($keys, '');
         $values = array();
-        array_push($values, 'Select...');
+        array_push($values, 'Select Centre');
         $combined = array();
         
         if(count($records)==0)
@@ -108,7 +108,7 @@ class CsecCentre extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5,
+                    ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
                                 'csec_centre.isdeleted' => 0, 'csec_centre.isactive' => 1,
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'csec_qualification.isdeleted' => 0,

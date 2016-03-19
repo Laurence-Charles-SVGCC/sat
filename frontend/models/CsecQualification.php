@@ -696,18 +696,11 @@ class CsecQualification extends \yii\db\ActiveRecord
             array_push($exam_ids, $body->examinationbodyid);
         }
         
-        
         //Retrieves first cseccentreid record - corresponding to value set in javascript function 'generateCsecQualificationBlanks()'
         $centres = CsecCentre::find()
                 ->where(['isactive' => 1, 'isdeleted' => 0])
                 ->all();
         $default_centreid = $centres[0]->cseccentreid;
-        
-        //Retrieves first examinationbodyid record - corresponding to value set in javascript function 'generateCsecQualificationBlanks()'
-//        $exam_bodies = ExaminationBody::find()
-//                ->where(['isactive' => 1, 'isdeleted' => 0])
-//                ->all();
-//        $default_exam_bodyid = $exam_bodies[0]->examinationbodyid;
         
         //Retrieves first subjectid record - corresponding to value set in javascript function 'generateCsecQualificationBlanks()'
         $subjects = Subject::find()
@@ -730,24 +723,20 @@ class CsecQualification extends \yii\db\ActiveRecord
         //Retrieves default canadatenumber - corresponding to value set in javascript function 'generateCsecQualificationBlanks()'
         $default_candidatenumber = "00000";
         
-        //Retrieves first year record - corresponding to value set in javascript function 'generateCsecQualificationBlanks()'
-//        $years = Yii::$app->params['years'];
-//        $keys = array_keys($years);
-//        $default_year = $years[$keys[1]];
         $default_year = "1970";
         
-if (    (in_array($this->examinationbodyid, $exam_ids) == false)
-            ||
-            (
-                ($this->cseccentreid == $default_centreid)
-                && ($this->subjectid==$default_subjectid) 
-                && ($this->examinationproficiencytypeid ==$default_proficiencyid)         
-                && ($this->examinationgradeid == NULL || strcmp($this->examinationgradeid,"")==0 ||  $this->examinationgradeid==$default_gradeid)
-                && (strcmp($this->candidatenumber,"")==0 || $this->candidatenumber==$default_candidatenumber)
-                && ($this->year == NULL || strcmp($this->year,"")==0 || strcmp($this->year,$default_year)==0)      
-            )
-        )
-            return false;
+        if (    (in_array($this->examinationbodyid, $exam_ids) == false)
+                    ||
+                    (
+                        ($this->cseccentreid == $default_centreid)
+                        && ($this->subjectid==$default_subjectid) 
+                        && ($this->examinationproficiencytypeid ==$default_proficiencyid)         
+                        && ($this->examinationgradeid == NULL || strcmp($this->examinationgradeid,"")==0 ||  $this->examinationgradeid==$default_gradeid)
+                        && (strcmp($this->candidatenumber,"")==0 || $this->candidatenumber==$default_candidatenumber)
+                        && ($this->year == NULL || strcmp($this->year,"")==0 || strcmp($this->year,$default_year)==0)      
+                    )
+                )
+                    return false;
         return true;    
     }
     
