@@ -29,13 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-            <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+            
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 //'filterModel' => $searchModel,
                 'options' => [
-                            'style' => 'width:95%; margin: 0 auto;'
+                            'style' => 'width:95%; margin: 0 auto;' 
                         ],
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],

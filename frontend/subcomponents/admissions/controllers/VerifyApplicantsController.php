@@ -6,7 +6,8 @@ use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\Request;
 use yii\helpers\Json;
-use common\controllers\DatabaseWrapperController;
+//use common\controllers\DatabaseWrapperController;
+use yii\base\Model;
 
 use common\models\User;
 use frontend\models\Applicant;
@@ -721,38 +722,50 @@ class VerifyApplicantsController extends \yii\web\Controller
      * 
      * Author: Laurence Charles
      * Date Created: 18/03/2016
-     * Date Last Modified: 18/03/2016
+     * Date Last Modified: 20/03/2016
      */
-    public function actionSaveNewQualifications($personid, $centrename, $centreid, $type, $record_count)
+    public function actionSaveNewQualifications($personid, $centrename, $centreid, $type, $record_count, $qual_limit)
     {
+        $all_qualifications = array();
         
-        if (Yii::$app->request->post())
+        //creates CsecQualification record containers
+        for ($i = 0 ; $i < $qual_limit ; $i++)
         {
-            $request = Yii::$app->request;
-
-            if ($request->post('CsecQualification'))
+            $temp = new CsecQualification();
+            array_push($all_qualifications, $temp);               
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+               
+            $load_flag = Model::loadMultiple($all_qualifications, $post_data);
+            if($load_flag == true)
             {
-                $qualifications = $request->post('CsecQualification');
-                $total_qualifications = count($qualifications);
+                /* Removes all the previously saved records.
+                 * Ensures only additional are save by this operation
+                 */
+                for ($i=0 ; $i<$record_count ; $i++)
+                {
+                    unset($all_qualifications[$i]);
+                }
                 
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-                    for ($i=$record_count ; $i<$total_qualifications ; $i++)
+                    foreach ($all_qualifications as $qualification) 
                     {
                         $save_flag = false;
-//                        $temp = new Csec
-                        
-                        if($qualifications[$i]->isValid() == true)
+                        if($qualification->isValid() == true)
                         {
-                            $qualifications[$i]->personid = $personid;
-                            if ($qualifications[$i]->validate() == false)
+                            $qualification->personid = $personid;
+                            if ($qualification->validate() == false)
                             {
                                 continue;
                             }
                             else
                             {
-                                $save_flag = $qualifications[$i]->save();
+                                $save_flag = $qualification->save();
                                 if ($save_flag == false)
                                 {
                                     $transaction->rollBack();
@@ -762,7 +775,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         }
                     }
                     $transaction->commit();
-                    
+                  
                     //redirect
                     if (strcasecmp($type, "pending")==0)
                     {
@@ -780,12 +793,15 @@ class VerifyApplicantsController extends \yii\web\Controller
                     {
                         return self::actionViewVerified($centreid, $centrename);
                     }
-                    
                 } catch (Exception $ex) 
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
-                }  
+                }
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured loading records. Please try again');
             }
         }
     }

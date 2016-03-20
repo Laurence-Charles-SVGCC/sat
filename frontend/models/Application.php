@@ -1019,18 +1019,33 @@ class Application extends \yii\db\ActiveRecord
      * Date Created: 05/03/2016
      * Date Last Modified: 05/03/2016
      */
-    public static function countActiveApplications()
+    public static function countActiveApplications($divisionid = NULL)
     {
-        $applicants = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/ 'application_period.isactive' => 1,
-                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->groupby('application.personid')
-                        ->count();
-            return $applicants;
+        if ($divisionid == NULL)
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/ 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
+        else
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9], 'application.divisionid' => $divisionid,
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
+        return $applicants;
     }
     
     
@@ -1043,17 +1058,32 @@ class Application extends \yii\db\ActiveRecord
      * Date Created: 06/03/2016
      * Date Last Modified: 06/03/2016
      */
-    public static function countVerifiedApplications()
+    public static function countVerifiedApplications($divisionid = NULL)
     {
-        $applicants = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/ 'application_period.isactive' => 1,
-                                'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9],
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->groupby('application.personid')
-                        ->count();
+        if ($divisionid == NULL)
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/ 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9],
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
+        else
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9], 'application.divisionid' => $divisionid,
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
             return $applicants;
     }
     

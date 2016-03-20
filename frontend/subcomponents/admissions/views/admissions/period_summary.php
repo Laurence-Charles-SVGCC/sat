@@ -53,7 +53,7 @@
                                             if(Yii::$app->user->can('admissions')  && ApplicationPeriod::canSafeToDelete($period['id']) == true)
                                             {
                                                 echo Html::a(' Delete', 
-                                            ['admissions/application-period/delete-application-period', 'recordid' => $period["id"]], 
+                                            ['application-period/delete-application-period', 'recordid' => $period["id"]], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',

@@ -5,6 +5,8 @@ use yii\grid\GridView;
 use yii\helpers\Url;
 
 use frontend\models\Application;
+use frontend\models\ApplicationPeriod;
+use frontend\models\Division;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -27,7 +29,27 @@ $this->params['breadcrumbs'][] = $this->title;
         <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;"> 
             <span class="pull-left"><strong >Total Applications Received: <?= Application::countActiveApplications();?></strong></span>
             <span class="pull-right"><strong>Total Applications Verified: <?= Application::countVerifiedApplications();?></strong></span>
-        </p>
+        </p></br/>
+        
+        <?php
+            $periods = ApplicationPeriod::periodIncomplete();
+            if ($periods == true)
+            {
+                foreach ($periods as $period) 
+                {
+                    echo "<p class='alert alert-info' role='alert' style='width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;'>"; 
+                        echo "<span class='pull-left'><strong >";
+                            echo  Division::getDivisionAbbreviation($period->divisionid) . " Applications Received:" . Application::countActiveApplications($period->divisionid);
+                        echo "</strong></span>";
+                        
+                        echo "<span class='pull-right'><strong >";
+                            echo Division::getDivisionAbbreviation($period->divisionid) . " Applications Verified:" . Application::countVerifiedApplications($period->divisionid);
+                        echo "</strong></span>";
+                    echo "</p><br/>";
+                }
+            }
+            
+       ?>
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>

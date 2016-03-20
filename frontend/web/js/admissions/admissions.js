@@ -378,7 +378,6 @@ function addNewCertificate()
     var qual_limit_array = document.getElementsByName("qual_limit");
     var qual_limit = parseInt(qual_limit_array[0].value);
 
-    
     var i = record_count;
 
     var lastStatus = document.getElementById("qualification[" + (qual_limit-1) + "]").style.display;
@@ -404,7 +403,8 @@ function addNewCertificate()
                 document.getElementById("csecqualification-" + i + "-examinationproficiencytypeid").selectedIndex = 0;
                 document.getElementById("csecqualification-" + i + "-year").selectedIndex = 0;
                 document.getElementById("csecqualification-" + i + "-examinationgradeid").selectedIndex = 0;
-
+                
+                
                 //Reveals initialized fileds
                 document.getElementById("save-new-certifcates").style.display = "block";        //reveals 'save' button
                 document.getElementById("qualification[" + i + "]").style.display = "block";

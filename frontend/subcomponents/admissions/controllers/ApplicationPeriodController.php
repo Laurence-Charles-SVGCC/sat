@@ -130,55 +130,83 @@ class ApplicationPeriodController extends Controller
     
     
     /**
-         * Updates an ApplicationPeriod record 
-         * 
-         * @param type $personid
-         * @param type $studentregistrationid
-         * @return type
-         * 
-         * Author: Laurence Charles
-         * Date Created: 09/02/2016
-         * Date Last Modified: 09/02/2016
-         */
-        public function actionEditApplicationPeriod($recordid)
+     * Updates an ApplicationPeriod record 
+     * 
+     * @param type $personid
+     * @param type $studentregistrationid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/02/2016
+     * Date Last Modified: 09/02/2016
+     */
+    public function actionEditApplicationPeriod($recordid)
+    {
+        $employeeid = Yii::$app->user->identity->personid;
+        $period = ApplicationPeriod::find()
+                    ->where(['applicationperiodid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($period == false)
         {
-            $employeeid = Yii::$app->user->identity->personid;
-            $period = ApplicationPeriod::find()
-                        ->where(['applicationperiodid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
-                        ->one();
-            if ($period == false)
-            {
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve application period record. Please try again.');
-                return $this->render('edit_application_period',[
-                                    'period' => $period
-                                ]);
-            }
-            
-            
-            if ($post_data = Yii::$app->request->post())
-            {
-                $load_flag = false;
-                $save_flag = false;
-                
-                $load_flag = $period->load($post_data);
-                $period->personid = $employeeid;
-                if($load_flag == true)
-                {
-                    $save_flag = $period->save();
-                    if($save_flag == true)
-                        return $this->redirect(['admissions/manage-application-period']);
-                    else
-                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record. Please try again.');
-                }
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record. Please try again.');              
-            }
-            
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve application period record. Please try again.');
             return $this->render('edit_application_period',[
-                                    'period' => $period
-                                ]);
+                                'period' => $period
+                            ]);
         }
+
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $save_flag = false;
+
+            $load_flag = $period->load($post_data);
+            $period->personid = $employeeid;
+            if($load_flag == true)
+            {
+                $save_flag = $period->save();
+                if($save_flag == true)
+                    return $this->redirect(['admissions/manage-application-period']);
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record. Please try again.');
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record. Please try again.');              
+        }
+
+        return $this->render('edit_application_period',[
+                                'period' => $period
+                            ]);
+    }
     
     
-    
+    /**
+     * Deletes an application period
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 21/03/2016
+     * Date Last Modified: 21/03/2016
+     */
+    public function actionDeleteApplicationPeriod($recordid)
+    {
+        $period = ApplicationPeriod::find()
+                    ->where(['applicationperiodid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($period == true)
+        {
+            $save_flag = false;
+            $period->isdeleted = 1;
+            $period->isactive = 0;
+            $save_flag = $period->save();
+            if($save_flag == false)
+                Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');             
+        }
+        else
+            Yii::$app->getSession()->setFlash('error', 'Error occured locating record. Please try again.');
+        
+        return $this->redirect(\Yii::$app->request->getReferrer());
+    }
 }

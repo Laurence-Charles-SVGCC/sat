@@ -402,6 +402,27 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
         
         
         
+        /**
+         * Returns an array of periods that have not been terminated
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 21/03/2016
+         * Date Last Modified: 21/03/2016
+         */
+        public static function periodIncomplete()
+        {
+            $periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                    ->all();
+            if (count($periods) > 0)
+                return $periods;
+            return false;
+        }
+        
+        
+        
         
         
         
