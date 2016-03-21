@@ -20,7 +20,7 @@ use frontend\models\Subject;
 use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationGrade;
 use frontend\models\ExaminationBody;
-
+use frontend\models\Division;
 
 
 
@@ -129,20 +129,121 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewAll($cseccentreid, $centrename)
     {
+//        if (strcasecmp($centrename, "external") == 0)
+//        {
+//            $data = Application::getExternal();
+//        }
+//        else
+//        {
+//            $data = array();
+//            foreach(Application::centreApplicantsReceived($cseccentreid) as $application)
+//            {
+//                $data[] = Applicant::find()
+//                        ->where(['personid' => $application->personid])
+//                        ->one();
+//            }
+//        }
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 20,
+//            ],
+//            'sort' => [
+//                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+//                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+//            ],
+//        ]);
+        
+        
         if (strcasecmp($centrename, "external") == 0)
         {
-            $data = Application::getExternal();
+            $applicants = Application::getExternal();
+            $data = array();
+            
+            foreach($applicants as $applicant)
+            {
+                $container = array();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
+                {
+                    $container["division"] = $division;
+                }
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
+            }
+            
         }
         else
         {
             $data = array();
+
             foreach(Application::centreApplicantsReceived($cseccentreid) as $application)
             {
-                $data[] = Applicant::find()
-                        ->where(['personid' => $application->personid])
-                        ->one();
+                $container = array();
+
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
+                {
+                    $container["division"] = $division;
+                }
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
             }
         }
+        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -150,9 +251,11 @@ class VerifyApplicantsController extends \yii\web\Controller
             ],
             'sort' => [
                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+                'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
+        
+        
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -169,11 +272,64 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewPending($cseccentreid, $centrename)
     {
+//        $data = array();
+//        foreach(Application::centreApplicantsPending($cseccentreid) as $application)
+//        {
+//            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+//        }
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 20,
+//            ],
+//            'sort' => [
+//                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+//                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+//            ],
+//        ]);
+        
         $data = array();
+        
         foreach(Application::centreApplicantsPending($cseccentreid) as $application)
         {
-            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            $container = array();
+            
+            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+            
+            $container["personid"] = $applicant->personid;
+            $container["firstname"] = $applicant->firstname;
+            $container["middlename"] = $applicant->middlename;
+            $container["lastname"] = $applicant->lastname;
+            $container["gender"] = $applicant->gender;
+            
+            $applications = Application::getApplications($applicant->personid);
+            $divisionid = $applications[0]->divisionid;
+            $division = Division::getDivisionAbbreviation($divisionid);
+            
+            /*
+             * If division is DTE or DNE then all applications refer to one division
+             */
+            if ($divisionid == 6  || $divisionid == 7)
+            {
+                $container["division"] = $division;
+            }
+            
+            /*
+             * If division is DASGS or DTVE then applications may refer to multiple divisions
+             */
+            if ($divisionid == 4  || $divisionid == 5)
+            {
+                foreach($applications as $application)
+                {
+                    $divID = $application->divisionid;
+                    $div = Division::getDivisionAbbreviation($divID);
+                    $divisions = " " . $div . " ";
+                }
+                $container["division"] = $divisions;
+            }
+            $data[] = $container;
         }
+        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -181,9 +337,10 @@ class VerifyApplicantsController extends \yii\web\Controller
             ],
             'sort' => [
                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+                'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
+        
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -201,11 +358,64 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewVerified($cseccentreid, $centrename)
     {
+//        $data = array();
+//        foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
+//        {
+//            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+//        }
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 20,
+//            ],
+//            'sort' => [
+//                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+//                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+//            ],
+//        ]);
+        
         $data = array();
+        
         foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
         {
-            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            $container = array();
+            
+            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+            
+            $container["personid"] = $applicant->personid;
+            $container["firstname"] = $applicant->firstname;
+            $container["middlename"] = $applicant->middlename;
+            $container["lastname"] = $applicant->lastname;
+            $container["gender"] = $applicant->gender;
+            
+            $applications = Application::getApplications($applicant->personid);
+            $divisionid = $applications[0]->divisionid;
+            $division = Division::getDivisionAbbreviation($divisionid);
+            
+            /*
+             * If division is DTE or DNE then all applications refer to one division
+             */
+            if ($divisionid == 6  || $divisionid == 7)
+            {
+                $container["division"] = $division;
+            }
+            
+            /*
+             * If division is DASGS or DTVE then applications may refer to multiple divisions
+             */
+            if ($divisionid == 4  || $divisionid == 5)
+            {
+                foreach($applications as $application)
+                {
+                    $divID = $application->divisionid;
+                    $div = Division::getDivisionAbbreviation($divID);
+                    $divisions = " " . $div . " ";
+                }
+                $container["division"] = $divisions;
+            }
+            $data[] = $container;
         }
+        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -213,9 +423,10 @@ class VerifyApplicantsController extends \yii\web\Controller
             ],
             'sort' => [
                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+                'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
+        
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -232,10 +443,63 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewQueried($cseccentreid, $centrename)
     {
+//        $data = array();
+//        foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
+//        {
+//            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+//        }
+//        
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 20,
+//            ],
+//            'sort' => [
+//                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+//                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+//            ],
+//        ]);
+        
         $data = array();
+        
         foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
         {
-            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+            $container = array();
+            
+            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+            
+            $container["personid"] = $applicant->personid;
+            $container["firstname"] = $applicant->firstname;
+            $container["middlename"] = $applicant->middlename;
+            $container["lastname"] = $applicant->lastname;
+            $container["gender"] = $applicant->gender;
+            
+            $applications = Application::getApplications($applicant->personid);
+            $divisionid = $applications[0]->divisionid;
+            $division = Division::getDivisionAbbreviation($divisionid);
+            
+            /*
+             * If division is DTE or DNE then all applications refer to one division
+             */
+            if ($divisionid == 6  || $divisionid == 7)
+            {
+                $container["division"] = $division;
+            }
+            
+            /*
+             * If division is DASGS or DTVE then applications may refer to multiple divisions
+             */
+            if ($divisionid == 4  || $divisionid == 5)
+            {
+                foreach($applications as $application)
+                {
+                    $divID = $application->divisionid;
+                    $div = Division::getDivisionAbbreviation($divID);
+                    $divisions = " " . $div . " ";
+                }
+                $container["division"] = $divisions;
+            }
+            $data[] = $container;
         }
         
         $dataProvider = new ArrayDataProvider([
@@ -245,9 +509,10 @@ class VerifyApplicantsController extends \yii\web\Controller
             ],
             'sort' => [
                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
+                'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
+        
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,

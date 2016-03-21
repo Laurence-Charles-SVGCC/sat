@@ -42,15 +42,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'personid',
                         'format' => 'html',
                         'label' => 'Applicant ID',
-                        'value' => function($model) use($centrename, $centreid, $type)
+                        'value' => function($row) use($centrename, $centreid, $type)
                             {
-                                $user = User::findOne(['personid' => $model->personid]);
-                                $username = $user ? $user->username : $model->personid;
+                                $user = User::findOne(['personid' => $row["personid"]]);
+                                $username = $user ? $user->username : $row["personid"];
                                 
                                 if (Yii::$app->user->can('Registrar') || Yii::$app->user->can('Assistant Registrar') || Applicant::isVerified($user->personid) == false)
                                 {
                                     return Html::a($username, 
-                                           Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
+                                           Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $row["personid"],
                                                'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
                                 }
                                 else
@@ -58,6 +58,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $username;
                                 }
                             }
+//                        'value' => function($model) use($centrename, $centreid, $type)
+//                            {
+//                                $user = User::findOne(['personid' => $model->personid]);
+//                                $username = $user ? $user->username : $model->personid;
+//                                
+//                                if (Yii::$app->user->can('Registrar') || Yii::$app->user->can('Assistant Registrar') || Applicant::isVerified($user->personid) == false)
+//                                {
+//                                    return Html::a($username, 
+//                                           Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $model->personid,
+//                                               'centrename' => $centrename, 'cseccentreid' =>$centreid, 'type' =>$type]));
+//                                }
+//                                else
+//                                {
+//                                    return $username;
+//                                }
+//                            }
                     ],
                     [
                         'attribute' => 'firstname',
@@ -78,7 +94,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'gender',
                         'format' => 'text',
                         'label' => 'Gender'
-                    ],          
+                    ], 
+                    [
+                        'attribute' => 'division',
+                        'format' => 'text',
+                        'label' => 'Division'
+                    ], 
                 ],
             ]); ?>
         </div>
