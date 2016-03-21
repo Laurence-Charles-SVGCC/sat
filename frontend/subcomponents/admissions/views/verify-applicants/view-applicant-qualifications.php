@@ -350,7 +350,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
 
                             </br><div id="save-new-certifcates" class="form-group" style="display:none">
-                                <?= Html::submitButton('Save New Certificates', ['class' => 'btn btn-success pull-right', 'onclick'=>'generateQualificationBlanks();']);?>
+                                <?= Html::submitButton('Save New Certificates', ['class' => 'btn btn-primary pull-right', 'onclick'=>'generateQualificationBlanks();']);?>
                             </div>
 
                         </div>
