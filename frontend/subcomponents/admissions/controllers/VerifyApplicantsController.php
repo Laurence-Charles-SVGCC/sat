@@ -777,22 +777,22 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $transaction->commit();
                   
                     //redirect
-                    if (strcasecmp($type, "pending")==0)
-                    {
-                        return self::actionViewPending($centreid, $centrename);
-                    }
-                    elseif (strcasecmp($type, "queried")==0)
-                    {
-                        return self::actionViewQueried($centreid, $centrename);
-                    }
-                    elseif (strcasecmp($type, "all")==0)
-                    {
-                        return self::actionViewAll($centreid, $centrename);
-                    }
-                    elseif (strcasecmp($type, "verified")==0)
-                    {
-                        return self::actionViewVerified($centreid, $centrename);
-                    }
+//                    if (strcasecmp($type, "pending")==0)
+//                    {
+//                        return self::actionViewPending($centreid, $centrename);
+//                    }
+//                    elseif (strcasecmp($type, "queried")==0)
+//                    {
+//                        return self::actionViewQueried($centreid, $centrename);
+//                    }
+//                    elseif (strcasecmp($type, "all")==0)
+//                    {
+//                        return self::actionViewAll($centreid, $centrename);
+//                    }
+//                    elseif (strcasecmp($type, "verified")==0)
+//                    {
+//                        return self::actionViewVerified($centreid, $centrename);
+//                    }
                 } catch (Exception $ex) 
                 {
                     $transaction->rollBack();
@@ -804,6 +804,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 Yii::$app->getSession()->setFlash('error', 'Error occured loading records. Please try again');
             }
         }
+        return $this->redirect(\Yii::$app->request->getReferrer());
     }
     
     
