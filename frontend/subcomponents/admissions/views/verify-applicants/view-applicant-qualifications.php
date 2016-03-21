@@ -293,7 +293,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <br/><br/>
             <fieldset style="margin-left:2.5%; width:95%">
                 <legend><strong>Certification Additions</strong></legend>
-                <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic for found below.</strong></p>
+                <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
                 <?php 
                     $form = yii\bootstrap\ActiveForm::begin([
                         'id' => 'new-certifcates-form',
