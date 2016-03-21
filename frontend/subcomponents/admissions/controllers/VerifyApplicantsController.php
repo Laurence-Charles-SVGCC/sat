@@ -1026,7 +1026,10 @@ class VerifyApplicantsController extends \yii\web\Controller
                             $qualification->personid = $personid;
                             if ($qualification->validate() == false)
                             {
-                                continue;
+//                                continue;
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error validating certificates. Please try again');
+                                return $this->redirect(\Yii::$app->request->getReferrer());
                             }
                             else
                             {
@@ -1035,6 +1038,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->getSession()->setFlash('error', 'Error saving certificates. Please try again');
+                                    return $this->redirect(\Yii::$app->request->getReferrer());
                                 }
                             }
                         }
