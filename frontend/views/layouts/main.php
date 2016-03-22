@@ -130,8 +130,8 @@ else
                     <?php endif; ?>
                     <?php if (Yii::$app->user->can('viewOffer')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
-                    <?php endif; ?>-->
-                   
+                    <?php endif; ?>
+                   -->
                     
                     <!--
                     <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::openPeriodExists()==true): ?>

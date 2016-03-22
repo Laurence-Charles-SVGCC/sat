@@ -49,7 +49,7 @@ class OfferController extends Controller
     * Created: 29/07/2015 by Gii
     * Last Modified: 29/07/2015 by Gamal Crichton | Laurence Charles (05/03/2016)
     */
-    public function actionIndex()
+    public function actionIndex($criteria = NULL)
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
@@ -62,6 +62,16 @@ class OfferController extends Controller
 //        $offer_cond['application_period.isocmplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
 //        $offer_cond['offer.isactive'] = 1;
+        
+        
+        if($criteria != NULL)
+        {
+            if (strcmp($criteria, "ispublished") == 0)
+                $offer_cond['offer.ispublished'] = 1;
+            elseif (strcmp($criteria, "revoked") == 0)
+                $offer_cond['offer.isactive'] = 0;
+        }
+        
         
         /*
          * if user has cross divisional authority then all application 
@@ -199,7 +209,7 @@ class OfferController extends Controller
             $capes[$c->capesubjectid] = $c->subjectname;
         }
 
-        return $this->render('index2', [
+        return $this->render('current_offers', [
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
@@ -720,11 +730,10 @@ class OfferController extends Controller
      * 
      * Author: Gamal Crichton
      * Date Created: ??
-     * Date Last Modified: 06/03/2016
+     * Date Last Modified: 06/03/2016 (L.Charles)
      */
-    public function actionUpdateView()
+    public function actionUpdateView($criteria = NULL)
     {
-        
         if (Yii::$app->request->post())
         {
             $request = Yii::$app->request;
@@ -754,6 +763,7 @@ class OfferController extends Controller
         $offer_cond['application_period.isactive'] = 1;
 //        $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
+        
         
         /*
          * if user has cross divisional authority then all application 
@@ -924,7 +934,7 @@ class OfferController extends Controller
             $capes[$c->capesubjectid] = $c->subjectname;
         }
 
-        return $this->render('index2', [
+        return $this->render('current_offers', [
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
@@ -940,12 +950,12 @@ class OfferController extends Controller
     
     
     /**
-     * 
+     * Generates "Questionable Offers' control panel
      * @return type
      * 
      * Author: Gamal Cricheton
      * Date Created: ??
-     * Date Last Modified: 07/03/2016 (Laurence Charles)
+     * Date Last Modified: 07/03/2016 (L. Charles)
      */
     public function actionOfferDetailsHome($criteria = NULL)
     {
@@ -1270,18 +1280,28 @@ class OfferController extends Controller
     }
     
     
-    
+    /**
+     * Generates Report for All Valid Offers
+     * 
+     * @return type
+     * 
+     * Author: Gamal Cricheton
+     * Date Created: ??
+     * Date Last Modified: 21/03/2016 (L. Charles)
+     */
     public function actionExportValidOffers()
     {
-        $division_id = Yii::$app->session->get('divisionid');
+        $division_id = EmployeeDepartment::getUserDivision();
         
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1, 'offer.isdeleted' => 0,
-            'offer.isactive' => 1);
+        $offer_cond = array();
         
-        if ($division_id && $division_id == 1)
-        {
-            $offer_cond = array('application_period.isactive' => 1, 'offer.isdeleted' => 0, 'offer.isactive' => 1);
-        }
+        $offer_cond['application_period.isactive'] = 1;
+//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.isdeleted'] = 0;
+        $offer_cond['offer.isactive'] = 1;
+        
+        if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
+            $offer_cond['application.divisionid'] = $division_id;
         
         $offers = Offer::find()
                 ->joinWith('application')
@@ -1329,16 +1349,28 @@ class OfferController extends Controller
         ]);
     }
     
+    
+    /**
+     * Generates Report for All Offers
+     * 
+     * @return type
+     * 
+     * Author: Gamal Cricheton
+     * Date Created: ??
+     * Date Last Modified: 21/03/2016 (L. Charles)
+     */
     public function actionExportAllOffers()
     {
-        $division_id = Yii::$app->session->get('divisionid');
+        $division_id = EmployeeDepartment::getUserDivision();
         
-        $offer_cond = array('application_period.divisionid' => $division_id, 'application_period.isactive' => 1);
+        $offer_cond = array();
         
-        if ($division_id && $division_id == 1)
-        {
-            $offer_cond = array('application_period.isactive' => 1);
-        }
+        $offer_cond['application_period.isactive'] = 1;
+//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.isactive'] = 1;
+        
+        if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
+            $offer_cond['application.divisionid'] = $division_id;
         
         $offers = Offer::find()
                 ->joinWith('application')

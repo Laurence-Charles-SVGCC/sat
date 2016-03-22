@@ -266,6 +266,8 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "block";
+        document.getElementById("offer-published").style.display = "none";
+        document.getElementById("offer-revoked").style.display = "none";
     } 
     
     if (search_by[1].checked == true)           //if by division
@@ -277,6 +279,7 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-revoked").style.display = "none";
     } 
     else if (search_by[2].checked == true)           //if by programme
     {         
@@ -287,6 +290,8 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "block";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-published").style.display = "none";
+        document.getElementById("offer-revoked").style.display = "none";
     }
     else if (search_by[3].checked == true)           //if by CAPE subject
     {        
@@ -297,7 +302,34 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "block";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-published").style.display = "none";
+        document.getElementById("offer-revoked").style.display = "none";
     }
+    else if (search_by[4].checked == true)           //if was published
+    {        
+        document.getElementById("offer-division-field").selectedIndex = 0;  
+        document.getElementById("offer-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-published").style.display = "block";
+        document.getElementById("offer-revoked").style.display = "none";
+    }
+    else if (search_by[5].checked == true)           //if was published
+    {        
+        document.getElementById("offer-division-field").selectedIndex = 0;  
+        document.getElementById("offer-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-published").style.display = "none";
+        document.getElementById("offer-revoked").style.display = "block";
+    }
+    
 }
 
 
@@ -356,6 +388,7 @@ function showFilterButton3()
    else
        document.getElementById('cape-filter-button').style.display = "none"; 
 }
+
 
 
 /**
@@ -478,7 +511,7 @@ function removeNewCertificate()
                     document.getElementById("csecqualification-" + j + "-examinationgradeid").selectedIndex = 0;
                     
                     //hide what was the last valid record
-                    document.getElementById("qualification[" + j + "]").style.display="none";
+                    document.getElementById("csecqualification[" + j + "]").style.display="none";
 
                     found = true;
                 }
@@ -571,7 +604,46 @@ function generateQualificationBlanks()
             document.getElementById("csecqualification-" + i + "-examinationgradeid").selectedIndex = 1;
             
             //last year
-            document.getElementById("qualification-" + i + "-year").selectedIndex = 47;
+            document.getElementById("csecqualification-" + i + "-year").selectedIndex = 47;
         }
     }
 }
+
+
+/**
+ * Toggles 'export-buttons' 
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 21/03/2016
+ * Date Last Modified: 21/03/2016
+ */
+function toggleExport()
+{
+    var search_by = document.getElementsByName('export_options');
+    if (search_by[0].checked == true)           //if "yes"
+        document.getElementById("export-buttons").style.display = "block";
+    else          //if "no"
+        document.getElementById("export-buttons").style.display = "none";
+}
+
+
+/**
+ * Toggles 'publish-buttons' 
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 21/03/2016
+ * Date Last Modified: 21/03/2016
+ */
+function togglePublish()
+{
+    var search_by = document.getElementsByName('publish_options');
+    if (search_by[0].checked == true)           //if "yes"
+        document.getElementById("publish-button").style.display = "block";
+    else          //if "no"
+        document.getElementById("publish-button").style.display = "none";
+} 
+    

@@ -1,8 +1,10 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+//use yii\grid\GridView;
 use yii\helpers\Url;
+use kartik\grid\GridView;
+use kartik\export\ExportMenu;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -89,6 +91,52 @@ $this->params['breadcrumbs'][] = $this->title;
             
             <?php if($dataProvider):?>
                 <h3 style="margin-left:2.5%"><?=$offer_type?></h3>
+                
+                <div style = 'margin-left: 2.5%;'>
+                    <?= ExportMenu::widget([
+                            'dataProvider' => $dataProvider,
+                            'columns' => [
+                                    [
+                                        'attribute' => 'username',
+                                        'format' => 'html',
+                                        'value' => function($row)
+                                         {
+                                            return Html::a($row['username'], 
+                                                       Url::to(['offer/view', 'id' => $row['offerid']]));
+                                          }
+                                    ],
+                                    'firstname',
+                                    'lastname',
+                                    'programme',
+                                    'issuedby',
+                                    'issuedate',
+                                    'revokedby',
+                                    'revokedate',
+                                    [
+                                        'attribute' => 'ispublished',
+                                        'format' => 'boolean',
+                                        'label' => 'Published'
+                                    ],
+                                ],
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false
+                            ],
+                        ]);
+                    ?>
+                </div>
+                
+                
                 <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'options' => ['style' => 'width: 95%; margin: 0 auto;'],
