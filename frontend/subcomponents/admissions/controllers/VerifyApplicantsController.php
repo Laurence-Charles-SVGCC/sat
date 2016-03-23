@@ -1201,12 +1201,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                                 }
                             }
                         }
-                        else
-                        {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error certifying certificates. Please try again');
-                            return $this->redirect(\Yii::$app->request->getReferrer());
-                        }
+//                        else
+//                        {
+//                            $transaction->rollBack();
+//                            Yii::$app->getSession()->setFlash('error', 'Error certifying certificates. Please try again');
+//                            return $this->redirect(\Yii::$app->request->getReferrer());
+//                        }
                         
                     }
                     $transaction->commit();

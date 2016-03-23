@@ -978,7 +978,7 @@ class AdmissionsController extends Controller
                         ],
                         'sort' => [
                             'attributes' => ['applicantid', 'firstname', 'lastname'],
-                            ]
+                            ],
                     ]);
                 }
             }
