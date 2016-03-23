@@ -21,7 +21,7 @@ use Yii;
  * @property string $examinationproficiencytypeid
  * @property string $year
  * @property string $examinationgradeid
-  * @property integer $isverified
+ * @property integer $isverified
  * @property integer $isactive
  * @property integer $isdeleted
  * @property integer $isqueried
@@ -50,9 +50,8 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         return [
             [['cseccentreid', 'personid', 'examinationbodyid', 'subjectid', 'examinationproficiencytypeid'], 'required'],
-            [['cseccentreid', 'personid', 'examinationbodyid', 'subjectid', 'examinationproficiencytypeid', 'examinationgradeid'], 'integer'],
+            [['cseccentreid', 'personid', 'examinationbodyid', 'subjectid', 'examinationproficiencytypeid', 'examinationgradeid', 'isverified', 'isactive', 'isdeleted', 'isqueried'], 'integer'],
             [['year'], 'safe'],
-            [['isverified', 'isactive', 'isdeleted', 'isqueried'], 'boolean'],
             [['candidatenumber'], 'string', 'max' => 20]
         ];
     }
