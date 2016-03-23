@@ -47,22 +47,22 @@ $this->params['breadcrumbs'][] = $this->title;
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <?php
                 Modal::begin([
-                    'header' => '<h2>Notification</h2>',
-                    'id' => 'modal-no-more-qualifications',
-                    'size' => 'modal-md',
-                ]);
-                echo "<p><strong>No records are present to be removed. If you would have previously deleted records, click "
-                . "save to finalize the operation</strong>.</p>";
+                        'header' => '<h2>Notification</h2>',
+                        'id' => 'modal-no-more-qualifications',
+                        'size' => 'modal-md',
+                    ]);
+                    echo "<p><strong>No records are present to be removed. If you would have previously deleted records, click "
+                    . "save to finalize the operation</strong>.</p>";
                 Modal::end();
             ?>
 
             <?php
                 Modal::begin([
-                    'header' => '<h2>Notification</h2>',
-                    'id' => 'modal-too-many-qualifications',
-                    'size' => 'modal-md',
-                ]);
-                echo "<p><strong>You have reached your record limit. No more records can be entered.</strong>.</p>";
+                        'header' => '<h2>Notification</h2>',
+                        'id' => 'modal-too-many-qualifications',
+                        'size' => 'modal-md',
+                    ]);
+                    echo "<p><strong>You have reached your record limit. No more records can be entered.</strong>.</p>";
                 Modal::end();
             ?>
             
