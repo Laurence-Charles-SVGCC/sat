@@ -511,7 +511,7 @@ function removeNewCertificate()
                     document.getElementById("csecqualification-" + j + "-examinationgradeid").selectedIndex = 0;
                     
                     //hide what was the last valid record
-                    document.getElementById("csecqualification[" + j + "]").style.display="none";
+                    document.getElementById("qualification[" + j + "]").style.display="none";
 
                     found = true;
                 }
