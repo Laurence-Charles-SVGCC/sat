@@ -67,7 +67,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
             
             <div id="saved-records">
-                <?php $form = ActiveForm::begin(); ?>
+                <?php 
+                    $form = ActiveForm::begin([
+                        'id' => 'saved-records-form'
+                    ]); 
+                ?>
                     <br/><fieldset style="width:100%">
                         <legend><strong>Certificate Results</strong></legend>
                         <table id="certificate_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
@@ -295,7 +299,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <legend><strong>Certification Additions</strong></legend>
                 <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
                 <?php 
-                    $form = yii\bootstrap\ActiveForm::begin([
+                    $form = /*yii\bootstrap\*/ActiveForm::begin([
                         'id' => 'new-certifcates-form',
                         'action' => Url::to(['verify-applicants/save-new-qualifications',
                                                 'personid' => $applicant->personid, 
@@ -355,7 +359,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </div>
                     </div>
-                <?php yii\bootstrap\ActiveForm::end(); ?>
+                <?php /*yii\bootstrap\ActiveForm::end();*/ActiveForm::end(); ?>
             </fieldset>
         </div>
     </div>
