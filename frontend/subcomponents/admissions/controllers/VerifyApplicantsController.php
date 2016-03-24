@@ -946,7 +946,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $qualifications,
                 'pagination' => [
-                    'pageSize' => 30,
+                    'pageSize' => 20,
                 ],
                 'sort' => [
                     'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
@@ -962,6 +962,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             return $this->render('view-applicant-qualifications',
                     [
                         'dataProvider' => $dataProvider,
+                        'csecqualifications' => $qualifications,
                         'applicant' => $applicant_model,
                         'username' => $username,
                         'centrename' => $centrename,

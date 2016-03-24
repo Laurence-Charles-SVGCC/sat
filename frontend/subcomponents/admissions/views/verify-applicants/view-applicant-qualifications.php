@@ -89,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <tbody>
                                 <?php
                                     $id = $applicant->personid;
-                                    $csecqualifications = $dataProvider->getModels();
+//                                    $csecqualifications = $dataProvider->getModels();
                                     $qual_limit = count($csecqualifications);
                                 ?>
 
