@@ -1180,9 +1180,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     foreach ($all_qualifications as $qualification) 
                     {
+                        $count = 0;
                         $save_flag = false;
                         if($qualification->isValid() == true)
                         {
+                            $count++;
                             $qualification->personid = $personid;
                             if ($qualification->validate() == false)
                             {
@@ -1210,6 +1212,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                        }
                         
                     }
+                    Yii::$app->getSession()->setFlash('error', 'Valid Record Count = ' . $count);
                     $transaction->commit();
                   
                     //redirect
@@ -1240,6 +1243,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 Yii::$app->getSession()->setFlash('error', 'Error occured loading records. Please try again');
             }
         }
+        
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
     
