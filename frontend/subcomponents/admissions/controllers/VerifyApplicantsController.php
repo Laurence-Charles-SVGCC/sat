@@ -943,15 +943,15 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $temp = NULL;
             }
 
-            $dataProvider = new ArrayDataProvider([
-                'allModels' => $qualifications,
-                'pagination' => [
-                    'pageSize' => 20,
-                ],
-                'sort' => [
-                    'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
-                ],
-            ]);
+//            $dataProvider = new ArrayDataProvider([
+//                'allModels' => $qualifications,
+//                'pagination' => [
+//                    'pageSize' => 20,
+//                ],
+//                'sort' => [
+//                    'attributes' => ['personid', 'examiningbody', 'examyear', 'proficiency', 'subject', 'grade', 'verified', 'queried'],
+//                ],
+//            ]);
 
             $applicant_model = Applicant::find()
                             ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
@@ -961,7 +961,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 
             return $this->render('view-applicant-qualifications',
                     [
-                        'dataProvider' => $dataProvider,
+//                        'dataProvider' => $dataProvider,
                         'csecqualifications' => $qualifications,
                         'applicant' => $applicant_model,
                         'username' => $username,

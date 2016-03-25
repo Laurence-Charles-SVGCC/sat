@@ -201,7 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <!--<a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>-->
 
-                        <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()): ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0/*$dataProvider->getModels()*/): ?>
                             <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary']) ?>
                         <?php endif; ?>
 
@@ -285,7 +285,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                     <div style="margin-left:2.5%;" class="form-group">
-                        <?php if (Yii::$app->user->can('verifyApplicants') && $dataProvider->getModels()  && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') &&    count($csecqualifications)>0/*$dataProvider->getModels()*/  && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
                             <br/><?= Html::submitButton('Update Degree', ['class' => 'btn btn-primary']) ?>
                             <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified']) ?>
                         <?php endif; ?>
@@ -353,7 +353,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </table>
                             </div>
 
-                            </br><div id="save-new-certifcates" class="form-group" style="display:none">
+                            </br>
+                            <div id="save-new-certifcates" class="form-group" style="display:none">
                                 <?= Html::submitButton('Save New Certificates', ['class' => 'btn btn-primary pull-right', 'onclick'=>'generateQualificationBlanks();']);?>
                             </div>
 
