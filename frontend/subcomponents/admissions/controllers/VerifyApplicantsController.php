@@ -1213,7 +1213,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                        }
                         
                     }
-//                    Yii::$app->getSession()->setFlash('error', 'Valid Record Count = ' . $count);
+                    Yii::$app->getSession()->setFlash('error', 'Valid Record Count = ' . $count);
                     $transaction->commit();
                   
                     //redirect
