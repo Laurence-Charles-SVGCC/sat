@@ -545,8 +545,8 @@ function generateQualificationBlanks()
     var record_count = parseInt(record_count_array[0].value);
     var qual_limit_array = document.getElementsByName("qual_limit");
     var qual_limit = parseInt(qual_limit_array[0].value);
-    alert("record_count = " + record_count);
-    alert("qual_limit = " + qual_limit);
+//    alert("record_count = " + record_count);
+//    alert("qual_limit = " + qual_limit);
     var i;
     for (i = record_count ; i < qual_limit ; i++)
     {
