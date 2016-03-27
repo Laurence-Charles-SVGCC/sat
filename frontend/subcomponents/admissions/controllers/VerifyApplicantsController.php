@@ -1525,7 +1525,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-                    $count = 0;
+//                    $count = 0;
                     foreach ($all_qualifications as $qualification) 
                     {
                         
@@ -1560,7 +1560,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                        }
                         
                     }
-                    Yii::$app->getSession()->setFlash('error', 'Valid Record Count = ' . $count);
+//                    Yii::$app->getSession()->setFlash('error', 'Valid Record Count = ' . $count);
                     $transaction->commit();
                   
                     //redirect
