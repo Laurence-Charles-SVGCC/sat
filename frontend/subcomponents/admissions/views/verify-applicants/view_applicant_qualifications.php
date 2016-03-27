@@ -1,35 +1,33 @@
 <?php
 
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
-use yii\bootstrap\Modal;
+    use yii\helpers\Html;
+    use yii\helpers\Url;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\ArrayHelper;
+    use yii\bootstrap\Modal;
 
-use frontend\models\ExaminationBody;
-use frontend\models\Subject;
-use frontend\models\ExaminationProficiencyType;
-use frontend\models\ExaminationGrade;
-use frontend\models\CsecCentre;
-use frontend\models\PostSecondaryQualification;
-use frontend\models\CsecQualification;
+    use frontend\models\ExaminationBody;
+    use frontend\models\Subject;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\CsecCentre;
+    use frontend\models\PostSecondaryQualification;
+    use frontend\models\CsecQualification;
 
-/* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+    /* @var $this yii\web\View */
+    /* @var $searchModel frontend\models\CsecCentreSearch */
+    /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$applicant_name = 'Undefined';
-if ($applicant)
-{
-    $applicant_name = $applicant->firstname . ' ' . $applicant->middlename . ' ' . $applicant->lastname;
-}
+    $applicant_name = 'Undefined';
+    if ($applicant)
+    {
+        $applicant_name = $applicant->firstname . ' ' . $applicant->middlename . ' ' . $applicant->lastname;
+    }
 
-$this->title = ' Applicant: ' . $applicant_name;
-$this->params['breadcrumbs'][] = ['label' => $centrename, 
-    'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
-$this->params['breadcrumbs'][] = $this->title;
-
-
+    $this->title = ' Applicant: ' . $applicant_name;
+    $this->params['breadcrumbs'][] = ['label' => $centrename, 
+        'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= Yii::$app->session->getFlash('error'); ?>
@@ -66,12 +64,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 Modal::end();
             ?>
             
-            <div id="saved-records">
-                <?php 
+            <?php 
                     $form = ActiveForm::begin([
-                        'id' => 'saved-records-form'
+                        'id' => 'update-records-form'
                     ]); 
-                ?>
+            ?>
+                <div id="saved-records">
                     <br/><fieldset style="width:100%">
                         <legend><strong>Certificate Results</strong></legend>
                         <table id="certificate_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
@@ -93,12 +91,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <tbody>
                                 <?php
                                     $id = $applicant->personid;
-//                                    $csecqualifications = $dataProvider->getModels();
-                                    $qual_limit = count($csecqualifications);
+//                                    $qual_limit = count($csecqualifications);
                                 ?>
 
                                 <?= Html::hiddenInput('record_count', $record_count); ?>
                                 <?= Html::hiddenInput('qual_limit', $qual_limit); ?>
+                                
 
                                 <?php for ($j=0 ; $j<$record_count ; $j++): ?>
                                     <?php if($csecqualifications[$j]->cseccentreid != $centreid):?>
@@ -201,12 +199,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <!--<a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>-->
 
-                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0/*$dataProvider->getModels()*/): ?>
-                            <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0): ?>
+                            <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();', ]) ?>
                         <?php endif; ?>
 
                         <?php if (PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == false):?>
-                            <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified', 'onclick'=>'generateQualificationBlanks();']) ?>
+                            <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verify-all', 'onclick'=>'generateQualificationBlanks();', ]) ?>
                         <?php endif; ?>
 
                         <!--<?php if (Yii::$app->user->can('addCertificate')): ?>
@@ -285,32 +283,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                     <div style="margin-left:2.5%;" class="form-group">
-                        <?php if (Yii::$app->user->can('verifyApplicants') &&    count($csecqualifications)>0/*$dataProvider->getModels()*/  && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
-                            <br/><?= Html::submitButton('Update Degree', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
-                            <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified', 'onclick'=>'generateQualificationBlanks();']) ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0 && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
+                            <br/><?= Html::submitButton('Update Degree', ['class' => 'btn btn-primary']) ?>
+                            <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified', 'onclick'=>'generateQualificationBlanks();', ]) ?>
                         <?php endif; ?>
                     </div>
-                <?php ActiveForm::end(); ?>
-            </div>
+                </div>
                    
             
-            <br/><br/>
-            <fieldset style="margin-left:2.5%; width:95%">
-                <legend><strong>Certification Additions</strong></legend>
-                <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
-                <?php 
-                    $form = /*yii\bootstrap\*/ActiveForm::begin([
-                        'id' => 'new-certifcates-form',
-                        'action' => Url::to(['verify-applicants/save-new-qualifications',
-                                                'personid' => $applicant->personid, 
-                                                'centrename' => $centrename, 
-                                                'centreid' => $centreid, 
-                                                'type' => $type,
-                                                'record_count' => $record_count,
-                                                'qual_limit' => $qual_limit,
-                                            ]),
-                    ])
-                ?>
+                <br/><br/>
+                <fieldset style="margin-left:2.5%; width:95%">
+                    <legend><strong>Certification Additions</strong></legend>
+                    <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
+                    
                     <div id="add-certiifcates" class="panel panel-default" style="width:100%; margin: 0 auto;">
                         <div class="panel-heading">
                             <h4>
@@ -325,7 +310,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <table id="certificate_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
                                     <?php for ($i = $record_count ; $i <$qual_limit  ; $i++):?>
                                         <?php $count = ($i-$record_count)+1;?>
-                                        <tr id="<?= "qualification[" . $i . "]" ;?>" style="display:none">
+                                        <tr id="<?= "qualification[" . $i . "]" ;?>" >
                                             <td  width='15%' >
                                                 <?= $form->field($csecqualifications[$i], "[{$i}]cseccentreid")->label("")->dropDownList(CsecCentre::processCentres(), ['style'=> 'font-size:14px;']);?>
                                             </td>
@@ -354,14 +339,16 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
 
                             </br>
-                            <div id="save-new-certifcates" class="form-group" style="display:none">
-                                <?= Html::submitButton('Save New Certificates', ['class' => 'btn btn-primary pull-right', 'onclick'=>'generateQualificationBlanks();']);?>
-                            </div>
+                            <?php if (Yii::$app->user->can('verifyApplicants')): ?>
+                                <div id="save-new-certifcates" class="form-group" style="display:none">
+                                    <?= Html::submitButton('Save New Certificates', ['class' => 'btn btn-primary pull-right', 'onclick'=>'generateQualificationBlanks();', 'name'=>'new_certificate']);?>
+                                </div>
+                            <?php endif;?>
 
                         </div>
                     </div>
-                <?php /*yii\bootstrap\ActiveForm::end();*/ActiveForm::end(); ?>
-            </fieldset>
+                </fieldset>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
