@@ -201,7 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <!--<a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>-->
 
-                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0/*$dataProvider->getModels()*/): ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0): ?>
                             <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
                         <?php endif; ?>
 
@@ -285,7 +285,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                     <div style="margin-left:2.5%;" class="form-group">
-                        <?php if (Yii::$app->user->can('verifyApplicants') &&    count($csecqualifications)>0/*$dataProvider->getModels()*/  && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
+                        <?php if (Yii::$app->user->can('verifyApplicants') &&    count($csecqualifications)>0 && PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true): ?>
                             <br/><?= Html::submitButton('Update Degree', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
                             <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified', 'onclick'=>'generateQualificationBlanks();']) ?>
                         <?php endif; ?>
@@ -299,7 +299,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <legend><strong>Certification Additions</strong></legend>
                 <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
                 <?php 
-                    $form = /*yii\bootstrap\*/ActiveForm::begin([
+                    $form = ActiveForm::begin([
                         'id' => 'new-certifcates-form',
                         'action' => Url::to(['verify-applicants/save-new-qualifications',
                                                 'personid' => $applicant->personid, 
@@ -360,7 +360,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </div>
                     </div>
-                <?php /*yii\bootstrap\ActiveForm::end();*/ActiveForm::end(); ?>
+                <?php ActiveForm::end(); ?>
             </fieldset>
         </div>
     </div>
