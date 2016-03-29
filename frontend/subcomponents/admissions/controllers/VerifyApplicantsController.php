@@ -973,7 +973,6 @@ class VerifyApplicantsController extends \yii\web\Controller
                 Yii::$app->getSession()->setFlash('error', 'Error occured loading records. Please try again');
             }
         }
-        
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
     

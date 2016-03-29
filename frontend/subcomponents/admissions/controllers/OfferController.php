@@ -1281,15 +1281,15 @@ class OfferController extends Controller
     
     
     /**
-     * Generates Report for All Valid Offers
+     * Generates Report for All Offers that have not been published yet
      * 
      * @return type
      * 
      * Author: Gamal Cricheton
      * Date Created: ??
-     * Date Last Modified: 21/03/2016 (L. Charles)
+     * Date Last Modified: 21/03/2016 | 29/03/2016 (L. Charles)
      */
-    public function actionExportValidOffers()
+    public function actionExportUnpublishedOffers()
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
@@ -1299,6 +1299,7 @@ class OfferController extends Controller
 //        $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['offer.isactive'] = 1;
+        $offer_cond['offer.ispublished'] = 1;
         
         if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
             $offer_cond['application.divisionid'] = $division_id;
@@ -1346,6 +1347,7 @@ class OfferController extends Controller
         
         return $this->renderPartial('offer-export', [
             'dataProvider' => $dataProvider,
+            'filetype' => ""
         ]);
     }
     

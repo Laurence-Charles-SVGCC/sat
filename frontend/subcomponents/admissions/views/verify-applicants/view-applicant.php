@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $user = User::findOne(['personid' => $row["personid"]]);
                                 $username = $user ? $user->username : $row["personid"];
                                 
-                                if (Yii::$app->user->can('Registrar') || Yii::$app->user->can('Assistant Registrar') || Applicant::isVerified($user->personid) == false)
+                                if (Yii::$app->user->can('Registrar') || Yii::$app->user->can('Assistant Registrar') || Yii::$app->user->can('Registry Staff')  ||Applicant::isVerified($user->personid) == false)
                                 {
                                     return Html::a($username, 
                                            Url::to(['verify-applicants/view-applicant-qualifications', 'applicantid' => $row["personid"],

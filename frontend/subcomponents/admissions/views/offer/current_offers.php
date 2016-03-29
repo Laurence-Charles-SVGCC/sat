@@ -116,8 +116,11 @@
                         </p>
                         
                         <div id="export-buttons" style="display:none">
-                            <?= Html::a('Export Valid Offers', ['export-valid-offers'], ['class' => 'btn btn-primary']) ?>
                             <?= Html::a('Export All Offers', ['export-all-offers'], ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('Export Pending Offers', ['export-unpublished-offers'], ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('Export Published Offers', ['export-published-offers'], ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('Export Revoked Offers', ['export-revoked-offers'], ['class' => 'btn btn-primary']) ?>
+                            
                         </div>
                         
                         <?php if (Yii::$app->user->can('publishOffer')): ?>

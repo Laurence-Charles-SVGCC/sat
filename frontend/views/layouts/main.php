@@ -187,7 +187,7 @@ else
                   <?php endif; ?>
                 </li>
 
-                <br/>
+                
                 <?php if (Yii::$app->user->can('students')): ?>
                     <li class="active treeview">
                         <a href="">
