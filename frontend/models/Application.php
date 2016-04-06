@@ -710,14 +710,14 @@ class Application extends \yii\db\ActiveRecord
                         ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+//                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                         ->where(['applicant.isexternal' => 0,
                                 'csec_centre.cseccentreid' => $cseccentreid,
                                 'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'academic_offering.isdeleted' => 0])
-                        ->groupby('application.personid')
+                        ->groupby('application.personid', 'csec_centre.cseccentreid')
                         ->all();
         }
         
@@ -816,14 +816,14 @@ class Application extends \yii\db\ActiveRecord
                         ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+//                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                         ->where([/*'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,*/
                                 'csec_centre.cseccentreid' => $cseccentreid,
                                 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'academic_offering.isdeleted' => 0])
-                        ->groupBy('application.personid')
+                        ->groupBy('application.personid', 'csec_centre.cseccentreid')
                         ->all();
 //                        ->leftJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
 //                        ->leftJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
