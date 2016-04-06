@@ -29,7 +29,7 @@
 ?>
 
     <div class="site-index">
-        <div class = "custom_wrapper">
+        <div class = "custom_wrapper" style="min-height:4800px;">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/sms_4.png');?>" alt="Find A Student">
@@ -38,7 +38,7 @@
                 </a>    
             </div>
             
-            <div class="custom_body">
+            <div class="custom_body" style="min-height:4500px;">
                     <h1 class="custom_h1"><?=$student->title . ". " . $student->firstname . " " . $student->middlename . " " . $student->lastname ;?></h1>
                     <div>
                         <!-- Nav tabs -->
@@ -1329,107 +1329,109 @@
                                                 ])
                                             ?>
 
-                                            <fieldset >
-                                                <legend>Family Information</legend>
-                                                <?= $form->field($nursinginfo, 'childcount')->label("How many children do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'childCount', 'onchange'=> 'checkChildCount();']);?>
+                                                <fieldset >
+                                                    <legend>Family Information</legend>
+                                                    <?= $form->field($nursinginfo, 'childcount')->label("How many children do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'childCount', 'onchange'=> 'checkChildCount();']);?>
 
-                                                <?php if (NursingAdditionalInfo::hasChildren($applicant->personid) == true):?>
-                                                    <div id="ages">
-                                                        <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                    <?php if (NursingAdditionalInfo::hasChildren($applicant->personid) == true):?>
+                                                        <div id="ages">
+                                                            <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                        </div>
+                                                    <?php else :?>
+                                                        <div id="ages" style="display:none">
+                                                            <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+                                                        </div>
+                                                    <?php endif ;?>
+
+                                                    <?= $form->field($nursinginfo, 'brothercount')->label("How many brothers do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'brotherCount']);?>
+
+                                                    <?= $form->field($nursinginfo, 'sistercount')->label("How many sisters do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'sisterCount']);?>
+                                                </fieldset><br>
+
+                                                <fieldset >
+                                                    <legend>Work Experience</legend>
+                                                    <?= $form->field($nursinginfo, 'yearcompletedschool')->label('Year school was completed: *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+
+                                                    <?= $form->field($nursinginfo, 'hasworked')->label("Have you worked since leaving school? *", ['class'=> 'form-label'])->inline()->radioList($has_worked, ['id' => 'hasWorked', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
+
+                                                    <?= $form->field($nursinginfo, 'isworking')->label("Are you currently employed? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'isWorking', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
+
+                                                    <div id="has-other-applications">
+                                                        <?= $form->field($nursinginfo, 'hasotherapplications')->label("Are you currently awaiting any application responses? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'hasOtherApplications', 'onclick' => 'showOtherApplicationDetails();']);?>
                                                     </div>
-                                                <?php else :?>
-                                                    <div id="ages" style="display:none">
-                                                        <?= $form->field($nursinginfo, 'childages')->label("Ages of children *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'childAges']) ?>
+
+                                                    <?php if (NursingAdditionalInfo::hasOtherApplications($applicant->personid) == true):?>
+                                                        <div id="other-applications-info">
+                                                            <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
+                                                        </div>
+                                                    <?php else :?>
+                                                        <div id="other-applications-info" style="display:none">
+                                                            <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
+                                                        </div>
+                                                    <?php endif ;?>
+
+                                                    <?= $form->field($nursinginfo, 'hasnursingexperience')->label("Do you have had any previous nursing or nurse related training? *", ['class'=> 'form-label'])->inline()->radioList($nursing_experience, ['id' => 'nurse-work']);?>
+                                                </fieldset></br>
+
+                                                <fieldset >
+                                                    <legend>Other</legend>
+                                                    <!-- Is organization member radiolist -->
+                                                    <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
+                                                        <?= $form->field($nursinginfo, 'ismember')->label("Are you a member of a professional organisation? *", ['class'=> 'form-label'])->inline()->radioList($is_organisational_member, ['class'=> 'form-field', 'onclick' => 'toggleOrganisationDetails();']);?>
+                                                    <?php endif;?>
+
+                                                    <!-- Organization details -->
+                                                    <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == true):?>
+                                                        <div id="member-organisations" style="display:block">  
+                                                            <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                                        </div>
+                                                    <?php else:?>
+                                                        <div id="member-organisations" style="display:none">
+                                                             <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!--Reason for not joining organization-->
+                                                    <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == false):?>
+                                                        <div id="exclusion-reason" style="display:block">  
+                                                            <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                                        </div>
+                                                    <?php else:?>
+                                                        <div id="exclusion-reason" style="display:none">
+                                                             <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!-- Is repeat applicant radiolist -->
+                                                    <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
+                                                        <?= $form->field($nursinginfo, 'repeatapplicant')->label("Have you applied for entry into this course previously? *", ['class'=> 'form-label'])->inline()->radioList($is_repeat_applicant, ['class'=> 'form-field', 'onclick' => 'togglePreviousYears();']);?>
+                                                    <?php endif;?>
+
+                                                    <!-- Previous years -->
+                                                    <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::hasPreviousApplication($applicant->personid) == true):?>
+                                                        <div id="previous-years" style="display:block">                                
+                                                    <?php else:?>
+                                                        <div id="previous-years" style="display:none">
+                                                    <?php endif; ?>
+                                                             <?= $form->field($nursinginfo, 'previousyears')->label('If yes, state when?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
+                                                        </div>
+
+                                                    <?= $form->field($nursinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
+
+                                                    </br><p>State two (2) reasons why you wish to do enroll in your programme of choice.
+                                                    <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+
+                                                    <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+
+                                                    <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
+                                                </fieldset></br>
+
+                                                <?php if(Yii::$app->user->can('updateAdditionalDetails')):?>
+                                                    <div class="form-group">
+                                                        <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
                                                     </div>
-                                                <?php endif ;?>
-
-                                                <?= $form->field($nursinginfo, 'brothercount')->label("How many brothers do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'brotherCount']);?>
-
-                                                <?= $form->field($nursinginfo, 'sistercount')->label("How many sisters do you have?*", ['class'=> 'form-label'])->dropDownList($relation_count, ['id'=>'sisterCount']);?>
-                                            </fieldset><br>
-
-                                            <fieldset >
-                                                <legend>Work Experience</legend>
-                                                <?= $form->field($nursinginfo, 'yearcompletedschool')->label('Year school was completed: *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                                                <?= $form->field($nursinginfo, 'hasworked')->label("Have you worked since leaving school? *", ['class'=> 'form-label'])->inline()->radioList($has_worked, ['id' => 'hasWorked', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
-
-                                                <?= $form->field($nursinginfo, 'isworking')->label("Are you currently employed? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'isWorking', 'onclick' => 'processOtherApplications();showGeneralWorkExperience();']);?>
-
-                                                <div id="has-other-applications">
-                                                    <?= $form->field($nursinginfo, 'hasotherapplications')->label("Are you currently awaiting any application responses? *", ['class'=> 'form-label'])->inline()->radioList($is_working, ['id' => 'hasOtherApplications', 'onclick' => 'showOtherApplicationDetails();']);?>
-                                                </div>
-
-                                                <?php if (NursingAdditionalInfo::hasOtherApplications($applicant->personid) == true):?>
-                                                    <div id="other-applications-info">
-                                                        <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
-                                                    </div>
-                                                <?php else :?>
-                                                    <div id="other-applications-info" style="display:none">
-                                                        <?= $form->field($nursinginfo, 'otherapplicationsinfo')->label("Where have you applied for a job? (Apart from this application? *", ['class'=> 'form-label'])->textArea(['rows' => '1', 'id'=>'otherApplicationInfo']) ?>
-                                                    </div>
-                                                <?php endif ;?>
-
-                                                <?= $form->field($nursinginfo, 'hasnursingexperience')->label("Do you have had any previous nursing or nurse related training? *", ['class'=> 'form-label'])->inline()->radioList($nursing_experience, ['id' => 'nurse-work']);?>
-                                            </fieldset></br>
-
-                                            <fieldset >
-                                                <legend>Other</legend>
-                                                <!-- Is organization member radiolist -->
-                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
-                                                    <?= $form->field($nursinginfo, 'ismember')->label("Are you a member of a professional organisation? *", ['class'=> 'form-label'])->inline()->radioList($is_organisational_member, ['class'=> 'form-field', 'onclick' => 'toggleOrganisationDetails();']);?>
                                                 <?php endif;?>
-
-                                                <!-- Organization details -->
-                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == true):?>
-                                                    <div id="member-organisations" style="display:block">  
-                                                        <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-                                                    </div>
-                                                <?php else:?>
-                                                    <div id="member-organisations" style="display:none">
-                                                         <?= $form->field($nursinginfo, 'memberorganisations')->label('If yes, state which?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
-                                                    </div>
-                                                <?php endif; ?>
-
-                                                <!--Reason for not joining organization-->
-                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::isMember($applicant->personid) == false):?>
-                                                    <div id="exclusion-reason" style="display:block">  
-                                                        <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-                                                    </div>
-                                                <?php else:?>
-                                                    <div id="exclusion-reason" style="display:none">
-                                                         <?= $form->field($nursinginfo, 'exclusionreason')->label('If no, give reason(s)?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
-                                                    </div>
-                                                <?php endif; ?>
-
-                                                <!-- Is repeat applicant radiolist -->
-                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true):?>
-                                                    <?= $form->field($nursinginfo, 'repeatapplicant')->label("Have you applied for entry into this course previously? *", ['class'=> 'form-label'])->inline()->radioList($is_repeat_applicant, ['class'=> 'form-field', 'onclick' => 'togglePreviousYears();']);?>
-                                                <?php endif;?>
-
-                                                <!-- Previous years -->
-                                                <?php if (Application::hasMidwiferyApplication($applicant->personid) == true  && NursingAdditionalInfo::hasPreviousApplication($applicant->personid) == true):?>
-                                                    <div id="previous-years" style="display:block">                                
-                                                <?php else:?>
-                                                    <div id="previous-years" style="display:none">
-                                                <?php endif; ?>
-                                                         <?= $form->field($nursinginfo, 'previousyears')->label('If yes, state when?', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>   
-                                                    </div>
-
-                                                <?= $form->field($nursinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
-
-                                                </br><p>State two (2) reasons why you wish to do enroll in your programme of choice.
-                                                <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
-
-                                                <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
-
-                                                <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-                                            </fieldset></br>
-
-                                            <div class="form-group">
-                                                <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
-                                            </div>
-                                        <?php yii\bootstrap\ActiveForm::end(); ?> 
+                                            <?php yii\bootstrap\ActiveForm::end(); ?> 
                                         <?php endif;?>
                                     </div>
                                 <?php endif;?><!--End of Nursing specific information-->
@@ -1578,10 +1580,9 @@
                                                 <legend>Other</legend>              
                                                 <?= $form->field($teachinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
 
-                                                </br><p>State two (2) reasons why you wish to enroll in the Division of Teacher Education.
                                                 <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
 
-                                                <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>             
+                                                <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>             
                                             </fieldset></br>
 
                                             <fieldset >
@@ -1600,10 +1601,12 @@
                                                     <?= $form->field($teachinginfo, 'sponsorname')->label("If you are sponsored please state the organization(s).", ['class'=> 'form-label'])->textArea(['rows' => '2']) ?>
                                                 </div>
                                             </fieldset></br>
-
-                                            <div class="form-group">
-                                                <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
-                                            </div>
+                                            
+                                            <?php if(Yii::$app->user->can('updateAdditionalDetails')):?>
+                                                <div class="form-group">
+                                                    <?= Html::submitButton('Update', ['class' => 'btn btn-success']);?>
+                                                </div>
+                                            <?php endif;?>
                                             <?php yii\bootstrap\ActiveForm::end(); ?> 
                                         <?php endif;?>
                                     </div>

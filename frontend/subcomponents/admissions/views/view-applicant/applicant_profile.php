@@ -109,7 +109,7 @@
 ?>
 
     <div class="site-index">
-        <div class = "custom_wrapper" style="min-height:4500px;">
+        <div class = "custom_wrapper" style="min-height:4800px;">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar">
@@ -118,7 +118,7 @@
                 </a>    
             </div>
             
-            <div class="custom_body" style="min-height:4200px;">                
+            <div class="custom_body" style="min-height:4500px;">                
                 <h1 class="custom_h1"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h1>
                 <div>
                     <!-- Nav tabs -->
@@ -1475,9 +1475,9 @@
                                             <?= $form->field($nursinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
                 
                                             </br><p>State two (2) reasons why you wish to do enroll in your programme of choice.
-                                            <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                            <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
 
-                                            <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                            <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
 
                                             <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
                                         </fieldset></br>
@@ -1638,10 +1638,9 @@
                                             <legend>Other</legend>              
                                             <?= $form->field($teachinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
 
-                                            </br><p>State two (2) reasons why you wish to enroll in the Division of Teacher Education.
                                             <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
 
-                                            <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>             
+                                            <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>             
                                         </fieldset></br>
 
                                         <fieldset >
