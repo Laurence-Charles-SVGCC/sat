@@ -914,13 +914,13 @@ class AdmissionsController extends Controller
                  *  This is because applicants may apply to both divisions
                  */
                 if ($division_id == 4  || $division_id == 5 )
-                    $cond_arr['application.division'] = [4,5];
+                    $cond_arr['application.divisionid'] = [4,5];
 
                 /*
                  *  If DTE or DNE the applicants are constrained to each division
                  */
                 elseif ($division_id == 6  || $division_id == 7 )
-                    $cond_arr['application.division'] = $division_id;
+                    $cond_arr['application.divisionid'] = $division_id;
 
                 if ($status == "pending")
                 {
