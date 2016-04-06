@@ -20,7 +20,7 @@
                     {
                        return Html::a($row['username'], 
                                         Url::to(['register-student/view-prospective-student',
-                                                 'personid' => $row['applicantid'],
+                                                 'personid' => $row['personid'],
                                                  'programme' => $row['programme_name'],
                                                 ])
                                     );
