@@ -811,13 +811,13 @@ class Application extends \yii\db\ActiveRecord
         else
         {
             $applicants = Application::find()
-//                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
                         ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
 //                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                        ->where([/*'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,*/
+                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                                 'csec_centre.cseccentreid' => $cseccentreid,
                                 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
@@ -825,20 +825,6 @@ class Application extends \yii\db\ActiveRecord
                                 'academic_offering.isdeleted' => 0])
                         ->groupBy('application.personid', 'csec_centre.cseccentreid')
                         ->all();
-//                        ->leftJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-//                        ->leftJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
-//                        ->leftJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                        ->leftJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                        ->leftJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                        ->leftJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-//                                'csec_centre.cseccentreid' => $cseccentreid,
-//                                'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-//                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-//                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                                'academic_offering.isdeleted' => 0])
-//                        ->groupby('application.personid')
-//                        ->all();
         }
         
         $elegible = array();
@@ -894,33 +880,31 @@ class Application extends \yii\db\ActiveRecord
             }
             else    // if attempting to retrieve "non-external" applicants
             {
-                foreach ($applicants as $key => $applicant)
-                {
-                    $applicant_record = Applicant::find()
-                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
-                            ->one();
-            
-                    if ($applicant_record->isexternal == 0)
+//                $applicant_record = Applicant::find()
+//                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+//                        ->one();
+//
+//                if ($applicant_record->isexternal == 0)
+//                {
+                    $non_verified1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]);
+                    $queried1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]);
+                    $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
+
+                    if($qualification == true)
                     {
-                        $non_verified1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]);
-                        $queried1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]);
-                        $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
+                        $non_verified2 = $qualification->isverified;
+                        $queried2 = $qualification->isqueried;
 
-                        if($qualification == true)
-                        {
-                            $non_verified2 = $qualification->isverified;
-                            $queried2 = $qualification->isqueried;
-
-                            if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
-                               $elegible[] =$applicants[$key];
-                        }
-                        else
-                        {
-                            if ($queried1 == false && $non_verified1 == true)
-                               $elegible[] = $applicants[$key];
-                        }
+                        if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
+                           $elegible[] =$applicants[$key];
                     }
-                }
+                    else
+                    {
+                        if ($queried1 == false && $non_verified1 == true)
+                           $elegible[] = $applicants[$key];
+                    }
+//                }
+                
             }
         }
         return $elegible;
