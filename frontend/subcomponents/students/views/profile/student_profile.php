@@ -1419,9 +1419,9 @@
                                                     <?= $form->field($nursinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
 
                                                     </br><p>State two (2) reasons why you wish to do enroll in your programme of choice.
-                                                    <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                                    <?= $form->field($nursinginfo, 'applicationmotivation1')->label("Reason #1 *", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
 
-                                                    <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                                    <?= $form->field($nursinginfo, 'applicationmotivation2')->label("Reason #2 *", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
 
                                                     <?= $form->field($nursinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
                                                 </fieldset></br>
@@ -1580,7 +1580,7 @@
                                                 <legend>Other</legend>              
                                                 <?= $form->field($teachinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
 
-                                                <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                                <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>
 
                                                 <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>             
                                             </fieldset></br>

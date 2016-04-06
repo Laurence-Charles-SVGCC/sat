@@ -1640,7 +1640,7 @@
                                                 <legend>Other</legend>              
                                                 <?= $form->field($teachinginfo, 'hascriminalrecord')->label("Have your every been charged by the law for any offence? *", ['class'=> 'form-label'])->inline()->radioList($has_criminalrecord);?>
 
-                                                <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '3']) ?>
+                                                <?= $form->field($teachinginfo, 'applicationmotivation')->label("Why do you want to enroll in this programme? *", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>
 
                                                 <?= $form->field($teachinginfo, 'additionalcomments')->label("Other Comments ", ['class'=> 'form-label'])->textArea(['rows' => '15']) ?>             
                                             </fieldset></br>
