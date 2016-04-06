@@ -1,9 +1,8 @@
 <?php
 
 /* 
- * 'add_post_secondary_qualification' view.  
  * Author: Laurence Charles
- * Date Created: 15/03/2016
+ * Date Created: 03/04/2016
  */
 
     use yii\helpers\Html;
@@ -13,7 +12,10 @@
     
     use frontend\models\PostSecondaryQualification;
     
-    $this->title = 'Add Post Secondary Qualification';
+    if(PostSecondaryQualification::getPostSecondaryQualifications($user->personid) == true)
+        $this->title = 'Edit Post Secondary Qualification';
+    else
+        $this->title = 'Add Post Secondary Qualification';
     
 ?>
 
@@ -40,25 +42,27 @@
                         echo "<table class='table table-hover' style='width:70%; margin: 0 auto;'>";                                        
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle'>Name of Degree*</th>";
-                                echo "<td>{$form->field($qualification, 'name')->label(" ", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
+                                echo "<td>{$form->field($qualification, 'name')->label("Name of Degree*", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
                             echo "</tr>";
                             
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle'>Awarding Institution</th>";
-                                echo "<td>{$form->field($qualification, 'awardinginstitution')->label(" ", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
+                                echo "<td>{$form->field($qualification, 'awardinginstitution')->label("Awarding Institution*", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
                             echo "</tr>";
 
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle;'>Year Degree Awarded</th>";
-                                echo "<td>{$form->field($qualification, 'yearawarded')->label(" ", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
+                                echo "<td>{$form->field($qualification, 'yearawarded')->label("Year Degree Awarded *", ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
                             echo "</tr>";                     
                         echo "</table><br/>";
                         
-                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success', 'style' => 'width:70%; margin:0 auto;']);
-
+                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
                     ActiveForm::end();    
                 ?>
             </div>
         </div>
     </div>
+
+
 

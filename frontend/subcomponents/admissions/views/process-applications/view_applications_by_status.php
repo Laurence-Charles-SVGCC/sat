@@ -10,7 +10,7 @@
 
     //$type = ucfirst($type);
     $this->title = $status_name;
-    $this->params['breadcrumbs'][] = ['label' => 'Review Applicants', 'url' => ['index']];
+//    $this->params['breadcrumbs'][] = ['label' => 'Review Applicants', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -35,10 +35,9 @@
                         'label' => 'Applicant ID',
                         'value' => function($row) use ($application_status)
                             {
-                                $middlename = $row['middlename'] ? $row['middlename'] : "";
                                 return Html::a($row['username'], 
                                        Url::to(['process-applications/view-applicant-certificates',
-                                                'applicantid' => $row['applicantid'],
+                                                'personid' => $row['personid'],
                                                 'programme' => $row['programme'], 
                                                 'application_status' => $application_status
                                                ]));
@@ -115,7 +114,7 @@
             
             <?php $form = ActiveForm::begin(
                     [
-                        'action' => Url::to(['review-applications/update-view']),
+                        'action' => Url::to(['process-applications/update-view']),
                     ]
             ); ?>
             
@@ -124,12 +123,12 @@
             
                 <div class="body-content">
                     <?php if(count($programmes) > 1):?>
-                        <br/><p style="font-size:20px">If you wish to filter the results by programme, use the dropdownlist below.</p>
+                        <br/><p style="font-size:20px; margin-left:2.5%;">If you wish to filter the results by programme, use the dropdownlist below.</p>
 
                         <div class="row">
                             <div class="col-lg-8">
                                 <?= Html::label( 'Select Filtering Criteria',  'programme'); ?>
-                                <?= Html::dropDownList('programme', null, $programmes, [ 'style' => 'font-size:20px', 'onchange' => 'showUpdateButton();']); ?>
+                                <?= Html::dropDownList('programme', null, $programmes, [ 'style' => 'font-size:20px;'/*, 'onclick' => 'showUpdateButton();'*/]); ?>
                             </div>
 
                             <div class="col-lg-4">

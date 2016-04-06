@@ -32,7 +32,7 @@
             <!-- Offer Flag-->
             <?php if (Offer::hasRecords($applicant->personid) == true):?>
                 <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant has an offer";?>
+                    <?= "Applicant has " . Offer::getPriorityOfffer($applicant->personid) . " offer";?>
                 </p>
             <?php endif;?>
 
@@ -113,7 +113,7 @@
                     </table>
                     
                 <?php else: ?>
-                    <p style="margin-left:5%;"><?= "Offers given: " . $offers_made . ". Proposed Intake: " . $spaces ?></p>
+                    <p style="margin-left:5%;"><?= "<ul style='margin-left:2.5%;'> " . "<li>Proposed Intake: " . $spaces . "</li>" . " <li>Conditional Offers given: " . $conditional_offers_made . "</li>" . " <li>Full Offers given: " . $offers_made . "</li>" . "</ul>" ?></p>
                 <?php endif; ?>  
             </div><br/>  
                 
@@ -121,7 +121,6 @@
                 <h2 class="custom_h2">Certificate Information</h2>
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
-                    //'filterModel' => $searchModel,
                     'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                     'columns' => [
                         [

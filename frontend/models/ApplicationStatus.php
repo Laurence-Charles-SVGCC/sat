@@ -82,12 +82,17 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($ids, 7);
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($ids, 8);
+            else
+                array_push($ids, 9);
             
             array_push($names, "Pending");
             array_push($names, "Shortlist");
             array_push($names, "Borderline");
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($names, "Conditional Offer");
+            else
+                array_push($names, "Offer");
+                
             array_push($container, $ids);
             array_push($container, $names);
         }
@@ -98,12 +103,16 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($ids, 7);
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($ids, 8);
+            else
+                array_push($ids, 9);
             array_push($ids, 6);
             
             array_push($names, "Shortlist");
             array_push($names, "Borderline");
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($names, "Conditional Offer");
+            else
+                array_push($names, "Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
@@ -116,12 +125,16 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($ids, 7);
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($ids, 8);
+            else
+                array_push($ids, 9);
             array_push($ids, 6);
             
             array_push($names, "Pending");
             array_push($names, "Borderline");
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($names, "Conditional Offer");
+            else
+                array_push($names, "Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
@@ -134,33 +147,37 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($ids, 4);
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($ids, 8);
+            else
+                array_push($ids, 9);
             array_push($ids, 6);
             
             array_push($names, "Pending");
             array_push($names, "Shortlist");
             if(AcademicOffering::requiresInterview($applicationid) == true)
                 array_push($names, "Conditional Offer");
+            else
+                array_push($names, "Offer");
             array_push($names, "Reject");
             
             array_push($container, $ids);
             array_push($container, $names);
         }
         
-        elseif ($current_status_id == 8)        //if interview offer
+        elseif ($current_status_id == 8)        //if interview/condition offer
         {
             array_push($ids, 3);
             array_push($ids, 4);
             array_push($ids, 7);
-            array_push($ids, 6);
+            array_push($ids, 6);        //just incase "Interview/Conditional Offer" was given in error
             array_push($ids, 9);
             array_push($ids, 10);
             
             array_push($names, "Pending");
             array_push($names, "Shortlist");
             array_push($names, "Borderline");
-            array_push($names, "Reject");
+            array_push($names, "Reject");       //just incase "Interview/Conditional Offer" was given in error
             array_push($names, "Offer");
-            array_push($names, "Reject Conditional Interview");
+            array_push($names, "Reject Conditional Offer");
             
             array_push($container, $ids);
             array_push($container, $names);
@@ -176,7 +193,7 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             if(AcademicOffering::requiresInterview($applicationid) == true)
             {
                 array_push($ids, 10);
-                array_push($names, "Reject Conditional Interview");
+                array_push($names, "Reject Conditional Offer");
             }
             
             /*

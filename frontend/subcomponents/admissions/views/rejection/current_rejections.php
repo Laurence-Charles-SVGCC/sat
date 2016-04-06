@@ -7,7 +7,6 @@
     
     use frontend\models\ApplicationPeriod;
     use frontend\models\Division;
-    use frontend\models\Offer;
 
     /* @var $this yii\web\View */
     /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -34,13 +33,14 @@
         $filter_criteria['revoked'] = 'Is Revoked?';
     }
 
-    if ($offertype == 1)
-            $offer_name = "Unconditional";
+    if ($rejectiontype == 1)
+            $rejection_name = "Pre-Interview";
         else
-            $offer_name = "Conditional";
-    $this->title = $divisionabbr . ' ' . $offer_name .  ' Offers for ' . $applicationperiodname;
+            $rejection_name = "Post-Interview";
+    $this->title = $divisionabbr . ' ' . $rejection_name .   ' Rejections for ' . $applicationperiodname;
     $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="body-content">
     <div class = "custom_wrapper">
         <div class="custom_header">
@@ -51,99 +51,100 @@
             </a>    
         </div>
         
-        <?php if($offer_issues): ?>
+        <?php if($rejection_issues): ?>
             <br/><div style="font-size:16px; width: 95%; margin: 0 auto;">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype]);?>" 
-                   title="Questionable Offers"
+                <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home' , 'rejectiontype' => $rejectiontype]);?>" 
+                   title="Questionable Rejections"
                    style="font-size:16px; width: 100%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                    Click Here To Review Questionable Offers
+                    Click Here To Review Questionable Rejections
                 </a>
             </div>
         <?php endif;?>
             
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-
+            
             <div class="row">
                 <div class="col-lg-9">
                     <?php $form = ActiveForm::begin(
                         [
-                            'action' => Url::to(['offer/update-view', 'offertype' => $offertype]),
+                            'action' => Url::to(['rejection/update-view', 'rejectiontype' => $rejectiontype]),
                         ]
                         ); ?>
 
                         <div style="margin-left:0.5%">
                             <p class="general_text">
                                 Please select a filtering criteria.
-                                <?= Html::radioList('offer_filter', null, $filter_criteria, ['class'=> 'form_field', 'onclick'=> 'filterOffer();']);?>
+                                <?= Html::radioList('rejection_filter', null, $filter_criteria, ['class'=> 'form_field', 'onclick'=> 'filterRejection();']);?>
                              </p>
 
-                            <div id="offer-home" style="display:none">
-                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => $offertype]);?> role="button">  Remove Filter</a>
+                            <div id="rejection-home" style="display:none">
+                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => $rejectiontype]);?> role="button">  Remove Filter</a>
                             </div>
 
-                            <div id="offer-division" style="display:none">
+                            <div id="rejection-division" style="display:none">
                                 <?= Html::label( 'Divisions',  'programme'); ?>
-                                <?= Html::dropDownList('offer-division-field', null, $divisions, ['id' => 'offer-division-field', 'onchange' => 'showFilterButton1();']) ; ?>
+                                <?= Html::dropDownList('rejection-division-field', null, $divisions, ['id' => 'rejection-division-field', 'onchange' => 'showRejectionFilterButton1();']) ; ?>
                                 <span id="divisional-filter-button" style="display:none;">
                                     <?= Html::submitButton('Filter', ['class' => 'btn btn-success', 'style' => 'margin-left:60%;']) ?>
                                 </span>
                             </div>
 
-                            <div id="offer-programme" style="display:none">
+                            <div id="rejection-programme" style="display:none">
                                 <?= Html::label( 'Programmes',  'programme'); ?>
-                                <?= Html::dropDownList('offer-programme-field', null, $programmes, ['id' => 'offer-programme-field', 'onchange' => 'showFilterButton2();']) ; ?>
+                                <?= Html::dropDownList('rejection-programme-field', null, $programmes, ['id' => 'rejection-programme-field', 'onchange' => 'showRejectionFilterButton2();']) ; ?>
                                 <span id="programme-filter-button" style="display:none;">
                                     <?= Html::submitButton('Filter', ['class' => 'btn btn-success', 'style' => 'margin-left:75%;']) ?>
                                 </span>
                             </div>
-
-                            <div id="offer-cape" style="display:none">
+                            
+                           
+                            <div id="rejection-cape" style="display:none">
                                 <?= Html::label( 'CAPE Subjects',  'cape'); ?>
-                                <?= Html::dropDownList('offer-cape-field', null, $cape_subjects, ['id' => 'offer-cape-field', 'onchange' => 'showFilterButton3();']) ; ?>
+                                <?= Html::dropDownList('rejection-cape-field', null, $cape_subjects, ['id' => 'rejection-cape-field', 'onchange' => 'showRejectionFilterButton3();']) ; ?>
                                 <span id="cape-filter-button" style="display:none;">
                                     <?= Html::submitButton('Filter', ['class' => 'btn btn-success', 'style' => 'margin-left:50%;']) ?>
                                 </span>
                             </div>
 
-                            <div id="offer-awaiting-publish" style="display:none">
-                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => $offertype, 'criteria' => 'awaiting-publish']);?> role="button">  View Pending Offers</a>
+                            <div id="rejection-awaiting-publish" style="display:none">
+                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => $rejectiontype , 'criteria' => 'awaiting-publish']);?> role="button">  View Pending Rejections</a>
                             </div> 
 
-                            <div id="offer-published" style="display:none">
-                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => $offertype, 'criteria' => 'ispublished']);?> role="button">  View Published Offers</a>
+                            <div id="rejection-published" style="display:none">
+                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => $rejectiontype, 'criteria' => 'ispublished']);?> role="button">  View Published Rejections</a>
                             </div>
 
-                            <div id="offer-revoked" style="display:none">
-                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => $offertype, 'criteria' => 'revoked']);?> role="button">  View Revoked Offers</a>
+                            <div id="rejection-revoked" style="display:none">
+                                <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => $rejectiontype, 'criteria' => 'revoked']);?> role="button">  View Revoked Rejections</a>
                             </div>
                         </div>
                     <?php ActiveForm::end(); ?>
-
+                        
                     <?php if($dataProvider->getTotalCount() > 0):?>
                         <br/><div style="margin-left:0.5%">
                             <p class="general_text">
-                                Would you like to export the Offers listing?
+                                Would you like to export the Rejections listing?
                                 <?= Html::radioList('export_options', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleExport();']);?>
                             </p>
 
                             <div id="export-buttons" style="display:none">
-                                <?= Html::a('Export All Offers', ['export-all-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Pending Offers', ['export-unpublished-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Published Offers', ['export-published-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Revoked Offers', ['export-revoked-offers', 'offertype' => $offertype], ['class' => 'btn btn-warning']) ?>
+                                <?= Html::a('Export All Rejections', ['export-all-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Export Pending Rejections', ['export-unpublished-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Export Published Rejections', ['export-published-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Export Revoked Rejections', ['export-revoked-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-warning']) ?>
 
                             </div>
 
-                            <?php if (Yii::$app->user->can('publishOffer')): ?>
+                            <?php if (Yii::$app->user->can('publishRejection')): ?>
                                 <br/>
                                 <p class="general_text">
-                                    Would you like to publish outstanding offers?
+                                    Would you like to publish outstanding rejections?
                                     <?= Html::radioList('publish_options', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'togglePublish();']);?>
                                 </p>
 
                                 <div id="publish-button" style="display:none">
-                                    <?= Html::a('Bulk Publish', ['bulk-publish', 'offertype' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) ?>
+                                    <?= Html::a('Bulk Publish', ['bulk-publish', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) ?>
 
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
@@ -159,10 +160,9 @@
                                 </div>
                             <?php endif; ?>
                         </div>
-                    <?php endif; ?>
+                    <?php endif;?>
                 </div>
             </div>
-            
 
             <br/>
             <?= GridView::widget([
@@ -173,14 +173,14 @@
                         'attribute' => 'username',
                         'format' => 'html',
                         'value' => function($row)
-                        {
+                         {
                             return Html::a($row['username'], 
                                            Url::to(['process-applications/view-applicant-certificates',
                                                     'personid' => $row['personid'],
                                                     'programme' => $row['prog'], 
                                                     'application_status' => $row['status'],
                                                    ]));  
-                        }
+                          }
                     ],
                     'firstname',
                     'lastname',
@@ -195,31 +195,26 @@
                         'label' => 'Published'
                     ],
                     [
-                        'attribute' => 'offerid',
-                        'label' => 'Revoke',
+                        'attribute' => 'rejectionid',
+                        'label' => 'Rescind',
                         'format' => 'html',
                         'value' => function($row)
                          {
-                            if (Yii::$app->user->can('deleteOffer'))
+                            if (Yii::$app->user->can('deleteRejection'))
                             {
-                                if($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)
-                                    return "N/A";
-                                else
+                                if($row['revokedby'] == "N/A")
                                 {
-                                    if($row['revokedby'] == "N/A")
-                                    {
-                                        return Html::a(' ', 
-                                                ['revoke', 'id' => $row['offerid'], 'offertype' => $row['offertype']], 
-                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove',
-                                                    'data' => [
-                                                        'confirm' => 'Are you sure you want to revoke this offer?',
-                                                        'method' => 'post',
-                                                    ],
-                                                ]);
-                                    }
-                                    else
-                                        return "N/A";
+                                    return Html::a(' ', 
+                                            ['rejection/rescind', 'id' => $row['rejectionid'], 'rejectiontype' => $row['rejectiontype']], 
+                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                'data' => [
+                                                    'confirm' => 'Are you sure you want to revoke this rejection?',
+                                                    'method' => 'post',
+                                                ],
+                                            ]);
                                 }
+                                else
+                                    return "N/A";
                             }
                             else
                             {

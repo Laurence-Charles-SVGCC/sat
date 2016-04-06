@@ -1,17 +1,18 @@
 <?php
 
-use yii\helpers\Html;
-//use yii\grid\GridView;
-use yii\helpers\Url;
-use kartik\grid\GridView;
-use kartik\export\ExportMenu;
+    use yii\helpers\Html;
+    //use yii\grid\GridView;
+    use yii\helpers\Url;
+    use kartik\grid\GridView;
+    use kartik\export\ExportMenu;
 
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+    /* @var $this yii\web\View */
+    /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Questionable Offers Dashboard';
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Questionable Rejection Dashboard';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="body-content">
     <div class = "custom_wrapper">
         <div class="custom_header">
@@ -25,21 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <div style="margin-left:2.5%">
-                <h2 class="custom_h2">Categories of Questionable Offers:</h2>
+                <h2 class="custom_h2">Categories of Questionable Rejections:</h2>
                 <ul>
-                    <?php if($multiple_offers):?>
-                        <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'mult']);?>" 
-                                title="Multiple offers"
-                                style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view successful applicants with multiple offers
-                            </a>
-                        </li><br/>
-                    <?php endif;?>
-                        
                     <?php if($math_req):?>
                         <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'maths']);?>" 
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'maths']);?>" 
                                 title="Lack CSEC Mathematics Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view successful applicant lacking CSEC Mathematics
@@ -49,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     <?php if($english_req):?>
                         <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'english']);?>" 
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'english']);?>" 
                                 title="Lack CSEC English Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view successful applicant lacking CSEC English Language
@@ -59,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         
                     <?php if($subjects_req):?>
                         <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'five_passes']);?>" 
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'five_passes']);?>" 
                                 title="Lack 5 CSEC Passes"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view successful applicants lacking five(5) CSEC passes
@@ -69,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     <?php if($dte_science_req):?>
                         <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'dte']);?>" 
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'dte']);?>" 
                                 title="Lack DTE Required Reelvant Science"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view successful applicants lacking DTE's the required relevant science
@@ -79,18 +70,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         
                     <?php if($dne_science_req):?>
                         <li>
-                            <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'dne']);?>" 
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home',  'rejectiontype' => $rejectiontype, 'criteria' => 'dne']);?>" 
                                 title="Lack DNE Required Relvant Science"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view successful applicants lacking DNE's required relevant science
                              </a>
                         </li>
                     <?php endif;?>
-                </oul>
+                </ul>
             </div>
             
             <?php if($dataProvider):?>
-                <h3 style="margin-left:2.5%"><?=$offer_type?></h3>
+                <h3 style="margin-left:2.5%"><?=$rejection_type?></h3>
                 
                 <div style = 'margin-left: 2.5%;'>
                     <?= ExportMenu::widget([
@@ -102,7 +93,11 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                        'value' => function($row)
 //                                         {
 //                                            return Html::a($row['username'], 
-//                                                       Url::to(['offer/view', 'id' => $row['offerid']]));
+//                                                            Url::to(['process-applications/view-applicant-certificates',
+//                                                                     'personid' => $row['personid'],
+//                                                                     'programme' => $row['prog'], 
+//                                                                     'application_status' => $row['status'],
+//                                                                    ]));  
 //                                          }
 //                                    ],
                                     'username',
@@ -140,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 
                 <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'options' => ['style' => 'width: 95%; margin: 0 auto;'],
+                        'options' => ['style' => 'width: 98%; margin: 0 auto;'],
                         'columns' => [
                             [
                                 'attribute' => 'username',
@@ -168,20 +163,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => 'Published'
                             ],
                             [
-                                'attribute' => 'offerid',
-                                'label' => 'Revoke',
+                                'attribute' => 'rejectionid',
+                                'label' => 'Rescind',
                                 'format' => 'html',
                                 'value' => function($row)
                                  {
-                                    if (Yii::$app->user->can('deleteOffer'))
+
+                                    if (Yii::$app->user->can('deleteRejection'))
                                     {
                                         if($row['revokedby'] == "N/A")
                                         {
                                             return Html::a(' ', 
-                                                    ['offer/revoke', 'id' => $row['offerid'], 'offertype' => $offertype], 
+                                                    ['rejection/rescind', 'id' => $row['rejectionid'], 'rejectiontype' => $row['rejectiontype']], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                         'data' => [
-                                                            'confirm' => 'Are you sure you want to revoke this offer?',
+                                                            'confirm' => 'Are you sure you want to revoke this rejection?',
                                                             'method' => 'post',
                                                         ],
                                                     ]);

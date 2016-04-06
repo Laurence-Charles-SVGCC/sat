@@ -69,6 +69,8 @@
     use frontend\models\NursingAdditionalInfo;
     use frontend\models\TeachingAdditionalInfo;
     use frontend\models\CriminalRecord;
+    use frontend\models\PostSecondaryQualification;
+    use frontend\models\ExternalQualification;
 
     class ProfileController extends Controller
     {
@@ -242,6 +244,9 @@
                     $combined = NULL;
                 }
             }
+            
+            $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($personid);
+            $external_qualification = ExternalQualification::getExternalQualifications($personid);
             
             /****************************** Applications ***************************/
             $applications = Application::getApplications($personid);
@@ -523,6 +528,8 @@
                 //models for qualifications tab
                 'qualifications' => $qualifications,
                 'qualificationDetails' => $qualificationDetails,
+                'post_qualification' => $post_qualification,
+                'external_qualification' => $external_qualification,
                 
                 //models for appplications and offers tab
                 'first' => $first,
@@ -661,6 +668,61 @@
             
             return $this->render('edit_general', [
                         'general' => $student_profile
+            ]);
+        }
+        
+        
+        /**
+        * Updates 'Extraccurricular Activities' section of Applicant Profile
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 03/04/2016
+        * Date Last Modified: 03/04/2016
+        */
+        public function actionEditExtracurricular($personid, $studentregistrationid)
+        {
+            $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+
+            $studentregistration = StudentRegistration::find()
+                     ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
+                     ->one();
+
+            $user = User::find()
+                    ->where(['personid' => $personid])
+                    ->one();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $applicant_load_flag = false;
+                $applicant_save_flag = false;
+
+                $applicant_load_flag = $applicant->load($post_data); 
+                if ($applicant_load_flag == true)
+                {
+                    $applicant_save_flag = $applicant->save();
+                    if ($applicant_save_flag == true)
+                    {
+                        return $this->redirect(['student-profile',
+                                     'personid' => $personid, 
+                                     'studentregistrationid' => $studentregistrationid,                     
+                                 ]);
+                    }
+                    else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
+                }
+                else
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load applicant model. Please try again.');    
+            }
+
+
+            return $this->render('edit_extracurricular', [
+                'studentregistration' => $studentregistration,
+                'applicant' => $applicant
             ]);
         }
         
@@ -1534,6 +1596,242 @@
                         'qualification' => $qualification,
             ]); 
         }
+        
+        
+        
+        /**
+        * Updates 'Technical Qualifications' section of Applicant Profile
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 03/04/2016
+        * Date Last Modified: 03/04/2016
+        */
+        public function actionEditTechnicalQualifications($personid, $studentregistrationid)
+        {
+            $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+
+            $user = User::find()
+                    ->where(['personid' => $personid])
+                    ->one();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $applicant_load_flag = false;
+                $applicant_save_flag = false;
+
+                $applicant_load_flag = $applicant->load($post_data); 
+                if ($applicant_load_flag == true)
+                {
+                    $applicant_save_flag = $applicant->save();
+                    if ($applicant_save_flag == true)
+                    {
+                        return $this->redirect(['student-profile',
+                                     'personid' => $personid, 
+                                     'studentregistrationid' => $studentregistrationid,                     
+                                 ]);
+                    }
+                    else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
+                }
+                else
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load applicant model. Please try again.');    
+            }
+
+
+            return $this->render('edit_technical_qualifications', [
+                'studentregistrationid' => $studentregistrationid,
+                'applicant' => $applicant
+            ]);
+        }
+        
+        
+        /**
+        * Adds/Edits/Deletes "PostSecondaryQualification' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 03/04/2016
+        * Date Last Modified: 03/04/2016
+        */
+        public function actionPostSecondaryQualification($personid, $studentregistrationid, $action)
+        {
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+
+            if ($action == "delete")
+            {
+                $qualification = PostSecondaryQualification::getPostSecondaryQualifications($personid);
+                if ($qualification == true)
+                {
+                    $save_flag = false;
+                    $qualification->isdeleted = 1;
+                    $qualification->isactive = 0;
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        return $this->redirect(['student-profile',
+                                    'personid' => $personid, 
+                                    'studentregistrationid' => $studentregistrationid,                     
+                                ]);
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when deleting Post Secondarty Degree. Please try again.');
+                    return $this->redirect(['student-profile',
+                                    'personid' => $personid, 
+                                    'studentregistrationid' => $studentregistrationid,                     
+                                ]);
+                }
+            }
+
+            elseif ($action == "add")
+                $qualification = new PostSecondaryQualification();
+            elseif ($action == "edit")
+                $qualification = PostSecondaryQualification::getPostSecondaryQualifications($personid);
+
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $validation_flag = false;
+                $save_flag = false;
+
+                $load_flag = $qualification->load($post_data);
+                if($load_flag == true)
+                {
+                    $qualification->personid = $user->personid;
+                    $validation_flag = $qualification->validate();
+
+                    if($validation_flag == true)
+                    {
+                        $save_flag = $qualification->save();
+                        if($save_flag == true)
+                        {
+                            return $this->redirect(['student-profile',
+                                    'personid' => $personid, 
+                                    'studentregistrationid' => $studentregistrationid,                     
+                                ]);
+                        }
+                        else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+                }
+                else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+            }
+
+            return $this->render('post_secondary_qualificiation', [
+                'user' => $user,
+                'qualification' => $qualification,
+                'studentregistrationid' => $studentregistrationid,
+            ]); 
+        }
+
+
+       /**
+        * Adds/Edits/Deletes "ExternalQualification' record
+        * 
+        * @param type $personid
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 03/04/2016
+        * Date Last Modified: 03/04/2016
+        */
+        public function actionExternalQualification($personid, $studentregistrationid, $action)
+        {
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+
+            if ($action == "delete")
+            {
+                $qualification = ExternalQualification::getExternalQualifications($personid);
+                if ($qualification == true)
+                {
+                    $save_flag = false;
+                    $qualification->isdeleted = 1;
+                    $qualification->isactive = 0;
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionApplicantProfile($user->username);
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when deleting External Qualification. Please try again.');
+                    return self::actionApplicantProfile($user->username);
+                }
+            }
+
+            elseif ($action == "add")
+                $qualification = new ExternalQualification();
+            elseif ($action == "edit")
+                $qualification = ExternalQualification::getExternalQualifications($personid);
+
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $validation_flag = false;
+                $save_flag = false;
+
+                $load_flag = $qualification->load($post_data);
+                if($load_flag == true)
+                {
+                    $qualification->personid = $user->personid;
+                    $validation_flag = $qualification->validate();
+
+                    if($validation_flag == true)
+                    {
+                        $save_flag = $qualification->save();
+                        if($save_flag == true)
+                        {
+                            return $this->redirect(['student-profile',
+                                    'personid' => $personid, 
+                                    'studentregistrationid' => $studentregistrationid,                     
+                                ]);
+                        }
+                        else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+                }
+                else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+            }
+
+            return $this->render('external_qualification', [
+                'user' => $user,
+                'qualification' => $qualification,
+                'studentregistrationid' => $studentregistrationid,  
+            ]); 
+       }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         /**

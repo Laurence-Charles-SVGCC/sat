@@ -1216,6 +1216,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getMultipleOffers($offers, $details = False)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         $personids = array();
         $offenderids = array();
@@ -1298,6 +1301,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getAcceptedWithoutEnglish($offers, $details = false)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         foreach($offers as $offer)
         {
@@ -1320,6 +1326,45 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
+     * Returns an array of all applicants that were given rejections but have 
+     * CSEC English Language pass
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithEnglish($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                    ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                    ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                    ->one();
+            $has_english = CsecQualification::hasCsecEnglish($applicant->personid);
+            if ($has_english)
+            {
+                if ($details)
+                    $rejectionids[] = $rejection;
+                else
+                    return true;
+            }
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
+    }
+    
+    
+    /**
      * Returns an array of all applicants that were given offers but don't have 
      * CSEC Mathematics pass
      * 
@@ -1333,6 +1378,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getAcceptedWithoutMath($offers, $details = false)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         foreach($offers as $offer)
         {
@@ -1355,6 +1403,45 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
+     * Returns an array of all applicants that were given rejections but have 
+     * CSEC Mathematics pass
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithMath($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                    ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                    ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                    ->one();
+            $has_math = CsecQualification::hasCsecMathematics($applicant->personid);
+            if ($has_math)
+            {
+                if ($details)
+                    $rejectionids[] = $rejection;
+                else
+                    return true;
+            }
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
+    }
+    
+    
+    /**
      * Returns an array of all applicants that were given offers but don't have 
      * the required DTE Relevant science
      * 
@@ -1368,6 +1455,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getAcceptedWithoutDteScienceCriteria($offers, $details = false)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         foreach($offers as $offer)
         {
@@ -1401,6 +1491,63 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
+     * Returns an array of all applicants that were given rejections but have 
+     * the required DTE Relevant science
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithDteScienceCriteria($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applications = Application::find()
+                        ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                        ->where(['rejection_applications.rejectionid' => $rejection->rejectionid])
+                        ->all();
+            if ($applications == false)
+                continue;
+            else
+            {
+                foreach ($applications as $application)
+                {
+                    if($application->divisionid == 6)
+                    {
+                        $applicant = Applicant::find()
+                                ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                                ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                                ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                                ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                                ->one();
+                        $has_relevant_science = CsecQualification::hasDteRelevantSciences($applicant->personid);
+                        if ($has_relevant_science)
+                        {
+                            if ($details)
+                            {
+                                $rejectionids[] = $rejection;
+                                break;
+                            }
+                            else
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
+    }
+    
+    
+    /**
      * Returns an array of all applicants that were given offers but don't have 
      * the required DNE Relevant science
      * 
@@ -1414,6 +1561,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getAcceptedWithoutDneScienceCriteria($offers, $details = false)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         foreach($offers as $offer)
         {
@@ -1447,6 +1597,63 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
+     * Returns an array of all applicants that were given rejections but have 
+     * the required DNE Relevant science
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithDneScienceCriteria($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applications = Application::find()
+                        ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                        ->where(['rejection_applications.rejectionid' => $rejection->rejectionid])
+                        ->all();
+            if ($applications == false)
+                continue;
+            else
+            {
+                foreach ($applications as $application)
+                {
+                    if($application->divisionid == 7)
+                    {
+                        $applicant = Applicant::find()
+                                ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                                ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                                ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                                ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                                ->one();
+                        $has_relevant_science = CsecQualification::hasDneRelevantSciences($applicant->personid);
+                        if ($has_relevant_science)
+                        {
+                            if ($details)
+                            {
+                                $rejectionids[] = $rejection;
+                                break;
+                            }
+                            else
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
+    }
+    
+    
+    /**
      * Returns an array of all applicants that were given offers but don't have 
      * 5 CSEC Passes
      * 
@@ -1460,6 +1667,9 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getAcceptedWithoutFivePasses($offers, $details = False)
     {
+        if (empty($offers))
+            return false;
+        
         $offerids = array();
         foreach($offers as $offer)
         {
@@ -1478,6 +1688,45 @@ class Applicant extends \yii\db\ActiveRecord
             }        
         }
         return count($offerids) > 0 ? $offerids : false;
+    }
+    
+    
+    /**
+     * Returns an array of all applicants that were given rejections but have 
+     * 5 CSEC Passes
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithFivePasses($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                    ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                    ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                    ->one();
+            $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
+            if ($minimum_subjects_passed)
+            {
+                if ($details)
+                    $rejectionids[] = $rejection;
+                else
+                    return true;
+            }        
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
     }
   
     

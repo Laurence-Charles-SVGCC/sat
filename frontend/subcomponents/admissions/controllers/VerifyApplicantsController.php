@@ -21,6 +21,7 @@ use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationGrade;
 use frontend\models\ExaminationBody;
 use frontend\models\Division;
+use frontend\models\ExternalQualification;
 
 
 
@@ -58,13 +59,17 @@ class VerifyApplicantsController extends \yii\web\Controller
 
             //For external applicants
             $amt_received = count(Application::getExternal());
+            $external_amt_verified = Application::centreApplicantsVerifiedCount($centre->cseccentreid, true);
             $centre_row = array();
             $centre_row['centre_name'] = "External";
             $centre_row['centre_id'] = '00000';
-            $centre_row['status'] = "N/A";
-            $centre_row['applicants_verified'] = "N/A";
+//            $centre_row['status'] = "N/A";
+            $centre_row['status'] = ($amt_received - $external_amt_verified) <= 0 ? "Complete" : "Incomplete";
+//            $centre_row['applicants_verified'] = "N/A";
+            $centre_row['applicants_verified'] = $external_amt_verified;
             $centre_row['total_received'] = $amt_received;
-            $centre_row['percentage_completed'] = 0;
+//            $centre_row['percentage_completed'] = 0;
+            $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($external_amt_verified/$amt_received) * 100, 2);
             array_push($data, $centre_row);
 
             $dataProvider = new ArrayDataProvider([
@@ -97,9 +102,12 @@ class VerifyApplicantsController extends \yii\web\Controller
         if (strcasecmp($centre_name, "external") == 0)
         {
             $amt_received = count(Application::getExternal());
-            $amt_verified = "N/A";
-            $amt_queried = "N/A";
-            $amt_pending = 0;
+//            $amt_verified = "N/A";
+//            $amt_queried = "N/A";
+//            $amt_pending = 0;
+            $amt_verified = Application::centreApplicantsVerifiedCount($centre_id, true);
+            $amt_queried = Application::centreApplicantsQueriedCount($centre_id, true);
+            $amt_pending = count(Application::centreApplicantsPending($centre_id, true));
         }
         else
         {
@@ -208,39 +216,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container = array();
 
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-
-                $container["personid"] = $applicant->personid;
-                $container["firstname"] = $applicant->firstname;
-                $container["middlename"] = $applicant->middlename;
-                $container["lastname"] = $applicant->lastname;
-                $container["gender"] = $applicant->gender;
-
-                $applications = Application::getApplications($applicant->personid);
-                $divisionid = $applications[0]->divisionid;
-                $division = Division::getDivisionAbbreviation($divisionid);
-
-                /*
-                 * If division is DTE or DNE then all applications refer to one division
-                 */
-                if ($divisionid == 6  || $divisionid == 7)
+                
+                if($applicant->isexternal == 0)
                 {
-                    $container["division"] = $division;
-                }
+                    $container["personid"] = $applicant->personid;
+                    $container["firstname"] = $applicant->firstname;
+                    $container["middlename"] = $applicant->middlename;
+                    $container["lastname"] = $applicant->lastname;
+                    $container["gender"] = $applicant->gender;
 
-                /*
-                 * If division is DASGS or DTVE then applications may refer to multiple divisions
-                 */
-                if ($divisionid == 4  || $divisionid == 5)
-                {
-                    foreach($applications as $application)
+                    $applications = Application::getApplications($applicant->personid);
+                    $divisionid = $applications[0]->divisionid;
+                    $division = Division::getDivisionAbbreviation($divisionid);
+
+                    /*
+                     * If division is DTE or DNE then all applications refer to one division
+                     */
+                    if ($divisionid == 6  || $divisionid == 7)
                     {
-                        $divID = $application->divisionid;
-                        $div = Division::getDivisionAbbreviation($divID);
-                        $divisions = " " . $div . " ";
+                        $container["division"] = $division;
                     }
-                    $container["division"] = $divisions;
+
+                    /*
+                     * If division is DASGS or DTVE then applications may refer to multiple divisions
+                     */
+                    if ($divisionid == 4  || $divisionid == 5)
+                    {
+                        foreach($applications as $application)
+                        {
+                            $divID = $application->divisionid;
+                            $div = Division::getDivisionAbbreviation($divID);
+                            $divisions = " " . $div . " ";
+                        }
+                        $container["division"] = $divisions;
+                    }
+                    $data[] = $container;
                 }
-                $data[] = $container;
             }
         }
         
@@ -288,46 +299,96 @@ class VerifyApplicantsController extends \yii\web\Controller
 //            ],
 //        ]);
         
-        $data = array();
-        
-        foreach(Application::centreApplicantsPending($cseccentreid) as $application)
+        if (strcasecmp($centrename, "external") == 0)
         {
-            $container = array();
+            $data = array();
             
-            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-            
-            $container["personid"] = $applicant->personid;
-            $container["firstname"] = $applicant->firstname;
-            $container["middlename"] = $applicant->middlename;
-            $container["lastname"] = $applicant->lastname;
-            $container["gender"] = $applicant->gender;
-            
-            $applications = Application::getApplications($applicant->personid);
-            $divisionid = $applications[0]->divisionid;
-            $division = Division::getDivisionAbbreviation($divisionid);
-            
-            /*
-             * If division is DTE or DNE then all applications refer to one division
-             */
-            if ($divisionid == 6  || $divisionid == 7)
+            foreach(Application::centreApplicantsPending($cseccentreid, true) as $application)
             {
-                $container["division"] = $division;
-            }
-            
-            /*
-             * If division is DASGS or DTVE then applications may refer to multiple divisions
-             */
-            if ($divisionid == 4  || $divisionid == 5)
-            {
-                foreach($applications as $application)
+                $container = array();
+                
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
                 {
-                    $divID = $application->divisionid;
-                    $div = Division::getDivisionAbbreviation($divID);
-                    $divisions = " " . $div . " ";
+                    $container["division"] = $division;
                 }
-                $container["division"] = $divisions;
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
             }
-            $data[] = $container;
+        }
+        else
+        {
+            $data = array();
+
+            foreach(Application::centreApplicantsPending($cseccentreid) as $application)
+            {
+                $container = array();
+
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                if($applicant->isexternal == 0)
+                {
+                    $container["personid"] = $applicant->personid;
+                    $container["firstname"] = $applicant->firstname;
+                    $container["middlename"] = $applicant->middlename;
+                    $container["lastname"] = $applicant->lastname;
+                    $container["gender"] = $applicant->gender;
+
+                    $applications = Application::getApplications($applicant->personid);
+                    $divisionid = $applications[0]->divisionid;
+                    $division = Division::getDivisionAbbreviation($divisionid);
+
+                    /*
+                     * If division is DTE or DNE then all applications refer to one division
+                     */
+                    if ($divisionid == 6  || $divisionid == 7)
+                    {
+                        $container["division"] = $division;
+                    }
+
+                    /*
+                     * If division is DASGS or DTVE then applications may refer to multiple divisions
+                     */
+                    if ($divisionid == 4  || $divisionid == 5)
+                    {
+                        foreach($applications as $application)
+                        {
+                            $divID = $application->divisionid;
+                            $div = Division::getDivisionAbbreviation($divID);
+                            $divisions = " " . $div . " ";
+                        }
+                        $container["division"] = $divisions;
+                    }
+                    $data[] = $container;
+                }
+            }
         }
         
         $dataProvider = new ArrayDataProvider([
@@ -374,46 +435,97 @@ class VerifyApplicantsController extends \yii\web\Controller
 //            ],
 //        ]);
         
-        $data = array();
+       
         
-        foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
+        if (strcasecmp($centrename, "external") == 0)
         {
-            $container = array();
+            $data = array();
             
-            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-            
-            $container["personid"] = $applicant->personid;
-            $container["firstname"] = $applicant->firstname;
-            $container["middlename"] = $applicant->middlename;
-            $container["lastname"] = $applicant->lastname;
-            $container["gender"] = $applicant->gender;
-            
-            $applications = Application::getApplications($applicant->personid);
-            $divisionid = $applications[0]->divisionid;
-            $division = Division::getDivisionAbbreviation($divisionid);
-            
-            /*
-             * If division is DTE or DNE then all applications refer to one division
-             */
-            if ($divisionid == 6  || $divisionid == 7)
+            foreach(Application::centreApplicantsVerified($cseccentreid, true) as $application)
             {
-                $container["division"] = $division;
-            }
-            
-            /*
-             * If division is DASGS or DTVE then applications may refer to multiple divisions
-             */
-            if ($divisionid == 4  || $divisionid == 5)
-            {
-                foreach($applications as $application)
+                $container = array();
+                
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
                 {
-                    $divID = $application->divisionid;
-                    $div = Division::getDivisionAbbreviation($divID);
-                    $divisions = " " . $div . " ";
+                    $container["division"] = $division;
                 }
-                $container["division"] = $divisions;
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
             }
-            $data[] = $container;
+        }
+        else
+        {
+             $data = array();
+            foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
+            {
+                $container = array();
+
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+                
+                if($applicant->isexternal == 0)
+                {
+                    $container["personid"] = $applicant->personid;
+                    $container["firstname"] = $applicant->firstname;
+                    $container["middlename"] = $applicant->middlename;
+                    $container["lastname"] = $applicant->lastname;
+                    $container["gender"] = $applicant->gender;
+
+                    $applications = Application::getApplications($applicant->personid);
+                    $divisionid = $applications[0]->divisionid;
+                    $division = Division::getDivisionAbbreviation($divisionid);
+
+                    /*
+                     * If division is DTE or DNE then all applications refer to one division
+                     */
+                    if ($divisionid == 6  || $divisionid == 7)
+                    {
+                        $container["division"] = $division;
+                    }
+
+                    /*
+                     * If division is DASGS or DTVE then applications may refer to multiple divisions
+                     */
+                    if ($divisionid == 4  || $divisionid == 5)
+                    {
+                        foreach($applications as $application)
+                        {
+                            $divID = $application->divisionid;
+                            $div = Division::getDivisionAbbreviation($divID);
+                            $divisions = " " . $div . " ";
+                        }
+                        $container["division"] = $divisions;
+                    }
+                    $data[] = $container;
+                }
+            }
         }
         
         $dataProvider = new ArrayDataProvider([
@@ -459,47 +571,96 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
 //            ],
 //        ]);
-        
-        $data = array();
-        
-        foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
+        if (strcasecmp($centrename, "external") == 0)
         {
-            $container = array();
+            $data = array();
             
-            $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-            
-            $container["personid"] = $applicant->personid;
-            $container["firstname"] = $applicant->firstname;
-            $container["middlename"] = $applicant->middlename;
-            $container["lastname"] = $applicant->lastname;
-            $container["gender"] = $applicant->gender;
-            
-            $applications = Application::getApplications($applicant->personid);
-            $divisionid = $applications[0]->divisionid;
-            $division = Division::getDivisionAbbreviation($divisionid);
-            
-            /*
-             * If division is DTE or DNE then all applications refer to one division
-             */
-            if ($divisionid == 6  || $divisionid == 7)
+            foreach(Application::centreApplicantsQueried($cseccentreid, true) as $application)
             {
-                $container["division"] = $division;
-            }
-            
-            /*
-             * If division is DASGS or DTVE then applications may refer to multiple divisions
-             */
-            if ($divisionid == 4  || $divisionid == 5)
-            {
-                foreach($applications as $application)
+                $container = array();
+                
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
                 {
-                    $divID = $application->divisionid;
-                    $div = Division::getDivisionAbbreviation($divID);
-                    $divisions = " " . $div . " ";
+                    $container["division"] = $division;
                 }
-                $container["division"] = $divisions;
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
             }
-            $data[] = $container;
+        }
+        else
+        {
+            $data = array();
+
+            foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
+            {
+                $container = array();
+
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+
+                if($applicant->isexternal == 0)
+                {
+                    $container["personid"] = $applicant->personid;
+                    $container["firstname"] = $applicant->firstname;
+                    $container["middlename"] = $applicant->middlename;
+                    $container["lastname"] = $applicant->lastname;
+                    $container["gender"] = $applicant->gender;
+
+                    $applications = Application::getApplications($applicant->personid);
+                    $divisionid = $applications[0]->divisionid;
+                    $division = Division::getDivisionAbbreviation($divisionid);
+
+                    /*
+                     * If division is DTE or DNE then all applications refer to one division
+                     */
+                    if ($divisionid == 6  || $divisionid == 7)
+                    {
+                        $container["division"] = $division;
+                    }
+
+                    /*
+                     * If division is DASGS or DTVE then applications may refer to multiple divisions
+                     */
+                    if ($divisionid == 4  || $divisionid == 5)
+                    {
+                        foreach($applications as $application)
+                        {
+                            $divID = $application->divisionid;
+                            $div = Division::getDivisionAbbreviation($divID);
+                            $divisions = " " . $div . " ";
+                        }
+                        $container["division"] = $divisions;
+                    }
+                    $data[] = $container;
+                }
+            }
         }
         
         $dataProvider = new ArrayDataProvider([
@@ -532,6 +693,8 @@ class VerifyApplicantsController extends \yii\web\Controller
     */
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
+        $request = Yii::$app->request;
+        
         if ($post_data = Yii::$app->request->post())
         {
             $post_qualification = PostSecondaryQualification::find()
@@ -563,15 +726,83 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
             
-           
-            $request = Yii::$app->request;
-            if ($request->post('CsecQualification'))
+            $external_qualification = ExternalQualification::find()
+                ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+            
+            /*
+             * Updates ExternalQualification Record if it exists
+             */
+            if ($external_qualification == true)        //if external qualification record exists
+            {
+                $external_save_flag = false;
+                $external_load_flag = false;
+
+                $external_load_flag = $external_qualification->load($post_data);
+                if ($external_load_flag == true)
+                {
+                    $external_save_flag = $external_qualification->save();
+                    if ($external_save_flag == false)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error updating external qualification record.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error loading external qualification recrord.');
+                    return $this->redirect(\Yii::$app->request->getReferrer());
+                }
+            }
+            
+            $qualifications = CsecQualification::find()
+                            ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->all();
+            
+            
+            /*
+             * For applicants with external qualifications, their status is updated to pending
+             * i. if they only have external_qualifications and it is verified
+             * ii. if they have external_qualification + post_secondary both must be verified
+             * iii. if they have external_qualification + post_secondary + csecqualification all three must be verified
+             */
+            if ($external_qualification == false &&  $post_qualification == false  && $qualifications == false)
+            {
+                //do nothing
+            }
+            elseif ($external_qualification == true &&  $post_qualification == false  && $qualifications == false)
+            {
+                if($external_qualification->isverified == 1  && $external_qualification->isqueried == 0)
+                {
+                    $applications = Application::findAll(['personid' => $applicantid, 'isactive' =>1, 'isdeleted' => 0]);
+                    foreach($applications as $application)
+                    {
+                        $application->applicationstatusid = 3;
+                        $application->save();
+                    }
+                } 
+            }
+            elseif ($external_qualification == true &&  $post_qualification == true  && $qualifications == false)
+            {
+                if  ($external_qualification->isverified == 1  && $external_qualification->isqueried == 0
+                        && $post_qualification->isverified == 1  && $post_qualification->isqueried == 0)
+                    {
+                        $applications = Application::findAll(['personid' => $applicantid, 'isactive' =>1, 'isdeleted' => 0]);
+                        foreach($applications as $application)
+                        {
+                            $application->applicationstatusid = 3;
+                            $application->save();
+                        }
+                    }
+            }
+            
+            elseif ($request->post('CsecQualification'))
             {
                 $verify_all = $request->post('verified') === '' ? true : false;
 
-                $qualifications = CsecQualification::find()
-                            ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
-                            ->all();
+//                $qualifications = CsecQualification::find()
+//                            ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+//                            ->all();
                 $current_count = count($qualifications);
                 $loaded_count = count($request->post('CsecQualification'));
                 
@@ -609,6 +840,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                                     $post_qualification->isqueried = 0;
                                     $post_qualification->save();
                                 }
+                                if($external_qualification == true)
+                                {
+                                    $external_qualification->isverified = 1;
+                                    $external_qualification->isqueried = 0;
+                                    $external_qualification->save();
+                                }
                             }
                             
                             if (!$qual->save())
@@ -627,7 +864,17 @@ class VerifyApplicantsController extends \yii\web\Controller
                     if ($post_qualification)
                     {
                         $all_certs++;
-                        if ($post_qualification->isverified == 1)
+                        if ($post_qualification->isverified == 1  && $post_qualification->isqueried == 0)
+                            $verified_certs++;
+                    }
+                    
+                    /*
+                     * If post secondary qualification exists then both previous counts must take it into consideration
+                     */
+                    if ($external_qualification)
+                    {
+                        $all_certs++;
+                        if ($external_qualification->isverified == 1 && $external_qualification->isqueried == 0)
                             $verified_certs++;
                     }
 
@@ -716,6 +963,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                             ->one();
 
             $username = $applicant_model->getPerson()->one()->username;
+            
+            $external_qualification = ExternalQualification::getExternalQualifications($applicant_model->personid);
 
             return $this->render('view-applicant-qualifications',
                     [
@@ -728,6 +977,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         'isexternal' => $applicant_model->isexternal,
                         'post_qualification' => $post_qualification,
                         'record_count' => $record_count,
+                        'external_qualification' => $external_qualification,
                     ]);
         }
     }
@@ -974,6 +1224,98 @@ class VerifyApplicantsController extends \yii\web\Controller
             }
         }
         return $this->redirect(\Yii::$app->request->getReferrer());
+    }
+    
+    
+    /**
+     * Adds/Edits/Deletes "ExternalQualification' record
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/04/2016
+     * Date Last Modified: 03/04/2016
+     */
+    public function actionExternalQualifications($personid, $action, $cseccentreid, $centrename, $type)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        if ($action == "delete")
+        {
+            $qualification = ExternalQualification::getExternalQualifications($personid);
+            if ($qualification == true)
+            {
+                $save_flag = false;
+                $qualification->isdeleted = 1;
+                $qualification->isactive = 0;
+                $save_flag = $qualification->save();
+                if($save_flag == true)
+                {
+                    return $this->redirect(\Yii::$app->request->getReferrer());
+                }
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when deleting External Qualification. Please try again.');
+                return $this->redirect(\Yii::$app->request->getReferrer());
+            }
+        }
+        
+        elseif ($action == "add")
+            $qualification = new ExternalQualification();
+
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $validation_flag = false;
+            $save_flag = false;
+
+            $load_flag = $qualification->load($post_data);
+            if($load_flag == true)
+            {
+                $qualification->personid = $user->personid;
+                $validation_flag = $qualification->validate();
+
+                if($validation_flag == true)
+                {
+                    $save_flag = $qualification->save();
+                    if($save_flag == true)
+                    {
+                        //redirect
+                        if (strcasecmp($type, "pending")==0)
+                        {
+                            return self::actionViewPending($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "queried")==0)
+                        {
+                            return self::actionViewQueried($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "all")==0)
+                        {
+                            return self::actionViewAll($cseccentreid, $centrename);
+                        }
+                        elseif (strcasecmp($type, "verified")==0)
+                        {
+                            return self::actionViewVerified($cseccentreid, $centrename);
+                        }
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                }
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
+            }
+            else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+        }
+
+        return $this->render('external_qualification', [
+            'user' => $user,
+            'qualification' => $qualification,
+        ]); 
     }
     
     

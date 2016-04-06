@@ -266,6 +266,7 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "block";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     } 
@@ -279,6 +280,8 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
+        document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     } 
     else if (search_by[2].checked == true)           //if by programme
@@ -290,6 +293,7 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "block";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
@@ -302,6 +306,7 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "block";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
@@ -314,7 +319,8 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
-        document.getElementById("offer-published").style.display = "block";
+        document.getElementById("offer-awaiting-publish").style.display = "block";
+        document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
     else if (search_by[5].checked == true)           //if was published
@@ -326,6 +332,20 @@ function filterOffer()
         document.getElementById("offer-programme").style.display = "none";
         document.getElementById("offer-cape").style.display = "none";
         document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
+        document.getElementById("offer-published").style.display = "block";
+        document.getElementById("offer-revoked").style.display = "none";
+    }
+    else if (search_by[6].checked == true)           //if was published
+    {        
+        document.getElementById("offer-division-field").selectedIndex = 0;  
+        document.getElementById("offer-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("offer-division").style.display = "none";       
+        document.getElementById("offer-programme").style.display = "none";
+        document.getElementById("offer-cape").style.display = "none";
+        document.getElementById("offer-home").style.display = "none";
+        document.getElementById("offer-awaiting-publish").style.display = "none";
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "block";
     }
@@ -648,3 +668,182 @@ function togglePublish()
         document.getElementById("publish-button").style.display = "none";
 } 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Handles the rejection filteration mechanism.
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 31/03/2016
+ * Date Last Modified: 31/03/2016
+ */
+function filterRejection()
+{
+    var search_by = document.getElementsByName('rejection_filter');
+    if (search_by[0].checked == true)           //if no filter
+    {  
+        document.getElementById("rejection-division-field").selectedIndex = 0;
+        document.getElementById("rejection-programme-field").selectedIndex = 0;  
+        document.getElementById("rejection-cape-field").selectedIndex = 0;  
+        
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "block";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "none";
+    } 
+    
+    if (search_by[1].checked == true)           //if by division
+    {  
+        document.getElementById("rejection-programme-field").selectedIndex = 0;  
+        document.getElementById("rejection-cape-field").selectedIndex = 0;  
+        
+        document.getElementById("rejection-division").style.display = "block";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "none";
+    } 
+    else if (search_by[2].checked == true)           //if by programme
+    {         
+        document.getElementById("rejection-division-field").selectedIndex = 0;
+        document.getElementById("rejection-cape-field").selectedIndex = 0;
+               
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "block";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "none";
+    }
+    else if (search_by[3].checked == true)           //if by CAPE subject
+    {        
+        document.getElementById("rejection-division-field").selectedIndex = 0;  
+        document.getElementById("rejection-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "block";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "none";
+    }
+    else if (search_by[4].checked == true)           //if was published
+    {        
+        document.getElementById("rejection-division-field").selectedIndex = 0;  
+        document.getElementById("rejection-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "block";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "none";
+    }
+    else if (search_by[5].checked == true)           //if was published
+    {        
+        document.getElementById("rejection-division-field").selectedIndex = 0;  
+        document.getElementById("rejection-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "block";
+        document.getElementById("rejection-revoked").style.display = "none";
+    }
+    else if (search_by[6].checked == true)           //if was published
+    {        
+        document.getElementById("rejection-division-field").selectedIndex = 0;  
+        document.getElementById("rejection-programme-field").selectedIndex = 0; 
+        
+        document.getElementById("rejection-division").style.display = "none";       
+        document.getElementById("rejection-programme").style.display = "none";
+        document.getElementById("rejection-cape").style.display = "none";
+        document.getElementById("rejection-home").style.display = "none";
+        document.getElementById("rejection-awaiting-publish").style.display = "none";
+        document.getElementById("rejection-published").style.display = "none";
+        document.getElementById("rejection-revoked").style.display = "block";
+    }
+    
+}
+
+
+/**
+ * Toggles the 'Filter' button for divisional filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 31/03/2016
+ * Date Last Modified: 31/03/2016
+ */
+function showRejectionFilterButton1()
+{
+    var button = document.getElementById("rejection-division-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('divisional-filter-button').style.display = "block"; 
+   else
+       document.getElementById('divisional-filter-button').style.display = "none"; 
+}
+
+
+/**
+ * Toggles the 'Filter' button for programme filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 31/03/2016
+ * Date Last Modified: 31/03/2016
+ */
+function showRejectionFilterButton2()
+{
+    var button = document.getElementById("rejection-programme-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('programme-filter-button').style.display = "block"; 
+   else
+       document.getElementById('programme-filter-button').style.display = "none"; 
+}
+
+
+/**
+ * Toggles the 'Filter' button for cape subject filter
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 31/03/2016
+ * Date Last Modified: 31/03/2016
+ */
+function showRejectionFilterButton3()
+{
+    var button = document.getElementById("rejection-cape-field").selectedIndex;
+    if (button != 0)
+       document.getElementById('cape-filter-button').style.display = "block"; 
+   else
+       document.getElementById('cape-filter-button').style.display = "none"; 
+}

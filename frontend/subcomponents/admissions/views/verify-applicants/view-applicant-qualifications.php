@@ -13,6 +13,7 @@ use frontend\models\ExaminationGrade;
 use frontend\models\CsecCentre;
 use frontend\models\PostSecondaryQualification;
 use frontend\models\CsecQualification;
+use frontend\models\ExternalQualification;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -215,7 +216,79 @@ $this->params['breadcrumbs'][] = $this->title;
                                     array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
                         <?php endif; ?>-->
                     </div> 
+                    
+                    
+                    <?php if($isexternal == 1 && $external_qualification == true) :?>
+                        <br/><fieldset style="margin-left:2.5%; width:95%">
+                            <legend><strong>External Qualifications</strong></legend>
+                            <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
+                                <thead>
+                                    <tr>
+                                        <th>Awarding Institution</th>
+                                        <th>Name of Degree</th>
+                                        <th>Year Awarded</th>
+                                        <th>Verified</th>
+                                        <th>Queried</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                <thead>
 
+                                <tbody>    
+                                    <tr>
+                                        <td width=30% style="vertical-align:middle">
+                                            <?= $form->field($external_qualification, 'name')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                        </td>
+
+                                        <td width=30%  style="vertical-align:middle">
+                                            <?= $form->field($external_qualification, 'awardinginstitution')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                        </td>
+
+                                        <td width=30%  style="vertical-align:middle">
+                                            <?= $form->field($external_qualification, 'yearawarded')->label("", ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
+                                        </td>
+
+                                        <td width=5% style="vertical-align:middle; text-align:center">
+                                            <?= $form->field($external_qualification, "isverified")->checkbox(['label' => NULL, 'value' => 1]); ?>
+                                        </td>
+
+                                        <td width=5% style="vertical-align:middle; text-align:center">
+                                            <?= $form->field($external_qualification, "isqueried")->checkbox(['label' => NULL]); ?>
+                                        </td>
+
+                                        <td style="vertical-align:middle">
+                                            <?= Html::a(' ', 
+                                                        ['external-qualifications', 'personid' => $applicant->personid, 'action' => 'delete', 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' => $type], 
+                                                        ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                         'style' => 'margin-right:20px',
+                                                        ]);
+                                            ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table><br/>
+                            
+                           <?= Html::submitButton('Update External Qualification', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
+                        </fieldset>
+                    
+                    <?php elseif($isexternal == 1 && $external_qualification == false) :?>
+                        <br/><fieldset style="margin-left:2.5%; width:95%">
+                            <legend><strong>External Qualifications</strong></legend>
+                            <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
+                                <tr>
+                                    <td>Applicant has not indicated the type of external qualification they possess.</td>
+                                </tr>
+
+                                <tr>
+                                    <?php
+                                        $add_role = Url::toRoute(['/subcomponents/admissions/verify-applicants/external-qualifications', 'personid' => $applicant->personid, 'action' => 'add', 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' => $type]);
+                                    ?>
+                                    <td><a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=$add_role?> role="button"> Add External Qualifications</a></td>
+                                 </tr>
+                            </table> 
+                        </fieldset>
+                    <?php endif;?>
+                    
+                    
 
                     <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true) :?>
                         <br/><fieldset style="margin-left:2.5%; width:95%">
@@ -267,10 +340,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             </table><br/>
                         </fieldset>
                     <?php else:?>
-                         <br/><fieldset style="margin-left:2.5%; width:95%">
+                        <br/><fieldset style="margin-left:2.5%; width:95%">
                             <legend><strong>Post Secondary Degree</strong></legend>
                             <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
-                                <tv>
+                                <tr>
                                     <td>Applicant has not indicated that they have a post secondary degree</td>
                                 </tr>
 
@@ -281,6 +354,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td><a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=$add_role?> role="button"> Add Post Secondary Qualification</a></td>
                                  </tr>
                             </table> 
+                        </fieldset>
                     <?php endif;?>
 
 

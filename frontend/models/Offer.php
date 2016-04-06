@@ -4,6 +4,10 @@ namespace frontend\models;
 
 use Yii;
 
+use frontend\models\Application;
+use common\models\User;
+use frontend\models\OfferType;
+
 /**
  * This is the model class for table "offer".
  *
@@ -262,6 +266,172 @@ class Offer extends \yii\db\ActiveRecord
         if (count($offers) > 0)
             return true;
         return false;
+    }
+    
+    
+    /**
+     * Returns the username of an offer
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 29/03/2016
+     * Date Last Modified: 29/03/2016
+     */
+    public function getApplicantUsername()
+    {
+        $user = User::find()
+                ->innerJoin('application' , '`application`.`personid` = `person`.`personid`')
+                ->where(['person.isactive' => 1, 'person.isdeleted' => 0,
+                        'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0 
+                        ])
+                ->one();
+        return $user->username;
+    }
+    
+    
+    /**
+     * Rescinds an existing offer.
+     * If offer was already published, the record is made inactive;
+     * If it has not been published, the record is deleted.
+     * 
+     * @param string $id
+     * @return mixed
+     * 
+     * Author: Laurence Charles
+     * Date Created: 01/04/2016
+     * Date Last Modified: 01/04/2016
+     */
+    public static function rescindOffer($applicationid, $offertype)
+    {
+        $save_flag = false;
+        
+        $offer = Offer::find()
+                ->where(['applicationid' => $applicationid, 'isactive' => 1, 'isdeleted' => 0, 'offertypeid' => $offertype])
+                ->one();
+        
+        if ($offer)
+        {
+            if($offer->ispublished == 1)
+            {
+                $offer->isactive = 0;
+                $offer->isdeleted = 0;
+                $offer->revokedby = Yii::$app->user->getId();
+                $offer->revokedate = date('Y-m-d');
+            }
+            else
+            {
+                $offer->isactive = 0;
+                $offer->isdeleted = 1;
+                $offer->revokedby = Yii::$app->user->getId();
+                $offer->revokedate = date('Y-m-d');
+            }
+           
+            $save_flag = $offer->save();
+            if ($save_flag == true)
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+    
+    
+    /**
+     * Returns the type of a particular offer
+     * 
+     * @param type $personid
+     * @return string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/04/2016
+     * Date Last Modified: 02/04/2016
+     */
+    public static function getOfferType($personid)
+    {
+        $offer = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
+                            ])
+                    ->one();
+        if ($offer)
+        {
+            $type = OfferType::find()
+                    ->where(['offertypeid' => $offer->offertypeid])
+                    ->one();
+            return $type->name;
+        }
+        return " ";
+    }
+    
+    
+    /**
+     * Returns true if application has an active full offer
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/04/2016
+     * Date Last Modified: 02/04/2016
+     */
+    public static function hasActiveFullOffer($personid)
+    {
+        $offer = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offertypeid' => 1,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
+                            ])
+                    ->one();
+        if ($offer)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns the type of a particular offer
+     * 
+     * @param type $personid
+     * @return string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/04/2016
+     * Date Last Modified: 05/04/2016
+     */
+    public static function getPriorityOfffer($personid)
+    {
+        $offers = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
+                            ])
+                    ->all();
+        if ($offers)
+        {
+            $has_full_offer = false;
+            foreach($offers as $off)
+            {
+                if ($off->offertypeid == 1)
+                    $has_full_offer = true;
+            }
+            
+            if ($has_full_offer == true)
+            {
+                $type = OfferType::find()
+                        ->where(['offertypeid' => 1])
+                        ->one();
+            }
+            else
+            {
+                $type = OfferType::find()
+                        ->where(['offertypeid' => 2])
+                        ->one();
+            }
+        }
+        return $type->name;
     }
         
    

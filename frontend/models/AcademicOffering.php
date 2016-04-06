@@ -374,7 +374,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
     {
         $record = AcademicOffering::find()
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.interviewneeded' => 1,
                         'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationid' => $applicationid, 
                         ])
                 ->one();

@@ -21,6 +21,8 @@
     use frontend\models\BatchStudent;
     use frontend\models\StudentRegistration;
     use frontend\models\Hold;
+    use frontend\models\PostSecondaryQualification;
+    use frontend\models\ExternalQualification;
 
     /* @var $this yii\web\View */
     $this->title = 'Student Profile';
@@ -888,6 +890,53 @@
                                     </table>
                                 <?php endif;?> 
                                 </div>
+                                
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('ViewProfileData') || Yii::$app->user->can('viewGeneral')):?>    
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Extracurricular Activities
+                                        <?php if(Yii::$app->user->can('editGeneral')):?>        
+                                            <a class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/edit-extracurricular', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role="button"> Edit</a>                                    
+                                        <?php endif;?>
+                                        </div>
+
+                                        <!-- Table -->
+                                        <table class="table table-hover" style="margin: 0 auto;">
+                                            <tr>
+                                                <th style='width:30%'>National Sports</th>
+                                                <?php if ($applicant->nationalsports == NULL || $applicant->nationalsports==" "):?>
+                                                    <td  style='width:70%'>Applicant has never been a national athlete representative</td>
+                                                <?php else:?>
+                                                    <td style='width:70%'><?=$applicant->nationalsports?></td>
+                                                <?php endif;?>
+                                            </tr> 
+                                            <tr>
+                                                <th style='width:30%'>Recreational Sports</th>
+                                                <?php if ($applicant->othersports == NULL || $applicant->othersports==" "):?>
+                                                    <td  style='width:70%'>Applicant does not play any sports recreationally</td>
+                                                <?php else:?>
+                                                    <td style='width:70%'><?=$applicant->othersports?></td>
+                                                <?php endif;?>
+                                            </tr>
+                                            <tr>
+                                                <th style='width:30%'>Club Memberships</th>
+                                                <?php if ($applicant->clubs == NULL || $applicant->clubs==" "):?>
+                                                    <td  style='width:70%'>Applicant is not a member of any clubs</td>
+                                                <?php else:?>
+                                                    <td style='width:70%'><?=$applicant->clubs?></td>
+                                                <?php endif;?>
+                                            </tr>
+                                            <tr>
+                                                <th style='width:30%'>Other Interests</th>
+                                                <?php if ($applicant->otherinterests == NULL || $applicant->otherinterests==" "):?>
+                                                    <td  style='width:70%'>Applicant has not indicated any other extracurricular interests/activities</td>
+                                                <?php else:?>
+                                                    <td style='width:70%'><?=$applicant->otherinterests?></td>
+                                                <?php endif;?>
+                                            </tr>
+                                        </table>
+                                    <?php endif;?>
+                                </div>
+                                
                             </div>
                             
                             
@@ -1981,6 +2030,129 @@
                                         <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button' style='margin-top:30px;'> Add Qualification</a>
                                     <?php endif;?>
                                 </div>
+                                
+                                
+                                <?php if(Yii::$app->user->can('viewAcademicQualificationsData')):?> 
+                                    <br/><br/><br/><br/>
+                                    <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Technical/Vocational Qualifications
+                                            <?php if(Yii::$app->user->can('addQualification')):?>        
+                                                <a class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/edit-technical-qualifications', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role="button"> Edit</a>                                    
+                                            <?php endif;?>
+                                        </div>
+
+                                        <?php if ($applicant->otheracademics == NULL || $applicant->otheracademics == " "):?>
+                                            </br><p><strong>Applicant has not indicated that they have any additional academic certifications.</strong></p></br>
+                                        <?php else:?>
+                                            <table class='table table-hover' style='margin: 0 auto;'>
+                                                <tr>
+                                                    <th style="width:35%">Certifications</th>
+                                                    <td style="width:65%"><?= $applicant->otheracademics?></td>
+                                                </tr>
+                                            </table>
+                                        <?php endif;?>
+                                    </div>
+                                <?php endif;?>
+
+
+                                <?php if(Yii::$app->user->can('viewAcademicQualificationsData')):?> 
+                                    <br/><br/><br/><br/>
+                                    <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Post Secondary Degree
+                                            <?php if(Yii::$app->user->can('addQualification')):?>
+                                                <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true) :?>
+                                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/post-secondary-qualification', 'personid' => $applicant->personid,'studentregistrationid' => $studentregistrationid, 'action' => 'edit']);?> role="button"> Edit</a>                           
+                                                    <?php
+                                                        if(Yii::$app->user->can('deleteQualification'))
+                                                                {
+                                                                    echo Html::a(' Delete', 
+                                                                                    ['post-secondary-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'delete'], 
+                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                        'data' => [
+                                                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                                                            'method' => 'post',
+                                                                                        ],
+                                                                                     'style' => 'margin-left:10px',
+                                                                                    ]);
+                                                                }
+                                                    ?>
+                                                <?php else:?>
+                                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/post-secondary-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'add']);?> role="button"> Add</a> 
+                                                 <?php endif;?>
+                                            <?php endif;?>
+                                        </div>
+
+                                        <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == false) :?>
+                                            </br><p><strong>Applicant has not indicated that they have a post secondary degree.</strong></p></br>
+                                        <?php else:?>
+                                            <table class='table table-hover' style='margin: 0 auto;'>
+                                                <tr>
+                                                    <th style="width:35%">Name of Degree</th>
+                                                    <td style="width:65%"><?=$post_qualification->name?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width:35%">Awarding Institution</th>
+                                                    <td style="width:65%"><?=$post_qualification->awardinginstitution?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width:35%">Year Awarded</th>
+                                                    <td style="width:65%"><?=$post_qualification->yearawarded?></td>
+                                                </tr>
+                                            </table>
+                                        <?php endif;?>
+                                    </div>
+                                <?php endif;?>
+
+
+                                <?php if(Yii::$app->user->can('viewAcademicQualificationsData')):?> 
+                                    <br/><br/><br/><br/>
+                                    <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">External Qualifications
+                                            <?php if(Yii::$app->user->can('addQualification')):?>
+                                                <?php if(ExternalQualification::getExternalQualifications($applicant->personid) == true) :?>
+                                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/external-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid,  'action' => 'edit']);?> role="button"> Edit</a>                           
+                                                    <?php
+                                                        if(Yii::$app->user->can('deleteQualification'))
+                                                                {
+                                                                    echo Html::a(' Delete', 
+                                                                                    ['external-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'delete'], 
+                                                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                                        'data' => [
+                                                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                                                            'method' => 'post',
+                                                                                        ],
+                                                                                     'style' => 'margin-left:10px',
+                                                                                    ]);
+                                                                }
+                                                    ?>
+                                                <?php else:?>
+                                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/external-qualification', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'add']);?> role="button"> Add</a> 
+                                                 <?php endif;?>
+                                            <?php endif;?>
+                                        </div>
+
+                                        <?php if(ExternalQualification::getExternalQualifications($applicant->personid) == false) :?>
+                                            </br><p><strong>Applicant has not indicated that they have any external qualifications.</strong></p></br>
+                                        <?php else:?>
+                                            <table class='table table-hover' style='margin: 0 auto;'>
+                                                <tr>
+                                                    <th style="width:35%">Awarding Institution</th>
+                                                    <td style="width:65%"><?=$external_qualification->awardinginstitution?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width:35%">Name of Degree</th>
+                                                    <td style="width:65%"><?=$external_qualification->name?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width:35%">Year Awarded</th>
+                                                    <td style="width:65%"><?=$external_qualification->yearawarded?></td>
+                                                </tr>
+                                            </table>
+                                        <?php endif;?>
+                                    </div>
+                                <?php endif;?>
+                                
+                                
                             </div>
                             
                             

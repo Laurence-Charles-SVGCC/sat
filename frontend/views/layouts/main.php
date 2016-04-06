@@ -113,25 +113,40 @@ else
                     <?php if (Yii::$app->user->can('Registrar')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])?>"><i class="fa fa-circle-o"></i>Manage Application Periods</a></li> 
                     <?php endif; ?>
+                    
                     <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
                     <?php endif; ?>
+                    
                     <?php if (Yii::$app->user->can('verifyApplicants')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
                     <?php endif; ?>
+                    
                     <?php if (Yii::$app->user->can('reviewApplications')  && ApplicationPeriod::openPeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                     <?php endif; ?>
                     
-                    
-                    <!--
                     <?php if (Yii::$app->user->can('publishOffer')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-offer-package-dashboard'])?>"><i class="fa fa-circle-o"></i>Prepare Offer Package</a></li>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-packages-dashboard'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>
                     <?php endif; ?>
+                   
                     <?php if (Yii::$app->user->can('viewOffer')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Conditional Offers</a></li>
                     <?php endif; ?>
-                   -->
+                    
+                    <?php if (Yii::$app->user->can('viewOffer')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 1])?>"><i class="fa fa-circle-o"></i>Unconditional Offers</a></li>
+                    <?php endif; ?>
+                        
+                    <?php if (Yii::$app->user->can('viewRejection')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1])?>"><i class="fa fa-circle-o"></i>Pre-Interview Rejections</a></li>
+                    <?php endif; ?> 
+                        
+                    <?php if (Yii::$app->user->can('viewRejection')): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])?>"><i class="fa fa-circle-o"></i>Post-Interview Rejections</a></li>
+                    <?php endif; ?>
+                        
+                  
                     
                     <!--
                     <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::openPeriodExists()==true): ?>
@@ -213,7 +228,7 @@ else
                 <?php endif; ?>
 
 
-                <br/>
+                
                 <?php if (Yii::$app->user->can('gradebook')): ?>
                     <li class="active treeview">
                         <a href="">
@@ -232,7 +247,7 @@ else
                     </li>
                 <?php endif; ?>
 
-                <br/>
+                
                 <?php if (Yii::$app->user->can('payments')): ?>
                 <li class="active treeview">
                   <a href="">

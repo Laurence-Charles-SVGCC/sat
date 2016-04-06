@@ -1,31 +1,33 @@
 <?php
 
-namespace app\subcomponents\admissions\controllers;
+    namespace app\subcomponents\admissions\controllers;
 
-use Yii;
-use frontend\models\Offer;
-use yii\data\ArrayDataProvider;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\helpers\Url;
-use frontend\models\ApplicationPeriod;
-use frontend\models\Division;
-use frontend\models\ProgrammeCatalog;
-use frontend\models\Applicant;
-use frontend\models\Employee;
-use frontend\models\ApplicationCapesubject;
-use frontend\models\Application;
-use frontend\models\Email;
-use frontend\models\ApplicationStatus;
-use frontend\models\PublishForm;
-use frontend\models\CapeSubject;
-use frontend\models\CsecQualification;
-use frontend\models\ExaminationBody;
-use frontend\models\Subject;
-use frontend\models\ExaminationGrade;
-use common\models\User;
- use frontend\models\EmployeeDepartment;
+    use Yii;
+    use yii\data\ArrayDataProvider;
+    use yii\web\Controller;
+    use yii\web\NotFoundHttpException;
+    use yii\filters\VerbFilter;
+    use yii\helpers\Url;
+
+    use common\models\User;
+    use frontend\models\Offer;
+    use frontend\models\ApplicationPeriod;
+    use frontend\models\Division;
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\AcademicOffering;
+    use frontend\models\Applicant;
+    use frontend\models\Employee;
+    use frontend\models\ApplicationCapesubject;
+    use frontend\models\Application;
+    use frontend\models\Email;
+    use frontend\models\ApplicationStatus;
+    use frontend\models\PublishForm;
+    use frontend\models\CapeSubject;
+    use frontend\models\CsecQualification;
+    use frontend\models\ExaminationBody;
+    use frontend\models\Subject;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\EmployeeDepartment;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -49,7 +51,7 @@ class OfferController extends Controller
     * Created: 29/07/2015 by Gii
     * Last Modified: 29/07/2015 by Gamal Crichton | Laurence Charles (05/03/2016)
     */
-    public function actionIndex($criteria = NULL)
+    public function actionIndex($offertype, $criteria = NULL)
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
@@ -59,17 +61,28 @@ class OfferController extends Controller
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.isocmplete'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
-//        $offer_cond['offer.isactive'] = 1;
         
         
         if($criteria != NULL)
         {
-            if (strcmp($criteria, "ispublished") == 0)
+            if (strcmp($criteria, "awaiting-publish") == 0)
+            {
+                $offer_cond['offer.ispublished'] = 0;
+                $offer_cond['offer.isactive'] = 1;
+            }
+            elseif (strcmp($criteria, "ispublished") == 0)
+            {
                 $offer_cond['offer.ispublished'] = 1;
+                $offer_cond['offer.isactive'] = 1;
+            }
             elseif (strcmp($criteria, "revoked") == 0)
+            {
+                $offer_cond['offer.ispublished'] = 1;
                 $offer_cond['offer.isactive'] = 0;
+            }
         }
         
         
@@ -135,8 +148,16 @@ class OfferController extends Controller
                 $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
             }
             
+            $info = Applicant::getApplicantInformation($applicant->personid);
+            $prog = $info["prog"];
+            $application_status = $info["status"];
+            
             $offer_data = array();
+            $offer_data['prog'] = $prog;
+            $offer_data['status'] = $application_status;
+            $offer_data['personid'] = $applicant->personid;
             $offer_data['offerid'] = $offer->offerid;
+            $offer_data['offertype'] = $offer->offertypeid;
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['username'] = $username;
             $offer_data['firstname'] = $applicant->firstname;
@@ -154,7 +175,7 @@ class OfferController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 25,
+                'pageSize' => 15,
             ],
         ]);
         
@@ -167,7 +188,7 @@ class OfferController extends Controller
         }
         
         $prog_cond = array();
-//        $prog_cond['application_period.applicaitonperiodstatusid'] = 5;
+        $prog_cond['application_period.iscomplete'] = 0;
         $prog_cond['application_period.isactive'] = 1;
         $prog_cond['application_period.isdeleted'] = 0;
         $prog_cond['programme_catalog.isactive'] = 1;
@@ -187,9 +208,9 @@ class OfferController extends Controller
         {
             $progs[$programme->programmecatalogid] = $programme->getFullName();
         }
-        
+       
         $cape_cond = array();
-//        $cape_cond['application_period.applicaitonperiodstatusid'] = 5;
+        $cape_cond['application_period.iscomplete'] = 0;
         $cape_cond['application_period.isactive'] = 1;
         $cape_cond['application_period.isdeleted'] = 0;
         $cape_cond['cape_subject.isactive'] = 1;
@@ -209,6 +230,7 @@ class OfferController extends Controller
             $capes[$c->capesubjectid] = $c->subjectname;
         }
 
+        
         return $this->render('current_offers', [
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
@@ -223,6 +245,7 @@ class OfferController extends Controller
             'subjects_req' => $subjects_req,
             'dte_science_req' => $dte_science_req,
             'dne_science_req' => $dne_science_req,
+            'offertype' => $offertype,
         ]);
     }
     
@@ -282,7 +305,7 @@ class OfferController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $offertype)
     {
         $model = $this->findModel($id);
         if ($model)
@@ -326,8 +349,165 @@ class OfferController extends Controller
             Yii::$app->session->setFlash('error', 'Offer not found');
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 
+                                'offertype' => $offertype 
+                               ]);
     }
+    
+    
+    /**
+     * Revokes an existing Offer.
+     * If offer was already published, the record is made inactive;
+     * If it has not been published, the record is deleted.
+     * 
+     * @param string $id
+     * @return mixed
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016 | 01/04/2016
+     */
+    public function actionRevoke($id, $offertype)
+    {
+        $offer = Offer::find()
+                ->where(['offerid' => $id])
+                ->one();
+        
+        if ($offer)
+        {
+            if($offer->ispublished == 1)
+            {
+                $offer->isactive = 0;
+                $offer->isdeleted = 0;
+                $offer->revokedby = Yii::$app->user->getId();
+                $offer->revokedate = date('Y-m-d');
+            }
+            else
+            {
+                $offer->isactive = 0;
+                $offer->isdeleted = 1;
+                $offer->revokedby = Yii::$app->user->getId();
+                $offer->revokedate = date('Y-m-d');
+            }
+           
+            if ($offer->save())
+            {
+                /*
+                * When offer is removed then all applications are reset to "Pending"
+                */
+                $application = $offer->getApplication()->one();
+                if ($application)
+                {
+                    $applications = Application::find()
+                                    ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                    if ($applications)
+                    {
+                        /*
+                         * If application is for a programme that requires an interview;
+                         * -> the related appliction is reset to 'conditional offer'
+                         */
+                        if(AcademicOffering::requiresInterview($application->applicationid) == true)
+                        {
+                            /*
+                             * If offer is a 'conditional-interview' offer;
+                             * -> the related application is set to pending
+                             */
+                            if($offer->offertypeid == 2)        
+                            {
+                                foreach($applications as $app)
+                                {
+                                    $app->applicationstatusid = 3;
+                                    $app->save();
+                                }
+                            }
+                            /*
+                             * If offer is a 'post-interview/full' offer;
+                             * -> the related application is set to 'conditional offer'
+                             * -> all other applications are set to 'rejected' 
+                             * -> condoitional offer is created
+                            */
+                            else
+                            {
+                                foreach($applications as $app)
+                                {
+                                    //if this is the application related to offer
+                                    if($app->applicationid == $offer->applicationid)
+                                    {
+                                        $app->applicationstatusid = 8;
+                                        $app->save();
+                                    }
+                                    else
+                                    {
+                                        $app->applicationstatusid = 6;
+                                        $app->save();
+                                    }
+                                }
+                                
+                                //creates conditional offer
+                                $conditional_offer = new Offer();
+                                $conditional_offer->applicationid = $offer->applicationid;
+                                $conditional_offer->offertypeid = 2;
+                                $conditional_offer->issuedby = Yii::$app->user->getID();
+                                $conditional_offer->issuedate = date('Y-m-d');
+                                $conditional_offer->save();
+                                
+                            }
+                        }
+                        /*
+                         * If application is for a programme that does not require an interview;
+                         * -> the related appliction is reset to pending
+                         */
+                        else
+                        {
+                            foreach($applications as $app)
+                            {
+                                $app->applicationstatusid = 3;
+                                $app->save();
+                            }
+                        }
+                    }
+                    else
+                        Yii::$app->session->setFlash('error', 'Error occured when retrieving all applications'); 
+                    
+                    
+                    /*
+                    * Remove Potential student ID
+                    */
+                    $applicant = $application ? Applicant::findOne(['personid' => $application->personid]) : NULL;
+                    $offers = $application ? 
+                                Offer::find()
+                                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                                    ->where(['application.personid' => $application->personid, 'offer.isactive' => 1, 'offer.isdeleted' => 0])
+                                    ->all() :
+                                NULL;
+                    
+                    //if applicant exists and applicant has no active offers
+                    if ($applicant && !$offers)
+                    { 
+                        //applicant has no other offers
+                        $applicant->potentialstudentid = NULL; 
+                        $applicant->save();
+                    }
+                }
+                else
+                    Yii::$app->session->setFlash('error', 'Error occured when retrieving application');   
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Offer could not be revoked');
+            }
+        }
+        else
+        {
+            Yii::$app->session->setFlash('error', 'Offer not found');
+        }
+
+        return $this->redirect(['index', 
+                                'offertype' => $offertype 
+                               ]);
+    }
+    
 
     /**
      * Finds the Offer model based on its primary key value.
@@ -732,7 +912,7 @@ class OfferController extends Controller
      * Date Created: ??
      * Date Last Modified: 06/03/2016 (L.Charles)
      */
-    public function actionUpdateView($criteria = NULL)
+    public function actionUpdateView($offertype)
     {
         if (Yii::$app->request->post())
         {
@@ -761,7 +941,8 @@ class OfferController extends Controller
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
         
         
@@ -861,8 +1042,16 @@ class OfferController extends Controller
                 $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
             }
 
+            $info = Applicant::getApplicantInformation($applicant->personid);
+            $prog = $info["prog"];
+            $application_status = $info["status"];
+            
             $offer_data = array();
+            $offer_data['prog'] = $prog;
+            $offer_data['status'] = $application_status;
+            $offer_data['personid'] = $applicant->personid;
             $offer_data['offerid'] = $offer->offerid;
+            $offer_data['offertype'] = $offer->offertypeid;
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['username'] = $username;
             $offer_data['firstname'] = $applicant->firstname;
@@ -880,7 +1069,7 @@ class OfferController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 25,
+                'pageSize' => 15,
             ],
         ]);
         
@@ -892,7 +1081,7 @@ class OfferController extends Controller
         }
         
         $prog_cond = array();
-//        $prog_cond['application_period.applicaitonperiodstatusid'] = 5;
+        $prog_cond['application_period.iscomplete'] = 0;
         $prog_cond['application_period.isactive'] = 1;
         $prog_cond['application_period.isdeleted'] = 0;
         $prog_cond['programme_catalog.isactive'] = 1;
@@ -914,7 +1103,7 @@ class OfferController extends Controller
         }
         
         $cape_cond = array();
-//        $cape_cond['application_period.applicaitonperiodstatusid'] = 5;
+        $cape_cond['application_period.iscomplete'] = 0;
         $cape_cond['application_period.isactive'] = 1;
         $cape_cond['application_period.isdeleted'] = 0;
         $cape_cond['cape_subject.isactive'] = 1;
@@ -945,6 +1134,7 @@ class OfferController extends Controller
             'multiple_offers' => $multiple_offers,
             'english_req' => $english_req,
             'subjects_req' => $subjects_req,
+            'offertype' => $offertype,
         ]);
     } 
     
@@ -957,7 +1147,7 @@ class OfferController extends Controller
      * Date Created: ??
      * Date Last Modified: 07/03/2016 (L. Charles)
      */
-    public function actionOfferDetailsHome($criteria = NULL)
+    public function actionOfferDetailsHome($offertype, $criteria = NULL)
     {
         $dataProvider = false;
         
@@ -968,7 +1158,8 @@ class OfferController extends Controller
         
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.isdeleted'] = 0;
-//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offerypeid'] = $offerype;
         $offer_cond['offer.isdeleted'] = 0;
         
         
@@ -1053,10 +1244,10 @@ class OfferController extends Controller
         {
             if($open_periods == true)
             {
-                $dte_open = in_array(6, $open_periods);
+                $dte_open = in_array(7, $open_periods);
                 if ($dte_open == true)
                 {
-                    $teaching = Applicant::getAcceptedWithoutDteScienceCriteria($offers, true);
+                    $teaching = Applicant::getAcceptedWithoutDneScienceCriteria($offers, true);
                     $dte_science_req1 = $teaching ? $teaching : array();
                 }
             }
@@ -1121,7 +1312,14 @@ class OfferController extends Controller
                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
 
+                $info = Applicant::getApplicantInformation($applicant->personid);
+                $prog = $info["prog"];
+                $application_status = $info["status"];
+
                 $offer_data = array();
+                $offer_data['prog'] = $prog;
+                $offer_data['status'] = $application_status;
+                $offer_data['personid'] = $applicant->personid;
                 $offer_data['offerid'] = $offer->offerid;
                 $offer_data['applicationid'] = $offer->applicationid;
                 $offer_data['username'] = $username;
@@ -1179,7 +1377,7 @@ class OfferController extends Controller
             }
         }
         
-        $offer_type = "No Choice";
+        $offer_type = "No Filter Applied";
         if ($criteria == "mult")
         {
             $offer_type = "Multiple Offer Recepients";
@@ -1190,7 +1388,7 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
@@ -1204,7 +1402,7 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
@@ -1218,7 +1416,7 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
@@ -1232,7 +1430,7 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
@@ -1246,7 +1444,7 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
@@ -1260,10 +1458,14 @@ class OfferController extends Controller
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname', 'programme', 'issued_by'],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
         }
+        
+        $info = Applicant::getApplicantInformation($applicant->personid);
+        $programme = $info["prog"];
+        $application_status = $info["status"];
 
         return $this->render('questionable-offers-home', [
             'applicationperiodname' => $app_period_name,
@@ -1276,6 +1478,85 @@ class OfferController extends Controller
             
             'dataProvider' => $dataProvider,
             'offer_type' => $offer_type,
+            'offertype' => $offertype,
+        ]);
+    }
+    
+    /**
+     * Generates Report for All Offers
+     * 
+     * @return type
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 21/03/2016 | 29/03/2016 (L. Charles)
+     */
+    public function actionExportAllOffers($offertype)
+    {
+        $division_id = EmployeeDepartment::getUserDivision();
+        
+        $offer_cond = array();
+        
+        $offer_cond['application_period.isactive'] = 1;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.isactive'] = 1;
+        
+        if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
+            $offer_cond['application.divisionid'] = $division_id;
+        
+        $offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($offer_cond)
+                ->all();
+        
+        $data = array();
+        foreach ($offers as $offer)
+        {
+            $username = $offer->getApplicantUsername();
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['username'] = $username;
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            $data[] = $offer_data;
+        }
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 2000,
+            ],
+        ]);
+        
+        $title = "Title: All Offers     ";
+        $date =  "Date Generated: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
+        return $this->renderPartial('offer-export', [
+            'dataProvider' => $dataProvider,
+            'filename' => $filename,
         ]);
     }
     
@@ -1285,18 +1566,100 @@ class OfferController extends Controller
      * 
      * @return type
      * 
-     * Author: Gamal Cricheton
+     * Author: Gamal Crichton
      * Date Created: ??
      * Date Last Modified: 21/03/2016 | 29/03/2016 (L. Charles)
      */
-    public function actionExportUnpublishedOffers()
+    public function actionExportUnpublishedOffers($offertype)
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
         $offer_cond = array();
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.isdeleted'] = 0;
+        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.isactive'] = 1;
+        $offer_cond['offer.ispublished'] = 0;
+        
+        if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
+            $offer_cond['application.divisionid'] = $division_id;
+        
+        $offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($offer_cond)
+                ->all();
+        
+        $data = array();
+        foreach ($offers as $offer)
+        {
+            $username = $offer->getApplicantUsername();
+            $cape_subjects_names = array();
+            $application = $offer->getApplication()->one();
+            $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            $issuer = Employee::findOne(['personid' => $offer->issuedby]);
+            $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
+            $revoker = Employee::findOne(['personid' => $offer->revokedby]);
+            $revokername = $revoker ? $revoker->firstname . ' ' . $revoker->lastname : 'N/A';
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
+            
+            $offer_data = array();
+            $offer_data['username'] = $username;
+            $offer_data['offerid'] = $offer->offerid;
+            $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['firstname'] = $applicant->firstname;
+            $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['issuedby'] = $issuername;
+            $offer_data['issuedate'] = $offer->issuedate;
+            $offer_data['revokedby'] = $revokername;
+            $offer_data['ispublished'] = $offer->ispublished;
+            
+            $data[] = $offer_data;
+        }
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 2000,
+            ],
+        ]);
+        
+        $title = "Title: Offers Awaiting Publishing     ";
+        $date =  "Date Generated: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
+        return $this->renderPartial('offer-export', [
+            'dataProvider' => $dataProvider,
+            'filename' => $filename,
+        ]);
+    }
+    
+    
+    /**
+     * Generates Report for All Published Offers
+     * 
+     * @return type
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 21/03/2016 | 29/03/2016  (L. Charles)
+     */
+    public function actionExportPublishedOffers($offertype)
+    {
+        $division_id = EmployeeDepartment::getUserDivision();
+        
+        $offer_cond = array();
+        
+        $offer_cond['application_period.isactive'] = 1;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offerypeid'] = $offerype;
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['offer.isactive'] = 1;
         $offer_cond['offer.ispublished'] = 1;
@@ -1314,6 +1677,7 @@ class OfferController extends Controller
         $data = array();
         foreach ($offers as $offer)
         {
+            $username = $offer->getApplicantUsername();
             $cape_subjects_names = array();
             $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
@@ -1326,6 +1690,7 @@ class OfferController extends Controller
             foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
             
             $offer_data = array();
+            $offer_data['username'] = $username;
             $offer_data['offerid'] = $offer->offerid;
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['firstname'] = $applicant->firstname;
@@ -1345,31 +1710,40 @@ class OfferController extends Controller
             ],
         ]);
         
+        $title = "Title: Published Offers     ";
+        $date =  "Date Generated: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
         return $this->renderPartial('offer-export', [
             'dataProvider' => $dataProvider,
-            'filetype' => ""
+            'filename' => $filename,
         ]);
     }
     
     
     /**
-     * Generates Report for All Offers
+     * Generates Report for All Revoked Offers
      * 
      * @return type
      * 
-     * Author: Gamal Cricheton
+     * Author: Gamal Crichton
      * Date Created: ??
-     * Date Last Modified: 21/03/2016 (L. Charles)
+     * Date Last Modified: 21/03/2016 | 29/03/2016  (L. Charles)
      */
-    public function actionExportAllOffers()
+    public function actionExportRevokedOffers($offertype)
     {
         $division_id = EmployeeDepartment::getUserDivision();
         
         $offer_cond = array();
         
         $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+        $offer_cond['offer.offerypeid'] = $offerype;
         $offer_cond['offer.isactive'] = 1;
+        $offer_cond['offer.isdeleted'] = 1;
+        $offer_cond['offer.ispublished'] = 1;
         
         if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
             $offer_cond['application.divisionid'] = $division_id;
@@ -1384,6 +1758,7 @@ class OfferController extends Controller
         $data = array();
         foreach ($offers as $offer)
         {
+            $username = $offer->getApplicantUsername();
             $cape_subjects_names = array();
             $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
@@ -1396,6 +1771,7 @@ class OfferController extends Controller
             foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
             
             $offer_data = array();
+            $offer_data['username'] = $username;
             $offer_data['offerid'] = $offer->offerid;
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['firstname'] = $applicant->firstname;
@@ -1415,139 +1791,27 @@ class OfferController extends Controller
             ],
         ]);
         
+        $title = "Title: Revoked Offers     ";
+        $date =  "Date Generated: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
         return $this->renderPartial('offer-export', [
             'dataProvider' => $dataProvider,
+            'filename' => $filename,
         ]);
     }
     
     
     
-    /**
-     * Return a listing of all successful applicant who have been awarded an offer
-     * but it has not been published as yet.
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 28/02/2016
-     * Date Last Modified: 05/03/2016
-     */
-    public function actionFindSuccessfulApplicant($status)
+    public function actionPreparePackagesDashboard()
     {
-        $dataProvider = null;
-        $info_string = null;
         
-        //if user initiates search based on applicantid
-        if ($app_id)
-        {
-            $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
-            $cond_arr['applicant.personid'] = $user? $user->personid : null;
-            $info_string = $info_string .  " Applicant ID: " . $app_id;
-        }    
-
-        //if user initiates search based on applicant name    
-        if ($firstname)
-        {
-            $cond_arr['applicant.firstname'] = $firstname;
-            $info_string = $info_string .  " First Name: " . $firstname; 
-        }
-        if ($lastname)
-        {
-            $cond_arr['applicant.lastname'] = $lastname;
-            $info_string = $info_string .  " Last Name: " . $lastname;
-        }        
-
-        //if user initiates search based on applicant email
-        if ($email)
-        {
-            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
-            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
-            $info_string = $info_string .  " Email: " . $email;
-        }
-
-
-        if (empty($cond_arr))
-        {
-            Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
-        }
-        else
-        {
-            $cond_arr['applicant.isactive'] = 1;
-            $cond_arr['applicant.isdeleted'] = 0;
-            $cond_arr['academic_offering.isactive'] = 1;
-            $cond_arr['academic_offering.isdeleted'] = 0;
-            $cond_arr['application_period.isactive'] = 1;
-            $cond_arr['application_period.iscomplete'] = 0;
-            $cond_arr['application.isactive'] = 1;
-            $cond_arr['application.isdeleted'] = 0;
-            $cond_arr['application.applicationstatusid'] = 9;
-            $cond_arr['offer.isactive'] = 1;  
-            $cond_arr['offer.isdeleted'] = 0;
-            if ($status = "published")
-                $cond_arr['offer.ispublished'] = 1;
-            if ($status = "awaiting_published")
-                $cond_arr['offer.ispublished'] = 0;
-            if ($status = "all")
-                $cond_arr['offer.ispublished'] = [0,1];
-            
-            
-
-            $applicants = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where($cond_arr)
-                        ->groupBy('applicant.personid')
-                        ->all();
-
-            if (empty($applicants))
-            {
-                Yii::$app->getSession()->setFlash('error', 'No successful applicants found matching this criteria.');
-            }
-            else
-            {
-                $data = array();
-                foreach ($applicants as $applicant)
-                {
-                    $app = array();
-                    $user = $applicant->getPerson()->one();
-
-                    $app['username'] = $user ? $user->username : '';
-                    $app['applicantid'] = $applicant->applicantid;
-                    $app['firstname'] = $applicant->firstname;
-                    $app['middlename'] = $applicant->middlename;
-                    $app['lastname'] = $applicant->lastname;
-
-                    $offer = Offer::getActiveOffer($applicant->personid);
-                    $target_programme = ProgrammeCatalog::getApplicantProgramme($offer->applicationid);
-                    $programme_name = $target_programme->getFullName();
-                    $app['programme_name'] = $programme_name;
-
-                    $data[] = $app;
-                }
-                $dataProvider = new ArrayDataProvider([
-                    'allModels' => $data,
-                    'pagination' => [
-                        'pageSize' => 25,
-                    ],
-                    'sort' => [
-                        'attributes' => ['applicantid', 'firstname', 'lastname'],
-                        ]
-                ]);
-            }
-        }
-   
-        
-        
-        return $this->render('find_current_applicant',
-            [
-            'dataProvider' => $dataProvider,
-            'status' => $status,
-            'info_string' => $info_string,
-        ]);
+        return $this->render('packages_dashboard');
     }
     
     
     
+  
 }
