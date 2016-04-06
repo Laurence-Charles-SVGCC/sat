@@ -689,7 +689,7 @@ class Application extends \yii\db\ActiveRecord
                     ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    ->where(['applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                             'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
