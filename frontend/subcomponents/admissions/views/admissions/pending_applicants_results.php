@@ -20,7 +20,7 @@
                     {
                        return Html::a($row['username'], 
                                         Url::to(['process-applications/view-applicant-certificates',
-                                                 'applicantid' => $row['applicantid'],
+                                                 'personid' => $row['applicantid'],
                                                  'programme' => $row['programme'], 
                                                  'application_status' => $row['application_status']
                                                 ])
