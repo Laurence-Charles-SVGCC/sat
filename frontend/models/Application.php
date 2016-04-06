@@ -812,7 +812,7 @@ class Application extends \yii\db\ActiveRecord
         {
             $applicants = Application::find()
                         ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
                         ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')

@@ -923,7 +923,7 @@
                 
                 <p id="edit-application">
                     <?= Html::a('Return to Application Review Dashboard',
-                        ['process-applications/view-applicant-certificates', 'applicantid' => $applicant->applicantid, 'programme' => $programme, 'application_status' => $application_status], 
+                        ['process-applications/view-applicant-certificates', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                         ['class' => 'btn btn-block btn-primary btn-danger']) 
                     ?>
                 </p>
