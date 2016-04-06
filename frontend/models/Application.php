@@ -329,34 +329,6 @@ class Application extends \yii\db\ActiveRecord
         return $data;
         
     }
-//    public static function getExternal()
-//    {
-//        $data = array();
-//        $applications = Application::find()
-//                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-//                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
-//                        'application.isdeleted' => 0,
-//                        'applicant.isexternal' => 1,
-//                        'academic_offering.isdeleted' => 0,
-//                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
-//                ->groupby('application.personid')
-//                ->all();
-//        
-//        $centre = CsecCentre::findOne(['isactive' => 0, 'isdeleted' => 0]);     //retrieves the 'exception' csec_centre
-//        $cseccentreid = $centre ? $centre->cseccentreid : NULL;
-//        foreach($applications as $application)
-//        {
-//            $qual = CsecQualification::findOne(['personid' => $application->personid, 'isdeleted' => 0]);
-//            if (!$qual || $qual->cseccentreid == $cseccentreid) //if no qualificatons can be found or the qualification found is of centreid="00000"
-//            {
-//                $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-//            }
-//        }
-//        return $data;
-//    }
     
     
     /**
@@ -437,37 +409,6 @@ class Application extends \yii\db\ActiveRecord
             return count(self::centreApplicantsVerified($cseccentreid, true));
         else
             return count(self::centreApplicantsVerified($cseccentreid));
-//        $applicants = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-//                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->all();
-//        foreach ($applicants as $key => $applicant)
-//        {
-//            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
-//                unset($applicants[$key]);
-//            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-//                unset($applicants[$key]);
-//            
-////            $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-////            if($qualification == true)
-////            {
-////                if (PostSecondaryQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
-////                    unset($applicants[$key]);
-////                
-////                if (PostSecondaryQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-////                    unset($applicants[$key]);
-////            }
-//        }
-//        return count($applicants);
     }
     
     
@@ -599,37 +540,6 @@ class Application extends \yii\db\ActiveRecord
         }
             
         return $eligible;
-//        $applicants = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
-//                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->all();
-//        foreach ($applicants as $key => $applicant)
-//        {
-//            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
-//                unset($applicants[$key]);
-//            if (CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-//                unset($applicants[$key]);
-//            
-////            $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-////            if($qualification == true)
-////            {
-////                if (PostSecondaryQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]))
-////                    unset($applicants[$key]);
-////                
-////                if (PostSecondaryQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-////                    unset($applicants[$key]);
-////            }
-//        }
-//        return $applicants;
     }
     
     
@@ -650,20 +560,6 @@ class Application extends \yii\db\ActiveRecord
             return count(self::centreApplicantsQueried($cseccentreid, true));
         else
             return count(self::centreApplicantsQueried($cseccentreid));
-//        $count = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0, 'csec_qualification.isactive' => 1,
-//                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->count();
-//        return $count;
     }
     
     
@@ -746,22 +642,6 @@ class Application extends \yii\db\ActiveRecord
             }
         }
         return $eligible;
-
-        
-//        $applicants = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isqueried' => 1, 'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
-//                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->all();
-//        return $applicants;
     }
     
     
@@ -909,74 +789,6 @@ class Application extends \yii\db\ActiveRecord
         
         return $elegible;
     }
-//    public static function centreApplicantsPending($cseccentreid)
-//    {
-//        $applicants = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-//                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/ 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->all();
-//        
-//        $elegible = array();
-//        foreach ($applicants as $key => $applicant)
-//        {
-//            $non_verified1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]);
-//            $queried1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]);
-//            $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-//            
-//            if($qualification == true)
-//            {
-//                $non_verified2 = $qualification->isverified;
-//                $queried2 = $qualification->isqueried;
-//                
-//                if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
-//                   $elegible [] =$applicants[$key];
-//            }
-//            else
-//            {
-//                if ($queried1 == false && $non_verified1 == true)
-//                   $elegible [] = $applicants[$key];
-//            }
-//        }
-//        return $elegible;
-//    }
-//    public static function centreApplicantsPending($cseccentreid)
-//    {
-//        $applicants = Application::find()
-//                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-//                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-//                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-//                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-//                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-//                            'csec_qualification.isqueried' => 0, 'csec_qualification.isverified' => 0, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-//                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5, 
-//                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
-//                            'academic_offering.isdeleted' => 0])
-//                    ->groupby('application.personid')
-//                    ->all();
-//        foreach ($applicants as $key => $applicant)
-//        {
-//            if (CsecQualification::findOne(['cseccentreid' => $cseccentreid,  'personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-//                unset($applicants[$key]);
-////            
-////            $qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-////            if($qualification == true)
-////            {
-////                if (PostSecondaryQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-////                    unset($applicants[$key]);
-////            }
-//        }
-//        return $applicants;
-//    }
     
     
     /**
