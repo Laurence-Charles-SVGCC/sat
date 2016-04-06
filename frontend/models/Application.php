@@ -805,7 +805,7 @@ class Application extends \yii\db\ActiveRecord
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
-                    ->groupby('application.personid')
+                    ->groupBy('application.personid')
                     ->all();
         }
         else
@@ -823,7 +823,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'academic_offering.isdeleted' => 0])
-                        ->groupby('application.personid')
+                        ->groupBy('application.personid')
                         ->all();
 //                        ->leftJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
 //                        ->leftJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
