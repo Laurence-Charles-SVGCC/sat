@@ -957,7 +957,7 @@ class AdmissionsController extends Controller
                         $user = $applicant->getPerson()->one();
 
                         $app['username'] = $user ? $user->username : '';
-                        $applicant['personid'] = $applicant->personid;
+                        $app['personid'] = $applicant->personid;
                         $app['applicantid'] = $applicant->applicantid;
                         $app['firstname'] = $applicant->firstname;
                         $app['middlename'] = $applicant->middlename;
