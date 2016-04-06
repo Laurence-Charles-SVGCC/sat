@@ -75,7 +75,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $data,
                 'pagination' => [
-                    'pageSize' => 15,
+                    'pageSize' => 30,
                 ],
                 'sort' => [
                     'defaultOrder' => ['centre_name' => SORT_ASC],
