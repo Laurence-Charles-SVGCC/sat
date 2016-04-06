@@ -817,7 +817,7 @@ class Application extends \yii\db\ActiveRecord
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                        ->where(['applicant.isexternal' => 0,
+                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                                 'csec_centre.cseccentreid' => $cseccentreid,
                                 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
@@ -898,12 +898,12 @@ class Application extends \yii\db\ActiveRecord
                             $queried2 = $qualification->isqueried;
 
                             if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
-                               $elegible [] =$applicants[$key];
+                               $elegible[] =$applicants[$key];
                         }
                         else
                         {
                             if ($queried1 == false && $non_verified1 == true)
-                               $elegible [] = $applicants[$key];
+                               $elegible[] = $applicants[$key];
                         }
                     }
                 }
