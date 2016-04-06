@@ -109,7 +109,7 @@
 ?>
 
     <div class="site-index">
-        <div class = "custom_wrapper" style="min-height:4100px;">
+        <div class = "custom_wrapper" style="min-height:4500px;">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar">
@@ -118,7 +118,7 @@
                 </a>    
             </div>
             
-            <div class="custom_body" style="min-height:3800px;">                
+            <div class="custom_body" style="min-height:4200px;">                
                 <h1 class="custom_h1"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h1>
                 <div>
                     <!-- Nav tabs -->
