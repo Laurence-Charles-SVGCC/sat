@@ -832,51 +832,44 @@ class Application extends \yii\db\ActiveRecord
         foreach ($applicants as $key => $applicant)
         {
             if($external == true)       // if attempting to retrieve external applicants
-            {
-//                $applicant_record = Applicant::find()
-//                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
-//                            ->one();
-//            
-//                if ($applicant_record->isexternal == 1)
-//                {
-                    //csec is always considered because all applicant have csecqualifications except "external"
-                    $non_verified1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]);
-                    $queried1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]);
+            {    
+                $csec_qualification = CsecQualification::getQualifications($applicant->personid);
+                $non_verified1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isverified' => 0, 'isdeleted' => 0, 'isactive' => 1]);
+                $queried1 = CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]);
 
-                    $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-                    $external_qualification = ExternalQualification::getExternalQualifications($applicant->personid);
+                $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
+                $external_qualification = ExternalQualification::getExternalQualifications($applicant->personid);
 
-                    if($post_qualification == false && $external_qualification == false)
-                    {
-                        if ($non_verified1 == false  &&  $queried1 == false)
-                            $elegible [] =$applicants[$key];
-                    }
-                    elseif($post_qualification == true  &&  $external_qualification==false)
-                    {
-                        $non_verified2 = $post_qualification->isverified;
-                        $queried2 = $post_qualification->isqueried;
-                        if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
-                           $elegible [] =$applicants[$key];
-                    }
-                    elseif($post_qualification == false  &&  $external_qualification==true)
-                    {
-                        $external_qualification_isverified = $external_qualification->isverified;
-                        $external_qualification_isqueried = $external_qualification->isqueried;
-                        if ($queried1 == false && $external_qualification_isqueried == 0 && ($non_verified1 == true || $external_qualification_isverified == 0))
-                           $elegible [] =$applicants[$key];
-                    }
-                    elseif($post_qualification == true  &&  $external_qualification==true)
-                    {
-                        $non_verified2 = $post_qualification->isverified;
-                        $queried2 = $post_qualification->isqueried;
+                if($post_qualification == false && $external_qualification == false)
+                {
+                    if ($non_verified1 == true &&  $queried1 == false)
+                        $elegible [] =$applicants[$key];
+                }
+                elseif($post_qualification == true  &&  $external_qualification==false)
+                {
+                    $non_verified2 = $post_qualification->isverified;
+                    $queried2 = $post_qualification->isqueried;
+                    if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0))
+                       $elegible [] =$applicants[$key];
+                }
+                elseif($post_qualification == false  &&  $external_qualification==true)
+                {
+                    $external_qualification_isverified = $external_qualification->isverified;
+                    $external_qualification_isqueried = $external_qualification->isqueried;
+                    if ($queried1 == false && $external_qualification_isqueried == 0 && ($non_verified1 == true || $external_qualification_isverified == 0))
+                       $elegible [] =$applicants[$key];
+                }
+                elseif($post_qualification == true  &&  $external_qualification==true)
+                {
+                    $non_verified2 = $post_qualification->isverified;
+                    $queried2 = $post_qualification->isqueried;
 
-                        $external_qualification_isverified = $external_qualification->isverified;
-                        $external_qualification_isqueried = $external_qualification->isqueried;
+                    $external_qualification_isverified = $external_qualification->isverified;
+                    $external_qualification_isqueried = $external_qualification->isqueried;
 
-                        if ($queried1 == false  && $queried2 == 0 && $external_qualification_isqueried == 0 && ($non_verified1 == true || $non_verified2 == 0 || $external_qualification_isverified == 0))
-                           $elegible [] =$applicants[$key];
-                    }
-//                }
+                    if ($queried1 == false  && $queried2 == 0 && $external_qualification_isqueried == 0 && ($non_verified1 == true || $non_verified2 == 0 || $external_qualification_isverified == 0))
+                       $elegible [] =$applicants[$key];
+                }
             }
             else    // if attempting to retrieve "non-external" applicants
             {
