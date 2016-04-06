@@ -497,7 +497,7 @@ class Application extends \yii\db\ActiveRecord
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
-                    ->groupby('application.personid')
+                    ->groupBy('application.personid')
                     ->all();
         }
         else
@@ -515,7 +515,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/ 
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'academic_offering.isdeleted' => 0])
-                        ->groupby('application.personid')
+                        ->groupBy('application.personid')
                         ->all();
         }
         
@@ -684,16 +684,17 @@ class Application extends \yii\db\ActiveRecord
         if($external == true)
         {
             $applicants = Application::find()
+                    ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
                     ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
+                    ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                            'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                             'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                             'academic_offering.isdeleted' => 0])
-                    ->groupby('application.personid')
+                    ->groupBy('application.personid')
                     ->all();
         }
         else
@@ -710,7 +711,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                                 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
                                 'academic_offering.isdeleted' => 0])
-                        ->groupby('application.personid', 'csec_centre.cseccentreid')
+                        ->groupBy('application.personid', 'csec_centre.cseccentreid')
                         ->all();
         }
         
@@ -719,23 +720,17 @@ class Application extends \yii\db\ActiveRecord
         {
             if($external == true)       // if attempting to retrieve external applicants
             {
-                $applicant_record = Applicant::find()
-                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
-                            ->one();
-                if ($applicant_record->isexternal == 1)
+                // if applicant has a queried certificate they are added to 'eligible'
+                if (CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
+                   $eligible[] = $applicants[$key];
+                else
                 {
-                    // if applicant has a queried certificate they are added to 'eligible'
-                    if (CsecQualification::findOne(['personid' => $applicant->personid, 'isqueried' => 1, 'isdeleted' => 0, 'isactive' => 1]))
-                       $eligible[] = $applicants[$key];
-                    else
-                    {
-                        $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-                        $external_qualification = ExternalQualification::getExternalQualifications($applicant->personid);
-                        if($post_qualification == true  && $post_qualification->isqueried==1)
-                            $eligible[] = $applicants[$key];
-                        elseif($external_qualification == true  && $external_qualification->isqueried==1)
-                            $eligible[] = $applicants[$key];
-                    }
+                    $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
+                    $external_qualification = ExternalQualification::getExternalQualifications($applicant->personid);
+                    if($post_qualification == true  && $post_qualification->isqueried==1)
+                        $eligible[] = $applicants[$key];
+                    elseif($external_qualification == true  && $external_qualification->isqueried==1)
+                        $eligible[] = $applicants[$key];
                 }
             }
             else        // if attempting to retrieve "non-external" applicants
