@@ -920,7 +920,7 @@ class AdmissionsController extends Controller
                  *  If DTE or DNE the applicants are constrained to each division
                  */
                 elseif ($division_id == 6  || $division_id == 7 )
-                    $cond_arr['application.division'] = $divsion_id;
+                    $cond_arr['application.division'] = $division_id;
 
                 if ($status == "pending")
                 {
