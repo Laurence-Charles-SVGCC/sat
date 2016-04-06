@@ -1102,7 +1102,7 @@
 
                                 </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php 
-                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                         {
                                             echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>References</h3>";
 
@@ -1151,7 +1151,7 @@
                                 <?php if($applicant->applicantintentid==6):?>
                                     </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                         <?php 
-                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                             {
                                                 echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Experience</h3>";
 
@@ -1227,7 +1227,7 @@
 
                                     </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                         <?php 
-                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                             {
                                                 echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Certification</h3>";
 
@@ -1309,7 +1309,7 @@
 
 
                                     </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
-                                        <?php if(Yii::$app->user->can('verifyApplicants')):?>
+                                        <?php if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData')):?>
                                             <h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Nursing Additional Information</h3>
                                             <?php 
                                                 $form = yii\bootstrap\ActiveForm::begin([
@@ -1439,7 +1439,7 @@
                                 <?php if($applicant->applicantintentid==4):?>
                                     </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                         <?php 
-                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                             {
                                                 echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Teaching Experience</h3>";
                                                 if ($teaching == false)
@@ -1524,7 +1524,7 @@
 
 
                                     </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
-                                        <?php if(Yii::$app->user->can('verifyApplicants')):?>
+                                        <?php if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData')):?>
                                             <h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Teaching Additional Information</h3>
                                             <?php 
                                                 $form = yii\bootstrap\ActiveForm::begin([
@@ -1612,7 +1612,7 @@
                                 
                                 </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php 
-                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                         {
                                             echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Criminal Record</h3>";
 
