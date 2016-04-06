@@ -316,7 +316,7 @@ class Application extends \yii\db\ActiveRecord
                 ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
+                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
                         'application.isdeleted' => 0,
                         'applicant.isexternal' => 1,
                         'academic_offering.isdeleted' => 0,
@@ -811,12 +811,26 @@ class Application extends \yii\db\ActiveRecord
         else
         {
             $applicants = Application::find()
-                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
-                        ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+//                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+//                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
+//                        ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+//                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+//                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+//                        ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+//                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+//                                'csec_centre.cseccentreid' => $cseccentreid,
+//                                'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
+//                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+//                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+//                                'academic_offering.isdeleted' => 0])
+//                        ->groupby('application.personid')
+//                        ->all();
+                        ->leftJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                        ->leftJoin('csec_qualification', '`csec_qualification`.`personid` = `applicant`.`personid`')
+                        ->leftJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                        ->leftJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->leftJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->leftJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
                         ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                                 'csec_centre.cseccentreid' => $cseccentreid,
                                 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
