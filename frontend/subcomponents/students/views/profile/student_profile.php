@@ -1012,7 +1012,7 @@
                             <div role="tabpanel" class="tab-pane fade" id="additional_details">                              
                                 </br><div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php 
-                                        if(Yii::$app->user->can('verifyApplicants'))
+                                        if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                                         {
                                             echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>General Work Experience</h3>";
                                             if ($general_work_experience == false)
