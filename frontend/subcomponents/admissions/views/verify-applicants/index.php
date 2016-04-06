@@ -7,6 +7,8 @@ use yii\helpers\Url;
 use frontend\models\Application;
 use frontend\models\ApplicationPeriod;
 use frontend\models\Division;
+use frontend\models\EmployeeDepartment;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -26,10 +28,12 @@ $this->params['breadcrumbs'][] = $this->title;
             </a>    
         </div><br/>
         
-        <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;"> 
-            <span class="pull-left"><strong >Total Applications Received: <?= Application::countActiveApplications();?></strong></span>
-            <span class="pull-right"><strong>Total Applications Verified: <?= Application::countVerifiedApplications();?></strong></span>
-        </p></br/>
+        <?php if (EmployeeDepartment::getUserDivision() == 1):?>
+            <p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;"> 
+                <span class="pull-left"><strong >Total Applications Received: <?= Application::countActiveApplications();?></strong></span>
+                <span class="pull-right"><strong>Total Applications Verified: <?= Application::countVerifiedApplications();?></strong></span>
+            </p><br/>
+        <?php endif;?>
         
         <?php
             $periods = ApplicationPeriod::periodIncomplete();
@@ -37,15 +41,18 @@ $this->params['breadcrumbs'][] = $this->title;
             {
                 foreach ($periods as $period) 
                 {
-                    echo "<p class='alert alert-info' role='alert' style='width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;'>"; 
-                        echo "<span class='pull-left'><strong >";
-                            echo  Division::getDivisionAbbreviation($period->divisionid) . " Applications Received:" . Application::countActiveApplications($period->divisionid);
-                        echo "</strong></span>";
-                        
-                        echo "<span class='pull-right'><strong >";
-                            echo Division::getDivisionAbbreviation($period->divisionid) . " Applications Verified:" . Application::countVerifiedApplications($period->divisionid);
-                        echo "</strong></span>";
-                    echo "</p><br/>";
+                    if (EmployeeDepartment::getUserDivision() == 1  || EmployeeDepartment::getUserDivision() == $period->divisionid)
+                    {
+                        echo "<p class='alert alert-info' role='alert' style='width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;'>"; 
+                            echo "<span class='pull-left'><strong >";
+                                echo  Division::getDivisionAbbreviation($period->divisionid) . " Applications Received:" . Application::countActiveApplications($period->divisionid);
+                            echo "</strong></span>";
+
+                            echo "<span class='pull-right'><strong >";
+                                echo Division::getDivisionAbbreviation($period->divisionid) . " Applications Verified:" . Application::countVerifiedApplications($period->divisionid);
+                            echo "</strong></span>";
+                        echo "</p><br/>";
+                    }
                 }
             }
             
