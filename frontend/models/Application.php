@@ -780,11 +780,13 @@ class Application extends \yii\db\ActiveRecord
             }
         }
         
-        
-        //adds empty $applicants to array
-        foreach ($applicants_without_csec_qualification as $record)
+        if($external == true)
         {
-            $elegible[] = $record;
+            //adds empty $applicants to array
+            foreach ($applicants_without_csec_qualification as $record)
+            {
+                $elegible[] = $record;
+            }
         }
         
         return $elegible;
