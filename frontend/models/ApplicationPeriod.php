@@ -333,6 +333,25 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
             return false;
         }
         
+        /**
+         * Return true if their is an incomplete application period
+         * 
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 24/02/2016
+         * Date Last Modified: 24/02/2016
+         */
+        public static function incompletePeriodExists()
+        {
+            $periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                    ->all();
+            if (count($periods) > 0)
+                return true;
+            return false;
+        }
+        
         
         /**
          * Return array of open application period
