@@ -484,8 +484,7 @@
             }
             $outgoing_status = $mail->send();
             
-//            return ($saved_status && $outgoing_status);
-            return ($outgoing_status);
+            return ($saved_status && $outgoing_status);
         }
         
         
