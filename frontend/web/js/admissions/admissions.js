@@ -847,3 +847,79 @@ function showRejectionFilterButton3()
    else
        document.getElementById('cape-filter-button').style.display = "none"; 
 }
+
+
+function toggleEmailFields()
+{
+    var count = document.getElementById("email_count").value;
+//    alert(count);
+    if (count == 0)
+    {
+        document.getElementById('email_1').style.display = "none"; 
+        document.getElementById('email-1').value = ""; 
+        
+        document.getElementById('email_2').style.display = "none"; 
+        document.getElementById('email-2').value = ""; 
+        
+        document.getElementById('email_3').style.display = "none"; 
+        document.getElementById('email-3').value = ""; 
+        
+        document.getElementById('submit-button').style.display = "none";
+    }
+    else if (count == 1)
+    {
+        document.getElementById('email_1').style.display = "block"; 
+        document.getElementById('email-1').value = ""; 
+        
+        document.getElementById('email_2').style.display = "none"; 
+        document.getElementById('email-2').value = "";
+        
+        document.getElementById('email_3').style.display = "none";
+        document.getElementById('email-3').value = "";
+        
+        document.getElementById('submit-button').style.display = "block";
+        
+    }
+    else if (count == 2)
+    {
+        document.getElementById('email_1').style.display = "block"; 
+        document.getElementById('email-1').value = ""; 
+        
+        document.getElementById('email_2').style.display = "block";
+        document.getElementById('email-2').value = ""; 
+        
+        document.getElementById('email_3').style.display = "none";
+        document.getElementById('email-3').value = ""; 
+        
+        document.getElementById('submit-button').style.display = "block";
+    }
+    else if (count == 3)
+    {
+        document.getElementById('email_1').style.display = "block"; 
+        document.getElementById('email-1').value = ""; 
+        
+        document.getElementById('email_2').style.display = "block"; 
+        document.getElementById('email-2').value = ""; 
+        
+        document.getElementById('email_3').style.display = "block";
+        document.getElementById('email-3').value = ""; 
+        
+        document.getElementById('submit-button').style.display = "block";
+    }
+}
+
+
+function showCommencementDate()
+{
+//    var search_by = document.getElementsByName('rejection_filter');
+    var result = document.getElementById("package-packagetypeid").value;
+
+    
+    if (result == 3  || result == 4)
+        document.getElementById('package-commencementdate').style.display = "block";
+    else
+    {
+        document.getElementById('package-commencementdate').value = "";
+        document.getElementById('package-commencementdate').style.display = "none";
+    }
+}

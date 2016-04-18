@@ -3,6 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+use yii\helpers\FileHelper;
+
+use frontend\models\Offer;
 
 /**
  * This is the model class for table "package".
@@ -14,6 +17,7 @@ use Yii;
  * @property integer $createdby
  * @property integer $lastmodifiedby
  * @property string $name
+ * @property string commencementdate
  * @property string $emailtitle
  * @property string $emailcontent
  * @property string $datestarted
@@ -28,7 +32,6 @@ use Yii;
  * @property PackageType $packagetype
  * @property PackageProgress $packageprogress
  * @property Person $createdby0
- * @property PackageDocument[] $packageDocuments
  */
 class Package extends \yii\db\ActiveRecord
 {
@@ -47,9 +50,10 @@ class Package extends \yii\db\ActiveRecord
     {
         return [
             [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'name', 'datestarted', 'emailtitle', 'emailcontent', 'documentcount'], 'required'],
-            [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'documentcount', 'isactive', 'isdeleted'], 'integer'],
+            [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'documentcount', 'isactive', 'isdeleted', 'waspublished'], 'integer'],
             [['datestarted', 'datecompleted'], 'safe'],
             [['name'], 'string', 'max' => 45],
+            [['commencementdate'], 'string', 'max' => 100],
             [['emailtitle', 'emailcontent'], 'string'],
         ];
     }
@@ -117,14 +121,6 @@ class Package extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Person::className(), ['personid' => 'createdby']);
     }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPackageDocuments()
-    {
-        return $this->hasMany(PackageDocument::className(), ['packageid' => 'packageid']);
-    }
     
     
     /**
@@ -141,7 +137,7 @@ class Package extends \yii\db\ActiveRecord
         $db = Yii::$app->db;
         
         $packages = $db->createCommand(
-                " SELECT package.applicationperiodid AS 'id',"
+                " SELECT package.packageid AS 'id',"
                 . " package.name AS 'package_name',"
                 . " application_period.name AS 'period_name',"
                 . " division.abbreviation AS 'division',"
@@ -190,10 +186,31 @@ class Package extends \yii\db\ActiveRecord
     {
         $id = Yii::$app->user->identity->personid;
         $package = Package::find()
-                ->where(['isactive' => 1, 'isdeleted' => 1 ,'lastmodifiedby' => $id, 'packageprogressid' => [1,2,4]])
+                ->where(['isactive' => 0, 'isdeleted' => 0 ,'lastmodifiedby' => $id, 'packageprogressid' => [1,2,3]])
                 ->one();
         if ($package)
             return $package->packageid;
+        return false;
+    }
+    
+    
+    /**
+     * Returns the 'applicationperiodid' of the incomplete period
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/04/2016
+     * Date Last Modified: 10/04/2016
+     */
+    public static function getIncompletePackage()
+    {
+        $id = Yii::$app->user->identity->personid;
+        $package = Package::find()
+                ->where(['isactive' => 0, 'isdeleted' => 0 ,'lastmodifiedby' => $id, 'packageprogressid' => [1,2,3]])
+                ->one();
+        if ($package)
+            return $package;
         return false;
     }
     
@@ -206,14 +223,158 @@ class Package extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 10/04/2016
-     * Date Last Modified: 10/04/2016
+     * Date Last Modified: 10/04/2016 | 11/04/2016
      */
     public static function safeToDelete($recordid)
     {
         $package = Package::find()
-                ->where(['packageid' => $recordid]);
+                ->where(['packageid' => $recordid])
+                ->one();
         if ($package==true  && $package->waspublished == 0)
             return true;
         return false;
     }
+    
+    
+    /**
+     * if $packageif == NULL;
+     *  -> get the documents of the current outstanding package
+     * else
+     *  -> get the documents of specified package
+     * 
+     * @param type $packageid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 11/04/2016
+     * Date Last Modified: 12/04/2016
+     */
+    public static function getDocuments($packageid = NULL)
+    {
+        if ($packageid == NULL)
+            $package = self::getIncompletePackage();
+        else
+        {
+            $package = Package::find()
+                ->where(['packageid' => $packageid])
+                ->one();
+        }
+
+        $dir = Yii::getAlias('@frontend') . "/files/packages/" . $package->packageid . "_" . $package->name;
+
+        $files = FileHelper::findFiles($dir);
+
+        return $files;
+    }
+
+
+    /**
+     * Returns true if document limit for package is met
+     *
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/04/2016
+     * Date Last Modified: 12/04/2016
+     */
+    public static function hasAllDocuments($packageid = NULL)
+    {
+        if ($packageid == NULL)
+            $package = self::getIncompletePackage();
+        else
+        {
+            $package = Package::find()
+                ->where(['packageid' => $packageid])
+                ->one();
+        }
+
+        $dir = Yii::getAlias('@frontend') . "/files/packages/" . $package->packageid . "_" . $package->name;
+
+        $files = FileHelper::findFiles($dir);
+        
+        if (count($files) == $package->documentcount)
+            return true;
+        return false;
+    }
+
+
+    /**
+     * Assess number of documents associated with a particular package
+     * if < package's documentcount, return -1;
+     * elseif == package's documentcount return 0
+     * elseif > package's documentcount return 1
+     *
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/04/2016
+     * Date Last Modified: 12/04/2016
+     */
+    public static function assessDocuments($packageid = NULL)
+    {
+        if ($packageid == NULL)
+            $package = self::getIncompletePackage();
+        else
+        {
+            $package = Package::find()
+                ->where(['packageid' => $packageid])
+                ->one();
+        }
+
+//        $dir = "frontend/files/packages/" . $package->packageid . "_" . $package->name;
+        $dir = Yii::getAlias('@frontend') . "/files/packages/" . $package->packageid . "_" . $package->name;
+
+        $files = FileHelper::findFiles($dir);
+        if (count($files) < $package->documentcount)
+            return -1;
+        elseif (count($files) == $package->documentcount)
+            return 0;
+        else
+            return 1;
+    }
+    
+    
+    /**
+     * Returns true if package has a document upload requirement
+     * 
+     * @param type $recordid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/04/2016
+     * Date Last Modified: 15/04/2016
+     */
+    public static function needsToUpload($recordid)
+    {
+        $package = Package::find()
+                ->where(['packageid' => $recordid])
+                ->one();
+        if ($package && $package->documentcount>0)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns tru if the package in qustion hase been used by a published offer
+     * 
+     * @param type $packageid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 17/04/2016
+     * Date Last Modified: 17/04/2016
+     */
+    public static function hasBeenPublished($packageid)
+    {
+        $offer = Offer::find()
+                ->where(['packageid' => $packageid, 'ispublished'=> 1])
+                ->one();
+        if($offer)
+            return true;
+        return false;
+    }
+    
+    
+    
 }

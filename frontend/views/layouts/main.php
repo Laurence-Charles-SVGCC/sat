@@ -128,7 +128,7 @@ else
                     
                     <?php if (Yii::$app->user->can('Registrar')): ?>
                         <!--<li><a href="////<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-packages-dashboard'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>-->
-                        <!--<li><a href="////<?= Url::toRoute(['/subcomponents/admissions/package'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>-->
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/package'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>
                     <?php endif; ?>
                    
                     <?php if (Yii::$app->user->can('viewOffer')): ?>

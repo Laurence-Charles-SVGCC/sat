@@ -21,6 +21,7 @@ use frontend\models\OfferType;
  * @property integer $ispublished
  * @property interger $isactive
  * @property integer $isdeleted
+ * @property integer $packageid
  *
  * @property Application $application
  */
@@ -41,7 +42,7 @@ class Offer extends \yii\db\ActiveRecord
     {
         return [
             [['applicationid', 'issuedby', 'issuedate', ], 'required'],
-            [['applicationid', 'offertypeid', 'issuedby', 'revokedby', 'ispublished', 'isactive', 'isdeleted'], 'integer'],
+            [['applicationid', 'offertypeid', 'issuedby', 'revokedby', 'ispublished', 'isactive', 'isdeleted', 'packageid'], 'integer'],
             [['issuedate', 'revokedate'], 'safe']
         ];
     }

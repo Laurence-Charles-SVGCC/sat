@@ -714,7 +714,7 @@
                             }
                         }
 
-                        //updates subsequent applications
+                        //if  not last application -> updates subsequent applications
                         if($count - $position > 1)
                         {
                             for ($i = $position+1 ; $i < $count ; $i++)

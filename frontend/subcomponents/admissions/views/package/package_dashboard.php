@@ -10,6 +10,7 @@
     use yii\web\UrlManager;
     
     use frontend\models\ApplicationPeriod;
+    use frontend\models\Package;
     
     $this->title = 'Package Setup Dashboard';
 ?>
@@ -52,13 +53,13 @@
                     <?php endif; ?>
                 </fieldset></br> 
                 
-                <?php if ($recordid == true  &&  $package->packageprogressid >= 1):?> 
+                <?php if ($recordid == true  && Package::needsToUpload($recordid) == true &&  $package->packageprogressid >= 1):?> 
                     <!--Step 2 button-->
                     <fieldset id="package-step-two">
                         <legend>Step 2: Upload Documents</legend>
-                        <a href="<?= Url::toRoute(['package/upload-attachments', 'count' => $package->documentcount])?>" title="Upload Documents">
+                        <a href="<?= Url::toRoute(['package/upload-attachments', 'recordid' => $recordid, 'count' => $package->documentcount])?>" title="Upload Documents">
                             <!--All indicated documents have been uploaded-->
-                            <?php if ($package->packageprogressid > 1):?>     
+                            <?php if ($package->packageprogressid > 1 || Package::assessDocuments() == 0):?>     
                                 <div class="alert in alert-block fade alert-success mainButtons">
                                     Click here modify attachments
                                 </div>
