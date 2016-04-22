@@ -126,25 +126,28 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                     <?php endif; ?>
                     
-                    <?php if (Yii::$app->user->can('Registrar')): ?>
-                        <!--<li><a href="////<?= Url::toRoute(['/subcomponents/admissions/offer/prepare-packages-dashboard'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>-->
+                    <?php if (Yii::$app->user->can('Registrar')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/package'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>
                     <?php endif; ?>
                    
-                    <?php if (Yii::$app->user->can('viewOffer')): ?>
+                    <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Conditional Offers</a></li>
                     <?php endif; ?>
                     
-                    <?php if (Yii::$app->user->can('viewOffer')): ?>
+                    <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 1])?>"><i class="fa fa-circle-o"></i>Unconditional Offers</a></li>
                     <?php endif; ?>
                         
-                    <?php if (Yii::$app->user->can('viewRejection')): ?>
+                    <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1])?>"><i class="fa fa-circle-o"></i>Pre-Interview Rejections</a></li>
                     <?php endif; ?> 
                         
-                    <?php if (Yii::$app->user->can('viewRejection')): ?>
+                    <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])?>"><i class="fa fa-circle-o"></i>Post-Interview Rejections</a></li>
+                    <?php endif; ?>
+                    
+                    <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Enroll Applicants</a></li>
                     <?php endif; ?>
                         
                   

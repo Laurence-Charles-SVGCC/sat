@@ -143,18 +143,21 @@
                                 </p>
 
                                 <div id="publish-button" style="display:none">
-                                    <?= Html::a('Bulk Publish', ['bulk-publish', 'offertype' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) ?>
-
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
+                                        if (Offer::anyOfferExists($periods, $offertype) == true)
+                                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                        else
+                                            echo "<p>No pending offers exist at this time.</p>";
+                                        
                                         if ($periods == true)
                                         {
                                             foreach ($periods as $period) 
                                             {
-                                                echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['bulk-publish', 'division' => Division::getDivisionAbbreviation($period->divisionid)], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true)
+                                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                         }
-
                                    ?>
                                 </div>
                             <?php endif; ?>
@@ -202,7 +205,7 @@
                          {
                             if (Yii::$app->user->can('deleteOffer'))
                             {
-                                if($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)
+                                if(($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)  || $row['ispublished'] == 1)
                                     return "N/A";
                                 else
                                 {

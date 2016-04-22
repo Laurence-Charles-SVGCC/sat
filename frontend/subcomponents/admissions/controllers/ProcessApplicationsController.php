@@ -534,6 +534,15 @@
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
                             }
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
+                            }
                         }
                     }
 
@@ -617,6 +626,15 @@
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
                             }
                         }
                     }
@@ -792,6 +810,15 @@
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
                             }
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
+                            }
                         }
                     }
 
@@ -833,6 +860,16 @@
                                         $transaction->rollBack();
                                         Yii::$app->session->setFlash('error', 'Error occured when creating offer');
                                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    }
+                                    // Generate potentialstudentid
+                                    else
+                                    {
+                                        $applicant = Applicant::find()
+                                                    ->where(['personid' => $update_candidate->personid])
+                                                    ->one();
+                                        $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                        $applicant->potentialstudentid = $generated_id;
+                                        $applicant->save();
                                     }
                                 }
                                 else
@@ -942,6 +979,15 @@
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
                             }
                         }
 

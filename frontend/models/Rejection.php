@@ -17,6 +17,7 @@ use Yii;
  * @property integer $isactive
  * @property integer $isdeleted
  * @property integer $ispublished
+ * @property integer $packageid
  *
  * @property Person $issuedby0
  * @property Person $revokedby0
@@ -42,7 +43,7 @@ class Rejection extends \yii\db\ActiveRecord
     {
         return [
             [['rejectiontypeid', 'personid', 'issuedby', 'issuedate'], 'required'],
-            [['rejectiontypeid', 'personid', 'issuedby', 'revokedby', 'isactive', 'isdeleted', 'ispublished'], 'integer'],
+            [['rejectiontypeid', 'personid', 'issuedby', 'revokedby', 'isactive', 'isdeleted', 'ispublished', 'packageid'], 'integer'],
             [['issuedate', 'revokedate'], 'safe']
         ];
     }
@@ -177,6 +178,89 @@ class Rejection extends \yii\db\ActiveRecord
         else
             return false;
     }
+    
+    
+    
+    /**
+     * Returns true if there is a pending application for the stated application period exists
+     * 
+     * @param type $applicationperiodid
+     * @param type $rejectiontype
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/04/2016
+     * Date Last Modified: 18/04/2016
+     */
+    public static function rejectionExists($applicationperiodid, $rejectiontype)
+    {
+        $rejection_cond['application_period.applicationperiodid'] = $applicationperiodid;
+        $rejection_cond['application_period.isactive'] = 1;
+        $rejection_cond['application_period.iscomplete'] = 0;
+        $rejection_cond['rejection.rejectiontypeid'] = $rejectiontype;
+        $rejection_cond['rejection.isdeleted'] = 0;
+        $rejection_cond['rejection.ispublished'] = 0;
+        $rejection_cond['rejection.isactive'] = 1;
+        $rejection_cond['rejection_applications.isactive'] = 1;
+        $rejection_cond['rejection_applications.isdeleted'] = 0;
+        
+        $rejections = Rejection::find()
+                ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($rejection_cond)
+                ->groupby('rejection.rejectionid')
+                ->all();
+        if($rejections)
+            return true;
+        return false;
+    }
+    
+    
+    
+    /**
+     * Returns true if there is a pending application for the stated application periods exists
+     * 
+     * @param type $applicationperiodid
+     * @param type $rejectiontype
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/04/2016
+     * Date Last Modified: 18/04/2016
+     */
+    public static function anyRejectionExists($applicationperiods, $rejectiontype)
+    {
+        $periodids = array();
+        foreach($applicationperiods as $period)
+            $periodids[]=$period->applicationperiodid;
+        
+        $rejection_cond['application_period.applicationperiodid'] = $periodids;
+        $rejection_cond['application_period.isactive'] = 1;
+        $rejection_cond['application_period.iscomplete'] = 0;
+        $rejection_cond['rejection.rejectiontypeid'] = $rejectiontype;
+        $rejection_cond['rejection.isdeleted'] = 0;
+        $rejection_cond['rejection.ispublished'] = 0;
+        $rejection_cond['rejection.isactive'] = 1;
+        $rejection_cond['rejection_applications.isactive'] = 1;
+        $rejection_cond['rejection_applications.isdeleted'] = 0;
+        
+        $rejections = Rejection::find()
+                ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($rejection_cond)
+                ->groupby('rejection.rejectionid')
+                ->all();
+        if($rejections)
+            return true;
+        return false;
+    }
+    
+    
+   
     
     
 }

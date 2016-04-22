@@ -162,10 +162,9 @@ class Package extends \yii\db\ActiveRecord
                 . " ON package.packageprogressid = package_progress.packageprogressid"
                 . " JOIN person"
                 . " ON package.createdby = person.personid"
-//                . " JOIN user"
-//                . " ON package.lastmodifiedby = user.personid"
-                . " WHERE package.isactive = 1"
-                . " AND package.isdeleted = 0;"
+                . " WHERE package.isdeleted = 0"
+                . " AND package.packageprogressid = 4"
+                . " AND application_period.iscomplete=0;"
             )
             ->queryAll();
 
@@ -356,7 +355,7 @@ class Package extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns tru if the package in qustion hase been used by a published offer
+     * Returns tru if the package in question hase been used by a published offer
      * 
      * @param type $packageid
      * @return boolean
@@ -367,10 +366,32 @@ class Package extends \yii\db\ActiveRecord
      */
     public static function hasBeenPublished($packageid)
     {
-        $offer = Offer::find()
-                ->where(['packageid' => $packageid, 'ispublished'=> 1])
+        $package = Package::find()
+                ->where(['packageid' => $packageid, 'waspublished'=> 1])
                 ->one();
-        if($offer)
+        if($package)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true if a package of the same type currently exists.
+     * 
+     * @param type $packagetypeid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 19/04/2016
+     * Date Last Modified: 19/04/2016
+     */
+    public static function currentPackageTypeExists($packagetypeid)
+    {
+        $package = Package::find()
+                ->innerJoin('`application_period`', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['package.packagetypeid' => $packagetypeid, 'package.isactive' => 1, 'package.isdeleted' => 0, 'application_period.iscomplete' => 0])
+                ->one();
+        if ($package)
             return true;
         return false;
     }

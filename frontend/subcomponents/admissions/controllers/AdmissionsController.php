@@ -894,7 +894,6 @@ class AdmissionsController extends Controller
                 $cond_arr['academic_offering.isactive'] = 1;
                 $cond_arr['academic_offering.isdeleted'] = 0;
                 $cond_arr['application_period.isactive'] = 1;
-//                $cond_arr['application_period.applicationperiodstatusid'] = 5;
                 $cond_arr['application_period.iscomplete'] = 0;
                 $cond_arr['application.isactive'] = 1;
                 $cond_arr['application.isdeleted'] = 0;
@@ -906,7 +905,7 @@ class AdmissionsController extends Controller
                     $cond_arr['application.applicationstatusid'] = 9;
                     $cond_arr['offer.isactive'] = 1;  
                     $cond_arr['offer.isdeleted'] = 0;
-//                    $cond_arr['offer.ispublished'] = 1;
+                    $cond_arr['offer.ispublished'] = 1;
                 }
 
                 /*
@@ -967,7 +966,7 @@ class AdmissionsController extends Controller
                         
                         $info = Applicant::getApplicantInformation($applicant->personid);
                         
-                        $app['programme'] = $info["prog"];
+                        $app['programme_name'] = $info["prog"];
                         $app['application_status'] = $info["status"];
                         
                         $data[] = $app;

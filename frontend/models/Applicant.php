@@ -1728,6 +1728,56 @@ class Applicant extends \yii\db\ActiveRecord
         }
         return count($rejectionids) > 0 ? $rejectionids : false;
     }
+    
+    
+    /*
+     * Generates/revokes a potentialstudentid
+     * 
+     * @param type $divisionid
+     * @param type $applicantid
+     * @param type $action
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+    */
+    public static function preparePotentialStudentID($divisionid, $applicantid, $action)
+    {
+        if ($action = "generate")
+        {
+            $academic_year = AcademicYear::find()
+                        ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                        ->where(['applicant.applicantid' => $applicantid,
+                                'application.isactive' => 1, 'application.isdeleted' => 0
+                                ])
+                        ->groupBy('application.personid')
+                        ->one();
+            
+            if($divisionid == 7)    //DNE applicant start the year following their application
+                $year = intval($academic_year->title) + 1;
+            else 
+                $year = $academic_year->title;
+                    
+            $startyear =  substr($academic_year->title, 2, 2);        
+            $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
+            $num = str_pad(strval($applicantid), 4, '0', STR_PAD_LEFT);
+            try
+            {
+                $potentialstudentid = intval($startyear . $div . $num);
+            } catch (Exception $ex) {
+                $potentialstudentid = NULL;
+            }
+        }
+        elseif($action = "revoke")
+        {
+            $potentialstudentid = NULL;
+        }
+        return $potentialstudentid;         
+    }
+    
   
     
 }

@@ -3,11 +3,12 @@
 namespace app\subcomponents\admissions\controllers;
 
 use Yii;
+use yii\helpers\Url;
+
 use common\models\User;
 use frontend\models\Applicant;
 use frontend\models\Application;
 use frontend\models\Offer;
-use yii\helpers\Url;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\DocumentSubmitted;
@@ -17,19 +18,32 @@ use frontend\models\Student;
 use frontend\models\StudentRegistration;
 use frontend\models\RegistrationType;
 use frontend\models\DocumentIntent;
+use frontend\models\Division;
+
 
 class RegisterStudentController extends \yii\web\Controller
 {
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
+//    public function actionIndex()
+//    {
+//        return $this->render('index');
+//    }
     
     
-    public function actionViewProspectiveStudent($applicantid, $programme)
+    
+    /**
+     * 
+     * @param type $personid
+     * @param type $programme
+     * @return type
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 21/04/2016
+     */
+    public function actionViewProspectiveStudent($personid, $programme)
     {
         $applicant = Applicant::find()
-                        ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
             
         $username = $applicant->getPerson()->one()->username;
@@ -37,12 +51,13 @@ class RegisterStudentController extends \yii\web\Controller
         $applications = Application::find()
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/  'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                        ->where(['application_period.iscomplete' => 0,  'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $applicant->personid])
                         ->all();
         
         $application_container = array();
-        $target_application = null;
+        $target_application = NULL;
+        $divisionid = NULL;
         
         foreach($applications as $application)
         {
@@ -63,6 +78,7 @@ class RegisterStudentController extends \yii\web\Controller
             //if this application is the same as the one that is associated with current offer
             if ($application->applicationid == $offer->applicationid)
             {
+                $divisionid = $application->divisionid;
                 $istarget = true;
                 $target_application = $application;
             }
@@ -103,6 +119,12 @@ class RegisterStudentController extends \yii\web\Controller
             array_push($application_container, $combined);  
         }
         
+        //Get documents already submitted
+        $selections = array();
+        foreach (DocumentSubmitted::findAll(['personid' => $personid]) as $doc)
+        {
+            array_push($selections, $doc->documenttypeid);
+        }
         
         return $this->render('prospective_student',
                     [
@@ -113,11 +135,162 @@ class RegisterStudentController extends \yii\web\Controller
                         'applicationid' => $target_application->applicationid,
                         'target_application' => $target_application,
                         'programme' => $programme,
+                        'divisionid' => $divisionid,
+                        
+                        'selections' => $selections,
+                        'offerid' => $offer->offerid,
+                        'applicationid' => $target_application->applicationid,
                     ]);
-        
-        
-        
     }
+    
+    
+    /**
+     * Creates a student record for a successful appplicant
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 22/04/2016
+     * Date Last Modified: 22/04/2016
+     * 
+     */
+    public function actionEnrollStudent()
+    {
+        $student_save_flag = false;
+        $user_save_flag = false;
+        $registration_save_flag = false;
+        $document_save_flag = false;
+    
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+           
+            //Make applicant a student
+            $offerid = $request->post('offerid');
+            $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
+            $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
+            $user = User::findOne(['personid' => $applicant->personid]);
+           
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $student = new Student();
+                $student->personid = $applicant->personid;
+                $student->applicantname = $user->username;
+                $student->title = $applicant->title;
+                $student->firstname = $applicant->firstname;
+                $student->middlename = $applicant->middlename;
+                $student->lastname = $applicant->lastname;
+                $student->gender = $applicant->gender;
+                $student->dateofbirth = $applicant->dateofbirth;
+                $student->admissiondate = date('Y-m-d');
+                $student_save_flag = $student->save();
+                if($student_save_flag == false)
+                {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error saving student record.');
+                }
+                else
+                {
+                    //Update username
+                    if ($applicant->potentialstudentid)
+                       $user->username = $applicant->potentialstudentid;
+                    else
+                    {
+                       $student_number = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "generate");
+                       $user->username = $student_number;
+                    }
+                    
+                    $user->persontypeid = 2;
+                    
+                    $user_save_flag = $user->save();
+                    if ($user_save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error saving user record.');
+                    }
+                    else
+                    {
+                        //Capture student registration
+                        $reg = new StudentRegistration();
+                        $reg->offerid = intval($offerid);
+                        $reg->personid = $applicant->personid;
+                        $reg->academicofferingid = $application->academicofferingid;
+                        $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
+                        $reg->registrationtypeid = $reg_type->registrationtypeid;
+                        $reg->currentlevel = 1;
+                        $reg->registrationdate = date('Y-m-d');
+                        $registration_save_flag = $reg->save();
+
+                        if ($registration_save_flag == false)
+                        {   
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error saving student registration record.');
+                        }
+                        else
+                        {
+                            //Update document submission
+                            $submitted = $request->post('documents');
+                            $docs = DocumentSubmitted::findAll(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                            $docs_arr = array();
+                            if ($docs)
+                            {
+                                foreach ($docs as $doc)
+                                { 
+                                    $docs_arr[] = $doc->documenttypeid; 
+                                }
+
+                                foreach ($docs as $doc)
+                                {
+                                    if (!in_array($doc->documenttypeid, $submitted))
+                                    { 
+                                        //Document has been unchecked
+                                        $doc->isdeleted = 1;
+                                        $document_save_flag = $doc->save();
+                                        if ($document_save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                                            break;
+                                        }
+                                    }
+                                }  
+                            }
+                            
+                            if($submitted)
+                            {
+                                foreach ($submitted as $sub)
+                                {
+                                    if (!in_array($sub, $docs_arr))
+                                    { 
+                                       $doc = new DocumentSubmitted();
+                                       $intent = DocumentIntent::findOne(['description' => 'registration']);
+                                       $doc->documenttypeid = $sub;
+                                       $doc->personid = $applicant->personid;
+                                       $doc->recepientid = Yii::$app->user->getId();
+                                       $doc->documentintentid = $intent ? $intent->documentintentid : NULL;
+                                       $document_save_flag = $doc->save(); 
+                                       if ($document_save_flag == false)
+                                       {
+                                           $transaction->rollBack();
+                                           Yii::$app->session->setFlash('error', 'Document could not be added');
+                                           break;
+                                       }
+                                    }
+                                }
+                            }
+                            $transaction->commit();
+                            Yii::$app->session->setFlash('success', 'Student registered successfully');   
+                            return $this->redirect( Url::toRoute(['/subcomponents/students/profile/student-profile', 'personid' => $applicant->personid, 'studentregistrationid' => $reg->studentregistrationid]));
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                $transaction->rollBack();
+            }
+       }
+   }
+    
     
     /*
     * Purpose: Responds to user indicating they want to register an applicant.
@@ -199,11 +372,14 @@ class RegisterStudentController extends \yii\web\Controller
                 'username' => $applicantusername]) );
    }
    
+   
+   
    public function actionMakeStudent()
    {
        if (Yii::$app->request->post())
        {
            $request = Yii::$app->request;
+           
            //Make applicant a student
            $offerid = $request->post('offerid');
            $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);

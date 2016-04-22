@@ -674,15 +674,6 @@ function togglePublish()
 
 
 
-
-
-
-
-
-
-
-
-
 /**
  * Handles the rejection filteration mechanism.
  * 
@@ -922,4 +913,14 @@ function showCommencementDate()
         document.getElementById('package-commencementdate').value = "";
         document.getElementById('package-commencementdate').style.display = "none";
     }
+}
+
+
+function toggleProfileButton()
+{
+    var review_applicant = document.getElementsByName('review-applicant');
+    if (review_applicant[0].checked == true)           //if "yes"
+        document.getElementById("profile-button").style.display = "block";
+    else          //if "no"
+        document.getElementById("profile-button").style.display = "none";
 }

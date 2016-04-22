@@ -48,8 +48,8 @@
                             foreach ($packages as $package) 
                             {
                                 echo "<tr>";
-                                    echo "<th rowspan='5' style='vertical-align:top; text-align:center; font-size:1.2em;'>{$package['package_name']}";
-                                        echo "<div style='margin-top:20px'>";
+                                    echo "<th rowspan='2' style='vertical-align:top; text-align:center; font-size:1.2em;'>{$package['package_name']}";
+                                        echo "<div style='margin-top:20px; margin-bottom:20px;'>";
                                             if(Yii::$app->user->can('Registrar')  && Package::hasBeenPublished($package['id']) == false)
                                             {
                                                 echo Html::a(' Delete', 
@@ -62,6 +62,19 @@
                                                                 'style' => 'margin-right:20px',
                                                             ]);
                                             }
+                                            elseif(Yii::$app->user->can('Registrar')  && Package::hasBeenPublished($package['id']) == true)
+                                            {
+                                                echo Html::a(' Deactivate', 
+                                                            ['package/deactivate-package', 'recordid' => $package["id"]], 
+                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                                'data' => [
+                                                                    'confirm' => 'Are you sure you want to delete this item?',
+                                                                    'method' => 'post',
+                                                                ],
+                                                                'style' => 'margin-right:20px',
+                                                            ]);
+                                            }
+                                            
                                             if(Yii::$app->user->can('Registrar')  && Package::hasBeenPublished($package['id']) == false)
                                             {
                                                 echo Html::a(' Edit', 

@@ -21,11 +21,96 @@
     use frontend\models\BatchStudent;
     use frontend\models\StudentRegistration;
     use frontend\models\Hold;
-    use frontend\models\PostSecondaryQualification;
     use frontend\models\ExternalQualification;
+    use frontend\models\NursingAdditionalInfo;
+    use frontend\models\TeachingAdditionalInfo;
+    use frontend\models\NurseWorkExperience;
+    use frontend\models\CriminalRecord;
+    use frontend\models\PostSecondaryQualification;
 
     /* @var $this yii\web\View */
     $this->title = 'Student Profile';
+    
+    $relation_count = [
+                        0 => '0',
+                        1 => '1', 
+                        2 => '2', 
+                        3 => '3', 
+                        4 => '4',
+                        5 => '5',
+                        6 => '6',
+                        7 => '7',
+                        8 => '8',
+                        9 => '9',
+                        10 => '10',
+                    ];
+    
+    $has_worked = [
+                    1 => 'Yes',
+                    0 => 'No'
+                ];
+    
+    $is_working = [
+                    1 => 'Yes', 
+                    0 => 'No'
+                ];
+    
+    $nursing_experience = [
+                    1 => 'Yes', 
+                    0 => 'No'
+                ];
+    
+    $teaching_experience = [
+                    1 => 'Yes', 
+                    0 => 'No'
+                ];
+    
+    $financing_options = [
+        'Father' => 'Father',
+        'Mother' => 'Mother',
+        'Self' => 'Self',
+        'Other' => 'Other'
+    ];
+    
+    $student_loan = [
+        1 => 'Yes', 
+        0 => 'No'
+    ];
+    
+    $sponsorship_request = [
+        'Grant' => 'Grant',
+        'Sponsohip' => 'Sponsoship',
+        'Both' => 'Both',
+        'Neither' => 'Neither'
+    ];
+    
+    $iscurrent_job = [
+                    '' => 'Select..',
+                    1 => 'Yes', 
+                    0 => 'No'
+                ];
+    
+    $titles = [
+            '' => 'Title', 
+            'Mr' => 'Mr',
+            'Ms' => 'Ms', 
+            'Mrs' => 'Mrs'
+        ];
+    
+    $has_criminalrecord = [
+                    1 => 'Yes',
+                    0 => 'No'
+                ];
+    
+    $is_repeat_applicant = [
+                    1 => 'Yes',
+                    0 => 'No'
+                ];
+    
+    $is_organisational_member = [
+                    1 => 'Yes',
+                    0 => 'No'
+                ];
 ?>
 
     <div class="site-index">

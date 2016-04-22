@@ -4,6 +4,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 
 use frontend\models\ExaminationBody;
 use frontend\models\ExaminationProficiencyType;
@@ -11,6 +12,7 @@ use frontend\models\Subject;
 use frontend\models\ExaminationGrade;
 use frontend\models\ApplicationStatus;
 use frontend\models\EmployeeDepartment;
+use frontend\models\DocumentType;
 
 
 $this->title = 'Successful Applicant  Review Dashboard';
@@ -28,20 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="custom_body">
-            <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2>
+            <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2><br/>
             
             <div style="margin-left:2.5%">
                 <p style="font-size:20px"><strong>Applicant ID:</strong><?= $username; ?></p><br/>
 
                 <p style="font-size:20px"><strong>Applicant Name:</strong><?= $applicant->title . ". " .  $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></p><br/>
 
-                <p style="font-size:20px"><strong>Application Being Considered:</strong><?= $programme; ?></p><br/>
+                <p style="font-size:20px"><strong>Programme Under Offer:</strong><?= $programme; ?></p><br/>
             </div>
             
-            <div>
+            
+            <fieldset>
+                <legend class="custom_h2" style="margin-left: 2.5%;">Submitted Applications</legend>
                 <table class='table table-condensed' style="width: 95%; margin: 0 auto;">
                     <tr>
-                        <th>Active</th>
                         <th>Priority</th>
                         <th>Division</th>
                         <th>Programme</th>
@@ -50,36 +53,68 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     <?php for($i = 0 ; $i< count($application_container) ; $i++): ?>
                         <tr>
-                            <?php if($application_container[$i]["istarget"] == true):?>
-                                <td> <i class="fa fa-hand-o-right"></i> </td>
-                            <?php else:?>
-                                <td></td>
-                            <?php endif;?>
-                            
                             <td> <?= $application_container[$i]["application"]->ordering ?> </td>
                             <td> <?= $application_container[$i]["division"] ?> </td>
                             <td> <?= $application_container[$i]["programme"] ?> </td>
+                            
+                            <?php if($application_container[$i]["istarget"] == true):?>
+                                <td> <i class="glyphicon glyphicon-ok"></i> </td>
+                            <?php else:?>
+                                <td><i class="glyphicon glyphicon-remove"></td>
+                            <?php endif;?>
                         </tr>
                     <?php endfor; ?> 
                 </table>
-            </div>
+            </fieldset><br/><br/>
             
             
-            <?php ActiveForm::begin(['action' => Url::to(['view-applicant/applicant-actions'])]);?>
-                
-                <?= Html::hiddenInput('applicantusername', $username); ?>
-                <?php if (Yii::$app->user->can('registerStudent')): ?>
-                    <?= Html::submitButton('Register as Student', ['class' => 'btn btn-success', 'name' => 'register']); ?>
-                <?php endif; ?>
-               
-                <?= Html::submitButton('View Applicant Profile', ['class' => 'btn btn-success', 'name' => 'applicant_profile']); ?>
-            
-                <?php if(Yii::$app->user->can('publishOffer')): ?>
-                    <?= Html::submitButton('Publish Decision', ['class' => 'btn btn-success', 'name' => 'publish_decision']); ?>
-                <?php endif; ?>
+            <fieldset>
+                <legend class="custom_h2" style="margin-left: 2.5%;">Registration Panel</legend>
+                <div style="margin-left: 2.5%;">
+                    <p class="general_text">
+                        Would you like to review the applicant's profile?
+                        <?= Html::radioList('review-applicant', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleProfileButton();']);?>
+                    </p>
 
-            <?php ActiveForm::end(); ?>
-            
+                    <div id="profile-button" style="display:none">
+                        <a target="_blank" class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
+                    </div>
+
+                    <br/>
+                    <div>
+                        <?php 
+                            $form = ActiveForm::begin(
+                                [
+                                    'action' => Url::to(['register-student/enroll-student']),
+                                ]); 
+                        ?>
+                        
+                            <?= Html::hiddenInput('applicantid', $applicant->applicantid); ?>
+                            <?= Html::hiddenInput('offerid', $offerid); ?>
+                            <?= Html::hiddenInput('applicationid', $applicationid); ?>
+                        
+                            <p class="general_text">Select from the following list which documents the applicant presented on enrollment.</p>
+                            <h3><strong>Enrollment Documents Checklist</strong></h3>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <?= Html::checkboxList('documents', 
+                                                            $selections, 
+                                                            ArrayHelper::map(DocumentType::findAll(['isdeleted' => 0]),
+                                                            'documenttypeid', 
+                                                            'name'));
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group"><br/>
+                                <?php if (Yii::$app->user->can('registerStudent')): ?>
+                                    <?= Html::submitButton(' Enroll Student', ['class' => 'btn btn-lg btn-success pull-left', 'style' => 'width: 30%;']) ?>
+                                <?php endif; ?>
+                            </div>
+                        <?php ActiveForm::end(); ?>
+                    </div>
+                </div>
+            </fieldset><br/><br/>
         </div>
     </div>
 </div>

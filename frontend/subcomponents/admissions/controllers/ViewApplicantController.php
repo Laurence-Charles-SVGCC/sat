@@ -1063,7 +1063,7 @@ class ViewApplicantController extends \yii\web\Controller
                 $year = $academic_year["title"];
                 array_push($secondDetails, $year);
             }
-            else if ($application->ordering == 3)
+            elseif ($application->ordering == 3)
             {
                 array_push($third, $application);
                 $isCape = Application::isCapeApplication($application->academicofferingid);

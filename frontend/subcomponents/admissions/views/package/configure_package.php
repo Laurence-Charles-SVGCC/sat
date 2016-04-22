@@ -142,8 +142,8 @@
                         if ($recordid == true)
                             echo Html::a(' Cancel',['package/initiate-package', 'recordid' => $recordid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-right', 'style' => 'width:20%; margin-left:5%;']);
                         else      
-                            echo Html::a(' Cancel',['package/initiate-package'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:20%; margin-left:5%;']);
-                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:20%; margin-right:5%;']);        
+                            echo Html::a(' Cancel',['package/initiate-package'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-right', 'style' => 'width:20%; margin-left:5%;']);
+                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:20%;']);        
                     ActiveForm::end();    
                 ?>
                 

@@ -55,10 +55,9 @@
                     <legend class="custom_h2">Configure Package</legend>
                     <?php
                         $form = ActiveForm::begin([
-                            'action' => Url::to(['package/initialize-package', 'recordid' => $recordid, 'action' => 'edit']),
-                            'id' => 'configure-package',
+//                            'action' => Url::to(['package/initialize-package', 'recordid' => $recordid, 'action' => 'edit']),
+                            'id' => 'view-package',
                             'options' => [
-    //                                            'class' => 'form-layout'
                             ],
                         ]);
 
@@ -71,15 +70,15 @@
 
                                 echo "<tr>";
                                     echo "<th style='width:25%; vertical-align:middle'>Application Period</th>";
-                                    echo "<td>{$form->field($package, 'applicationperiodid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period', 'readonly' => true])}</td>";
+                                    echo "<td>{$form->field($package, 'applicationperiodid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period', 'readonly' => true, 'disabled' => true])}</td>";
                                 echo "</tr>";
 
                                 echo "<tr>";
                                     echo "<th style='width:25%; vertical-align:middle'>Package Type</th>";
-                                    echo "<td>{$form->field($package, 'packagetypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(PackageType::find()->all(), 'packagetypeid', 'description'), ['prompt'=>'Select Package Type', 'readonly' => true])}</td>";
+                                    echo "<td>{$form->field($package, 'packagetypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(PackageType::find()->all(), 'packagetypeid', 'description'), ['prompt'=>'Select Package Type', 'readonly' => true, 'disabled' => true])}</td>";
                                 echo "</tr>";
                                 
-                                if($package->commencement)
+                                if($package->commencementdate)
                                 {
                                     echo "<tr>";
                                         echo "<th style='width:25%; vertical-align:middle'>Commencement Date</th>";
@@ -89,7 +88,7 @@
 
                                 echo "<tr>";
                                     echo "<th style='width:25%; vertical-align:middle'>Number of Attachments</th>";
-                                    echo "<td>{$form->field($package, 'documentcount')->label('', ['class'=> 'form-label'])->dropDownList($document_count, ['readonly' => true])}</td>";
+                                    echo "<td>{$form->field($package, 'documentcount')->label('', ['class'=> 'form-label'])->dropDownList($document_count, ['readonly' => true, 'disabled' => true])}</td>";
                                 echo "</tr>"; 
 
                                 echo "<tr>";
@@ -103,7 +102,7 @@
                                     {
                                         $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
                                         echo "<td>";
-                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
+                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%', 'disabled' => true]);
                                         echo "</td>";
                                     }
                                     elseif ($package->packageid  && $package->packagetypeid==3)
@@ -115,7 +114,7 @@
                                                 . "We are pleased to inform you that you have been invited to interview for a place in the  "
                                                 . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
                                         echo "<td>";
-                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
+                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%', 'disabled' => true]);
                                         echo "</td>";
                                     }        
                                     elseif ($package->packageid  && $package->packagetypeid==4)
@@ -128,7 +127,7 @@
                                                 . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
                                                 . "Your Student Number is: [student number]";
                                         echo "<td>";
-                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px;  width:100%']);
+                                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px;  width:100%', 'disabled' => true]);
                                         echo "</td>";
                                     }
                                 echo "</tr>";
@@ -145,7 +144,7 @@
                 
                 <fieldset>
                     <legend class="custom_h2">File Listing</legend>
-                    <?php if ($saved_documents):?>
+                    <?php if (!$saved_documents):?>
                         <h3>No files are attached to the current offer.</h3>
                     <?php else:?>
                         <ul>

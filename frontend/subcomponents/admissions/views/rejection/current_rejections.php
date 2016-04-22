@@ -7,6 +7,8 @@
     
     use frontend\models\ApplicationPeriod;
     use frontend\models\Division;
+    use frontend\models\Rejection;
+    
 
     /* @var $this yii\web\View */
     /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -144,15 +146,19 @@
                                 </p>
 
                                 <div id="publish-button" style="display:none">
-                                    <?= Html::a('Bulk Publish', ['bulk-publish', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) ?>
-
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
+                                        if (Rejection::anyRejectionExists($periods, $rejectiontype) == true)
+                                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                        else
+                                            echo "<p>No pending rejections exist at this time.</p>";
+                                        
                                         if ($periods == true)
                                         {
                                             foreach ($periods as $period) 
                                             {
-                                                echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['bulk-publish', 'division' => Division::getDivisionAbbreviation($period->divisionid)], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                                if(Rejection::rejectionExists($period->applicationperiodid, $rejectiontype) == true)
+                                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                         }
 
@@ -202,7 +208,7 @@
                          {
                             if (Yii::$app->user->can('deleteRejection'))
                             {
-                                if($row['revokedby'] == "N/A")
+                                if($row['revokedby'] == "N/A"  &&  $row['ispublished'] == 0)
                                 {
                                     return Html::a(' ', 
                                             ['rejection/rescind', 'id' => $row['rejectionid'], 'rejectiontype' => $row['rejectiontype']], 
