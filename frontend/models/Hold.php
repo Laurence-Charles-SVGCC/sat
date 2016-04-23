@@ -20,6 +20,7 @@ use frontend\models\HoldType;
  * @property integer $isactive
  * @property integer $isdeleted
  * @property integer $wasnotified
+ * @property integer $academicyearid
  *
  * @property HoldType $holdtype
  * @property Person $appliedby0
@@ -43,7 +44,7 @@ class Hold extends \yii\db\ActiveRecord
     {
         return [
             [['studentregistrationid', 'holdtypeid', 'appliedby', 'dateapplied'], 'required'],
-            [['studentregistrationid', 'holdtypeid', 'appliedby', 'resolvedby', 'holdstatus', 'isactive', 'isdeleted', 'wasnotified'], 'integer'],
+            [['studentregistrationid', 'holdtypeid', 'appliedby', 'resolvedby', 'holdstatus', 'isactive', 'isdeleted', 'wasnotified', 'academicyearid'], 'integer'],
             [['details'], 'string'],
             [['dateapplied', 'dateresolved'], 'safe']
         ];
@@ -67,6 +68,7 @@ class Hold extends \yii\db\ActiveRecord
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
             'wasnotified' => 'Wasnotified',
+            'academicyearid' => 'Academic Year',
         ];
     }
 

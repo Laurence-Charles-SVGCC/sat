@@ -924,3 +924,57 @@ function toggleProfileButton()
     else          //if "no"
         document.getElementById("profile-button").style.display = "none";
 }
+
+
+
+
+/**
+ * Handles search method functinonality for card.
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 23/04/2016
+ * Date Last Modified: 23/04/2016
+ */
+function cardSearch()
+{
+//    alert ("oye");
+    var search_by = document.getElementsByName('card_search_method');
+    if (search_by[0].checked == true)           //if by studentid
+    {   
+        if (document.getElementsByName("field_firstname")[0] != null)
+            document.getElementsByName("field_firstname")[0].value = "";
+ 
+        if (document.getElementsByName("field_lastname")[0] != null)
+            document.getElementsByName("field_lastname")[0].value = ""; 
+        
+        document.getElementById("student-id").style.display = "block";       
+        document.getElementById("student-name").style.display = "none";
+        document.getElementById("applicaiton-period").style.display = "none";
+    } 
+    else if (search_by[1].checked == true)           //if by student name
+    {         
+        if (document.getElementsByName("field_studentid")[0] != null)
+            document.getElementsByName("field_studentid")[0].value = "";
+        
+        document.getElementById("student-id").style.display = "none";       
+        document.getElementById("student-name").style.display = "block";
+        document.getElementById("applicaiton-period").style.display = "none";
+    }
+    else if (search_by[2].checked == true)           //if by application period
+    {        
+        if (document.getElementsByName("field_studentid")[0] != null)
+            document.getElementsByName("field_studentid")[0].value = "";
+        
+        if (document.getElementsByName("field_firstname")[0] != null)
+            document.getElementsByName("field_firstname")[0].value = "";
+ 
+        if (document.getElementsByName("field_lastname")[0] != null)
+            document.getElementsByName("field_lastname")[0].value = ""; 
+        
+        document.getElementById("student-id").style.display = "none";       
+        document.getElementById("student-name").style.display = "none";
+        document.getElementById("applicaiton-period").style.display = "block";
+    } 
+}

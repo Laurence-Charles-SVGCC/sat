@@ -149,32 +149,16 @@ else
                     <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Enroll Applicants</a></li>
                     <?php endif; ?>
-                        
-                  
-                    
-                    <!--
-                    <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Register Applicant</a></li>
-                    <?php endif; ?>   
-                    
-                    <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Pending Registrants</a></li>
+                   
+                    <?php if (Yii::$app->user->can('studentCard')): ?>    
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
                     
-                    -->    
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                        
+                        
+                        
+                        
                     <!--
                     <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                     

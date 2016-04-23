@@ -30,17 +30,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
-                    'options' => ['style' => 'width:90%;'],
+                    'options' => ['style' => 'width:98%; margin: 0 auto;'],
                     'columns' => [
-                        'title',
-                        'firstname',
-                        'middlename',
-                        'lastname',
-                        'programme',
                         [
                            'attribute' => 'studentno',
                             'label' => 'Student No.',
                         ],
+                        'title',
+                        'firstname',
+                        'lastname',
+                        'programme',
                         'registered:boolean',
                         'published:boolean',
                         [

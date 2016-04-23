@@ -5,6 +5,8 @@ namespace app\subcomponents\admissions\controllers;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Url;
+
+use common\models\User;
 use frontend\models\Division;
 use frontend\models\StudentRegistration;
 use frontend\models\ApplicationPeriod;
@@ -12,91 +14,204 @@ use frontend\models\Offer;
 use frontend\models\Applicant;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
+use frontend\models\EmployeeDepartment;
+
 
 class CardController extends \yii\web\Controller
 {
-    public function actionIndex()
+    /**
+     * Renders Index and processes search
+     * 
+     * @param type $criteria
+     * @param type $periodid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/04/2016
+     * Date Last Modified: 23/04/2016
+     */
+    public function actionIndex($criteria = NULL, $periodid = NULL)
     {
-        $dasgs = Division::findOne(['abbreviation' => 'DASGS']);
-        $dtve = Division::findOne(['abbreviation' => 'DTVE']);
-        $dasgsid = $dasgs ? $dasgs->divisionid : Null;
-        $dtveid = $dtve ? $dtve->divisionid : Null;
+        $dataProvider = null;
+        $info_string = null;
+        
+        $division_id = EmployeeDepartment::getUserDivision();
+        
+        if($criteria != NULL)
+        {
+            //if search is done by application period
+            if ($criteria == "application-period")
+            {
+                $period = ApplicationPeriod::find()
+                        ->where(['applicationperiodid' => $periodid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+
+                $info_string = " Application Period [ " . $period->name . " ]";
+
+                $offer_cond = array();
+                $offer_cond['application_period.applicationperiodid'] = $periodid;
+                $offer_cond['application_period.isactive'] = 1;
+                $offer_cond['application_period.isdeleted'] = 0;
+                $offer_cond['offer.isactive'] = 1;
+                $offer_cond['offer.isdeleted'] = 0;
+                $offer_cond['offer.ispublished'] = 1;
+                $offer_cond['student_registration.isactive'] = 1;
+                $offer_cond['student_registration.isdeleted'] = 0;
+
+                $offers = Offer::find()
+                        ->joinWith('application')
+                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('`student_registration`', '`application`.`personid` = `student_registration`.`personid`')
+                        ->where($offer_cond)
+                        ->all();
+
+                $data = array();
+                foreach ($offers as $offer)
+                {
+                    $cape_subjects_names = array();
+                    $application = $offer->getApplication()->one();
+                    $applicant = Applicant::findOne(['personid' => $application->personid]);
+                    $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                    foreach ($cape_subjects as $cs) 
+                    { 
+                        $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                    }
+                    $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1]);
+
+                    $offer_data = array();
+                    $offer_data['offerid'] = $offer->offerid;
+                    $offer_data['studentreg'] = $student_reg;
+                    $offer_data['title'] = $applicant->title;
+                    $offer_data['firstname'] = $applicant->firstname;
+                    $offer_data['middlename'] = $applicant->middlename;
+                    $offer_data['lastname'] = $applicant->lastname;
+                    $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                    $offer_data['studentno'] = $applicant->potentialstudentid;
+                    $offer_data['published'] = $offer->ispublished;
+                    $offer_data['registered'] = $student_reg ? True : False;
+                    $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
+                    $offer_data['cardready'] = $student_reg ? $student_reg->cardready : False ;
+                    $offer_data['cardcollected'] = $student_reg ? $student_reg->cardcollected : False;
+                    $data[] = $offer_data;
+                }
+            }
+
+            elseif($criteria == "student-id"  ||  $criteria == "student-name")
+            {
+                if($criteria == "student-id")
+                    $info_string = "Student ID";
+
+                elseif($criteria == "student-name")
+                    $info_string = "Student Name";
+
+                if (Yii::$app->request->post())
+                {
+                    $request = Yii::$app->request;
+                    $student_id = $request->post('field_studentid');
+                    $firstname = $request->post('field_firstname');
+                    $lastname = $request->post('field_lastname');
+
+                    $offer_cond = array();
+                    $offer_cond['application_period.isactive'] = 1;
+                    $offer_cond['application_period.isdeleted'] = 0;
+                    $offer_cond['offer.isactive'] = 1;
+                    $offer_cond['offer.isdeleted'] = 0;
+                    $offer_cond['offer.ispublished'] = 1;
+                    $offer_cond['student_registration.isactive'] = 1;
+                    $offer_cond['student_registration.isdeleted'] = 0;
+                    
+                    //if user initiates search based on studentid
+                    if ($student_id)
+                    {
+                        $user = User::findOne(['username' => $student_id, 'isactive' => 1, 'isdeleted' => 0]);
+                        $offer_cond['student.personid'] = $user->personid;
+                        $info_string = $info_string .  " Applicant ID: " . $student_id;
+                    }    
+
+                    //if user initiates search based on student name    
+                    if ($firstname)
+                    {
+                        $offer_cond['student.firstname'] = $firstname;
+                        $info_string = $info_string .  " First Name: " . $firstname; 
+                    }
+                    if ($lastname)
+                    {
+                        $offer_cond['student.lastname'] = $lastname;
+                        $info_string = $info_string .  " Last Name: " . $lastname;
+                    } 
+                    
+                    $offers = Offer::find()
+                        ->joinWith('application')
+                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('`student_registration`', '`application`.`personid` = `student_registration`.`personid`')
+                        ->innerJoin('`student`', '`student_registration`.`personid` = `student`.`personid`')
+                        ->where($offer_cond)
+                        ->all();
+
+                    $data = array();
+                    foreach ($offers as $offer)
+                    {
+                        $cape_subjects_names = array();
+                        $application = $offer->getApplication()->one();
+                        $applicant = Applicant::findOne(['personid' => $application->personid]);
+                        $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                        foreach ($cape_subjects as $cs) 
+                        { 
+                            $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                        }
+                        $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1]);
+
+                        $offer_data['offerid'] = $offer->offerid;
+                        $offer_data['studentreg'] = $student_reg;
+                        $offer_data['title'] = $applicant->title;
+                        $offer_data['firstname'] = $applicant->firstname;
+                        $offer_data['middlename'] = $applicant->middlename;
+                        $offer_data['lastname'] = $applicant->lastname;
+                        $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                        $offer_data['studentno'] = $applicant->potentialstudentid;
+                        $offer_data['published'] = $offer->ispublished;
+                        $offer_data['registered'] = $student_reg ? True : False;
+                        $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
+                        $offer_data['cardready'] = $student_reg ? $student_reg->cardready : False ;
+                        $offer_data['cardcollected'] = $student_reg ? $student_reg->cardcollected : False;
+                        $data[] = $offer_data;
+                    }
+                }
+            }
+
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 25,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['firstname', 'lastname', 'studentno'],
+                  ]
+            ]);
+        }
+        
         return $this->render('index',
                 [
-                    'dasgsid' => $dasgsid,
-                    'dtveid' => $dtveid,
+                    'dataProvider' => $dataProvider,
+                    'info_string' => $info_string,
                 ]);
     }
-    
-    public function actionViewApplicants($divisionid)
-    {
-        $division = Division::findOne(['divisionid' => $divisionid ]);
-        $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $divisionid, 'isactive' => 1]);
-        $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
-        $offer_cond = array('application_period.divisionid' => $divisionid, 'application_period.isactive' => 1, 'offer.isactive' => 1,
-            'offer.isdeleted' => 1);
-        
-        if ($divisionid && $divisionid == 1)
-        {
-            $app_period_name = "All Active Application Periods";
-            $offer_cond = array('application_period.isactive' => 1, 'offer.isactive' => 1,
-            'offer.isdeleted' => 1);
-        }
-        $offer_cond['offer.isdeleted'] = 0;
-        
-        $offers = Offer::find()
-                ->joinWith('application')
-                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where($offer_cond)
-                ->all();
-        $data = array();
-        foreach ($offers as $offer)
-        {
-            $cape_subjects_names = array();
-            $application = $offer->getApplication()->one();
-            $applicant = Applicant::findOne(['personid' => $application->personid]);
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-            foreach ($cape_subjects as $cs) { $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; }
-            $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1]);
-            
-            $offer_data = array();
-            $offer_data['offerid'] = $offer->offerid;
-            $offer_data['studentreg'] = $student_reg;
-            $offer_data['title'] = $applicant->title;
-            $offer_data['firstname'] = $applicant->firstname;
-            $offer_data['middlename'] = $applicant->middlename;
-            $offer_data['lastname'] = $applicant->lastname;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-            $offer_data['studentno'] = $applicant->potentialstudentid;
-            $offer_data['published'] = $offer->ispublished;
-            $offer_data['registered'] = $student_reg ? True : False;
-            $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
-            $offer_data['cardready'] = $student_reg ? $student_reg->cardready : False ;
-            $offer_data['cardcollected'] = $student_reg ? $student_reg->cardcollected : False;
-            $data[] = $offer_data;
-        }
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $data,
-            'pagination' => [
-                'pageSize' => 35,
-            ],
-            'sort' => [
-                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                'attributes' => ['firstname', 'lastname', 'studentno'],
-              ]
-        ]);
 
-        return $this->render('view-applicants', [
-            'dataProvider' => $dataProvider,
-            'divisionabbr' => $division_abbr,
-            'applicationperiodname' => $app_period_name,
-        ]);
-    }
     
+    /**
+     * Updates applicant card status
+     * 
+     * @return type
+     * 
+     * Author: Gamal Crichton
+     * Date Created:??
+     * Date Last Modified: 23/04/2016 (L.Charles)
+     */
     public function actionUpdateApplicants()
     {
         if (Yii::$app->request->post())
@@ -115,7 +230,7 @@ class CardController extends \yii\web\Controller
                 $reg->cardcollected = in_array($reg->studentregistrationid, array_keys($cardcollected)) ? 1 : 0;
                 $reg->save();
             }
-            Yii::$app->session->setFlash('success', 'Card data updated sucessfully');
+//            Yii::$app->session->setFlash('success', 'Card data updated sucessfully');
         }
         return $this->redirect(Url::to(['index']));
         
