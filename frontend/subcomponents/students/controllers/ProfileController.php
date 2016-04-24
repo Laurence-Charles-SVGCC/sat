@@ -3375,11 +3375,16 @@
         * Date Created: 15/03/2016
         * Date Last Modified: 15/03/2016
         */
-       public function actionDeleteCriminalRecord($personid, $recordid)
-       {
+        public function actionDeleteCriminalRecord($personid, $recordid)
+        {
            $user = User::find()
                    ->where(['personid' => $personid])
                    ->one();
+           
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
 
            $criminalrecord = CriminalRecord::find()
                            ->where(['criminalrecordid' => $recordid])
@@ -3400,9 +3405,60 @@
            else
                Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
 
-
-           return self::actionApplicantProfile($user->username);
-       }
+//           return self::actionApplicantProfile($user->username);
+           return self::actionStudentProfile($user->personid, $studentregistrationid);
+        }
+        
+        
+        /**
+         * Updates student card
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 23/04/2016
+         * Date Last Modified: 23/04/2016
+         */
+        public function actionEditStudentCard($personid, $recordid)
+        {
+            $save_flag = false;
+            
+            $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+           
+            $reg = StudentRegistration::find()
+                            ->where(['studentregistrationid' => $recordid])
+                            ->one();
+            $studentregistrationid = $reg->studentregistrationid;
+            
+            if (Yii::$app->request->post())
+            {
+                $request = Yii::$app->request;
+                $receivedpicture = $request->post('receivedpicture');
+                $cardready = $request->post('cardready');
+                $cardcollected = $request->post('cardcollected');
+  
+                $reg->receivedpicture = $receivedpicture;
+                $reg->cardready = $cardready;
+                $reg->cardcollected = $cardcollected;
+                $save_flag = $reg->save();
+                if ($save_flag == false)
+                    Yii::$app->getSession()->setFlash('error', 'Error occured saving record. Please try again.');
+                else
+                    return self::actionStudentProfile($user->personid, $studentregistrationid);
+            }
+            
+            return $this->render('edit_student_card', [
+                    'user' => $user,
+                    'personid' => $personid,
+                    'reg' => $reg,
+                ]);
+        }
+        
+        
         
         
     }
