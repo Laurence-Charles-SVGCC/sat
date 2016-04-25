@@ -55,6 +55,9 @@ return [
                 'gradebook' => [
                     'class' => 'app\subcomponents\gradebook\GradebookModule',
                 ],
+                'registry' => [
+                    'class' => 'app\subcomponents\registry\RegistryModule',
+                ],
               ]
           ]
     ]

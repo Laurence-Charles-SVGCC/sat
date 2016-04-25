@@ -54,6 +54,7 @@ class AppAsset extends AssetBundle
         'js/students/ajax_functions.js',
         'js/admissions/admissions.js',
         'js/admissions/qualification_ajax_functions.js',
+        'js/registry/registry.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

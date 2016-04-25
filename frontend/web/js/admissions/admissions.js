@@ -1,6 +1,7 @@
 /* 
  * Contains all author created Javascript functions for the "Admissions" module.
- * Author: 11/02/2016
+ * Author: Laurence Charles
+ * Date: 11/02/2016
  */
 
 

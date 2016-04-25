@@ -100,7 +100,7 @@ else
             <aside class="main-sidebar">
             <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
-              <!-- Sidebar user panel -->
+            <!-- Sidebar user panel -->
               <!-- sidebar menu: : style can be found in sidebar.less -->
               <ul class="sidebar-menu">
                <?php if (Yii::$app->user->can('admissions')): ?>
@@ -153,43 +153,34 @@ else
                     <?php if (Yii::$app->user->can('studentCard')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
-                    
-                    
-                        
-                        
-                        
-                        
-                    <!--
-                    <li class="active"><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                    
-                    <?php if (Yii::$app->user->can('viewApplicationPeriod')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/application-period'])?>"><i class="fa fa-circle-o"></i>Application Periods</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('viewAcademicOffering')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/academic-offering'])?>"><i class="fa fa-circle-o"></i>Academic Offerings</a></li>
-                    <?php endif; ?> 
-                    <?php if (Yii::$app->user->can('reviewApplications')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/review-applications'])?>"><i class="fa fa-circle-o"></i>Review Applications</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('searchApplicant')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Search Applicant</a></li>
-                    <?php endif; ?>
-                    
-                    
-                    <?php if (Yii::$app->user->can('viewOffer')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer'])?>"><i class="fa fa-circle-o"></i>Manage Offers</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('registerStudent')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Register Student</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('studentCard')): ?>    
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
-                    <?php endif; ?>
-                    -->
                   </ul>
-                  <?php endif; ?>
                 </li>
+               <?php endif; ?>
+                
 
+                <!--
+                <?php if (Yii::$app->user->can('registry')): ?>
+                    <li class="active treeview">
+                        <a href="">
+                            <i class="fa fa-graduation-cap"></i> <span>Registry</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <?php if (Yii::$app->user->can('manageAwards')): ?>
+                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards'])?>"><i class="fa fa-circle-o"></i>Awards</a></li>
+                            <?php endif; ?>
+                            
+                            <?php if (Yii::$app->user->can('manageClubs')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/clubs/manage-clubs'])?>"><i class="fa fa-circle-o"></i>Clubs</a></li>
+                            <?php endif; ?>
+                            
+                            <?php if (Yii::$app->user->can('manageTranscripts')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/transcripts/manage-transcripts'])?>"><i class="fa fa-circle-o"></i>Transcripts</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+                -->
+                
                 
                 <?php if (Yii::$app->user->can('students')): ?>
                     <li class="active treeview">
