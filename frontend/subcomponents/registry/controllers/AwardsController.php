@@ -9,6 +9,7 @@
 
     use common\models\User;
     use frontend\models\Award;
+    use frontend\models\PersonAward;
 
     use frontend\models\Division;
     use frontend\models\Employee;
@@ -45,15 +46,39 @@
     class AwardsController extends Controller
     {
 
+        /**
+         * Renders Award Control Panel
+         * 
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 25/04/2016
+         * Date Last Modified: 25/04/2016
+         */
         public function actionManageAwards()
         {
+            $awards = Award::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+            
             return $this->render('awards_panel',
                     [
-
+                        'awards' => $awards,
                     ]);
         }
 
 
+        /**
+         * Creates/Edits an 'award'
+         * 
+         * @param type $action
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 25/04/2016
+         * Date Last Modified: 25/04/2016
+         */
         public function actionConfigureAward($action, $recordid = NULL)
         {
             $load_flag = false;
@@ -92,6 +117,16 @@
         }
         
         
+        /**
+         * Deletes an award
+         * 
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 25/04/2016
+         * Date Last Modified: 25/04/2016
+         */
         public function actionDeleteAward($recordid)
         {
             $save_flag = false;
@@ -112,6 +147,75 @@
             }
             
             return self::actionManageAwards();
+        }
+        
+        
+        /**
+         * Renders awardee listing
+         * 
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 25/04/2016
+         * Date Last Modified: 25/04/2016
+         */
+        public function actionViewAwardees($recordid)
+        {
+            $award = Award::find()
+                        ->where(['awardid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            $assignments = Award::getAwardees($recordid);
+            $awardees = array();
+            
+            $keys = array();
+            array_push($keys, 'personid');
+            array_push($keys, 'studentregistrationid');
+            array_push($keys, 'username');
+            array_push($keys, 'title');
+            array_push($keys, 'firstname');
+            array_push($keys, 'lastname');
+            array_push($keys, 'dateawarded');
+            
+            if($award && $assignments)
+            {
+                foreach($assignments as $assignment)
+                {
+                    $person = User::find()
+                            ->where(['personid' => $assignment->personid])
+                            ->one();
+                    $student = Student::find()
+                            ->where(['personid' => $assignment->personid])
+                            ->one();
+                    
+                    $values = array();
+                    $row = array();
+
+                    array_push($values, $student->personid);
+                    array_push($values, $assignment->studentregistrationid);
+                    array_push($values, $person->username);
+                    array_push($values, $student->title);
+                    array_push($values, $student->firstname);
+                    array_push($values, $student->lastname);
+                    array_push($values, $assignment->dateawarded);
+                   
+                    $row = array_combine($keys, $values);
+                    array_push($awardees, $row);
+
+                    $values = NULL;
+                    $row = NULL;
+                }
+                
+                return $this->render('view_awardees',
+                    [
+                        'awardees' => $awardees,
+                        'award' => $award,
+                    ]);
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when retrieving records.');
+            }
         }
 
 

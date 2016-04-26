@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use frontend\models\PersonAward;
 
 /**
  * This is the model class for table "award".
@@ -139,5 +140,46 @@ class Award extends \yii\db\ActiveRecord
     public function getPersonAwards()
     {
         return $this->hasMany(PersonAward::className(), ['awardid' => 'awardid']);
+    }
+    
+    
+    /**
+     * Returns a 'person_award' record if it exists
+     * 
+     * @param type $awardid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 25/04/2016
+     * Date Last Modified: 25/04/2016
+     */
+    public static function isAssigned($awardid)
+    {
+        $assignment = PersonAward::find()
+                    ->where(['awardid' => $awardid])
+                    ->one();
+        if($assignment)
+            return $assignment;
+        return false;
+    }
+    
+    /**
+     * Returns array of 'person_award' records if it exists
+     * 
+     * @param type $awardid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 25/04/2016
+     * Date Last Modified: 25/04/2016
+     */
+    public static function getAwardees($awardid)
+    {
+        $assignments = PersonAward::find()
+                    ->where(['awardid' => $awardid])
+                    ->all();
+        if($assignments)
+            return $assignments;
+        return false;
     }
 }

@@ -59,44 +59,44 @@
                             <td><?=$form->field($award, 'awardcategoryid')->label('')->dropDownList(ArrayHelper::map(AwardCategory::find()->all(), 'awardcategoryid', 'name'), ['prompt'=>'Select Category']) ?></td>
                         </tr>
                         
-                        <tr style="width:100%;">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Type</th>
                             <td><?=$form->field($award, 'awardtypeid')->label('')->dropDownList(ArrayHelper::map(AwardType::find()->all(), 'awardtypeid', 'name'), ['prompt'=>'Select Type', 'onchange' => 'toggleAwardType();']) ?></td>
                         </tr>
                         
-                        <tr id="award-year" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Year</th>
-                            <td><?=$form->field($award, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()->all(), 'academicyearid', 'title'), ['prompt'=>'Select Year']) ?></td>
+                            <td  style="display:none;" id="award-year" ><?=$form->field($award, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()->all(), 'academicyearid', 'title'), ['prompt'=>'Select Year']) ?></td>
                         </tr>
                         
-                        <tr id="award-semester" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Semester</th>
-                            <td><?=$form->field($award, 'semesterid')->label('')->dropDownList(ArrayHelper::map(Semester::find()->all(), 'semesterid', 'title'), ['prompt'=>'Select Semester']) ?></td>
+                            <td id="award-semester" style="display:none;"><?=$form->field($award, 'semesterid')->label('')->dropDownList(ArrayHelper::map(Semester::find()->all(), 'semesterid', 'title'), ['prompt'=>'Select Semester']) ?></td>
                         </tr>
                         
                         <tr>
                             <th style='width:30%; vertical-align:middle'>Scope</th>
-                            <td><?=$form->field($award, 'awardscopeid')->label('')->dropDownList(ArrayHelper::map(AwardScope::find()->all(), 'awardscopeid', 'name'), ['prompt'=>'Select Scope']) ?></td>
+                            <td><?=$form->field($award, 'awardscopeid')->label('')->dropDownList(ArrayHelper::map(AwardScope::find()->all(), 'awardscopeid', 'name'), ['prompt'=>'Select Scope', 'onchange' => 'toggleAwardScope();']) ?></td>
                         </tr>
                         
-                        <tr id="award-division" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Division</th>
-                            <td><?=$form->field($award, 'divisionid')->label('')->dropDownList(ArrayHelper::map(Division::find()->where(['divisionid' => [4,5,6,7]])->all(), 'divisionid', 'name'), ['prompt'=>'Select Division']) ?></td>
+                            <td id="award-division" style="display:none"><?=$form->field($award, 'divisionid')->label('')->dropDownList(ArrayHelper::map(Division::find()->where(['divisionid' => [4,5,6,7]])->all(), 'divisionid', 'name'), ['prompt'=>'Select Division']) ?></td>
                         </tr>
                         
-                        <tr id="award-department" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Department</th>
-                            <td><?=$form->field($award, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->all(), 'departmentid', 'name'), ['prompt'=>'Select Department']) ?></td>
+                            <td id="award-department" style="display:none"><?=$form->field($award, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->where(['departmentid' => [1,2,3,4,5,6,7,8,9,10,11]])->all(), 'departmentid', 'name'), ['prompt'=>'Select Department']) ?></td>
                         </tr>
                         
-                        <tr id="award-programme" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Programme</th>
-                            <td><?=$form->field($award, 'programmecatalogid')->label('')->dropDownList(ArrayHelper::map(ProgrammeCatalog::find()->all(), 'programmecatalogid', 'name'), ['prompt'=>'Select Programme']) ?></td>
+                            <td id="award-programme" style="display:none"><?=$form->field($award, 'programmecatalogid')->label('')->dropDownList(ArrayHelper::map(ProgrammeCatalog::find()->all(), 'programmecatalogid', 'name'), ['prompt'=>'Select Programme']) ?></td>
                         </tr>
                         
-                        <tr id="award-ssubject" style="display:none">
+                        <tr>
                             <th style='width:30%; vertical-align:middle'>Subject</th>
-                            <td><?=$form->field($award, 'subject')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'style' => 'vertical-align:middle'])?></td>
+                            <td id="award-subject" style="display:none"><?=$form->field($award, 'subject')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'style' => 'vertical-align:middle'])?></td>
                         </tr>
                     </table><br/>
                     

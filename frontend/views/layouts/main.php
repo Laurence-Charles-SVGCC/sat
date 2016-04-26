@@ -158,7 +158,7 @@ else
                <?php endif; ?>
                 
 
-                <!--
+                
                 <?php if (Yii::$app->user->can('registry')): ?>
                     <li class="active treeview">
                         <a href="">
@@ -173,13 +173,13 @@ else
                                 <li><a href="<?= Url::toRoute(['/subcomponents/registry/clubs/manage-clubs'])?>"><i class="fa fa-circle-o"></i>Clubs</a></li>
                             <?php endif; ?>
                             
-                            <?php if (Yii::$app->user->can('manageTranscripts')): ?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/transcripts/manage-transcripts'])?>"><i class="fa fa-circle-o"></i>Transcripts</a></li>
-                            <?php endif; ?>
+                            <!--<?php if (Yii::$app->user->can('manageTranscripts')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/transcripts/manage-transcripts'])?>"><i class="fa fa-circle-o"></i>Transcript Requests</a></li>
+                            <?php endif; ?>-->
                         </ul>
                     </li>
                 <?php endif; ?>
-                -->
+                
                 
                 
                 <?php if (Yii::$app->user->can('students')): ?>

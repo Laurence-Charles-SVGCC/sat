@@ -21,3 +21,38 @@ function toggleAwardType()
 }
 
 
+function toggleAwardScope()
+{
+    var award_scope = document.getElementById("award-awardscopeid").selectedIndex;
+    
+    if(award_scope == 2)
+    {
+        document.getElementById("award-division").style.display = "block"; 
+        document.getElementById("award-department").style.display = "none";
+        document.getElementById("award-programme").style.display = "none"; 
+        document.getElementById("award-subject").style.display = "none";
+    }
+    else if(award_scope == 3)
+    {
+        document.getElementById("award-division").style.display = "none"; 
+        document.getElementById("award-department").style.display = "block";
+        document.getElementById("award-programme").style.display = "none"; 
+        document.getElementById("award-subject").style.display = "none";
+    }
+    else if(award_scope == 4)
+    {
+        document.getElementById("award-division").style.display = "none"; 
+        document.getElementById("award-department").style.display = "none";
+        document.getElementById("award-programme").style.display = "block"; 
+        document.getElementById("award-subject").style.display = "none";
+    }
+    else if(award_scope == 5)
+    {
+        document.getElementById("award-division").style.display = "none"; 
+        document.getElementById("award-department").style.display = "none";
+        document.getElementById("award-programme").style.display = "none"; 
+        document.getElementById("award-subject").style.display = "block";
+    }
+}
+
+
