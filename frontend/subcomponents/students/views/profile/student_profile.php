@@ -167,6 +167,9 @@
                             <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('viewAttendanceTab')):?>    
                                 <li role="presentation"><a href="#attendance" aria-controls="attendance" role="tab" data-toggle="tab">Attendance</a></li>
                             <?php endif;?> 
+                            <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('manageAwards')):?>    
+                                <li role="presentation"><a href="#awards" aria-controls="awards" role="tab" data-toggle="tab">Awards</a></li>
+                            <?php endif;?> 
                         </ul>
                         
                         <!-- Tab panes -->
@@ -3096,11 +3099,60 @@
                                 <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
                             </div>
                             
-                            
                             <div role="tabpanel" class="tab-pane fade" id="attendance"> 
                                 <h2 class="custom_h2">Attendance</h2>
                                 </br>
                                 <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                            </div>
+                                    
+                            <div role="tabpanel" class="tab-pane fade" id="awards"> 
+                                </br>
+                                
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('manageAwards')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Award Listing
+                                            <?php if(Yii::$app->user->can('createAward')):?>
+                                                <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'create']);?> role='button'> Assign Award</a>
+                                            <?php endif;?>
+                                        </div>
+                                        
+                                        <table class='table table-hover' style='margin: 0 auto;'>
+                                            <?php if (!$awards):?>
+                                                <h3>Student has not been a recipient of any awards</h3>
+                                            <?php else:?>
+                                                <?php foreach ($awardDetails as $detail):?>
+                                                    <tr>
+                                                        <th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'><?=$detail['awardname']?>
+                                                        <th>Date Awarded</th>
+                                                        <td><?=$detail['date']?></td>
+                                                        <th>Comments</th>
+                                                        <td><?=$detail['comments']?></td>
+                                                    </tr>
+                                                    
+                                                    <tr>
+                                                        <th>Programme</th>
+                                                        <td><?=$detail['programme']?></td>
+                                                        <th>Action</th>
+                                                        <td>
+                                                            <div class='dropdown'>
+                                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                                                                    Select your intended action
+                                                                    <span class='caret'></span>
+                                                                </button>
+                                                                <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                                                                    <li><a target='_blank' href=<?=Url::toRoute(['/subcomponents/students/profile/view-award', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $detail['awardid']])?>>View Award Details</a></li>
+                                                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'edit', 'awardid' => $detail['recordid']])?>>Edit</a></li>
+                                                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/delete-award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'awardid' => $detail['recordid']])?>>Delete</a></li>
+                                                                    </ul>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach;?>
+                                            <?php endif;?>
+                                        </table>
+                                    <?php endif;?>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>

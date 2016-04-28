@@ -5,6 +5,7 @@ namespace frontend\models;
 use Yii;
 use frontend\models\PersonAward;
 
+
 /**
  * This is the model class for table "award".
  *

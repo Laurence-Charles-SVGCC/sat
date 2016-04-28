@@ -71,7 +71,14 @@
     use frontend\models\CriminalRecord;
     use frontend\models\PostSecondaryQualification;
     use frontend\models\ExternalQualification;
-
+    use frontend\models\Award;
+    use frontend\models\PersonAward;
+    use frontend\models\AwardCategory;
+    use frontend\models\AwardType;
+    use frontend\models\Semester;
+    use frontend\models\AwardScope;
+    
+    
     class ProfileController extends Controller
     {
 
@@ -476,6 +483,10 @@
             /******************************  Transfers  *********************************/
             $transfers = StudentTransfer::getTransfers($studentregistrationid);
             
+            /***************************** Awards/Clubs ********************************/
+            $awards = PersonAward::getAwards($personid);
+            $awardDetails = PersonAward::getAwardDetails($personid);
+            
             /****************************************************************************/
             return $this->render('student_profile',[
                 'studentregistrationid' => $studentregistrationid,
@@ -560,6 +571,10 @@
                 
                 //models for transfers tab
                 'transfers' => $transfers,
+                
+                //models for awards and clubs
+                'awards' => $awards,
+                'awardDetails' => $awardDetails,
                 
             ]);
         }
@@ -3459,6 +3474,202 @@
         }
         
         
+        /**
+         * Delete an award assignment
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @param type $awardid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionDeleteAward($personid, $recordid , $awardid)
+        {
+            $save_flag = false;
+            
+            $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+           
+            $award_assignment = PersonAward::find()
+                    ->where(['personawardid' => $awardid])
+                    ->one();
+            if(!$award_assignment)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured finding record. Please try again.');
+            }
+            else
+            {
+                $award_assignment->isactive = 0;
+                $award_assignment->isdeleted = 1;
+                $save_flag = $award_assignment->save();
+                if (!$save_flag)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');
+                }
+                else
+                {
+                    return self::actionStudentProfile($user->personid, $recordid);
+                }
+            }
+        }
+        
+        /**
+         * Creates/edits an award assignment
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @param type $action
+         * @param type $awardid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionAward($personid, $recordid, $action, $awardid=NULL)
+        {
+            $save_flag = false;
+            
+            $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+           
+            $registration = StudentRegistration::find()
+                            ->where(['studentregistrationid' => $recordid])
+                            ->one();
+            if($action == "create")
+            {
+                $award_assignment = new PersonAward();
+            }
+            elseif($action == "edit")
+            {
+                $award_assignment = PersonAward::find()
+                        ->where(['personawardid' => $awardid])
+                        ->one();
+            }
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $validation_flag = false;
+                $save_flag = false;
+
+                $load_flag = $award_assignment->load($post_data);
+                if($load_flag == true)
+                {
+                    $award_assignment->personid = $personid;
+                    $award_assignment->studentregistrationid = $recordid;
+                    $validation_flag = $award_assignment->validate();
+
+                    if($validation_flag == true)
+                    {
+                        
+                        $save_flag = $award_assignment->save();
+                        if($save_flag == true)
+                        {
+                            return self::actionStudentProfile($user->personid, $recordid);
+                        }
+                        else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+                }
+                else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+            }
+            
+            return $this->render('assign_award', [
+                    'award_assignment' => $award_assignment,
+                    'action' => $action,
+                    'personid' => $personid,
+                    'studentregistrationid' => $recordid,
+                ]);
+        }
+        
+        
+        /**
+         * View an award details
+         * 
+         * @param type $personid
+         * @param type $studentregistrationid
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionViewAward($personid, $studentregistrationid, $recordid)
+        {
+            $award = Award::find()
+                        ->where(['awardid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            $name = $award->name;
+            $description = $award->description;
+            $awardcategory = AwardCategory::find()
+                        ->where(['awardcategoryid' => $award->awardcategoryid])
+                        ->one()
+                        ->name;
+            $awardtype = AwardType::find()
+                        ->where(['awardtypeid' => $award->awardtypeid])
+                        ->one()
+                        ->name;
+            
+            $academicyear = ($award->awardtypeid == 2)? : false;
+            
+            $semester = ($award->awardtypeid == 1)? :false;
+            
+            $awardscope = AwardScope::find()
+                        ->where(['awardscopeid' => $award->awardscopeid])
+                        ->one()
+                        ->name;
+            
+            $division = ($award->awardscopeid == 2)?
+                        Division::find()
+                            ->where(['divisionid' => $award->divisionid])
+                            ->one()
+                            ->name
+                        : false;
+            
+            $department = ($award->awardscopeid == 3)?
+                        Department::find()
+                            ->where(['departmentid' => $award->departmentid])
+                            ->one()
+                            ->name
+                        : false;
+            
+            $programme = ($award->awardscopeid == 4)?
+                        ProgrammeCatalog::find()
+                            ->where(['programmecatalogid' => $award->programmecatalogid])
+                            ->one()
+                            ->name
+                        : false;
+            
+            $subject = $award->subject ? $award->subject: false;
+                    
+            return $this->render('view_award_details',
+                    [
+                        'award' => $award,
+                        'name' => $name,
+                        'description' => $description,
+                        'awardcategory' => $awardcategory,
+                        'awardtype' => $awardtype,
+                        'academicyear' => $academicyear,
+                        'semester' => $semester,
+                        'awardscope' => $awardscope,
+                        'division' => $division,
+                        'department' => $department,
+                        'programme' => $programme,
+                        'subject' => $subject,
+                        'personid' => $personid,
+                        'studentregistrationid' => $studentregistrationid,
+                    ]);
+        }
         
         
     }
