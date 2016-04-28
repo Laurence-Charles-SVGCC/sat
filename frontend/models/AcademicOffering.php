@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use frontend\models\ProgrammeCatalog;
 
 /**
  * This is the model class for table "academic_offering".
@@ -382,6 +383,25 @@ class AcademicOffering extends \yii\db\ActiveRecord
             return true;
         return false;
     }
+    
+    
+    /**
+     * Returns true is academicoffering correspondes to a CAPE programme
+     * 
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 27/042016 [L.Charles]
+     */
+    public static function isCape($academicofferingid)
+    {
+        $ao = AcademicOffering::findOne(['academicofferingid' => $academicofferingid]);
+        $cape_prog = ProgrammeCatalog::findOne(['name' => 'cape']);
+        return $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : false;
+    }
+    
        
        
        

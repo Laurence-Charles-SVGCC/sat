@@ -165,8 +165,12 @@ else
                             <i class="fa fa-graduation-cap"></i> <span>Registry</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
+                            <?php if (Yii::$app->user->can('viewProgramme')): ?>
+                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Manage Programmes</a></li>
+                            <?php endif; ?>
+                                
                             <?php if (Yii::$app->user->can('manageAwards')): ?>
-                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards'])?>"><i class="fa fa-circle-o"></i>Awards</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards'])?>"><i class="fa fa-circle-o"></i>Awards</a></li>
                             <?php endif; ?>
                             
                             <?php if (Yii::$app->user->can('manageClubs')): ?>
@@ -255,10 +259,10 @@ else
                 <?php if (Yii::$app->user->can('programmes')): ?>
                 <li class="active treeview">
                   <a href="">
-                    <i class="fa fa-mortar-board"></i> <span>Programmes</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-book"></i> <span>Programmes</span> <i class="fa fa-angle-left pull-right"></i>
                   </a>
                   <ul class="treeview-menu">
-                    <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    
                     <?php if (Yii::$app->user->can('viewProgramme')): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programme-catalog/index'])?>"><i class="fa fa-circle-o"></i>Programme Catalog</a></li>
                     <?php endif; ?>
@@ -268,6 +272,7 @@ else
                   </ul>
                 </li>
                 <?php endif; ?>
+               
                 <?php if (Yii::$app->user->can('general')): ?>
                     <li class="active treeview">
                       <a href="#">

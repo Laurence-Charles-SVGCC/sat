@@ -135,4 +135,115 @@ class Department extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns an array of departmentIDs for a particular division
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/04/2016
+     * Date Last Modified: 27/04/2016
+     */
+    public static function getDepartmentIDs($divisionid)
+    {
+        $departments = Department::find()
+                    ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+        $ids = array();
+        if ($departments)
+        {
+            foreach ($departments as $department)
+            {
+                $ids[]= $department->departmentid;
+            }
+            return $ids;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Returns an array of department that have at least one assigned course
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/04/2016
+     * Date Last Modified: 27/04/2016
+     */
+    public static function getDepartmentsWithCourses()
+    {
+        $non_cape_departments = Department::find()
+                ->innerJoin('programme_catalog', '`department`.`departmentid` = `programme_catalog`.`departmentid`')
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->innerJoin('course_offering', '`academic_offering`.`academicofferingid` = `course_offering`.`academicofferingid`')
+                ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0])
+                ->all();
+        $cape_departments = Department::find()
+                ->innerJoin('programme_catalog', '`department`.`departmentid` = `programme_catalog`.`departmentid`')
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->innerJoin('cape_subject', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
+                ->where(['cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0])
+                ->all();
+        
+        $departments = array();
+                
+        $keys = array();
+        array_push($keys, '0');
+        
+        $values = array();
+        array_push($values, 'Select Department...');
+        
+        foreach($non_cape_departments as $non_cape_department)
+        {
+            if (!in_array($non_cape_department, $departments))
+            {
+                $key = strval($non_cape_department->departmentid);
+                array_push($keys, $key);
+                $value = strval($non_cape_department->name);
+                array_push($values, $value);
+            }
+        }
+        
+        foreach($cape_departments as $cape_department)
+        {
+            if (!in_array($cape_department, $departments))
+            {
+                $key = strval($cape_department->departmentid);
+                array_push($keys, $key);
+                $value = strval($cape_department->name);
+                array_push($values, $value);
+            }
+        }
+        
+        $combined = array_combine($keys, $values);
+        return $combined;        
+    }
+    
+    
+    
+    /**
+     * Returns the abbreviation of a particular division
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 08/01/2016
+     * Date Last Modified: 08/01/2016
+     */
+    public static function getDeparmentName($departmentid)
+    {
+        $department = Department::find()
+                    ->where(['departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        if ($department)
+        {
+            return $department->name;
+        }
+        else
+            return false;
+    }
+    
 }

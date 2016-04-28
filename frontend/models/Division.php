@@ -406,9 +406,67 @@ class Division extends \yii\db\ActiveRecord
             $combined = array_combine($keys, $values);
             return $combined;
         }
+    }
+    
+    
+    /**
+     * Returns an array of divisions that have at least one assigned course
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/04/2016
+     * Date Last Modified: 27/04/2016
+     */
+    public static function getDivisionsWithCourses()
+    {
+        $non_cape_divisions = Division::find()
+                ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
+                ->innerJoin('programme_catalog', '`department`.`departmentid` = `programme_catalog`.`departmentid`')
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->innerJoin('course_offering', '`academic_offering`.`academicofferingid` = `course_offering`.`academicofferingid`')
+                ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0])
+                ->all();
+        $cape_divisions = Division::find()
+                ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
+                ->innerJoin('programme_catalog', '`department`.`departmentid` = `programme_catalog`.`departmentid`')
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->innerJoin('cape_subject', '`academic_offering`.`academicofferingid` = `cape_subject`.`academicofferingid`')
+                ->where(['cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0])
+                ->all();
         
+        $divisions = array();
+                
+        $keys = array();
+        array_push($keys, '0');
         
+        $values = array();
+        array_push($values, 'Select Division...');
         
+        foreach($non_cape_divisions as $non_cape_division)
+        {
+            if (!in_array($non_cape_division, $divisions))
+            {
+                $key = strval($non_cape_division->divisionid);
+                array_push($keys, $key);
+                $value = strval($non_cape_division->abbreviation);
+                array_push($values, $value);
+            }
+        }
+        
+        foreach($cape_divisions as $cape_division)
+        {
+            if (!in_array($cape_division, $divisions))
+            {
+                $key = strval($cape_division->divisionid);
+                array_push($keys, $key);
+                $value = strval($cape_division->abbreviation);
+                array_push($values, $value);
+            }
+        }
+        
+        $combined = array_combine($keys, $values);
+        return $combined;        
     }
     
     

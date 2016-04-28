@@ -130,6 +130,15 @@ and open the template in the editor.
   border-radius: 6px 6px 6px 6px;
 }
 
+.wide_center_content 
+{
+  width:80%;
+  min-height: 500px;
+  margin: 0 auto;
+  border: 3px solid #CCCCCC;
+  border-radius: 6px 6px 6px 6px;
+}
+
 .form-layout{
     border: 1px solid #CCCCCC;
     border-radius: 6px 6px 6px 6px;
