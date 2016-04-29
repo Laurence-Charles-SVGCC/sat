@@ -311,9 +311,10 @@ class CsecQualification extends \yii\db\ActiveRecord
             return False;
         }
         
-        $reapplicant = Yii::$app->cms_db->createCommand(
+        $cms_reapplicant = Yii::$app->cms_db->createCommand(
                 "select certificate_id from applicants_certificates where year = $year and candidate_no = $candidateno")
                 ->queryOne();
+        
         return $reapplicant ? True : False;
     }
     

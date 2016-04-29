@@ -338,11 +338,12 @@
                         $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                     }
                     $message = 'Possible Duplicate of applicant(s) ' . $dupes;
+                    
                 }
                 $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
                 if ($reapp)
                 {
-                    $message = $message . ' Applicant applied to College in a previous year.';
+                    $message = $message . ' Applicant applied to College in academic year prior to 2015/2016.';
                 }
                 if ($dups || $reapp)
                 {
