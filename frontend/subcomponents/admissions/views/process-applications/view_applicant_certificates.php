@@ -29,6 +29,13 @@
         </div>
         
         <?php if ($application_status > 2):?>
+             <!-- Duplicate Flag-->
+            <?php if ($duplicate_message):?>
+                <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= $duplicate_message;?>
+                </p>
+            <?php endif;?>
+                
             <!-- Offer Flag-->
             <?php if (Offer::hasRecords($applicant->personid) == true):?>
                 <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 

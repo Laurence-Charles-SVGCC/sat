@@ -270,7 +270,7 @@ class CsecQualification extends \yii\db\ActiveRecord
         if ($candidateno == 0 || strlen($origcandidateno) != 10 )
             return false;
         $groups = CsecQualification::find()
-                    ->where(['candidatenumber' => $candidateno, /*'isverified' => 1,*/ 'isdeleted' => 0,
+                    ->where(['candidatenumber' => $candidateno, 'isdeleted' => 0,
                         'year' => $year])
                     ->groupBy('personid')
                     ->all();

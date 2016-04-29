@@ -241,6 +241,8 @@
         */
         public function actionViewApplicantCertificates($personid, $programme, $application_status)
         {
+            $duplicate_message = false;
+            
             $applicant = Applicant::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
@@ -344,7 +346,8 @@
                 }
                 if ($dups || $reapp)
                 {
-                    Yii::$app->session->setFlash('warning', $message);
+                    //Yii::$app->session->setFlash('warning', $message);
+                    $duplicate_message = $message;
                 }
             }
             else
@@ -414,6 +417,7 @@
             
             return $this->render('view_applicant_certificates',
                     [
+                        'duplicate_message' => $duplicate_message,
                         'username' => $username,
                         'applicant' => $applicant,
                         'applications' => $applications,
