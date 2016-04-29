@@ -10,10 +10,10 @@
     use yii\helpers\ArrayHelper;
     use dosamigos\datepicker\DatePicker;
     
-    use frontend\models\Award;
-    use frontend\models\PersonAward;
+    use frontend\models\Club;
+    use frontend\models\ClubRole;
     
-    $this->title = $action .' Award';
+    $this->title = 'Update Club Member Role';
 ?>
 
     <div class="site-index">
@@ -31,7 +31,7 @@
 
                 <?php
                     $form = ActiveForm::begin([
-                                'id' => 'assign_award',
+                                'id' => 'assign_club',
                                 'options' => [
                                     'style' => 'width:90%; margin: 0 auto;',
                                 ],
@@ -39,18 +39,28 @@
                 ?>
                     <table class='table table-hover' style='margin: 0 auto;'>
                         <tr>
-                            <th style='width:30%; vertical-align:middle'>Award</th>
-                            <td><?=$form->field($award_assignment, 'awardid')->label('')->dropDownList(ArrayHelper::map(Award::find()->all(), 'awardid', 'name'), ['prompt'=>'Select Award']) ?></td>
-                        </tr>
-
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Comments</th>
-                            <td><?=$form->field($award_assignment, 'comments')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5])?></td>
+                            <th style='width:30%; vertical-align:middle'>Club Name</th>
+                            <td><?=$form->field($club_assignment, 'clubid')->label('')->dropDownList(ArrayHelper::map(Club::find()->all(), 'clubid', 'name'), ['prompt'=>'Select Club', 'readonly' => true, 'disabled' => true]) ?></td>
                         </tr>
                         
                         <tr>
-                            <th style='width:30%; vertical-align:middle'>Date Awarded</th>
-                            <td><?=$form->field($award_assignment, 'dateawarded')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
+                            <th style='width:30%; vertical-align:middle'>Club Role</th>
+                            <td><?=$form->field($club_assignment, 'clubroleid')->label('')->dropDownList(ArrayHelper::map(ClubRole::find()->all(), 'clubroleid', 'name'), ['prompt'=>'Select Member Role']) ?></td>
+                        </tr>
+                        
+                        <tr>
+                            <th style='width:30%; vertical-align:middle'>End Date of Previous Role</th>
+                            <td><?=$form->field($member_history, 'enddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
+                        </tr>
+                        
+                        <tr>
+                            <th style='width:30%; vertical-align:middle'>Start Date of New Role</th>
+                            <td><?=$form->field($member_history, 'startdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
+                        </tr>
+                        
+                        <tr>
+                            <th style='width:30%; vertical-align:middle'>Comments</th>
+                            <td><?=$form->field($club_assignment, 'comments')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5])?></td>
                         </tr>
                     </table><br/>
 
@@ -61,5 +71,7 @@
             </div>
         </div>
     </div>
+
+
 
 

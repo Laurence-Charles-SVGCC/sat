@@ -34,7 +34,9 @@
                 </br>                              
                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Awards Listing
-                        <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/registry/awards/configure-award', 'action' => 'create']);?> role="button"> Create Award</a>
+                        <?php if(Yii::$app->user->can('assignAward')):?>
+                            <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/registry/awards/configure-award', 'action' => 'create']);?> role="button"> Create Award</a>
+                        <?php endif;?>
                     </div>
                     
                     <?php if($awards == false):?>
@@ -92,11 +94,15 @@
                                                 <span class='caret'></span>
                                             </button>
                                             <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
-                                                <li><a href=<?=Url::toRoute(['/subcomponents/registry/awards/configure-award', 'action' => 'edit', 'recordid' => $award->awardid])?>>Edit</a></li>
-                                                <?php if(Award::getAwardees($award->awardid) == true):?>   
+                                                <?php if(Yii::$app->user->can('editAward')):?>
+                                                    <li><a href=<?=Url::toRoute(['/subcomponents/registry/awards/configure-award', 'action' => 'edit', 'recordid' => $award->awardid])?>>Edit</a></li>
+                                                <?php endif;?>
+                                                    
+                                                <?php if(Award::getAwardees($award->awardid) == true  && Yii::$app->user->can('viewAward')):?>   
                                                     <li><a href=<?=Url::toRoute(['/subcomponents/registry/awards/view-awardees', 'recordid' => $award->awardid])?>>View Awardees</a></li>
                                                 <?php endif;?>
-                                                <?php if(Award::isAssigned($award->awardid) == false):?>    
+                                                
+                                                <?php if(Award::isAssigned($award->awardid) == false && Yii::$app->user->can('deleteAward')):?>    
                                                     <li><a href=<?=Url::toRoute(['/subcomponents/registry/awards/delete-award', 'recordid' => $award->awardid])?>>Delete Award</a></li>
                                                 <?php endif;?>
                                             </ul>

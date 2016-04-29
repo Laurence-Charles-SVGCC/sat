@@ -94,4 +94,92 @@ class ClubMember extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ClubRole::className(), ['clubroleid' => 'clubroleid']);
     }
+    
+    
+    /**
+     * Returns an array of clubs assignments of a particular student
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/04/2016
+     * Date Last Modified: 28/04/2016
+     */
+    public static function getClubs($personid)
+    {
+        return ClubMember::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+    }
+    
+    
+     /**
+     * Returns an array of club details a particular student is a part of
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/04/2016
+     * Date Last Modified: 28/04/2016
+     */
+    public static function getClubDetails($personid)
+    {
+        
+        $collection  = array();
+        
+        $clubs = ClubMember::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        
+        $keys = array();
+        array_push($keys, 'recordid');
+        array_push($keys, 'clubid');
+        array_push($keys, 'personid');
+        array_push($keys, 'clubname');
+        array_push($keys, 'date');
+        array_push($keys, 'comments');
+        array_push($keys, 'programme');
+        array_push($keys, 'role');
+        
+        
+        foreach($clubs as $club)
+        {
+            $combined = array();
+            $values = array();
+            
+            $clubname = Club::find()
+                    ->where(['clubid' => $club->clubid])
+                    ->one()
+                    ->name;
+            
+            $date = $club->appointmentdate;
+            $comments = $club->comments;
+            
+            $student_registration = StudentRegistration::find()
+                    ->where(['studentregistrationid' => $club->studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $programme = ProgrammeCatalog::getProgrammeName($student_registration->academicofferingid);
+            
+            $role = ClubRole::find()
+                    ->where(['clubroleid' => $club->clubroleid])
+                    ->one()
+                    ->name;
+            
+            array_push($values, $club->clubmemberid);
+            array_push($values, $club->clubid);
+            array_push($values, $club->personid);
+            array_push($values, $clubname);
+            array_push($values, $date);
+            array_push($values, $comments);
+            array_push($values, $programme);
+            array_push($values, $role);
+            
+            $combined = array_combine($keys, $values);
+            array_push($collection, $combined);
+        }
+
+        return $collection;
+    }
 }

@@ -77,6 +77,9 @@
     use frontend\models\AwardType;
     use frontend\models\Semester;
     use frontend\models\AwardScope;
+    use frontend\models\Club;
+    use frontend\models\ClubMember;
+    use frontend\models\ClubMemberHistory;
     
     
     class ProfileController extends Controller
@@ -487,6 +490,8 @@
             $awards = PersonAward::getAwards($personid);
             $awardDetails = PersonAward::getAwardDetails($personid);
             
+            $clubs = ClubMember::getClubs($personid);
+            $clubDetails = ClubMember::getClubDetails($personid);
             /****************************************************************************/
             return $this->render('student_profile',[
                 'studentregistrationid' => $studentregistrationid,
@@ -575,6 +580,9 @@
                 //models for awards and clubs
                 'awards' => $awards,
                 'awardDetails' => $awardDetails,
+                'clubs' => $clubs,
+                'clubDetails' => $clubDetails,
+                
                 
             ]);
         }
@@ -3666,6 +3674,284 @@
                         'department' => $department,
                         'programme' => $programme,
                         'subject' => $subject,
+                        'personid' => $personid,
+                        'studentregistrationid' => $studentregistrationid,
+                    ]);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /**
+         * Delete an club assignment
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @param type $clubid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionDeleteClub($personid, $recordid , $clubid)
+        {
+            $save_flag = false;
+            
+            $user = User::find()
+                   ->where(['personid' => $personid])
+                   ->one();
+           
+            $club_assignment = ClubMember::find()
+                    ->where(['clubmemberid' => $clubid])
+                    ->one();
+            
+            $member_history = ClubMemberHistory::find()
+                    ->where(['clubmemberid' => $club_assignment->clubmemberid, 'isactive'=> 1, 'isdeleted'=> 0])
+                    ->all();
+            
+            if(!$club_assignment)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured finding record. Please try again.');
+            }
+            else
+            {
+                $club_assignment->isactive = 0;
+                $club_assignment->isdeleted = 1;
+                $save_flag = $club_assignment->save();
+                
+                if (!$save_flag)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');
+                }
+                else
+                {
+                    if ($member_history)
+                    {
+                        foreach($member_history as $history)
+                        {
+                            $history->isactive = 0;
+                            $history->isdeleted = 1;
+                            $history->save();
+                        }
+                    }
+                    return self::actionStudentProfile($user->personid, $recordid);
+                }
+            }
+        }
+        
+        
+        /**
+         * Creates/edits an club assignment
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @param type $action
+         * @param type $clubid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionClub($personid, $recordid, $action, $clubid = NULL)
+        {
+            $save_flag = false;
+            
+            if($action == "create")
+            {
+                $club_assignment = new ClubMember();
+            }
+            elseif($action == "edit")
+            {
+                $club_assignment = ClubMember::find()
+                        ->where(['clubmemberid' => $clubid])
+                        ->one();
+            }
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $validation_flag = false;
+                $save_flag = false;
+
+                $load_flag = $club_assignment->load($post_data);
+                if($load_flag == true)
+                {
+                    $club_assignment->personid = $personid;
+                    $club_assignment->studentregistrationid = $recordid;
+                    $validation_flag = $club_assignment->validate();
+
+                    if($validation_flag == true)
+                    {
+                        $save_flag = $club_assignment->save();
+                        if($save_flag == true)
+                        {
+                            return self::actionStudentProfile($personid, $recordid);
+                        }
+                        else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                    }
+                    else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+                }
+                else
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+            }
+            
+            return $this->render('assign_club', [
+                    'club_assignment' => $club_assignment,
+                    'action' => $action,
+                    'personid' => $personid,
+                    'studentregistrationid' => $recordid,
+                ]);
+        }
+        
+        
+        /**
+         * Updates club member's role
+         * 
+         * @param type $personid
+         * @param type $recordid
+         * @param type $clubid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionUpdateClubRole($personid, $recordid, $clubid = NULL)
+        {
+            $member_history = new ClubMemberHistory();
+            
+            $save_flag = false;
+            $history_save_flag = false;
+            
+            $club_assignment = ClubMember::find()
+                    ->where(['clubmemberid' => $clubid])
+                    ->one();
+          
+            if ($post_data = Yii::$app->request->post())
+            {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    $load_flag = false;
+                    $validation_flag = false;
+                    $save_flag = false;
+
+                    $member_history->clubid = $club_assignment->clubid;
+                    $member_history->studentregistrationid = $personid;
+                    $member_history->personid = $recordid;
+                    $member_history->oldclubroleid = $club_assignment->clubroleid;
+
+                    $load_flag = $club_assignment->load($post_data);
+                    if($load_flag == true)
+                    {
+                        $validation_flag = $club_assignment->validate();
+
+                        if($validation_flag == true)
+                        {
+                            $member_history->newclubroleid = $club_assignment->clubroleid;
+                            $history_save_flag = $member_history->save();
+                            $save_flag = $club_assignment->save();
+                            
+                            if($save_flag == true  && $history_save_flag ==true)
+                            {
+                                $transaction->commit();
+                                return self::actionStudentProfile($personid, $recordid);
+                            }
+                            else
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
+                            }
+                        }
+                        else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate record. Please try again.');
+                    }
+                    else
+                            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load record. Please try again.');              
+                } catch (Exception $e) {
+                    
+                }
+            }
+            
+            return $this->render('update_club_role', [
+                    'club_assignment' => $club_assignment,
+                    'member_history' => $member_history,
+                    'personid' => $personid,
+                    'studentregistrationid' => $recordid,
+                ]);
+        }
+        
+        
+        /*
+         *     
+                            
+                            
+                            $member_history->clubid =
+                            $member_history->studentregistrationid =xxx
+                            $member_history->personid = xxx
+                            $member_history->startdate = xxx
+                            $member_history->enddate = 
+                            $member_history->oldclubroleid = 
+                            $member_history->newclubroleid
+
+                            
+                            
+         */
+        
+        
+        /**
+         * View an club details
+         * 
+         * @param type $personid
+         * @param type $studentregistrationid
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/04/2016
+         * Date Last Modified: 28/04/2016
+         */
+        public function actionViewClub($personid, $studentregistrationid, $recordid)
+        {
+            $club = Club::find()
+                        ->where(['clubid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            $name = $club->name;
+            $description = $club->description;
+            $motto = $club->motto;
+            $yearfounded = $club->yearfounded;
+                    
+            return $this->render('view_club_details',
+                    [
+                        'club' => $club,
+                        'name' => $name,
+                        'description' => $description,
+                        'motto' => $motto,
+                        'yearfounded' => $yearfounded,
                         'personid' => $personid,
                         'studentregistrationid' => $studentregistrationid,
                     ]);

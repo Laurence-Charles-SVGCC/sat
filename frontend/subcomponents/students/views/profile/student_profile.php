@@ -170,6 +170,9 @@
                             <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('manageAwards')):?>    
                                 <li role="presentation"><a href="#awards" aria-controls="awards" role="tab" data-toggle="tab">Awards</a></li>
                             <?php endif;?> 
+                            <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('manageClubs')):?>    
+                                <li role="presentation"><a href="#clubs" aria-controls="clubs" role="tab" data-toggle="tab">Clubs</a></li>
+                            <?php endif;?> 
                         </ul>
                         
                         <!-- Tab panes -->
@@ -3107,11 +3110,10 @@
                                     
                             <div role="tabpanel" class="tab-pane fade" id="awards"> 
                                 </br>
-                                
                                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php if(Yii::$app->user->can('manageAwards')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Award Listing
-                                            <?php if(Yii::$app->user->can('createAward')):?>
+                                            <?php if(Yii::$app->user->can('assignAward')):?>
                                                 <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'create']);?> role='button'> Assign Award</a>
                                             <?php endif;?>
                                         </div>
@@ -3140,10 +3142,18 @@
                                                                     <span class='caret'></span>
                                                                 </button>
                                                                 <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
-                                                                    <li><a target='_blank' href=<?=Url::toRoute(['/subcomponents/students/profile/view-award', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $detail['awardid']])?>>View Award Details</a></li>
-                                                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'edit', 'awardid' => $detail['recordid']])?>>Edit</a></li>
-                                                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/delete-award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'awardid' => $detail['recordid']])?>>Delete</a></li>
-                                                                    </ul>
+                                                                    <?php if(Yii::$app->user->can('viewAward')):?>
+                                                                        <li><a target='_blank' href=<?=Url::toRoute(['/subcomponents/students/profile/view-award', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $detail['awardid']])?>>View Award Details</a></li>
+                                                                    <?php endif;?>
+                                                                    
+                                                                    <?php if(Yii::$app->user->can('editAward')):?>
+                                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'edit', 'awardid' => $detail['recordid']])?>>Edit</a></li>
+                                                                    <?php endif;?>
+                                                                        
+                                                                    <?php if(Yii::$app->user->can('deleteAward')):?>
+                                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/delete-award', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'awardid' => $detail['recordid']])?>>Delete</a></li>
+                                                                    <?php endif;?>
+                                                                </ul>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -3152,7 +3162,72 @@
                                         </table>
                                     <?php endif;?>
                                 </div>
+                            </div>
                                 
+                            
+                            <div role="tabpanel" class="tab-pane fade" id="clubs"> 
+                                </br>
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('manageClubs')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Club Membership
+                                            <?php if(Yii::$app->user->can('createMembership')):?>
+                                                <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/club', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'create']);?> role='button'> Join New Club</a>
+                                            <?php endif;?>
+                                        </div>
+                                        
+                                        <table class='table table-hover' style='margin: 0 auto;'>
+                                            <?php if (!$awards):?>
+                                                <h3>Student is not a member of any club</h3>
+                                            <?php else:?>
+                                                <?php foreach ($clubDetails as $detail):?>
+                                                    <tr>
+                                                        <th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'><?=$detail['clubname']?>
+                                                        <th>Date Joined</th>
+                                                        <td><?=$detail['date']?></td>
+                                                        <th>Programme</th>
+                                                        <td><?=$detail['programme']?></td>
+                                                    </tr>
+                                                    
+                                                    <tr>
+                                                        <th>Comments</th>
+                                                        <td colspan='3'><?=$detail['comments']?></td>
+                                                    </tr>
+                                                    
+                                                    <tr>
+                                                        <th>Current Role</th>
+                                                        <td><?=$detail['role']?></td>
+                                                        <th>Action</th>
+                                                        <td>
+                                                            <div class='dropdown'>
+                                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                                                                    Select your intended action
+                                                                    <span class='caret'></span>
+                                                                </button>
+                                                                <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                                                                    <?php if(Yii::$app->user->can('viewClub')):?>
+                                                                        <li><a target='_blank' href=<?=Url::toRoute(['/subcomponents/students/profile/view-club', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'recordid' => $detail['clubid']])?>>View Club Details</a></li>
+                                                                    <?php endif;?>
+                                                                    
+                                                                    <?php if(Yii::$app->user->can('editClub')):?>
+                                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/club', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'action' => 'edit', 'clubid' => $detail['recordid']])?>>Edit</a></li>
+                                                                    <?php endif;?>
+                                                                        
+                                                                    <?php if(Yii::$app->user->can('editClub')):?>
+                                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/update-club-role', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'clubid' => $detail['recordid']])?>>Update Role</a></li>
+                                                                    <?php endif;?>    
+                                                                        
+                                                                    <?php if(Yii::$app->user->can('deleteClub')):?>
+                                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/profile/delete-club', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid, 'clubid' => $detail['recordid']])?>>Delete</a></li>
+                                                                    <?php endif;?>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach;?>
+                                            <?php endif;?>
+                                        </table>
+                                    <?php endif;?>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -26,7 +26,9 @@
                 </br>                              
                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Clubs Listing
-                        <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/registry/clubs/configure-club', 'action' => 'create']);?> role="button"> Create Club</a>
+                        <?php if(Yii::$app->user->can('createClub')):?>
+                            <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/registry/clubs/configure-club', 'action' => 'create']);?> role="button"> Create Club</a>
+                        <?php endif;?>
                     </div>
                     
                     </br>
@@ -61,9 +63,11 @@
                                                 <span class='caret'></span>
                                             </button>
                                             <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
-                                                <li><a href=<?=Url::toRoute(['/subcomponents/registry/clubs/configure-club', 'action' => 'edit', 'recordid' => $club->clubid])?>>Edit</a></li>
-                                                
-                                                <?php if(Club::hasMembers($club->clubid) == false):?>    
+                                                <?php if(Yii::$app->user->can('editClub')):?>
+                                                    <li><a href=<?=Url::toRoute(['/subcomponents/registry/clubs/configure-club', 'action' => 'edit', 'recordid' => $club->clubid])?>>Edit</a></li>
+                                                <?php endif;?>
+                                                    
+                                                <?php if(Club::hasMembers($club->clubid) == false  && Yii::$app->user->can('deleteClub')):?>    
                                                     <li><a href=<?=Url::toRoute(['/subcomponents/registry/clubs/delete-club', 'recordid' => $club->clubid])?>>Delete Club</a></li>
                                                 <?php endif;?>
                                             </ul>
