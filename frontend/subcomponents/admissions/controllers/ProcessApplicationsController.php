@@ -684,18 +684,29 @@
                                 }
                             }
                         }
-
-                        $offer = new Offer();
-                        $offer->applicationid = $applicationid;
-                        $offer->offertypeid = 2;
-                        $offer->issuedby = Yii::$app->user->getID();
-                        $offer->issuedate = date('Y-m-d');
-                        $offer_save_flag = $offer->save();
-                        if($offer_save_flag == false)
+                        
+                        /**
+                         * this should prevent the creation of multiple offers,
+                         * which is suspected to occur when internet timeout 
+                         * during request submission
+                         */
+                        $existing_current_offer = Offer::find()
+                                        ->where(['applicationid' => $applicationid, 'offertypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->all();
+                        if($existing_current_offer == false)
                         {
-                            $transaction->rollBack();
-                            Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                            return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            $offer = new Offer();
+                            $offer->applicationid = $applicationid;
+                            $offer->offertypeid = 2;
+                            $offer->issuedby = Yii::$app->user->getID();
+                            $offer->issuedate = date('Y-m-d');
+                            $offer_save_flag = $offer->save();
+                            if($offer_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
                         }
 
                         /*
@@ -832,7 +843,7 @@
                      * -> nothing is done to preceeding applications
                      * -> nothing is done to subsequent applications
                      */
-                    elseif($new_status == 9)
+                    elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
                         if($old_status == 8)
                         {
@@ -847,11 +858,20 @@
                             }
                             else
                             {
+                                /**
+                                * this should prevent the creation of multiple offers,
+                                * which is suspected to occur when internet timeout 
+                                * during request submission
+                                */
+                               $existing_current_offer = Offer::find()
+                                               ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                               ->all();
+                               
                                 /*
-                                * If old_offer exists;
+                                * If conditional exists;
                                 * it must be published before applicant can be given a full offer
                                 */
-                                if($old_offer->ispublished == 1)
+                                if($old_offer->ispublished == 1  && $existing_current_offer == false)
                                 {
                                     // create offer
                                     $offer = new Offer();
@@ -924,7 +944,7 @@
                      * -> all precceding applications are rejected
                      * ->all subsequent applications are set to rejected
                      */
-                    elseif($new_status == 10)
+                    elseif($new_status == 10  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
                         //updates subsequent applications
                         if($count - $position > 1)
