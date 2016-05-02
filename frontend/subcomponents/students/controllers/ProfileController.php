@@ -80,6 +80,8 @@
     use frontend\models\Club;
     use frontend\models\ClubMember;
     use frontend\models\ClubMemberHistory;
+    use frontend\models\Event;
+    use frontend\models\EventType;
     
     
     class ProfileController extends Controller
@@ -492,7 +494,40 @@
             
             $clubs = ClubMember::getClubs($personid);
             $clubDetails = ClubMember::getClubDetails($personid);
-            /****************************************************************************/
+            /*********************************  Events  ********************************/
+            $events = Event::getEvents($studentregistrationid);
+            $data = array();
+            
+            foreach($events as $event)
+            {
+                $event_data = array();
+                $event_data['eventid'] = $event->eventid;
+                $event_data['recordid'] = $event->recordid;
+                $eventtype = EventType::find()
+                        ->where(['eventtypeid' => $event->eventtypeid])
+                        ->one()
+                        ->name;
+                $event_data['eventtypeid'] = $event->eventtypeid;
+                $event_data['eventtype'] = $eventtype;
+                $event_data['studentregistrationid'] = $event->studentregistrationid;
+                $event_data['personid'] = $personid;
+                $event_data['date'] = $event->date;
+                $event_data['summary'] = $event->summary;
+                $data[] = $event_data;
+            }
+            
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 25,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['date' => SORT_ASC],
+                    'attributes' => ['date'],
+                  ]
+            ]);
+            /***************************************************************************/
+            
             return $this->render('student_profile',[
                 'studentregistrationid' => $studentregistrationid,
                 
@@ -583,6 +618,9 @@
                 'clubs' => $clubs,
                 'clubDetails' => $clubDetails,
                 
+                //models for event
+                'events' => $events,
+                'dataProvider' => $dataProvider,
                 
             ]);
         }

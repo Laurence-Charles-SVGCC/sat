@@ -140,79 +140,81 @@ else
           <!-- sidebar menu: : style can be found in sidebar.less -->
           
           <ul class="sidebar-menu">
-            <li class="fa fa-home">
-              <a href="<?= Url::toRoute(['/site/index'])?>">
-                <i class="fa fa-dashboard"></i> <span>Home</span> <i class="fa fa-angle-left pull-right"></i>
-              </a>
-            </li>
-            <li class="treeview">
-              <a href="">
-                <i class="fa fa-dashboard"></i> <span>Roles & Permissions</span> <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li class="active"><a href="<?= Url::toRoute(['/rbac/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-item/index'])?>"><i class="fa fa-circle-o"></i>Manage Roles and Permissions</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
-                <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Assign Roles and Permissions</a></li>
-              </ul>
-            </li>
-            <li class="treeview">
-              <a href="">
-                <i class="fa fa-dashboard"></i> <span>Users</span> <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li class="active"><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create User</a></li>
-                <li><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>Employees</a></li>
-                <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>Departments</a></li>
-                <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
-              </ul>
-            </li>
-            <!--<li class="treeview">
-              <a href="#">
-                <i class="fa fa-files-o"></i>
-                <span>Miscellaneous</span>
-                <span class="label label-primary pull-right">4</span>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="<?= Url::toRoute(['/subcomponents/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                <li><a href="<?= Url::toRoute(['/subcomponents/general/division'])?>"><i class="fa fa-circle-o"></i>Divisions</a></li>
-              </ul>
-            </li>
-            <li>
-              <a href="pages/widgets.html">
-                <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
-              </a>
-            </li>
-            <li class="treeview">
-              <a href="#">
-                <i class="fa fa-share"></i> <span>Multilevel</span>
-                <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-                <li>
-                  <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+            <?php if (Yii::$app->user->can('System Administrator')): ?>
+                <li class="fa fa-home">
+                  <a href="<?= Url::toRoute(['/site/index'])?>">
+                    <i class="fa fa-dashboard"></i> <span>Home</span> <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                </li>
+                <li class="treeview">
+                  <a href="">
+                    <i class="fa fa-dashboard"></i> <span>Roles & Permissions</span> <i class="fa fa-angle-left pull-right"></i>
+                  </a>
                   <ul class="treeview-menu">
-                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-                    <li>
-                      <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-                      <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                      </ul>
-                    </li>
+                    <li class="active"><a href="<?= Url::toRoute(['/rbac/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    <li><a href="<?= Url::toRoute(['/auth-item/index'])?>"><i class="fa fa-circle-o"></i>Manage Roles and Permissions</a></li>
+                    <li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>
+                    <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
+                    <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Assign Roles and Permissions</a></li>
                   </ul>
                 </li>
-                <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-              </ul>
-            </li>
-            <li><a href="documentation/index.html"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
-            <li class="header">LABELS</li>
-            <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
-            <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
-            <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>-->
+                <li class="treeview">
+                  <a href="">
+                    <i class="fa fa-dashboard"></i> <span>Users</span> <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li class="active"><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create User</a></li>
+                    <li><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>Employees</a></li>
+                    <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>Departments</a></li>
+                    <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
+                  </ul>
+                </li>
+                <!--<li class="treeview">
+                  <a href="#">
+                    <i class="fa fa-files-o"></i>
+                    <span>Miscellaneous</span>
+                    <span class="label label-primary pull-right">4</span>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li><a href="<?= Url::toRoute(['/subcomponents/general/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
+                    <li><a href="<?= Url::toRoute(['/subcomponents/general/division'])?>"><i class="fa fa-circle-o"></i>Divisions</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="pages/widgets.html">
+                    <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
+                  </a>
+                </li>
+                <li class="treeview">
+                  <a href="#">
+                    <i class="fa fa-share"></i> <span>Multilevel</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                    <li>
+                      <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+                      <ul class="treeview-menu">
+                        <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                        <li>
+                          <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                          <ul class="treeview-menu">
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                  </ul>
+                </li>
+                <li><a href="documentation/index.html"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
+                <li class="header">LABELS</li>
+                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>-->
+          <?php endif;?>  
           </ul>
         </section>
         <!-- /.sidebar -->

@@ -10,12 +10,12 @@
     use yii\helpers\Url;
     use yii\grid\GridView;
     use yii\widgets\ActiveForm;
+    use yii\data\ArrayDataProvider;
     
     use frontend\models\CapeSubject;
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\Employee;
-    
     use frontend\models\AcademicStatus;
     use frontend\models\BatchStudentCape;
     use frontend\models\BatchStudent;
@@ -3097,9 +3097,70 @@
                             </div>
                             
                             <div role="tabpanel" class="tab-pane fade" id="student_log"> 
-                                <h2 class="custom_h2">Student Log</h2>
+                                
                                 </br>
-                                <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('manageEvents')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Student Log
+                                            <?php if(Yii::$app->user->can('createEvent')):?>
+                                                <span class='dropdown pull-right'>
+                                                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                                                        Add Record
+                                                        <span class='caret'></span>
+                                                    </button>
+                                                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/log/create-event', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'sick-leave'])?>>Sick Leave</a></li>
+
+                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/log/create-event', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'maternity-leve'])?>>Maternity Leave</a></li>
+
+                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/log/create-event', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'disciplinary'])?>>Disciplinary Action</a></li>
+
+                                                        <li><a href=<?=Url::toRoute(['/subcomponents/students/log/create-event', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'action' => 'miscellaneous'])?>>Miscellaneous</a></li>
+                                                    </ul>
+                                                </span>
+                                            <?php endif;?>
+                                        </div><br/>
+                                        
+                                        <?= GridView::widget([
+                                            'dataProvider' => $dataProvider,
+                                            'columns' => 
+                                                [
+                                                    ['class' => 'yii\grid\SerialColumn'],
+                                                    [
+                                                        'attribute' => 'date',
+//                                                        'format' => 'text',
+                                                        'label' => 'Date',
+                                                        'format' => 'html',
+                                                        'value' => function($row)
+                                                            {
+                                                                if(Yii::$app->user->can('viewEvent'))
+                                                                {
+                                                                    return Html::a($row['date'], 
+                                                                                Url::to(['log/event-details', 'personid' => $row['personid'], 'studentregistrationid' => $row['studentregistrationid'], 'eventid' => $row['eventid'], 'eventtypeid' => $row['eventtypeid'], 'recordid' => $row['recordid']]));
+                                                                }
+                                                                else    
+                                                                {
+                                                                    return $row['date'];
+                                                                }
+                                                            }
+                                                    ],
+                                                    [
+                                                        'attribute' => 'eventtype',
+                                                        'format' => 'text',
+                                                        'label' => 'eventtype'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'summary',
+                                                        'format' => 'text',
+                                                        'label' => 'summary'
+                                                    ],
+                                                ],
+                                            ]); 
+                                        ?> 
+                                    
+                                    <?php endif;?>
+                                </div>
+                            
                             </div>
                             
                             <div role="tabpanel" class="tab-pane fade" id="attendance"> 
