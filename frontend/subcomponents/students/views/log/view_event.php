@@ -40,7 +40,7 @@
                                     <li><a href=<?=Url::toRoute(['/subcomponents/students/log/edit-event', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid])?>>Edit</a></li>
                                 <?php endif;?>
                                 <?php if(Yii::$app->user->can('editEvent')):?>
-                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/log/attach-document', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid])?>>Attach Document</a></li>
+                                    <li><a href=<?=Url::toRoute(['/subcomponents/students/log/attach-documents', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid])?>>Attach Document</a></li>
                                 <?php endif;?>
                                 <?php if(Yii::$app->user->can('deleteEvent')):?>
                                     <li><a href=<?=Url::toRoute(['/subcomponents/students/log/delete-event', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid])?>>Delete</a></li>
@@ -70,7 +70,46 @@
                             <td><?=$event_details->startdate?></td>
                         </tr>
                     </table>
-                </div>
+                </div><br/><br/><br/>
+                
+                <fieldset  style="width:90%; margin: 0 auto;">
+                    <legend class="custom_h2">File Listing</legend>
+                    <table class='table table-hover' style='margin: 0 auto;'>
+                        <?php if(!$saved_documents):?>
+                            <h3>No files are currently attached to this note</h3>
+                        <?php else:?>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Download</th>
+                                <th>Delete</th>
+                            </tr>
+                            <?php foreach($saved_documents as $index=>$doc):?>
+                                <tr>
+                                    <td><?=  substr($doc,65)/*$doc*/?></td>
+                                    <?php 
+                                        $filename = substr($doc,65);
+                                    ?> 
+                                    <td>
+                                        <?= Html::a(' ', 
+                                                    ['log/download-event-attachment',  'index' => $index, 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid], 
+                                                    ['class' => 'btn btn-success glyphicon glyphicon-download-alt']
+                                                ) ?>
+                                    <td>
+                                        <?=Html::a(' ', 
+                                                    ['log/delete-attachment', 'index' => $index, 'personid' => $personid, 'studentregistrationid' => $studentregistrationid, 'eventid' => $event->eventid, 'eventtypeid' => $event->eventtypeid, 'recordid' => $recordid], 
+                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to delete this item?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach;?>
+                        <?php endif;?>
+                    </table>
+                </fieldset>
             </div>
         </div>
     </div>

@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use yii\helpers\FileHelper;
+
 /**
  * This is the model class for table "event".
  *
@@ -91,5 +93,38 @@ class Event extends \yii\db\ActiveRecord
                 ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
                 ->all();
         return $events;
+    }
+    
+    
+    /**
+     * Get documents relataed to a particular event
+     * 
+     * @param type $username
+     * @param type $studentregistrationid
+     * @param type $eventtypeid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/05/2016
+     * Date Last Modified: 02/05/2016
+     */
+    public static function getDocuments($username, $studentregistrationid, $eventtypeid, $recordid)
+    {
+        
+        if ($eventtypeid == 1)
+            $event_type = "sick_leave";
+        elseif ($eventtypeid == 2)
+            $event_type = "maternity_leave";
+        elseif ($eventtypeid == 3)
+            $event_type = "miscellaneous";
+        elseif ($eventtypeid == 4)
+            $event_type = "disciplinary_action";
+        
+        $dir =  Yii::getAlias('@frontend') . "/files/student_records/" . $username . "/" . $studentregistrationid . "/events/" . $event_type . "/" . $recordid . "/";
+        
+        $files = FileHelper::findFiles($dir);
+
+        return $files;
     }
 }
