@@ -252,7 +252,7 @@ class VerifyApplicantsController extends \yii\web\Controller
         {
             $data = array();
 
-            foreach(Application::centreAbandonedApplicantsReceived($cseccentreid) as $application)
+            foreach(Application::centreAbandonedApplicantsReceived($centreid) as $application)
             {
                 $container = array();
 
