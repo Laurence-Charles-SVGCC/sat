@@ -318,9 +318,8 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
-//                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
-                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10]
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
                             ])
                     ->all();
         $count = count($applications);
@@ -379,6 +378,10 @@ class Applicant extends \yii\db\ActiveRecord
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
                   )
                     $application_status =10;
+            
+            //is abandoned
+            elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11)
+                $application_status =11;
         }
         
         elseif ($count == 3)
@@ -438,6 +441,10 @@ class Applicant extends \yii\db\ActiveRecord
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
                   )
             $application_status =10;
+            
+            //is abandoned
+            elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11 && $applications[2]->applicationstatusid == 11)
+                $application_status =11;
         }
         
         $target = Application::getTarget($applications, $application_status);
