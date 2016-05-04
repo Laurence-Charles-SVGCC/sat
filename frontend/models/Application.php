@@ -1127,6 +1127,18 @@ class Application extends \yii\db\ActiveRecord
             }
         }
         
+        elseif ($application_status == 11)    //if abandoned
+        {
+            foreach($applications as $application)
+            {
+                if ($application->applicationstatusid == 11)
+                {
+                    $target_application = $application;
+                    break;
+                }
+            }
+        }
+        
         return $target_application;
     }
     
