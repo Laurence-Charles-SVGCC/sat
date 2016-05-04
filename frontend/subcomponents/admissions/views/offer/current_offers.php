@@ -35,10 +35,10 @@
     }
 
     if ($offertype == 1)
-            $offer_name = "Unconditional";
-        else
-            $offer_name = "Conditional";
-    $this->title = $divisionabbr . ' ' . $offer_name .  ' Offers for ' . $applicationperiodname;
+        $this->title = $divisionabbr . ' Unconditional Offers for ' . $applicationperiodname;
+    else
+       $this->title = $divisionabbr . ' Interviewees for ' . $applicationperiodname;
+    
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="body-content">

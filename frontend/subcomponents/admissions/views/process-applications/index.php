@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     <a style="width:12%; height:100px; margin-left:10%; margin-right:10%; margin-top:5%; margin-bottom:5%; font-size:16px; <?php if($interviewoffer==0) echo 'pointer-events:none;cursor: default;opacity: 0.6;'?>"" class="btn btn-app" href="<?= Url::to(['process-applications/view-by-status', 'division_id' => $division_id, 'application_status' => 8])?>">
                         <span class="badge bg-green" style="font-size:16px;"><?= $interviewoffer ?></span>
-                        <i class="fa fa-cart-plus"></i><strong> Conditional<br/> Offer</strong>
+                        <i class="fa fa-cart-plus"></i><strong> Interviewees</strong>
                     </a>
                     
                     <a style="width:12%; height:100px; margin-left:10%; margin-right:10%; margin-top:5%; margin-bottom:5%; font-size:16px; <?php if($conditionalofferreject==0) echo 'pointer-events:none;cursor: default;opacity: 0.6;'?>"" class="btn btn-app" href="<?= Url::to(['process-applications/view-by-status', 'division_id' => $division_id, 'application_status' => 10])?>">
