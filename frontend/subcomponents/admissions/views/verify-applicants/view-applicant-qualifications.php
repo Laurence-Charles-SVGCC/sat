@@ -14,6 +14,7 @@ use frontend\models\CsecCentre;
 use frontend\models\PostSecondaryQualification;
 use frontend\models\CsecQualification;
 use frontend\models\ExternalQualification;
+use frontend\models\Application;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\CsecCentreSearch */
@@ -66,6 +67,33 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo "<p><strong>You have reached your record limit. No more records can be entered.</strong>.</p>";
                 Modal::end();
             ?>
+           
+            <?php if(Application::getAbandonedApplicantApplications($applicant->personid) == true):?>
+                <div id="set_application_as_active">
+                    <?=Html::a(' Reactivate Application', 
+                                ['verify-applicants/reactivate-application', 'personid' => $applicant->personid], 
+                                ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                    'style' => 'margin-right:2.5%',
+                                    'data' => [
+                                        'confirm' => 'Are you sure you want to set this application as active?',
+                                        'method' => 'post',
+                                    ],
+                                ]);?>
+                </div>
+            <?php elseif(Application::getAbandonedApplicantApplications($applicant->personid) == false && Application::getAbandonmentEligibility($applicant->personid)==true):?>
+                <div id="set_application_as_abandoned">
+                    <?=Html::a(' Set As Abandoned', 
+                                ['verify-applicants/abandon-application', 'personid' => $applicant->personid], 
+                                ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                    'style' => 'margin-right:2.5%',
+                                    'data' => [
+                                        'confirm' => 'Are you sure you want to set this application as abandoned?',
+                                        'method' => 'post',
+                                    ],
+                                ]);?>
+                </div>
+            <?php endif;?>
+            
             
             <div id="saved-records">
                 <?php 

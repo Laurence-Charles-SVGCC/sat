@@ -319,7 +319,38 @@ class Application extends \yii\db\ActiveRecord
                         'application.isdeleted' => 0,
                         'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                         'academic_offering.isdeleted' => 0,
-                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9]])
+                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                ->groupby('application.personid')
+                ->all();
+        foreach($applications as $application)
+        {
+            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
+        }
+        return $data;
+    }
+    
+    
+    /**
+     * Gets the Abandoned Applicants with CSEC Certificates who indicated they have "External" qualifications
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getAbandonedExternal()
+    {
+        $data = array();
+        $applications = Application::find()
+                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                        'application.isdeleted' => 0,
+                        'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                        'academic_offering.isdeleted' => 0,
+                        'application.applicationstatusid' => 11])
                 ->groupby('application.personid')
                 ->all();
         foreach($applications as $application)
@@ -354,13 +385,46 @@ class Application extends \yii\db\ActiveRecord
                             'csec_centre.cseccentreid' => $cseccentreid,
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                             'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
                             'academic_offering.isdeleted' => 0
                             ])
                     ->groupby('application.personid')
                     ->count();
         return $count;
     }
+    
+    
+    /**
+     * Gets the count of Abandoned Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/02/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function centreAbandonedApplicantsReceivedCount($cseccentreid)
+    {
+        $count = Application::find()
+                    ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['applicant.isexternal' => 0,
+                            'csec_centre.cseccentreid' => $cseccentreid,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                            'csec_qualification.isdeleted' => 0,
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                            'academic_offering.isdeleted' => 0
+                            ])
+                    ->groupby('application.personid')
+                    ->count();
+        return $count;
+    }
+    
     
     /**
      * Gets the Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
@@ -383,13 +447,46 @@ class Application extends \yii\db\ActiveRecord
                     ->where(['csec_centre.cseccentreid' => $cseccentreid,
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                             'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
                             'academic_offering.isdeleted' => 0
                             ])
                     ->groupby('application.personid')
                     ->all();
         return $applicants;
     }
+    
+    
+    
+    /**
+     * Gets the Abandoned Applicants with CSEC Certificates to a particular CSEC Centre relevant to active application periods
+     * 
+     * @param type $cseccentreid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function centreAbandonedApplicantsReceived($cseccentreid)
+    {
+        $applicants = Application::find()
+                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                            'csec_qualification.isdeleted' => 0,
+                            'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                            'academic_offering.isdeleted' => 0
+                            ])
+                    ->groupby('application.personid')
+                    ->all();
+        return $applicants;
+    }
+    
+    
     
   
     /**
@@ -1108,7 +1205,7 @@ class Application extends \yii\db\ActiveRecord
                             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                             ->where(['application_period.iscomplete' => 0, /*'application_period.applicationperiodstatusid' => 5,*/ 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9],
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
                                     'academic_offering.isdeleted' => 0
                                     ])
                             ->groupby('application.personid')
@@ -1120,7 +1217,46 @@ class Application extends \yii\db\ActiveRecord
                             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                             ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9], 'application.divisionid' => $divisionid,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10], 'application.divisionid' => $divisionid,
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
+        return $applicants;
+    }
+    
+    
+    /**
+     * Returns a count of the abandoned applicants for current active application periods
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 05/03/2016
+     * Date Last Modified: 05/03/2016
+     */
+    public static function countAbandonedApplications($divisionid = NULL)
+    {
+        if ($divisionid == NULL)
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                                    'academic_offering.isdeleted' => 0
+                                    ])
+                            ->groupby('application.personid')
+                            ->count();
+        }
+        else
+        {
+            $applicants = Application::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.divisionid' => $divisionid,
                                     'academic_offering.isdeleted' => 0
                                     ])
                             ->groupby('application.personid')
@@ -1167,6 +1303,110 @@ class Application extends \yii\db\ActiveRecord
         }
             return $applicants;
     }
+    
+    
+    
+    
+    /**
+     * Gets all active applications for a particular applicant
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getApplicantApplications($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->all();
+        return $applications;
+    }
+    
+    
+    /**
+     * Gets all abandoned applications for a particular applicant
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getAbandonedApplicantApplications($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.personid' => $personid,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->all();
+        return $applications;
+    }
+    
+    
+    
+    /**
+     * Gets all abandoned applications
+     * 
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getAllAbandonedApplicantApplications()
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->all();
+        return $applications;
+    }
+    
+    
+    
+    /**
+     * Returns true if applicant's applications are eligble for abandonment
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getAbandonmentEligibility($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->all();
+        if($applications)
+            return true;
+        return false;
+    }
+    
+    
+    
     
     
     

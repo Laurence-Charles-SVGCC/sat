@@ -92,6 +92,67 @@ class VerifyApplicantsController extends \yii\web\Controller
     }
     
     
+    
+    /**
+     * Renders the "Abandoned Application Index"
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public function actionIndexAbandoned()
+    {
+        $data = array();
+        $current_centres = CsecCentre::getAbandonedCurrentCentres();
+        
+        /*
+         *  If there is an abanadoned applications the associated csec centres are retreived
+         */
+        if ($current_centres == true)      
+        {
+            foreach ($current_centres as $centre)
+            {
+                $amt_received = Application::centreAbandonedApplicantsReceivedCount($centre->cseccentreid);
+                if ($amt_received>0)
+                {
+                    $centre_row = array();
+                    $centre_row['centre_name'] = $centre->name;
+                    $centre_row['centre_id'] = $centre->cseccentreid;
+                    $centre_row['total_received'] = $amt_received;
+                    array_push($data, $centre_row);
+                }
+            }
+
+            //For external applicants
+            $amt_received = count(Application::getAbandonedExternal());
+            $centre_row = array();
+            $centre_row['centre_name'] = "External";
+            $centre_row['centre_id'] = '00000';
+            $centre_row['total_received'] = $amt_received;
+            array_push($data, $centre_row);
+
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 30,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['centre_name' => SORT_ASC],
+                    'attributes' => ['centre_name', 'total_received'],
+                ],
+            ]);
+        }
+        else
+            $dataProvider = false;
+        
+        return $this->render('index_abandoned',
+                ['dataProvider' => $dataProvider]
+                );
+    }
+    
+    
     /*
     * Purpose: Displays verification dashboard of a centre
     * Created: 15/07/2015 by Gii
@@ -126,6 +187,133 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'verified' => $amt_verified,
                     'queried' => $amt_queried,
                     'total' => $amt_received,
+                ]);
+    }
+    
+    
+    /**
+     * Displays verification dashboard of a centre
+     * 
+     * @param type $centre_id
+     * @param type $centre_name
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public function actionAbandonedCentreDetails($centreid, $centrename)
+    {
+        if (strcasecmp($centrename, "external") == 0)
+        {
+            $applicants = Application::getAbandonedExternal();
+            $data = array();
+            
+            foreach($applicants as $applicant)
+            {
+                $container = array();
+
+                $container["personid"] = $applicant->personid;
+                $container["firstname"] = $applicant->firstname;
+                $container["middlename"] = $applicant->middlename;
+                $container["lastname"] = $applicant->lastname;
+                $container["gender"] = $applicant->gender;
+
+                $applications = Application::getApplications($applicant->personid);
+                $divisionid = $applications[0]->divisionid;
+                $division = Division::getDivisionAbbreviation($divisionid);
+
+                /*
+                 * If division is DTE or DNE then all applications refer to one division
+                 */
+                if ($divisionid == 6  || $divisionid == 7)
+                {
+                    $container["division"] = $division;
+                }
+
+                /*
+                 * If division is DASGS or DTVE then applications may refer to multiple divisions
+                 */
+                if ($divisionid == 4  || $divisionid == 5)
+                {
+                    foreach($applications as $application)
+                    {
+                        $divID = $application->divisionid;
+                        $div = Division::getDivisionAbbreviation($divID);
+                        $divisions = " " . $div . " ";
+                    }
+                    $container["division"] = $divisions;
+                }
+                $data[] = $container;
+            }
+            
+        }
+        else
+        {
+            $data = array();
+
+            foreach(Application::centreAbandonedApplicantsReceived($cseccentreid) as $application)
+            {
+                $container = array();
+
+                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
+                
+                if($applicant->isexternal == 0)
+                {
+                    $container["personid"] = $applicant->personid;
+                    $container["firstname"] = $applicant->firstname;
+                    $container["middlename"] = $applicant->middlename;
+                    $container["lastname"] = $applicant->lastname;
+                    $container["gender"] = $applicant->gender;
+
+                    $applications = Application::getApplications($applicant->personid);
+                    $divisionid = $applications[0]->divisionid;
+                    $division = Division::getDivisionAbbreviation($divisionid);
+
+                    /*
+                     * If division is DTE or DNE then all applications refer to one division
+                     */
+                    if ($divisionid == 6  || $divisionid == 7)
+                    {
+                        $container["division"] = $division;
+                    }
+
+                    /*
+                     * If division is DASGS or DTVE then applications may refer to multiple divisions
+                     */
+                    if ($divisionid == 4  || $divisionid == 5)
+                    {
+                        foreach($applications as $application)
+                        {
+                            $divID = $application->divisionid;
+                            $div = Division::getDivisionAbbreviation($divID);
+                            $divisions = " " . $div . " ";
+                        }
+                        $container["division"] = $divisions;
+                    }
+                    $data[] = $container;
+                }
+            }
+        }
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => [
+                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
+            ],
+        ]);
+        
+        
+        return $this->render('view-applicant',
+                [
+                    'dataProvider' => $dataProvider,
+                    'type' => 'Abandoned',
+                    'centrename' => $centrename,
+                    'centreid' => $centreid,
                 ]);
     }
 
@@ -1318,6 +1506,53 @@ class VerifyApplicantsController extends \yii\web\Controller
         ]); 
     }
     
+    
+    /**
+     * Set all the applications of a particular applicant to "Abandoned"
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public function actionAbandonApplication($personid)
+    {
+        $applications = Application::getApplicantApplications($personid);
+        
+        foreach($applications as $application)
+        {
+            $application->applicationstatusid = 11;
+            $application->save();
+        }
+        
+        return self::actionIndexAbandoned();
+    }
+    
+    
+    /**
+     * Set all the applications of a particular applicant to "Unverified"
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public function actionReactivateApplication($personid)
+    {
+        $applications = Application::getAbandonedApplicantApplications($personid);
+        
+        foreach($applications as $application)
+        {
+            $application->applicationstatusid = 2;
+            $application->save();
+        }
+        
+        return self::actionIndex();
+    }
     
     
 }

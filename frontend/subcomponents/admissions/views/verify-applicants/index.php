@@ -118,6 +118,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     <p>There are no current applications, pending verification.</p>
                 </div>
             <?php endif;?>
+                
+                
+            <br/><br/><br/>    
+            <?php if(Application::getAllAbandonedApplicantApplications() == true):?>
+                <fieldset style='width:95%; margin:0 auto;'>
+                    <legend>Abandoned Applications</legend>
+                    
+                    <p>
+                        You have previously classified one or more applications as abandoned.
+                        If you wish to see a list of the applicants with abandoned applications,
+                        please click the button below.
+                    </p><br/>
+                    
+                    <td><a class="btn btn-primary pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/verify-applicants/index-abandoned']);?> role="button"> View Abandoned Applications</a></td>
+                </fieldset>
+            <?php endif;?>
+            
         </div>
     </div>
 
