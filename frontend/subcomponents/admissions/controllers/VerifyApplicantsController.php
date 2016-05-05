@@ -1540,23 +1540,17 @@ class VerifyApplicantsController extends \yii\web\Controller
             {
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
-//                return self::actionIndex();
-//                return self::actionViewPending($centreid, $centrename);
             }
             else
             {
                 $transaction->commit();
-//                return self::actionIndexAbandoned();
-//                return self::actionViewPending($centreid, $centrename);
             }
         } catch (Exception $ex) 
         {
             $transaction->rollBack();
             Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
-//            return self::actionViewPending($centreid, $centrename);
         }
         return self::actionViewPending($centreid, $centrename);
-//        return self::actionIndexAbandoned();
     }
     
     
@@ -1603,15 +1597,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                 if($save_flag == false)
                 {
                     $transaction->rollBack();
-                    Yii::$app->getSession()->setFlash('error', 'Error occured updating record' . $i . ' . Please try again');
-                    
-//                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
+                    Yii::$app->getSession()->setFlash('error', 'Error occured updating record. Please try again');
                 }
                 else
                 {
                     $transaction->commit();
-//                    return self::actionIndex();
-//                    return self::actionIndexAbandoned();
                 }
             } catch (Exception $ex) 
             {
