@@ -1544,6 +1544,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             else
             {
                 $transaction->commit();
+                return self::actionIndex();
             }
         } catch (Exception $ex) 
         {
@@ -1551,7 +1552,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
         }
         
-        return self::actionIndexAbandoned();
+//        return self::actionIndexAbandoned();
     }
     
     
@@ -1567,41 +1568,48 @@ class VerifyApplicantsController extends \yii\web\Controller
      */
     public function actionReactivateApplication($personid)
     {
-        $applications = Application::getAbandonedApplicantApplications($personid);
         $save_flag = true;
         $test_flag = true;
         
-        $transaction = \Yii::$app->db->beginTransaction();
-        try 
+        $applications = Application::getAbandonedApplicantApplications($personid);
+        if($applications == false)
         {
-            foreach($applications as $application)
+            Yii::$app->getSession()->setFlash('error', 'Error retrieving records. Please try again');
+        }
+        else
+        {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
             {
-                $application->applicationstatusid = 2;
-                $test_flag = $application->save();
-                
-                if ($test_flag == false)
+                foreach($applications as $application)
                 {
-                    $save_flag = false;
-                    break;
+                    $application->applicationstatusid = 2;
+                    $test_flag = $application->save();
+
+                    if ($test_flag == false)
+                    {
+                        $save_flag = false;
+                        break;
+                    }
                 }
-            }
-            
-            if($save_flag == false)
+
+                if($save_flag == false)
+                {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
+                }
+                else
+                {
+                    $transaction->commit();
+                    return self::actionIndex();
+                }
+            } catch (Exception $ex) 
             {
                 $transaction->rollBack();
-                Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
+                Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
             }
-            else
-            {
-                $transaction->commit();
-            }
-        } catch (Exception $ex) 
-        {
-            $transaction->rollBack();
-            Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
         }
         
-        return self::actionIndex();
     }
     
     
