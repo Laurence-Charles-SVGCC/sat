@@ -228,6 +228,29 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             array_push($container, $names);
         }
         
+        
+        elseif ($current_status_id == 11)        //if abandoned
+        {
+            array_push($ids, 4);
+            array_push($ids, 7);
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($ids, 8);
+            else
+                array_push($ids, 9);
+            array_push($ids, 6);
+            
+            array_push($names, "Shortlist");
+            array_push($names, "Borderline");
+            if(AcademicOffering::requiresInterview($applicationid) == true)
+                array_push($names, "Conditional Offer");
+            else
+                array_push($names, "Offer");
+            array_push($names, "Reject");
+            
+            array_push($container, $ids);
+            array_push($container, $names);
+        }
+        
         return $container;
     }
     
