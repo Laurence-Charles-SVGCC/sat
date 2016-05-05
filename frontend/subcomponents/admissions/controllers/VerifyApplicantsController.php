@@ -1517,7 +1517,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
      */
-    public function actionAbandonApplication($personid, $centreid, $centrename)
+    public function actionAbandonApplication($personid, $centrename, $centreid)
     {
         $applications = Application::getApplicantApplications($personid);
         $save_flag = true;
@@ -1570,7 +1570,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
      */
-    public function actionReactivateApplication($personid, $centrename, $centreid, $type)
+    public function actionReactivateApplication($personid, $centrename, $centreid)
     {
         $save_flag = true;
         $test_flag = true;
