@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php elseif(Application::getAbandonedApplicantApplications($applicant->personid) == false && Application::getAbandonmentEligibility($applicant->personid)==true):?>
                 <div id="set_application_as_abandoned">
                     <?=Html::a(' Set As Abandoned', 
-                                ['verify-applicants/abandon-application', 'personid' => $applicant->personid], 
+                                ['verify-applicants/abandon-application', 'personid' => $applicant->personid, 'centrename' => $centrename, 'centreid' => $centreid], 
                                 ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                     'style' => 'margin-right:2.5%',
                                     'data' => [

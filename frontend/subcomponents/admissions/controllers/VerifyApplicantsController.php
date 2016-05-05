@@ -1517,7 +1517,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
      */
-    public function actionAbandonApplication($personid)
+    public function actionAbandonApplication($personid, $centreid, $centrename)
     {
         $applications = Application::getApplicantApplications($personid);
         $save_flag = true;
