@@ -899,7 +899,7 @@ class AdmissionsController extends Controller
                 $cond_arr['application.isdeleted'] = 0;
                 if ($status == "pending")
 //                    $cond_arr['application.applicationstatusid'] = [3,4,5,6,7,8,9,10];
-                    $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10];
+                    $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
                 else
                 {
                     $cond_arr['application.applicationstatusid'] = 9;
