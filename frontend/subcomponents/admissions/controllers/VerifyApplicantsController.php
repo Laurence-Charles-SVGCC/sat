@@ -1544,7 +1544,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             else
             {
                 $transaction->commit();
-                return self::actionIndex();
+                return self::actionIndexAbandoned();
             }
         } catch (Exception $ex) 
         {
@@ -1566,7 +1566,7 @@ class VerifyApplicantsController extends \yii\web\Controller
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
      */
-    public function actionReactivateApplication($personid)
+    public function actionReactivateApplication($personid, $centrename, $centreid, $type)
     {
         $save_flag = true;
         $test_flag = true;
@@ -1597,6 +1597,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
+//                    return self::actionIndexAbandoned();
+                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
                 }
                 else
                 {

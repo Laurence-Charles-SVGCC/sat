@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php if(Application::getAbandonedApplicantApplications($applicant->personid) == true):?>
                 <div id="set_application_as_active">
                     <?=Html::a(' Reactivate Application', 
-                                ['verify-applicants/reactivate-application', 'personid' => $applicant->personid], 
+                                ['verify-applicants/reactivate-application', 'personid' => $applicant->personid, 'centrename' => $centrename, 'centreid' => $centreid, 'type' => $type], 
                                 ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                     'style' => 'margin-right:2.5%',
                                     'data' => [
