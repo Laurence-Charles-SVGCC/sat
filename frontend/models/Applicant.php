@@ -319,8 +319,9 @@ class Applicant extends \yii\db\ActiveRecord
                     ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
-                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
                             ])
+                    ->orderBy('application.ordering ASC')
                     ->all();
         $count = count($applications);
         
