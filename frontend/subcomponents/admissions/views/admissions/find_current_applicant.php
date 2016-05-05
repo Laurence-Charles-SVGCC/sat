@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <ol>
                             <li>You may begin your search based on your Applicant ID.</li>
 
-                            <li>You may begin your search based on your Student Name.</li>
+                            <li>You may begin your search based on your Applicant Name.</li>
 
                             <li>You may begin your search based on your Email Address.</li>
                         </ol>
@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <p class="general_text">
                         Please select a method by which to begin your search.
-                        <?= Html::radioList('search_how', null, ['applicantid' => 'By Applicant ID' , 'name' => 'By Student Name', 'email' => 'By Email'], ['class'=> 'form_field', 'onclick'=> 'checkSearchHow();']);?>
+                        <?= Html::radioList('search_how', null, ['applicantid' => 'By Applicant ID' , 'name' => 'By Applicant Name', 'email' => 'By Email'], ['class'=> 'form_field', 'onclick'=> 'checkSearchHow();']);?>
                     </p>
 
                     <div id="applicantid" style="display:none">
