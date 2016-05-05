@@ -1540,18 +1540,22 @@ class VerifyApplicantsController extends \yii\web\Controller
             {
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+//                return self::actionIndex();
+//                return self::actionViewPending($centreid, $centrename);
             }
             else
             {
                 $transaction->commit();
-                return self::actionIndexAbandoned();
+//                return self::actionIndexAbandoned();
+//                return self::actionViewPending($centreid, $centrename);
             }
         } catch (Exception $ex) 
         {
             $transaction->rollBack();
             Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+//            return self::actionViewPending($centreid, $centrename);
         }
-        
+        return self::actionViewPending($centreid, $centrename);
 //        return self::actionIndexAbandoned();
     }
     
@@ -1600,13 +1604,14 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured updating record' . $i . ' . Please try again');
-                    return self::actionIndexAbandoned();
+                    
 //                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
                 }
                 else
                 {
                     $transaction->commit();
-                    return self::actionIndex();
+//                    return self::actionIndex();
+//                    return self::actionIndexAbandoned();
                 }
             } catch (Exception $ex) 
             {
@@ -1614,6 +1619,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
             }
         }
+        return self::actionIndexAbandoned();
         
     }
     
