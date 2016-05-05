@@ -1589,7 +1589,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             if($save_flag == false)
             {
                 $transaction->rollBack();
-                Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+                Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
             }
             else
             {
