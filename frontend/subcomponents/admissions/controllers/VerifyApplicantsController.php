@@ -1570,6 +1570,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         $save_flag = true;
         $test_flag = true;
+        $i = -1;
         
         $applications = Application::getAbandonedApplicantApplications($personid);
         
@@ -1582,13 +1583,14 @@ class VerifyApplicantsController extends \yii\web\Controller
             $transaction = \Yii::$app->db->beginTransaction();
             try 
             {
-                foreach($applications as $application)
+                foreach($applications as $key=>$application)
                 {
                     $application->applicationstatusid = 2;
                     $test_flag = $application->save();
 
                     if ($test_flag == false)
                     {
+                        $i = $key;
                         $save_flag = false;
                         break;
                     }
@@ -1597,7 +1599,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 if($save_flag == false)
                 {
                     $transaction->rollBack();
-                    Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
+                    Yii::$app->getSession()->setFlash('error', 'Error occured updating record' . $i . ' . Please try again');
                     return self::actionIndexAbandoned();
 //                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
                 }
