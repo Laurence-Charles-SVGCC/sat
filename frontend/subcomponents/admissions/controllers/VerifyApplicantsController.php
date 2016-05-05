@@ -1597,8 +1597,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
-//                    return self::actionIndexAbandoned();
-                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
+                    return self::actionIndexAbandoned();
+//                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
                 }
                 else
                 {
