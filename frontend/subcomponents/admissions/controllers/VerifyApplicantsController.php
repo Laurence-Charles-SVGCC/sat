@@ -1572,6 +1572,7 @@ class VerifyApplicantsController extends \yii\web\Controller
         $test_flag = true;
         
         $applications = Application::getAbandonedApplicantApplications($personid);
+        
         if($applications == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error retrieving records. Please try again');
@@ -1596,7 +1597,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 if($save_flag == false)
                 {
                     $transaction->rollBack();
-                    Yii::$app->getSession()->setFlash('error', 'Error occured updating records. Please try again');
+                    Yii::$app->getSession()->setFlash('error', 'Error occured updating records' . count($applications) . 'Please try again');
                     return self::actionIndexAbandoned();
 //                    return self::actionViewApplicantQualifications($personid, $centrename, $centreid, $type);
                 }
