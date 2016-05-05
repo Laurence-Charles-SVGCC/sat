@@ -53,7 +53,7 @@ class Application extends \yii\db\ActiveRecord
             [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'applicationtimestamp', 'ordering'], 'required'],
             [['personid', 'divisionid', 'academicofferingid', 'applicationstatusid', 'ordering', 'isactive', 'isdeleted'], 'integer'],
             [['applicationtimestamp', 'submissiontimestamp'], 'safe'],
-            [['ipaddress', 'browseragent'], 'string', 'max' => 150]
+            [['ipaddress', 'browseragent'], 'string']
         ];
     }
 
