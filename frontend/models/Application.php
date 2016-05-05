@@ -1350,6 +1350,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
                                 'academic_offering.isdeleted' => 0
                                 ])
+                        ->orderBy('application.ordering ASC')
                         ->all();
         return $applications;
     }
@@ -1374,6 +1375,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.personid' => $personid,
                                 'academic_offering.isdeleted' => 0
                                 ])
+                        ->orderBy('application.ordering ASC')
                         ->all();
         return $applications;
     }
@@ -1398,6 +1400,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
                                 'academic_offering.isdeleted' => 0
                                 ])
+                        ->orderBy('application.ordering ASC')
                         ->all();
         return $applications;
     }
@@ -1423,6 +1426,7 @@ class Application extends \yii\db\ActiveRecord
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
                                 'academic_offering.isdeleted' => 0
                                 ])
+                        ->orderBy('application.ordering ASC')
                         ->all();
         if($applications)
             return true;
