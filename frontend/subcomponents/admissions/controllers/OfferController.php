@@ -1499,7 +1499,7 @@ class OfferController extends Controller
         
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.iscomplete'] = 0;
-        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isactive'] = 1;
         
         if ($division_id == 4 || $division_id == 5 || $division_id == 6  || $division_id == 7)
@@ -1659,7 +1659,7 @@ class OfferController extends Controller
         
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.iscomplete'] = 0;
-        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['offer.isactive'] = 1;
         $offer_cond['offer.ispublished'] = 1;
@@ -1740,7 +1740,7 @@ class OfferController extends Controller
         
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.iscomplete'] = 0;
-        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isactive'] = 1;
         $offer_cond['offer.isdeleted'] = 1;
         $offer_cond['offer.ispublished'] = 1;
