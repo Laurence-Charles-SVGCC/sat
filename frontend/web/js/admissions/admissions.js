@@ -979,3 +979,21 @@ function cardSearch()
         document.getElementById("applicaiton-period").style.display = "block";
     } 
 }
+
+
+
+function showCape()
+{
+//    alert("show cape");
+    var academicofferingid = document.getElementById("academicoffering-id").value;
+    var divisionid = document.getElementById("division_id").value;
+    var offering_id = document.getElementsByName("cape-id")[0].value;
+    
+    //Needs to be changed yearly or implementation made more flexible
+    if (academicofferingid == offering_id  && divisionid == 4){    //if CAPE program isselected
+        document.getElementById("cape-choice").style.display = "block";
+    }
+    else {
+         document.getElementById("cape-choice").style.display = "none";
+    }    
+}

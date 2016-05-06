@@ -15,7 +15,6 @@
     use frontend\models\AcademicYear;
     use frontend\models\CapeSubject;
     use frontend\models\EmployeeDepartment;
-    
     use frontend\models\applicantregistration\ApplicantRegistration;
     use frontend\models\ApplicantSearchModel;
     use frontend\models\Applicant;
@@ -30,7 +29,6 @@
     use frontend\models\CsecQualification;
     use frontend\models\CsecQualificationModel;
     use frontend\models\Application;
-    use frontend\models\ApplicationHistory;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\CapeGroup;
     use frontend\models\CsecCentre;
@@ -51,6 +49,7 @@
     use frontend\models\Rejection;
     use frontend\models\RejectionApplications;
 
+    
     class ProcessApplicationsController extends \yii\web\Controller
     { 
         
@@ -1395,9 +1394,318 @@
         
         
         
-        public function actionGenerateConditionalOfferList()
+        /*
+         * Encodes the academic offergins; essential for the dependant dropdown widget
+         *
+         * 
+         * @param type $personid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 06/11/2015
+         * Date Last Modified:06/11/2015 | 06/05/2016
+         */
+        public function actionAcademicOffering($personid) 
         {
+            $out = [];
+            if (isset($_POST['depdrop_parents'])) 
+            {
+                $parents = $_POST['depdrop_parents'];
+                if ($parents != null) {
+                    $division_id = $parents[0];
+                    $out = self::getAcademicOfferingList($division_id, $personid); 
+                    echo Json::encode(['output'=>$out, 'selected'=>'']);
+                    return;
+                }
+            }
+            echo Json::encode(['output'=>'', 'selected'=>'']);
+        }
+        
+        
+        
+        /**
+         * Retrieves the academic offerins; essential for the dependant dropdown widget
+         * 
+         * @param type $division_id
+         * @return array
+         * 
+         * Author: Laurence Charles
+         * Date Created: 06/11/2015
+         * Date Last Modified:06/11/2015 | 06/05/2016
+         */
+        public static function getAcademicOfferingList($division_id, $personid)
+        { 
+            $id = $personid;
+            $intent = Applicant::getApplicantIntent($id);
+            $db = Yii::$app->db;
             
+            if ($intent == 1  || $intent == 4 || $intent == 6)       //if user is applying for full time programme
+            {
+                $programmetypeid = 1;   //used to identify full time programmes
+            }
+            
+            else if ($intent == 2 || $intent ==3  || $intent ==5  || $intent ==7)      //if user is applying for part time
+            {
+                $programmetypeid = 2;  //will be used to identify part time programmes
+            } 
+            
+            $records = $db->createCommand(
+                    'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
+                    . ' FROM programme_catalog '
+                    . ' JOIN academic_offering'
+                    . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
+                    . ' JOIN qualification_type'
+                    . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid' 
+                    . ' WHERE academic_offering.isactive=1'
+                    . ' AND academic_offering.isdeleted=0'
+                    . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
+                    . ' AND programme_catalog.departmentid'
+                    . ' IN ('
+                    . ' SELECT departmentid'
+                    . ' FROM department'
+                    . ' WHERE divisionid = '. $division_id
+                    . ' );'
+                    )
+                    ->queryAll();  
+
+            $arr = array();
+            foreach ($records as $record){
+                $combined = array();
+                $keys = array();
+                $values = array();
+                array_push($keys, "id");
+                array_push($keys, "name");
+                $k1 = strval($record["academicofferingid"]);
+                $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"]);
+                array_push($values, $k1);
+                array_push($values, $k2);
+                $combined = array_combine($keys, $values);
+                array_push($arr, $combined);
+                $combined = NULL;
+                $keys = NULL;
+                $values = NULL;        
+            }
+            return $arr;  
+        }
+        
+        
+        
+        public function actionCustomOffer($personid)
+        { 
+            date_default_timezone_set('America/St_Vincent');
+            
+            $id = $personid;
+            $capegroups = CapeGroup::getGroups();
+            $applicationcapesubject = array();
+            $groups = CapeGroup::getGroups();
+            $groupCount = count($groups);
+            $application = new Application();
+            
+            //Create blank records to accommodate capesubject-application associations
+            for ($i = 0; $i < $groupCount; $i++)
+            {
+                $temp = new ApplicationCapesubject();
+                //Values giving default value so as to facilitate validation (selective saving will be implemented)
+                $temp->capesubjectid = 0;
+                $temp->applicationid = 0;
+                array_push($applicationcapesubject, $temp);
+            }
+            
+            //Flags
+            $application_load_flag = false;
+            $application_save_flag = false;
+            $capesubject_load_flag = false;
+            $capesubject_validation_flag = false;
+            $capesubject_save_flag = false; 
+            
+            if ($post_data = Yii::$app->request->post())              //if post request made
+            {
+                $application_load_flag = $application->load($post_data); 
+                
+                if ($application_load_flag == true)       //if application load operation is successful
+                {
+                    $application->personid = $id;    
+                    $application->applicationtimestamp = date('Y-m-d H:i:s' );
+            
+                    $current_applications = Application::getApplicantApplications($personid);
+                    
+                    /* if applicant has less than three applications; 
+                     * -> the first alternative offer has an ordering of 4
+                     * else
+                     * -> it have an ordering 1 higher than the last active application
+                     */
+                    if (count($current_applications) < 3)
+                        $application->ordering = 4;
+                    else
+                    {
+                        $last_priority = end($current_applications)->priority;
+                        $application->ordering = $last_priority +1;
+                    }
+                    
+                    $application->ipaddress = Yii::$app->request->getUserIP();
+                    $application->browseragent = Yii::$app->request->getUserAgent();
+                    $application->applicationstatusid = 9;
+                    
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
+                    {
+                        $application_save_flag = $application->save();
+                        if ($application_save_flag = false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occurred when saving application.');
+                        }
+                        else
+                        {
+                            
+                            /*
+                             * all current application must be rejected
+                             */
+                            $temp_save_flag = true;
+                            $save_flag = true;
+                            foreach($current_applications as $app)
+                            {
+                                $app->applicationstatusid = 6;
+                                $temp_save_flag = $app->save();
+                                if($temp_save_flag == false)
+                                {
+                                    $save_flag = false;
+                                    break;
+                                }
+                            }
+                            
+                            if($save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occurred when rejecting  previous application.');
+                            }
+                            else
+                            {
+                                /*
+                                 * if offer has been issued it must be rescinded
+                                 */
+                                $application_ids = array();
+                                foreach($current_applications as $record)
+                                {
+                                    $application_ids[] = $record->applicationid;
+                                }
+                                $offers = Offer::find()
+                                        ->where(['applicationid' => $application_ids, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->all();
+                                if($offers)
+                                {
+                                    $offer_flag = true;
+                                    $offer_save_flag = true;
+                                    foreach($offers as $offer)
+                                    {
+                                        $offer_flag = Offer::rescindOffer($offer->applicationid, 1);
+                                        if ($offer_flag == false)
+                                        {
+                                            $offer_save_flag = false;
+                                            break;
+                                        }
+                                    }
+                                    if($offer_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occurred when rescinding offer.');
+                                    }
+                                    
+                                }
+                                        
+                                $isCape = Application::isCAPEApplication($application->academicofferingid);
+                                if ($isCape == true)       //if application is for CAPE programme
+                                {       
+                                    $capesubject_load_flag = Model::loadMultiple($applicationcapesubject, $post_data);
+                                    if ($capesubject_load_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occurred when loading capesubjects.');
+                                    }
+                                    else
+                                    {
+                                        $capesubject_validation_flag = Model::validateMultiple($applicationcapesubject);
+                                        if ($capesubject_validation_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->getSession()->setFlash('error', 'Error occurred when validating capesubjects.');
+                                        }
+                                        else        
+                                        {
+                                            //CAPE subject selection is only updated if 3-4 subjects have been selected
+                                            $selected = 0;
+                                            foreach ($applicationcapesubject as $subject) 
+                                            {
+                                                if ($subject->capesubjectid != 0)           //if valid subject is selected
+                                                {        
+                                                    $selected++;
+                                                }
+                                            }
+
+                                            if($selected == 3 || $selected == 4)            //if valid number of CAPE subjects have been selected
+                                            {       
+                                                $temp_status = true;
+                                                foreach ($applicationcapesubject as $subject) 
+                                                {
+                                                    $subject->applicationid = $application->applicationid;      //updates applicationid
+
+                                                    if ($subject->capesubjectid != 0 && $subject->applicationid != 0 )       //if none is selected then reocrd should not be saved
+                                                    {        
+                                                        $capesubject_save_flag = $subject->save();
+                                                        if ($capesubject_save_flag == false)          //CapeApplicationSubject save operation fails
+                                                        {
+                                                            $temp_status = false;
+                                                            break;
+                                                        }                                                   
+                                                    }
+                                                }
+
+                                                if ($temp_status == false)  
+                                                {
+                                                    $transaction->rollBack();
+                                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving capesubject associations.'); 
+                                                }
+                                            }
+                                            else         //if incorrect number of CAPE subjects selected.
+                                            { 
+                                                Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 3(min)  or 4(max) CAPE subjects.'); 
+                                            } 
+                                        }  
+                                    }  
+                                }//endif isCape 
+                                
+                                // create offer
+                                $offer = new Offer();
+                                $offer->applicationid = $applicationid;
+                                $offer->offertypeid = 1;
+                                $offer->issuedby = Yii::$app->user->getId();
+                                $offer->issuedate = date("Y-m-d");
+                                $new_offer_save_flag = $offer->save();
+                                if($new_offer_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving new offer.'); 
+                                }
+                                else
+                                {
+                                    $transaction->commit(); 
+                                    return self::actionViewApplicantCertificates($personid, $programme, $application_status);
+                                }
+                            }//if rejections successful
+                        } //endif application_save_flag == true
+                    } catch (Exception $ex) {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
+                    }
+                }   //end-if application load
+            }   //end-if POST operation
+           
+            return $this->render('custom_offer', [
+                        'application' => $application,
+                        'applicationcapesubject' =>  $applicationcapesubject,
+                        'capegroups' => $capegroups,
+                        'personid' => $personid,
+                    ]);
         }
         
         

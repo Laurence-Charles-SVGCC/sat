@@ -180,7 +180,23 @@
             </div><br/>
             
             <div>
-                <h2 class="custom_h2">Applications</h2>
+                <h2 class="custom_h2">
+                    Applications
+                    <?php if(false):?>
+                        <div class="pull-right" style="margin-right:2.5%">
+                            <?=Html::a(' Create Custom Offer', 
+                                        ['process-applications/custom-offer', 'personid' => $applicant->personid], 
+                                        ['class' => 'btn btn-danger',
+                                            'style' => '',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to create a cutomized offer for student?',
+                                                'method' => 'post',
+                                            ],
+                                        ]);?>
+                        </div>
+                    <?php endif;?>
+                </h2>
+                
                 <table class='table table-condensed' style="width: 95%; margin: 0 auto;">
                     <tr>
                         <?php if ($application_status > 2):?>

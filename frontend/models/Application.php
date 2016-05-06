@@ -520,7 +520,7 @@ class Application extends \yii\db\ActiveRecord
      * Date Created: 18/02/2016
      * Date Last Modified: 18/02/2016 | 20/03/2016 | 04/04/2016
      */
-    public static function centreApplicantsVerified($cseccentreid, $external = false)
+    public static function centreApplicantsVerified($cseccentreid = NULL, $external = false)
     {
         if($external == true)
         {

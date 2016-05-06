@@ -402,6 +402,30 @@ class AcademicOffering extends \yii\db\ActiveRecord
         return $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : false;
     }
     
+    
+    /**
+     * Returns the academicofferingid of current CAPE offfering
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 25/02/2016
+     * Date Last Modified: 25/02/2016
+     */
+    public static function getCurrentCapeID()
+    {
+        $offering = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['programme_catalog.name' => "CAPE",
+                            'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5
+                            ])
+                    ->one();
+        if ($offering)
+            return $offering->academicofferingid;
+        return false;
+    }
+    
        
        
        

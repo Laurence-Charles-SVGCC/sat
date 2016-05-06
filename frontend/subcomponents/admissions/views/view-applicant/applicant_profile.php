@@ -1721,7 +1721,7 @@
                                             
                                             echo "<table class='table table-hover' style='margin: 0 auto;'>";                                            
                                                 echo "<tr>";
-                                                    echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing->location}</th>";
+//                                                    echo "<th rowspan='3' style='vertical-align:middle; text-align:center; font-size:1.2em;'>{$nursing->location}</th>";
                                                     echo "<th>Nature of Charge</th>";
                                                     echo "<td colspan='3'>{$criminalrecord->natureofcharge}</td>";
                                                 echo "</tr>";

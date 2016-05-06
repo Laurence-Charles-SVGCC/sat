@@ -35,6 +35,25 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionIndex()
     {
         $data = array();
+        
+        $has_external = count(Application::getExternal());
+        if($has_external > 0)
+        {
+            //For external applicants
+            $amt_received = count(Application::getExternal());
+            $external_amt_verified = Application::centreApplicantsVerifiedCount(NULL, true);
+            $centre_row = array();
+            $centre_row['centre_name'] = "External";
+            $centre_row['centre_id'] = '00000';
+            $centre_row['status'] = ($amt_received - $external_amt_verified) <= 0 ? "Complete" : "Incomplete";
+            $centre_row['applicants_verified'] = $external_amt_verified;
+            $centre_row['total_received'] = $amt_received;
+            $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($external_amt_verified/$amt_received) * 100, 2);
+            array_push($data, $centre_row);
+        }
+        
+        
+        
         $current_centres = CsecCentre::getCurrentCentres();
         
         /*
@@ -57,31 +76,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                 array_push($data, $centre_row);
             }
 
-            //For external applicants
-            $amt_received = count(Application::getExternal());
-            $external_amt_verified = Application::centreApplicantsVerifiedCount($centre->cseccentreid, true);
-            $centre_row = array();
-            $centre_row['centre_name'] = "External";
-            $centre_row['centre_id'] = '00000';
-//            $centre_row['status'] = "N/A";
-            $centre_row['status'] = ($amt_received - $external_amt_verified) <= 0 ? "Complete" : "Incomplete";
-//            $centre_row['applicants_verified'] = "N/A";
-            $centre_row['applicants_verified'] = $external_amt_verified;
-            $centre_row['total_received'] = $amt_received;
-//            $centre_row['percentage_completed'] = 0;
-            $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($external_amt_verified/$amt_received) * 100, 2);
-            array_push($data, $centre_row);
+//            //For external applicants
+//            $amt_received = count(Application::getExternal());
+//            $external_amt_verified = Application::centreApplicantsVerifiedCount($centre->cseccentreid, true);
+//            $centre_row = array();
+//            $centre_row['centre_name'] = "External";
+//            $centre_row['centre_id'] = '00000';
+//            $centre_row['status'] = ($amt_received - $external_amt_verified) <= 0 ? "Complete" : "Incomplete";
+//            $centre_row['applicants_verified'] = $external_amt_verified;
+//            $centre_row['total_received'] = $amt_received;
+//            $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($external_amt_verified/$amt_received) * 100, 2);
+//            array_push($data, $centre_row);
 
+//            $dataProvider = new ArrayDataProvider([
+//                'allModels' => $data,
+//                'pagination' => [
+//                    'pageSize' => 30,
+//                ],
+//                'sort' => [
+//                    'defaultOrder' => ['centre_name' => SORT_ASC],
+//                    'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
+//                ],
+//            ]);
+        }
+        
+        if (!empty($data))
+        {
             $dataProvider = new ArrayDataProvider([
-                'allModels' => $data,
-                'pagination' => [
-                    'pageSize' => 30,
-                ],
-                'sort' => [
-                    'defaultOrder' => ['centre_name' => SORT_ASC],
-                    'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
-                ],
-            ]);
+                    'allModels' => $data,
+                    'pagination' => [
+                        'pageSize' => 30,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['centre_name' => SORT_ASC],
+                        'attributes' => ['centre_name', 'status', 'applicants_verified', 'total_received', 'percentage_completed'],
+                    ],
+                ]);
         }
         else
             $dataProvider = false;
@@ -958,6 +988,10 @@ class VerifyApplicantsController extends \yii\web\Controller
             {
                 //do nothing
             }
+//            elseif ($external_qualification == false &&  $post_qualification == true  && $qualifications == false)
+//            {
+//                
+//            }
             elseif ($external_qualification == true &&  $post_qualification == false  && $qualifications == false)
             {
                 if($external_qualification->isverified == 1  && $external_qualification->isqueried == 0)
