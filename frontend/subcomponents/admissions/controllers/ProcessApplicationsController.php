@@ -780,32 +780,50 @@
                          */
                         else
                         {
-                            //create Rejection record
-                            $rejection = new Rejection();
-                            $rejection->personid = $update_candidate->personid;
-                            $rejection->rejectiontypeid = 1;
-                            $rejection->issuedby = Yii::$app->user->getID();
-                            $rejection->issuedate = date('Y-m-d');
-                            $rejection_save_flag = $rejection->save();
-                            if($rejection_save_flag == false)
+                            /**
+                            * this should prevent the creation of multiple rejections,
+                            * which is suspected to occur when internet timeout 
+                            * during request submission
+                            */
+                            $rejection = Rejection::find()
+                                    ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                    ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                            'application.isdeleted' => 0, 'application.personid' => $$update_candidate->personid,
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                            ])
+                                    ->one();
+                            if($rejection == false)
                             {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
-                            }
-
-                            //crete associate RejectionApplications records
-                            foreach($applications as $application)
-                            {
-                                $temp = new RejectionApplications();
-                                $temp->rejectionid = $rejection->rejectionid;
-                                $temp->applicationid = $application->applicationid;
-                                $miscellaneous_save_flag = $temp->save();
-                                if ($miscellaneous_save_flag == false)
+                                //create Rejection record
+                                $rejection = new Rejection();
+                                $rejection->personid = $update_candidate->personid;
+                                $rejection->rejectiontypeid = 1;
+                                $rejection->issuedby = Yii::$app->user->getID();
+                                $rejection->issuedate = date('Y-m-d');
+                                $rejection_save_flag = $rejection->save();
+                                if($rejection_save_flag == false)
                                 {
                                     $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+
+                                //crete associate RejectionApplications records
+                                foreach($applications as $application)
+                                {
+                                    $temp = new RejectionApplications();
+                                    $temp->rejectionid = $rejection->rejectionid;
+                                    $temp->applicationid = $application->applicationid;
+                                    $miscellaneous_save_flag = $temp->save();
+                                    if ($miscellaneous_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    }
                                 }
                             }
                         }
@@ -1027,32 +1045,50 @@
                             }
                         }
 
-                        //create Rejection record
-                        $rejection = new Rejection();
-                        $rejection->personid = $update_candidate->personid;
-                        $rejection->rejectiontypeid = 2;
-                        $rejection->issuedby = Yii::$app->user->getID();
-                        $rejection->issuedate = date('Y-m-d');
-                        $rejection_save_flag = $rejection->save();
-                        if ($rejection_save_flag == false)
+                        /**
+                        * this should prevent the creation of multiple rejections,
+                        * which is suspected to occur when internet timeout 
+                        * during request submission
+                        */
+                        $rejection = Rejection::find()
+                                ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                        'application.isdeleted' => 0, 'application.personid' => $$update_candidate->personid,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                        ])
+                                ->one();
+                        if($rejection == false)
                         {
-                            $transaction->rollBack();
-                            Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                            return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
-                        }
-
-                        //create associate RejectionApplications records
-                        foreach($applications as $application)
-                        {
-                            $temp = new RejectionApplications();
-                            $temp->rejectionid = $rejection->rejectionid;
-                            $temp->applicationid = $application->applicationid;
-                            $miscellaneous_save_flag = $temp->save();
-                            if ($miscellaneous_save_flag == false)
+                            //create Rejection record
+                            $rejection = new Rejection();
+                            $rejection->personid = $update_candidate->personid;
+                            $rejection->rejectiontypeid = 2;
+                            $rejection->issuedby = Yii::$app->user->getID();
+                            $rejection->issuedate = date('Y-m-d');
+                            $rejection_save_flag = $rejection->save();
+                            if ($rejection_save_flag == false)
                             {
                                 $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
+
+                            //create associate RejectionApplications records
+                            foreach($applications as $application)
+                            {
+                                $temp = new RejectionApplications();
+                                $temp->rejectionid = $rejection->rejectionid;
+                                $temp->applicationid = $application->applicationid;
+                                $miscellaneous_save_flag = $temp->save();
+                                if ($miscellaneous_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
                             }
                         }
                     }
