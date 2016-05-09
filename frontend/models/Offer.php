@@ -393,7 +393,7 @@ class Offer extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns the type of a particular offer
+     * Returns the type name of a particular offer
      * 
      * @param type $personid
      * @return string
@@ -402,7 +402,7 @@ class Offer extends \yii\db\ActiveRecord
      * Date Created: 05/04/2016
      * Date Last Modified: 05/04/2016
      */
-    public static function getPriorityOfffer($personid)
+    public static function getPriorityOffer($personid)
     {
         $offers = Offer::find()
                     ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
@@ -420,19 +420,10 @@ class Offer extends \yii\db\ActiveRecord
             }
             
             if ($has_full_offer == true)
-            {
-                $type = OfferType::find()
-                        ->where(['offertypeid' => 1])
-                        ->one();
-            }
+                return "Full Offer";
             else
-            {
-                $type = OfferType::find()
-                        ->where(['offertypeid' => 2])
-                        ->one();
-            }
+                return "Interview Invitation";
         }
-        return $type->name;
     }
     
     

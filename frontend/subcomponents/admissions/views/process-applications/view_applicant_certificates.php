@@ -41,7 +41,7 @@
             <!-- Offer Flag-->
             <?php if (Offer::hasRecords($applicant->personid) == true):?>
                 <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant has " . Offer::getPriorityOfffer($applicant->personid) . " offer";?>
+                    <?= "Applicant has " . Offer::getPriorityOffer($applicant->personid) . ".";?>
                 </p>
             <?php endif;?>
 
