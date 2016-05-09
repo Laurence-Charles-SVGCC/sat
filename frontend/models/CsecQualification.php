@@ -334,11 +334,20 @@ class CsecQualification extends \yii\db\ActiveRecord
         $certificates = self::getSubjects($personid);
         
         $english = Subject::findOne(['name' => 'English Language', 'examinationbodyid' => 3, 'isactive' => 1, 'isdeleted' => 0]);
-        if ($english)
+        $english2 = Subject::findOne(['name' => 'English Language', 'examinationbodyid' => 5, 'isactive' => 1, 'isdeleted' => 0]);
+        
+        if ($english  && $english2)
         {
             foreach($certificates as $cert)
             {
                 if ($cert->subjectid == $english->subjectid)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
+                }
+                
+                elseif ($cert->subjectid == $english2->subjectid)
                 {
                     $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                     if (in_array($exam_grade->ordering, array(1,2,3)))
@@ -365,11 +374,22 @@ class CsecQualification extends \yii\db\ActiveRecord
         $certificates = self::getSubjects($personid);
         
         $math = Subject::findOne(['name' => 'Mathematics', 'examinationbodyid' => 3, 'isactive' => 1, 'isdeleted' => 0]);
-        if ($math)
+        $math2 = Subject::findOne(['name' => 'Mathematics', 'examinationbodyid' => 5, 'isactive' => 1, 'isdeleted' => 0]);
+        
+        if ($math && $math2)
         {
             foreach($certificates as $cert)
             {                 
                 if ($cert->subjectid == $math->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                    {
+                        return true;
+                    }
+                }
+                
+                if ($cert->subjectid == $math2->subjectid && $cert)
                 {
                     $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                     if (in_array($exam_grade->ordering, array(1,2,3)))
@@ -459,11 +479,20 @@ class CsecQualification extends \yii\db\ActiveRecord
         $certificates = self::getSubjects($personid);
         
         $geography = Subject::findOne(['name' => 'Geography', 'examinationbodyid' => 3, 'isdeleted' => 0]);
-        if ($geography)
+        $geography2 = Subject::findOne(['name' => 'Geography', 'examinationbodyid' => 5, 'isdeleted' => 0]);
+        
+        if ($geography && $geography2)
         {
             foreach($certificates as $cert)
             {                 
                 if ($cert->subjectid == $geography->subjectid && $cert)
+                {
+                    $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                    if (in_array($exam_grade->ordering, array(1,2,3)))
+                        return true;
+                }
+                
+                if ($cert->subjectid == $geography2->subjectid && $cert)
                 {
                     $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                     if (in_array($exam_grade->ordering, array(1,2,3)))
@@ -516,20 +545,34 @@ class CsecQualification extends \yii\db\ActiveRecord
         if (count($certificates)>0)
         {
             $has_integrated_science = false;
+            
             $has_biology = false;
+            $has_biology2 = false;
+            
             $has_chemistry = false;
+            $has_chemistry2 = false;
+            
             $has_physics = false;
+            $has_physics2 = false;
+            
             $has_agricultural_science1 = false;
             $has_agricultural_science2 = false;
 
             $integrated_science = Subject::findOne(['name' => 'Integrated Science', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            
             $biology = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $biology2 = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
+            
             $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $chemistry2 = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 5, 'isdeleted' => 0]);
+            
             $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $physics2 = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 5, 'isdeleted' => 0]);
+            
             $agricultural_science1 = Subject::findOne(['name' => 'Agricultural Science (Double Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $agricultural_science2 = Subject::findOne(['name' => 'Agricultural Science (Single Award)', 'examinationbodyid' => 3, 'isdeleted' => 0]);
 
-            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $agricultural_science1 == true && $agricultural_science2 == true)
+            if($integrated_science == true && $biology == true && $biology2 == true && $chemistry == true && $chemistry2 == true && $physics == true  && $physics2 == true && $agricultural_science1 == true && $agricultural_science2 == true)
             {
                 foreach($certificates as $cert)
                 {                 
@@ -547,6 +590,13 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_biology = true;
                     }
                     
+                    if ($cert->subjectid == $biology2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_biology2 = true;
+                    }
+                    
                     if ($cert->subjectid == $chemistry->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
@@ -554,11 +604,25 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_chemistry = true;
                     }
                     
+                    if ($cert->subjectid == $chemistry2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_chemistry2 = true;
+                    }
+                    
                     if ($cert->subjectid == $physics->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
                             $has_physics = true;
+                    }
+                    
+                    if ($cert->subjectid == $physics2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_physics2 = true;
                     }
                     
                     if ($cert->subjectid == $agricultural_science1->subjectid)
@@ -577,7 +641,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                 }
             }
             
-            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_agricultural_science1 == true || $has_agricultural_science2 == true)
+            if($has_integrated_science == true || $has_biology == true  || $has_biology2 == true|| $has_chemistry == true || $has_chemistry2 == true || $has_physics == true || $has_physics2 == true || $has_agricultural_science1 == true || $has_agricultural_science2 == true)
                 return true;
         }
         return false;
@@ -603,19 +667,25 @@ class CsecQualification extends \yii\db\ActiveRecord
         {
             $has_integrated_science = false;
             $has_biology = false;
+            $has_biology2 = false;
             $has_chemistry = false;
+            $has_chemistry2 = false;
             $has_physics = false;
+            $has_physics2 = false;
             $has_human_and_social_biology = false;
             $has_human_and_social_biology2 = false;
 
             $integrated_science = Subject::findOne(['name' => 'Integrated Science', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $biology = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $biology2 = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
             $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $chemistry2 = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 5, 'isdeleted' => 0]);
             $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $physics2 = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 5, 'isdeleted' => 0]);
             $human_and_social_biology = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $human_and_social_biology2 = Subject::findOne(['name' => 'Human and Social Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
 
-            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true  && $human_and_social_biology2 == true)
+            if($integrated_science == true && $biology == true && $biology2 == true && $chemistry == true  && $chemistry2 == true && $physics == true  && $physics2 == true && $human_and_social_biology == true  && $human_and_social_biology2 == true)
             {
                 foreach($certificates as $cert)
                 {                 
@@ -633,6 +703,13 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_biology = true;
                     }
                     
+                    if ($cert->subjectid == $biology2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_biology2 = true;
+                    }
+                    
                     if ($cert->subjectid == $chemistry->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
@@ -640,11 +717,18 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_chemistry = true;
                     }
                     
-                    if ($cert->subjectid == $physics->subjectid)
+                    if ($cert->subjectid == $chemistry2->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
-                            $has_physics = true;
+                            $has_chemistry2 = true;
+                    }
+                    
+                    if ($cert->subjectid == $physics2->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_physics2 = true;
                     }
                     
                     if ($cert->subjectid == $human_and_social_biology->subjectid)
@@ -663,7 +747,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                 }
             }
             
-            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_human_and_social_biology == true || $has_human_and_social_biology2 == true)
+            if($has_integrated_science == true || $has_biology == true  || $has_biology2 == true || $has_chemistry == true ||  $has_chemistry2 == true || $has_physics == true || $has_physics2 == true || $has_human_and_social_biology == true || $has_human_and_social_biology2 == true)
                 return true;
         }
         return false;
