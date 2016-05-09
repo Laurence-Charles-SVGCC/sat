@@ -53,11 +53,19 @@
         
         <?php if($offer_issues): ?>
             <br/><div style="font-size:16px; width: 95%; margin: 0 auto;">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype]);?>" 
-                   title="Questionable Offers"
-                   style="font-size:16px; width: 100%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                    Click Here To Review Questionable Offers
-                </a>
+                <?php if($offertype==1):?>
+                    <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype]);?>" 
+                       title="Questionable Offers"
+                       style="font-size:16px; width: 100%; margin: 0 auto; color:white" class ='btn btn-danger'> 
+                        Click Here To Review Questionable Offers
+                    </a>
+                <?php elseif ($offertype == 2):?>
+                    <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype]);?>" 
+                       title="Questionable Offers"
+                       style="font-size:16px; width: 100%; margin: 0 auto; color:white" class ='btn btn-danger'> 
+                        Click Here To Review Questionable Interviewees
+                    </a>
+                <?php endif;?>
             </div>
         <?php endif;?>
             
