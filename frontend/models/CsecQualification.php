@@ -615,7 +615,7 @@ class CsecQualification extends \yii\db\ActiveRecord
             $human_and_social_biology = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $human_and_social_biology2 = Subject::findOne(['name' => 'Human and Social Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
 
-            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true)
+            if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true  && $human_and_social_biology2 == true)
             {
                 foreach($certificates as $cert)
                 {                 
@@ -654,7 +654,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                             $has_human_and_social_biology = true;
                     }
                     
-                    if ($cert->subjectid == $human_and_social_biology->subjectid)
+                    if ($cert->subjectid == $human_and_social_biology2->subjectid)
                     {
                         $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
                         if (in_array($exam_grade->ordering, array(1,2,3)))
