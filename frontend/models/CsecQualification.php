@@ -326,7 +326,7 @@ class CsecQualification extends \yii\db\ActiveRecord
                         'application.isactive' => 1, 'application.isdeleted' => 0,
                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                         'academic_offering.isdeleted' => 0,
-                        'applicant.dateofbirth' => $applicant->dateofbirth,
+                        'applicant.dateofbirth' => $applicant->dateofbirth, //added check that prevent false positive matches for applicants with same candidateno and examyear but diffeenr DOBs
                         ])
                 ->groupBy('csec_qualification.personid')
                 ->all();
