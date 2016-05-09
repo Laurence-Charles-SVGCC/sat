@@ -13,6 +13,8 @@
     use frontend\models\EmployeeDepartment;
     use frontend\models\Offer;
     use frontend\models\CsecQualification;
+    use frontend\models\Applicant;
+    use frontend\models\Application;
 
     $this->title = 'Application  Review Dashboard';
     //$this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
@@ -102,7 +104,7 @@
             <div>
                 <p style="font-size:20px; margin-left:2.5%"><strong>For the current programme under consideration the current intake statistic are as follows:</strong></p>
                 
-                <?php if($cape): ?>
+                <?php if($cape && Offer::find()->where(['applicationid'=> $target_application->applicationid, 'isactive' => 1, 'isdeleted' => 0])->one()): ?>
                     <table class='table table-condensed' style="margin-left:2.5%;">
                         <tr>
                             <th>Subject</th>
@@ -119,7 +121,7 @@
                         <?php endforeach; ?>
                     </table>
                     
-                <?php else: ?>
+                <?php elseif(!$cape): ?>
                     <p style="margin-left:5%;"><?= "<ul style='margin-left:2.5%;'> " . "<li>Proposed Intake: " . $spaces . "</li>" . " <li>Conditional Offers given: " . $conditional_offers_made . "</li>" . " <li>Full Offers given: " . $offers_made . "</li>" . "</ul>" ?></p>
                 <?php endif; ?>  
             </div><br/>  
@@ -182,15 +184,15 @@
             <div>
                 <h2 class="custom_h2">
                     Applications
-                    <?php if(false):?>
+                    <?php if(Applicant::getApplicantIntent($applicant->personid)  == 1):?>
                         <div class="pull-right" style="margin-right:2.5%">
                             <?=Html::a(' Create Custom Offer', 
-                                        ['process-applications/custom-offer', 'personid' => $applicant->personid], 
+                                        ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                                         ['class' => 'btn btn-danger',
                                             'style' => '',
                                             'data' => [
                                                 'confirm' => 'Are you sure you want to create a cutomized offer for student?',
-                                                'method' => 'post',
+//                                                'method' => 'post',
                                             ],
                                         ]);?>
                         </div>
@@ -230,11 +232,11 @@
                                 if ($application_status > 2)
                                 {
                                     // User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
-                                    if (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean'))
+                                    if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean')))
                                     {
                                         /*
                                          * If user is a member of "All Divisions", "DTE" or "DNE" they have ability to change the application status
-                                         * of any application that is the one under current consideration; or any application avobe it
+                                         * of any application that is the one under current consideration; or any application above it
                                          */
                                         if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  || EmployeeDepartment::getUserDivision() == 1)
                                         {
@@ -316,7 +318,7 @@
                         </tr>
                     <?php endfor; ?> 
                 </table>
-            </div>
+            </div><br/>
             
             <div><br/>
                 <a class="btn btn-success glyphicon glyphicon-folder-open" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/view-applicant-details', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status]);?> role="button">  View Application Snapshot</a>

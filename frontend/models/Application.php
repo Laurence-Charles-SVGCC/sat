@@ -923,107 +923,122 @@ class Application extends \yii\db\ActiveRecord
      */
     public static function isTarget($applications, $application_status, $candidate)
     {
-        $count = count($applications);
-                
-        if ($application_status == 6)       //if reject
+        /*
+         * if alternative application exist;
+         * -> the last altenative application is the the target
+         * else
+         * -> the determination is a bit more complex
+         */
+        $personid = $applications[0]->personid;
+        $alternatives = self::getCustomApplications($personid);
+        if($alternatives)
         {
-            $target_application = $applications[($count-1)];
+            $target_application = end($alternatives);
         }
-        
-        
-        elseif ($application_status == 2)   //if unverifed
+        else
         {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid==2)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
-        
-            
-        elseif ($application_status == 3)   //if pending
-        {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid==3)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
+            $count = count($applications);
 
-        elseif ($application_status == 4)    //if shortlist
-        {
-            foreach($applications as $application)
+            if ($application_status == 6)       //if reject
             {
-                if ($application->applicationstatusid == 4)
-                {
-                    $target_application = $application;
-                    break;
-                }
+                $target_application = $applications[($count-1)];
             }
-        }
 
-        elseif ($application_status == 7)   //if borderline
-        {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid == 7)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
 
-        elseif ($application_status == 8)    //if conditional offer
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 2)   //if unverifed
             {
-                if ($application->applicationstatusid == 8)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid==2)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
 
-        elseif ($application_status == 9)   //if full-offer
-        {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid == 9)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
 
-        elseif ($application_status == 10)  //if conditional-offer-reject
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 3)   //if pending
             {
-                if ($application->applicationstatusid == 10)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid==3)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
-        
-        elseif ($application_status == 11)    //if abandoned
-        {
-            foreach($applications as $application)
+
+            elseif ($application_status == 4)    //if shortlist
             {
-                if ($application->applicationstatusid == 11)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid == 4)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 7)   //if borderline
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 7)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 8)    //if conditional offer
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 8)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 9)   //if full-offer
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 9)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 10)  //if conditional-offer-reject
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 10)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 11)    //if abandoned
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 11)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
         }
@@ -1048,105 +1063,120 @@ class Application extends \yii\db\ActiveRecord
      */
     public static function getTarget($applications, $application_status)
     {
-        $count = count($applications);
-                
-        if ($application_status == 6)       //if reject
+        /*
+         * if alternative application exist;
+         * -> the last altenative application is the the target
+         * else
+         * -> the determination is a bit more complex
+         */
+        $personid = $applications[0]->personid;
+        $alternatives = self::getCustomApplications($personid);
+        if($alternatives)
         {
-            $target_application = $applications[($count-1)];
+            $target_application = end($alternatives);
         }
-         
-        elseif ($application_status == 2)   //if unnverified
+        else
         {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid==2)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
-        
-        elseif ($application_status == 3)   //if pending
-        {
-            foreach($applications as $application)
-            {
-                if ($application->applicationstatusid==3)
-                {
-                    $target_application = $application;
-                    break;
-                }
-            }
-        }
+            $count = count($applications);
 
-        elseif ($application_status == 4)    //if shortlist
-        {
-            foreach($applications as $application)
+            if ($application_status == 6)       //if reject
             {
-                if ($application->applicationstatusid == 4)
-                {
-                    $target_application = $application;
-                    break;
-                }
+                $target_application = $applications[($count-1)];
             }
-        }
 
-        elseif ($application_status == 7)   //if borderline
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 2)   //if unnverified
             {
-                if ($application->applicationstatusid == 7)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid==2)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
 
-        elseif ($application_status == 8)    //if conditional offer
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 3)   //if pending
             {
-                if ($application->applicationstatusid == 8)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid==3)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
 
-        elseif ($application_status == 9)   //if full-offer
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 4)    //if shortlist
             {
-                if ($application->applicationstatusid == 9)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid == 4)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
 
-        elseif ($application_status == 10)  //if conditional-offer-reject
-        {
-            foreach($applications as $application)
+            elseif ($application_status == 7)   //if borderline
             {
-                if ($application->applicationstatusid == 10)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid == 7)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
-        }
-        
-        elseif ($application_status == 11)    //if abandoned
-        {
-            foreach($applications as $application)
+
+            elseif ($application_status == 8)    //if conditional offer
             {
-                if ($application->applicationstatusid == 11)
+                foreach($applications as $application)
                 {
-                    $target_application = $application;
-                    break;
+                    if ($application->applicationstatusid == 8)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 9)   //if full-offer
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 9)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 10)  //if conditional-offer-reject
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 10)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
+                }
+            }
+
+            elseif ($application_status == 11)    //if abandoned
+            {
+                foreach($applications as $application)
+                {
+                    if ($application->applicationstatusid == 11)
+                    {
+                        $target_application = $application;
+                        break;
+                    }
                 }
             }
         }
@@ -1332,7 +1362,7 @@ class Application extends \yii\db\ActiveRecord
     
     
     /**
-     * Gets all active applications for a particular applicant
+     * Gets all active 'unverified' applications for a particular applicant
      * 
      * @param type $personid
      * @return type
@@ -1347,9 +1377,35 @@ class Application extends \yii\db\ActiveRecord
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
+                                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
                                 'academic_offering.isdeleted' => 0
                                 ])
+                        ->orderBy('application.ordering ASC')
+                        ->all();
+        return $applications;
+    }
+    
+    
+    /**
+     * Returns an array of all verifed applications
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getVerifiedApplications($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->andWhere(['>', 'application.applicationstatusid', 2])
                         ->orderBy('application.ordering ASC')
                         ->all();
         return $applications;
@@ -1413,7 +1469,7 @@ class Application extends \yii\db\ActiveRecord
      * @param type $personid
      * @return type
      * 
-     * Author: Luarence Charles
+     * Author: Laurence Charles
      * Date Creatred: 04/05/2016
      * Date Last Modified: 04/05/2016
      */
@@ -1431,6 +1487,31 @@ class Application extends \yii\db\ActiveRecord
         if($applications)
             return true;
         return false;
+    }
+    
+    
+    /**
+     * Returns an array of customized applications given to student
+     * 
+     * @param type $personid
+     * 
+     * Author: Laurence Charles
+     * Date Creatred: 04/05/2016
+     * Date Last Modified: 04/05/2016
+     */
+    public static function getCustomApplications($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                /*'application.isactive' => 1, */'application.isdeleted' => 0, /*'application.applicationstatusid' => 9,*/ 'application.personid' => $personid,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
+                                ])
+                        ->andWhere(['>', 'application.ordering', 3])
+                        ->orderBy('application.ordering ASC')
+                        ->all();
+        return $applications;
     }
     
     

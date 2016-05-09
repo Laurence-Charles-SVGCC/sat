@@ -25,7 +25,7 @@
     /* @var $this yii\web\View */
     /* @var $form yii\bootstrap\ActiveForm */
     
-    $this->title = 'Cutomized Offer';
+    $this->title = 'Customized Offer';
 //    $this->params['breadcrumbs'][] = ['label' => 'Applicant Dashboard', 'url' => ['site/dashboard']];
 //    $this->params['breadcrumbs'][] = ['label' => 'Programme Dashboard', 'url' => ['programme-choice/programme-choices']];
 //    $this->params['breadcrumbs'][] = $this->title;
@@ -43,13 +43,7 @@
         </div>
         
         <div class="custom_body">
-            
-            <?php if(Yii::$app->session->hasFlash('error')): ?>
-                <div class="alert alert-danger" role="alert" style="font-size:20px; text-align:center">
-                    <?= Yii::$app->session->getFlash('error'); ?>
-                </div>
-            <?php endif; ?>
-            
+           
             <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2><br/>
     
             <div>           
@@ -72,7 +66,7 @@
 
                     <!--Parent--> 
                     <div id="cape-first-choice-division" style="font-size:17px;">              
-                        <p><?= $form->field($application, 'divisionid')->label("Select your division of first choice")->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division_id', 'onchange' => 'showCape();']);?></p>   
+                        <p><?= $form->field($application, 'divisionid')->label("Select your division of first choice")->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division-id', 'onchange' => 'showCape();']);?></p>   
                     </div>
                     </br>
 
@@ -81,7 +75,7 @@
                         <p> <?= $form->field($application, 'academicofferingid')->widget(DepDrop::classname(), [
                                 'options'=>['id'=>'academicoffering-id', 'onchange' => 'showCape();'],
                                 'pluginOptions'=>[
-                                    'depends'=>['division_id'],
+                                    'depends'=>['division-id'],
                                     'placeholder'=>'Select...',
 //                                    'url'=> Url::toRoute(['/subcomponents/admissions/process-applications/academic-offering', 'personid' => $personid])
                                     'url'=> Url::to(['process-applications/academic-offering', 'personid' => $personid])

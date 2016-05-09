@@ -365,16 +365,18 @@ class OfferController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 30/03/2016
-     * Date Last Modified: 30/03/2016 | 01/04/2016
+     * Date Last Modified: 30/03/2016 | 01/04/2016 | 08/05/2016
      */
     public function actionRevoke($id, $offertype)
     {
+        $offer_save_flag = false;
         $offer = Offer::find()
                 ->where(['offerid' => $id])
                 ->one();
         
         if ($offer)
         {
+            
             if($offer->ispublished == 1)
             {
                 $offer->isactive = 0;
@@ -389,113 +391,196 @@ class OfferController extends Controller
                 $offer->revokedby = Yii::$app->user->getId();
                 $offer->revokedate = date('Y-m-d');
             }
-           
-            if ($offer->save())
+            
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
             {
-                /*
-                * When offer is removed then all applications are reset to "Pending"
-                */
-                $application = $offer->getApplication()->one();
-                if ($application)
+                $offer_save_flag = $offer->save();
+                if ($offer_save_flag == true)
                 {
-                    $applications = Application::find()
-                                    ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
-                                    ->all();
-                    if ($applications)
+                    /*
+                    * When offer is removed then all applications are reset to "Pending"
+                    */
+                    $application = $offer->getApplication()->one();
+                    if ($application)
                     {
-                        /*
-                         * If application is for a programme that requires an interview;
-                         * -> the related appliction is reset to 'conditional offer'
-                         */
-                        if(AcademicOffering::requiresInterview($application->applicationid) == true)
+                        if($application->ordering <= 3)
                         {
-                            /*
-                             * If offer is a 'conditional-interview' offer;
-                             * -> the related application is set to pending
-                             */
-                            if($offer->offertypeid == 2)        
+                            $applications = Application::find()
+                                            ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->andWhere(['<=', 'ordering', 3])
+                                            ->all();
+                            if ($applications)
                             {
-                                foreach($applications as $app)
+                                $app_temp_save_flag = true;
+                                $app_save_flag = true;
+                                /*
+                                 * If application is for a programme that requires an interview;
+                                 * -> the related application is reset to 'conditional offer'
+                                 */
+                                if(AcademicOffering::requiresInterview($application->applicationid) == true)
                                 {
-                                    $app->applicationstatusid = 3;
-                                    $app->save();
-                                }
-                            }
-                            /*
-                             * If offer is a 'post-interview/full' offer;
-                             * -> the related application is set to 'conditional offer'
-                             * -> all other applications are set to 'rejected' 
-                             * -> condoitional offer is created
-                            */
-                            else
-                            {
-                                foreach($applications as $app)
-                                {
-                                    //if this is the application related to offer
-                                    if($app->applicationid == $offer->applicationid)
+                                    /*
+                                     * If offer is a 'conditional-interview' offer;
+                                     * -> the related application is set to pending
+                                     */
+                                    if($offer->offertypeid == 2)        
                                     {
-                                        $app->applicationstatusid = 8;
-                                        $app->save();
+                                        foreach($applications as $app)
+                                        {
+                                            $app->applicationstatusid = 3;
+                                            $app_temp_save_flag = $app->save();
+                                            if($app_temp_save_flag == false)
+                                            {
+                                                $app_save_flag = false;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if($app_save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->session->setFlash('error', 'Error occured when update application status'); 
+                                            return self::actionIndex($offertype);
+                                        }
+                                        
                                     }
+                                    /*
+                                     * If offer is a 'post-interview/full' offer;
+                                     * -> the related application is set to 'conditional offer'
+                                     * -> all other applications are set to 'rejected' 
+                                     * -> condoitional offer is created
+                                    */
                                     else
                                     {
-                                        $app->applicationstatusid = 6;
-                                        $app->save();
+                                        foreach($applications as $app)
+                                        {
+                                            //if this is the application related to offer
+                                            if($app->applicationid == $offer->applicationid)
+                                            {
+                                                $app->applicationstatusid = 8;
+                                                $app_temp_save_flag = $app->save();
+                                                if($app_temp_save_flag == false)
+                                                {
+                                                    $app_save_flag = false;
+                                                    break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $app->applicationstatusid = 6;
+                                                $app_temp_save_flag = $app->save();
+                                                if($app_temp_save_flag == false)
+                                                {
+                                                    $app_save_flag = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        
+                                        if($app_save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->session->setFlash('error', 'Error occured when update application status'); 
+                                            return self::actionIndex($offertype);
+                                        }
+
+                                        //creates conditional offer
+                                        $conditional_save_flag = false;
+                                        $conditional_offer = new Offer();
+                                        $conditional_offer->applicationid = $offer->applicationid;
+                                        $conditional_offer->offertypeid = 2;
+                                        $conditional_offer->issuedby = Yii::$app->user->getID();
+                                        $conditional_offer->issuedate = date('Y-m-d');
+                                        $conditional_save_flag = $conditional_offer->save();
+                                        
+                                        if($conditional_save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->session->setFlash('error', 'Error occured when creating conditional offer'); 
+                                            return self::actionIndex($offertype);
+                                        }
+
                                     }
                                 }
-                                
-                                //creates conditional offer
-                                $conditional_offer = new Offer();
-                                $conditional_offer->applicationid = $offer->applicationid;
-                                $conditional_offer->offertypeid = 2;
-                                $conditional_offer->issuedby = Yii::$app->user->getID();
-                                $conditional_offer->issuedate = date('Y-m-d');
-                                $conditional_offer->save();
-                                
+                                /*
+                                 * If application is for a programme that does not require an interview;
+                                 * -> the related appliction is reset to pending
+                                 */
+                                else
+                                {
+                                    foreach($applications as $app)
+                                    {
+                                        $app->applicationstatusid = 3;
+                                        $app_temp_save_flag = $app->save();
+                                        if($app_temp_save_flag == false)
+                                        {
+                                            $app_save_flag = false;
+                                            break;
+                                        }
+                                    }
+                                    if($app_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when update application status'); 
+                                        return self::actionIndex($offertype);
+                                    }
+                                }
                             }
-                        }
-                        /*
-                         * If application is for a programme that does not require an interview;
-                         * -> the related appliction is reset to pending
-                         */
-                        else
-                        {
-                            foreach($applications as $app)
+                            else
                             {
-                                $app->applicationstatusid = 3;
-                                $app->save();
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when retrieving all applications');
+                                return self::actionIndex($offertype);
                             }
                         }
+                        else        //if a customized offer
+                        {
+                            $application->applicationstatusid = 6;
+                            $app_save_flag = $application->save();
+                            if($app_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when update application status'); 
+                                return self::actionIndex($offertype);
+                            }
+                        }
+                        
+                        /*
+                        * Remove Potential student ID
+                        */
+                        $applicant_save_flag = false;
+                        $applicant = Applicant::findOne(['personid' => $application->personid]);
+                        $applicant->potentialstudentid = NULL; 
+                        $applicant_save_flag = $applicant->save();
+
+                        if($applicant_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured when update application status'); 
+                            return self::actionIndex($offertype);
+                        }
+                        
+                        $transaction->commit();
+                        return self::actionIndex($offertype);
                     }
                     else
-                        Yii::$app->session->setFlash('error', 'Error occured when retrieving all applications'); 
-                    
-                    
-                    /*
-                    * Remove Potential student ID
-                    */
-                    $applicant = $application ? Applicant::findOne(['personid' => $application->personid]) : NULL;
-                    $offers = $application ? 
-                                Offer::find()
-                                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
-                                    ->where(['application.personid' => $application->personid, 'offer.isactive' => 1, 'offer.isdeleted' => 0])
-                                    ->all() :
-                                NULL;
-                    
-                    //if applicant exists and applicant has no active offers
-                    if ($applicant && !$offers)
-                    { 
-                        //applicant has no other offers
-                        $applicant->potentialstudentid = NULL; 
-                        $applicant->save();
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->session->setFlash('error', 'Error occured when retrieving application');
+                        return self::actionIndex($offertype);
                     }
                 }
                 else
-                    Yii::$app->session->setFlash('error', 'Error occured when retrieving application');   
-            }
-            else
-            {
-                Yii::$app->session->setFlash('error', 'Offer could not be revoked');
+                {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Error occured saving offer record');
+                    return self::actionIndex($offertype);
+                }
+            } catch (Exception $ex) {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
+                return self::actionIndex($offertype);
             }
         }
         else
@@ -503,6 +588,7 @@ class OfferController extends Controller
             Yii::$app->session->setFlash('error', 'Offer not found');
         }
 
+        
         return $this->redirect(['index', 
                                 'offertype' => $offertype 
                                ]);

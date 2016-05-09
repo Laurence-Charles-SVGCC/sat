@@ -606,12 +606,14 @@ class CsecQualification extends \yii\db\ActiveRecord
             $has_chemistry = false;
             $has_physics = false;
             $has_human_and_social_biology = false;
+            $has_human_and_social_biology2 = false;
 
             $integrated_science = Subject::findOne(['name' => 'Integrated Science', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $biology = Subject::findOne(['name' => 'Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $human_and_social_biology = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
+            $human_and_social_biology2 = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
 
             if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true)
             {
@@ -651,10 +653,17 @@ class CsecQualification extends \yii\db\ActiveRecord
                         if (in_array($exam_grade->ordering, array(1,2,3)))
                             $has_human_and_social_biology = true;
                     }
+                    
+                    if ($cert->subjectid == $human_and_social_biology->subjectid)
+                    {
+                        $exam_grade = ExaminationGrade::findOne(['examinationgradeid' => $cert->examinationgradeid]);
+                        if (in_array($exam_grade->ordering, array(1,2,3)))
+                            $has_human_and_social_biology2 = true;
+                    }
                 }
             }
             
-            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_human_and_social_biology == true)
+            if($has_integrated_science == true || $has_biology == true || $has_chemistry == true || $has_physics == true || $has_human_and_social_biology == true || $has_human_and_social_biology2 == true)
                 return true;
         }
         return false;

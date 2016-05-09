@@ -5,6 +5,16 @@
     use Yii;
     use yii\helpers\Url;
     use yii\data\ArrayDataProvider;
+    use yii\helpers\Json;
+    use yii\web\Controller;
+    use yii\web\NotFoundHttpException;
+    use yii\filters\VerbFilter;
+    use yii\web\Response;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\ArrayHelper;
+    use yii\web\Request;
+    use yii\helpers\FileHelper;
+    use yii\base\Model;
     
     use common\models\User;
     use frontend\models\ProgrammeCatalog;
@@ -252,7 +262,7 @@
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $applicant->personid])
+                                /*I'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $applicant->personid])
                         ->orderBy('application.ordering ASC')
                         ->all();
             
@@ -387,32 +397,33 @@
                             ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                             ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
-                            ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 'application_period.isactive' => 1, 
-                                    'offer.isdeleted' => 0])
+                            ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 
+                                    'application_period.isactive' => 1, 'application_period.iscomplete' => 0,
+                                    'offer.isdeleted' => 0
+                                    ])
                             ->all());
                         $cape_info[$cape->subjectname]['capacity'] = $cape->capacity;
                     }
                 }
-                else
-                {
-                    $offers_made = count(Offer::find()
-                            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1,
-                                    'application.isactive' => 1, 'application.isdeleted' => 0,
-                                    'academic_offering.academicofferingid' => $ao->academicofferingid])
-                            ->all());
-                    
-                    $conditional_offers_made = count(Offer::find()
-                            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 2,
-                                    'application.isactive' => 1, 'application.isdeleted' => 0,
-                                    'academic_offering.academicofferingid' => $ao->academicofferingid])
-                            ->all());
+//               
+                $offers_made = count(Offer::find()
+                        ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1,
+                                'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.academicofferingid' => $ao->academicofferingid])
+                        ->all());
 
-                    $spaces = $ao->spaces;
-                }
+                $conditional_offers_made = count(Offer::find()
+                        ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 2,
+                                'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.academicofferingid' => $ao->academicofferingid])
+                        ->all());
+
+                $spaces = $ao->spaces;
+//                
             }
             
             
@@ -1418,7 +1429,7 @@
                     return;
                 }
             }
-            echo Json::encode(['output'=>'', 'selected'=>'']);
+//            echo Json::encode(['output'=>'', 'selected'=>'']);
         }
         
         
@@ -1435,8 +1446,9 @@
          */
         public static function getAcademicOfferingList($division_id, $personid)
         { 
-            $id = $personid;
-            $intent = Applicant::getApplicantIntent($id);
+//            $id = $personid;x/
+//            $id = 2244;
+            $intent = Applicant::getApplicantIntent($personid);
             $db = Yii::$app->db;
             
             if ($intent == 1  || $intent == 4 || $intent == 6)       //if user is applying for full time programme
@@ -1455,9 +1467,13 @@
                     . ' JOIN academic_offering'
                     . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
                     . ' JOIN qualification_type'
-                    . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid' 
+                    . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
+                    . ' JOIN application_period'
+                    . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
                     . ' WHERE academic_offering.isactive=1'
                     . ' AND academic_offering.isdeleted=0'
+                    . ' AND application_period.iscomplete = 0'
+                    . ' AND application_period.isactive = 1'
                     . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
                     . ' AND programme_catalog.departmentid'
                     . ' IN ('
@@ -1489,8 +1505,17 @@
         }
         
         
-        
-        public function actionCustomOffer($personid)
+        /**
+         * Generates an alternative application and offer for an applicant
+         * 
+         * @param type $personid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 07/05/2016
+         * Date Last Modified: 07/05/2016
+         */
+        public function actionCustomOffer($personid, $programme, $application_status)
         { 
             date_default_timezone_set('America/St_Vincent');
             
@@ -1526,20 +1551,20 @@
                 {
                     $application->personid = $id;    
                     $application->applicationtimestamp = date('Y-m-d H:i:s' );
+                    $application->submissiontimestamp = date('Y-m-d H:i:s' );
             
-                    $current_applications = Application::getApplicantApplications($personid);
-                    
+                    $current_applications = Application::getVerifiedApplications($personid);
                     /* if applicant has less than three applications; 
                      * -> the first alternative offer has an ordering of 4
                      * else
                      * -> it have an ordering 1 higher than the last active application
                      */
-                    if (count($current_applications) < 3)
+                    if (count($current_applications) <= 3)
                         $application->ordering = 4;
                     else
                     {
-                        $last_priority = end($current_applications)->priority;
-                        $application->ordering = $last_priority +1;
+                        $last_priority = end($current_applications)->ordering;
+                        $application->ordering = $last_priority + 1;
                     }
                     
                     $application->ipaddress = Yii::$app->request->getUserIP();
@@ -1557,9 +1582,8 @@
                         }
                         else
                         {
-                            
                             /*
-                             * all current application must be rejected
+                             * all current applications must be rejected
                              */
                             $temp_save_flag = true;
                             $save_flag = true;
@@ -1668,7 +1692,9 @@
                                             }
                                             else         //if incorrect number of CAPE subjects selected.
                                             { 
+                                                $transaction->rollBack();
                                                 Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 3(min)  or 4(max) CAPE subjects.'); 
+                                                return self::actionViewApplicantCertificates($personid, $programme, 9);
                                             } 
                                         }  
                                     }  
@@ -1676,7 +1702,7 @@
                                 
                                 // create offer
                                 $offer = new Offer();
-                                $offer->applicationid = $applicationid;
+                                $offer->applicationid = $application->applicationid;
                                 $offer->offertypeid = 1;
                                 $offer->issuedby = Yii::$app->user->getId();
                                 $offer->issuedate = date("Y-m-d");
@@ -1688,8 +1714,25 @@
                                 }
                                 else
                                 {
-                                    $transaction->commit(); 
-                                    return self::actionViewApplicantCertificates($personid, $programme, $application_status);
+                                    //generate potenialstudentid
+                                    $applicant_save_flag = false;
+                                    $applicant = Applicant::find()
+                                                    ->where(['personid' => $personid])
+                                                    ->one();
+                                    $generated_id = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "generate");
+                                    $applicant->potentialstudentid = $generated_id;
+                                    $applicant_save_flag = $applicant->save();
+                                    
+                                    if($applicant_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving applicant record.'); 
+                                    }
+                                    else
+                                    {
+                                        $transaction->commit(); 
+                                        return self::actionViewApplicantCertificates($personid, $programme, $application_status);
+                                    }
                                 }
                             }//if rejections successful
                         } //endif application_save_flag == true
@@ -1698,6 +1741,10 @@
                         Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
                     }
                 }   //end-if application load
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occurred loading application record.');
+                }
             }   //end-if POST operation
            
             return $this->render('custom_offer', [
