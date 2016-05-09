@@ -6,6 +6,8 @@ use yii\helpers\Url;
 use kartik\grid\GridView;
 use kartik\export\ExportMenu;
 
+use frontend\models\Offer;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -25,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <div style="margin-left:2.5%">
-                <h2 class="custom_h2">Categories of Questionable Offers:</h2>
+                <h2 class="custom_h2">Categories of Questionable <?php if($offertype==1)echo "Unconditional Offers"; else echo"Interview Invitations;"?></h2>
                 <ul>
                     <?php if($multiple_offers):?>
                         <li>
