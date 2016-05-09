@@ -1305,7 +1305,12 @@ class Applicant extends \yii\db\ActiveRecord
             $applicant = Applicant::find()
                     ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->where(['application.isdeleted' => 0, 'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
+                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                    ->where(['application.isdeleted' => 0,
+                            'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid,
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                            ])
                     ->one();
             if ($applicant && in_array($applicant->personid, $personids))
             {
