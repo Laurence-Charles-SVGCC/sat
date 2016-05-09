@@ -293,6 +293,60 @@ class CsecQualification extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Identifies possible duplicate offer recepients based on csec_qualifications
+     * 
+     * @param type $personid
+     * @param type $candidateno
+     * @param type $year
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/05/2016
+     * Date Last Modified: 09/05/2016
+     */
+    public static function getPossibleDuplicateOfferee($personid, $candidateno, $year)
+    {
+        try
+        {
+            $origcandidateno = $candidateno;
+            $candidateno = intval($candidateno);
+        } catch (Exception $ex) {
+            return false;
+        } 
+        if ($candidateno == 0 || strlen($origcandidateno) != 10 )
+            return false;
+        $groups = CsecQualification::find()
+                ->innerJoin('application', '`application`.`personid` = `csec_qualification`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['csec_qualification.candidatenumber' => $candidateno, 'csec_qualification.isdeleted' => 0,'csec_qualification.year' => $year,
+                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.personid' => $personid,
+                        'academic_offering.isdeleted' => 0
+                        ])
+                ->groupBy('personid')
+                ->all();
+        if (count($groups) == 1)
+        {
+            return false;
+        }
+        else
+        {
+            $dups = array();
+            foreach ($groups as $group)
+            {
+                if ($group->personid != $personid)
+                {
+                    $dups[] = $group->personid;
+                }
+            }
+            return $dups;
+        }
+    }
+    
+    
+    
+    
     /*
     * Purpose: Determines if applicant has applied before
     * Created: 27/07/2015 by Gamal Crichton

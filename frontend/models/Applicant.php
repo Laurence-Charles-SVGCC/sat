@@ -1305,13 +1305,12 @@ class Applicant extends \yii\db\ActiveRecord
             $applicant = Applicant::find()
                     ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['application.isdeleted' => 0,
-                            'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                            'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid
                             ])
                     ->one();
+            
+            /* Identifies duplicates based on multiple offers having the same personid */
             if ($applicant && in_array($applicant->personid, $personids))
             {
                 if ($details)
@@ -1321,12 +1320,14 @@ class Applicant extends \yii\db\ActiveRecord
             }
             else if ($applicant)
                 $personids[] = $applicant->personid;
+            /****************************************************************************/
             
             $certificates = CsecQualification::getSubjects($applicant->personid);
             if ($certificates)
             {
                 $division_id = EmployeeDepartment::getUserDivision();
-                $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+//                $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                 $dups = CsecQualification::getPossibleDuplicateOfferee($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
                 if ($dups)
                 {
                     foreach($dups as $dup)
