@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'maths']);?>" 
                                 title="Lack CSEC Mathematics Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view successful applicant lacking CSEC Mathematics
+                                Click here to view successful applicant lacking CSEC/GCE Mathematics
                              </a>
                         </li><br/>
                     <?php endif;?>
@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'english']);?>" 
                                 title="Lack CSEC English Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view successful applicant lacking CSEC English Language
+                                Click here to view successful applicant lacking CSEC/GCE English Language
                              </a>
                         </li><br/>
                     <?php endif;?>
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'five_passes']);?>" 
                                 title="Lack 5 CSEC Passes"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view successful applicants lacking five(5) CSEC passes
+                                Click here to view successful applicants lacking five(5) CSEC/GCE passes
                              </a>
                         </li><br/>
                     <?php endif;?>

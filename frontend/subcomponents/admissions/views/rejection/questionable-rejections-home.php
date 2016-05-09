@@ -33,7 +33,7 @@
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'maths']);?>" 
                                 title="Lack CSEC Mathematics Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view unsuccessful applicants who have CSEC Mathematics pass
+                                Click here to view unsuccessful applicants who have CSEC/GCE Mathematics pass
                              </a>
                         </li><br/>
                     <?php endif;?>
@@ -43,7 +43,7 @@
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'english']);?>" 
                                 title="Lack CSEC English Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view unsuccessful applicants who have CSEC English Language pass
+                                Click here to view unsuccessful applicants who have CSEC/GCE English Language pass
                              </a>
                         </li><br/>
                     <?php endif;?>
@@ -53,7 +53,7 @@
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'five_passes']);?>" 
                                 title="Lack 5 CSEC Passes"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view unsuccessful applicants possessing five(5) CSEC passes
+                                Click here to view unsuccessful applicants possessing five(5) CSEC/GCE passes
                              </a>
                         </li><br/>
                     <?php endif;?>
