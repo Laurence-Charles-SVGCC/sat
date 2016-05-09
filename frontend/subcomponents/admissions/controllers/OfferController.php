@@ -1245,7 +1245,7 @@ class OfferController extends Controller
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.isdeleted'] = 0;
         $offer_cond['application_period.iscomplete'] = 0;
-        $offer_cond['offer.offerypeid'] = $offerype;
+        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
         
         
