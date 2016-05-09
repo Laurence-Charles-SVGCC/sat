@@ -171,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'offerid',
                                 'label' => 'Revoke',
                                 'format' => 'html',
-                                'value' => function($row)
+                                'value' => function($row, $offertype)
                                  {
                                     if (Yii::$app->user->can('deleteOffer'))
                                     {
