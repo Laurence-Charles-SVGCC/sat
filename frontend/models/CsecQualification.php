@@ -321,10 +321,11 @@ class CsecQualification extends \yii\db\ActiveRecord
                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->where(['csec_qualification.candidatenumber' => $candidateno, 'csec_qualification.isdeleted' => 0,'csec_qualification.year' => $year,
-                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [8,9], 'application.personid' => $personid,
+                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                         'academic_offering.isdeleted' => 0
                         ])
-                ->groupBy('personid')
+                ->groupBy('csec_qualification.personid')
                 ->all();
         if (count($groups) == 1)
         {
