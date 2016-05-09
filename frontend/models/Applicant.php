@@ -1327,7 +1327,7 @@ class Applicant extends \yii\db\ActiveRecord
             {
                 $division_id = EmployeeDepartment::getUserDivision();
 //                $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
-                 $dups = CsecQualification::getPossibleDuplicateOfferee($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                $dups = CsecQualification::getPossibleDuplicateOfferee($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
                 if ($dups)
                 {
                     foreach($dups as $dup)
