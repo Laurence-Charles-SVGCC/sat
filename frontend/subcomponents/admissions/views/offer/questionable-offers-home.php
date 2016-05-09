@@ -13,7 +13,7 @@ use frontend\models\Offer;
 if($offertype==1)
     $val = " Offers ";
 else 
-    $val = "Interview Invitations ";
+    $val = " Invitations ";
 $this->title = 'Questionable' . $val . 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
