@@ -1549,9 +1549,9 @@ class OfferController extends Controller
             ]);
         }
         
-        $info = Applicant::getApplicantInformation($applicant->personid);
-        $programme = $info["prog"];
-        $application_status = $info["status"];
+//        $info = Applicant::getApplicantInformation($applicant->personid);
+//        $programme = $info["prog"];
+//        $application_status = $info["status"];
 
         return $this->render('questionable-offers-home', [
             'applicationperiodname' => $app_period_name,
