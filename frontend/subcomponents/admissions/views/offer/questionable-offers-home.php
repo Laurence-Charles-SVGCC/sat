@@ -10,8 +10,11 @@ use frontend\models\Offer;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Questionable Offers Dashboard';
+if($offertype==1)
+    $val = " Offers ";
+else 
+    $val = "Interview Invitations ";
+$this->title = 'Questionable' . $val . 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="body-content">
@@ -27,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             <div style="margin-left:2.5%">
-                <h2 class="custom_h2">Categories of Questionable <?php if($offertype==1)echo "Unconditional Offers"; else echo"Interview Invitations;"?></h2>
+                <h2 class="custom_h2">Categories of Questionable <?php if($offertype==1)echo "Unconditional Offers:"; else echo"Interview Invitations:";?></h2>
                 <ul>
                     <?php if($multiple_offers):?>
                         <li>
