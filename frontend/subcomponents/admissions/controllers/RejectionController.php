@@ -1006,7 +1006,7 @@ class RejectionController extends Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $math_req_data,
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 25,
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -1020,7 +1020,7 @@ class RejectionController extends Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $english_req_data,
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 25,
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -1034,7 +1034,7 @@ class RejectionController extends Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $subjects_req_data,
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 25,
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -1048,7 +1048,7 @@ class RejectionController extends Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $dte_req_data,
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 25,
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -1062,7 +1062,7 @@ class RejectionController extends Controller
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $dne_req_data,
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 25,
                     ],
                 'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
