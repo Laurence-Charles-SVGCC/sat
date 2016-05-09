@@ -613,7 +613,7 @@ class CsecQualification extends \yii\db\ActiveRecord
             $chemistry = Subject::findOne(['name' => 'Chemistry', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $physics = Subject::findOne(['name' => 'Physics', 'examinationbodyid' => 3, 'isdeleted' => 0]);
             $human_and_social_biology = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 3, 'isdeleted' => 0]);
-            $human_and_social_biology2 = Subject::findOne(['name' => 'Human & Social Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
+            $human_and_social_biology2 = Subject::findOne(['name' => 'Human and Social Biology', 'examinationbodyid' => 5, 'isdeleted' => 0]);
 
             if($integrated_science == true && $biology == true && $chemistry == true && $physics == true && $human_and_social_biology == true)
             {
