@@ -27,7 +27,7 @@
 
             <div id="salutations">
                 <p>With warm wishes and kind regards,</p>
-                <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>
+                <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.png" alt="mrs-rouse-signature"></p>
                 <!--<p><img src="http://localhost/sat_dev/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>-->
                 <p>
                     Samantha Minors-Rouse
