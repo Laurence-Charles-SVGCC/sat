@@ -238,7 +238,7 @@ class Applicant extends \yii\db\ActiveRecord
                      ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
+                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.divisionid' => $division_id,  'application.applicationstatusid' => [3,4,5,6,7,8,9,10]
                             ])
                     ->groupBy('applicant.personid')
@@ -597,14 +597,14 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered pending if; 
-             * Application 1 -> Pending | Rejected
-             * Application 2 -> Pending | Pending
+             * Application 1 -> Rejected | Pending
+             * Application 2 -> Pending  | Pending
              */
             elseif($count == 2)
             {
                 if(
-                        ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
-                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
+                        ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
                   )
                     return true;
             }
