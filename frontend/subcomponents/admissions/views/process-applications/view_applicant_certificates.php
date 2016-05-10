@@ -260,6 +260,7 @@
                                                                                                     //for 'actionViewByStatus($division_id, $application_status)' redirect
                                                                                                     'old_status' => $target_application->applicationstatusid,
                                                                                                     'divisionid' => $application_container[$i]["application"]->divisionid,
+                                                                                                    'programme' => $programme
                                                                                                  ]);
                                                                 echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";      
                                                             }
@@ -267,18 +268,17 @@
                                                     echo "</div>";
                                                 echo "</td>";  
                                             }
-                                        }
-
-                                        /*
-                                         * If user is a member of "DASGS", "DTVE" they have ability to change any application status directly above the one under
-                                         * current consideration if the current application is pending and the previous application is a programme offered by their division.
-                                         */
+                                        }                            
                                         else
                                         {
+                                            /*
+                                            * If user is a member of "DASGS", "DTVE" they have ability to change any application status directly above the one under
+                                            * current consideration if the current application is pending and the previous application is a programme offered by their division.
+                                            */
                                             if(    $application_container[$i]["istarget"] == true 
                                                 || ($target_application->applicationstatusid == 3  
                                                         && ($target_application->ordering - $application_container[$i]["application"]->ordering == 1)  
-                                                        && $application_container[$i]["application"]->divisionid == EmployeeDepartment::getUserDivision()
+                                                        && $application_container[$i]["application"]->divisionid == EmployeeDepartment::getUserDivision() 
                                                     )
                                                )
                                             {
@@ -300,6 +300,7 @@
                                                                                                     //for 'actionViewByStatus($division_id, $application_status)' redirect
                                                                                                     'old_status' => $target_application->applicationstatusid,
                                                                                                     'divisionid' => $application_container[$i]["application"]->divisionid,
+                                                                                                    'programme' => $programme
                                                                                                  ]);
                                                                 echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";
                                                             }

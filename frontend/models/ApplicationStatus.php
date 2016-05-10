@@ -214,7 +214,6 @@ class ApplicationStatus extends \yii\db\ActiveRecord
             }
             
             
-            
             array_push($container, $ids);
             array_push($container, $names);
         }
