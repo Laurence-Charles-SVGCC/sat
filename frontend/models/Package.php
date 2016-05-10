@@ -206,7 +206,7 @@ class Package extends \yii\db\ActiveRecord
     {
         $id = Yii::$app->user->identity->personid;
         $package = Package::find()
-                ->where(['isactive' => 0, 'isdeleted' => 0 ,'lastmodifiedby' => $id, 'packageprogressid' => [1,2,3]])
+                ->where(['isactive' => 0, 'isdeleted' => 0, 'packageprogressid' => [1,2,3]])
                 ->one();
         if ($package)
             return $package;
