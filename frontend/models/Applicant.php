@@ -623,6 +623,8 @@ class Applicant extends \yii\db\ActiveRecord
                   )
                     return true;
             }
+            else
+                return true;
         }
         return false;
         
