@@ -35,8 +35,7 @@ class ExaminationGrade extends \yii\db\ActiveRecord
     {
         return [
             [['examinationbodyid', 'name', 'ordering'], 'required'],
-            [['examinationbodyid', 'ordering'], 'integer'],
-            [['isactive', 'isdeleted'], 'boolean'],
+            [['examinationbodyid', 'ordering', 'isactive', 'isdeleted'], 'integer'],
             [['name'], 'string', 'max' => 45]
         ];
     }

@@ -181,6 +181,28 @@ class CsecQualification extends \yii\db\ActiveRecord
     }
     
     
+    
+    public static function getSecondaryGradesCount($personid, $grade)
+    {
+        return CsecQualification::find()
+                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
+                    ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                             'csec_qualification.examinationbodyid' => [3,5], 'examination_grade.ordering' => $grade,
+                            ])
+                    ->count();
+    }
+    
+    public static function getTertiaryGradesCount($personid, $grade)
+    {
+        return CsecQualification::find()
+                    ->innerJoin('examination_grade', '`examination_grade`.`examinationgradeid` = `csec_qualification`.`examinationgradeid`')
+                    ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isverified' => 1, 'csec_qualification.isdeleted' => 0,
+                             'csec_qualification.examinationbodyid' => 2, 'examination_grade.ordering' => $grade,
+                            ])
+                    ->count();
+    }
+    
+    
     /*
     * Purpose: Determins if student passed CSEC Math 
     * Created: 4/08/2015 by Gamal Crichton

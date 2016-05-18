@@ -460,6 +460,48 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
             return $period->name;
         return "upcoming";
     }
+    
+    /**
+     * Returns an array of application periods for display in dropdownlist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 11/05/2016
+     * Date Last Modified: 11/05/2016
+     */
+    public static function preparePeriods()
+    {
+        $records = ApplicationPeriod::find()
+                    ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                            'application.isactive' => 1, 'application.isdeleted' => 0
+                            ])
+                    ->andWhere(['>=', 'applicationperiodstatusid', 5])
+                    ->all();
+        if (count($records) > 0)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select...');
+
+            foreach($records as $record)
+            {
+                $key = strval($record->applicationperiodid);
+                array_push($keys, $key);
+                $value = strval($record->name);
+                array_push($values, $value);
+            }
+
+            $combined = array_combine($keys, $values);
+            return $combined;
+        }
+        return false;
+    }
         
         
         

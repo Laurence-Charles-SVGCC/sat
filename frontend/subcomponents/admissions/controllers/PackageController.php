@@ -832,9 +832,9 @@
 
                    }
                    /*
-                    * If $sub_category/rejectiontypeid = pre_interview;
-                    * -> use pre_interview rejection package
-                    * ->else use post_interview rejection package
+                    * If $sub_category/offertypeid = conditional;
+                    * -> use conditional offer package
+                    * ->else use full offer rejection package
                     */
                     if ($sub_category == 1)
                         $packagetypeid = 4;

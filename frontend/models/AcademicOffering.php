@@ -398,7 +398,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
     public static function isCape($academicofferingid)
     {
         $ao = AcademicOffering::findOne(['academicofferingid' => $academicofferingid]);
-        $cape_prog = ProgrammeCatalog::findOne(['name' => 'cape']);
+        $cape_prog = ProgrammeCatalog::findOne(['name' => 'CAPE']);
         return $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : false;
     }
     
@@ -419,6 +419,31 @@ class AcademicOffering extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['programme_catalog.name' => "CAPE",
                             'application_period.isactive' => 1, 'application_period.applicationperiodstatusid' => 5
+                            ])
+                    ->one();
+        if ($offering)
+            return $offering->academicofferingid;
+        return false;
+    }
+    
+    
+    /**
+     * Returns the CAPE academic offering for the specified application period
+     * 
+     * @param type $periodid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 14/05/2016
+     * Date Last Modified: 14/05/2016
+     */
+    public static function getCapeID($periodid)
+    {
+        $offering = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['programme_catalog.name' => "CAPE",
+                            'application_period.applicationperiodid' => $periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                             ])
                     ->one();
         if ($offering)

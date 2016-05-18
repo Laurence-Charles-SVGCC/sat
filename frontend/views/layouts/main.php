@@ -153,6 +153,10 @@ else
                     <?php if (Yii::$app->user->can('studentCard')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
+                        
+                    <?php if (true): ?>    
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
+                    <?php endif; ?>
                   </ul>
                 </li>
                <?php endif; ?>
@@ -175,6 +179,14 @@ else
                             
                             <?php if (Yii::$app->user->can('manageClubs')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/registry/clubs/manage-clubs'])?>"><i class="fa fa-circle-o"></i>Clubs</a></li>
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('students')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-programme-intake'])?>"><i class="fa fa-circle-o"></i>Generate Intake Reports</a></li>
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('students')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants'])?>"><i class="fa fa-circle-o"></i>View Unregistered Applicants</a></li>
                             <?php endif; ?>
                             
                             <!--<?php if (Yii::$app->user->can('manageTranscripts')): ?>
