@@ -359,11 +359,6 @@ class ReportsController extends Controller {
             ],
         ]);
 
-        if($url)
-            $platform = "local";
-        else
-            $platform = "live";
-            
         if ($passmaths == 1 && $passenglish == 1)
             $header = "Bordeline Students with passes Mathematics and English Language";
         elseif ($passmaths == 1 && $passenglish == 0)
