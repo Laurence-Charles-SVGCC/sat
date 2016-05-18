@@ -40,6 +40,9 @@
                         'action' => Url::to(['reports/generate-programme-intake']),
                     ]); 
             ?>
+            
+                <?= Html::hiddenInput('intake_listing_baseUrl', Url::home(true)); ?>
+                
                 <div style="margin-left:2.5%"><br/>
                     <div id="intake-application-period">
                         <?= Html::label('1. Please select the application period you wish to investigate: ', 'intake_period_label'); ?>

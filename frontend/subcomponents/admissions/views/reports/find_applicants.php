@@ -53,7 +53,7 @@
                         'action' => Url::to(['reports/generate-applicant-listing']),
                     ]); 
             ?>
-                <?= Html::hiddenInput('baseUrl', Url::home(true)); ?>
+                <?= Html::hiddenInput('preparelisting_baseUrl', Url::home(true)); ?>
             
                 <div style="margin-left:2.5%"><br/>
                     <div id="application-period-scope">

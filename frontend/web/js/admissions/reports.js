@@ -366,7 +366,7 @@ function PrepareListing(e)
         listing_type = 4;
     
     
-    var baseUrl = document.getElementsByName('baseUrl')[0].value;
+    var baseUrl = document.getElementsByName('preparelisting_baseUrl')[0].value;
     if (baseUrl.search("localhost")!=-1)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
     else
@@ -620,12 +620,20 @@ function IntakePrepareListing(e)
     }
     else if(document.getElementById('non-dasgs-intake-programme-options').style.display == "block")
         listing_type = 1;
+    
+    
+    var baseUrl = document.getElementsByName('intake_listing_baseUrl')[0].value;
+    if (baseUrl.search("localhost")!=-1)
+        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+    else
+        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+        
         
     //Implementation for live server
 //    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     
     //For local implementation
-    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
     
     url+= "applicationperiodid=" + applicationperiodid;
     
