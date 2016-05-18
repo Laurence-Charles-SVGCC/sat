@@ -382,8 +382,9 @@ class ReportsController extends Controller {
         ]);
     }
 
+    
     /**
-     * Generate a full applicant list for Application Period
+     * Generate an applicant list for Application Period
      * 
      * @return type
      * 
@@ -471,8 +472,20 @@ class ReportsController extends Controller {
             $cond['application_period.isactive'] = 1;
             $cond['application_period.isdeleted'] = 0;
             
+            if(!$criteria  && !$programmeid)
+            {
+                $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where($cond)
+                        ->andWhere(['>=', 'application.applicationstatusid', 3])
+                        ->groupby('applicant.personid')
+                        ->orderBy('applicant.lastname ASC')
+                        ->all();
+            }
             
-            if ($criteria == "associate") 
+            elseif ($criteria == "associate") 
             {
                 $cond['application.academicofferingid'] = $programmeid;
                 
