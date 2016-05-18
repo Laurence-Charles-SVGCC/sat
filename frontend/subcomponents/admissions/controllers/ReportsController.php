@@ -222,7 +222,7 @@ class ReportsController extends Controller {
                     ->divisionid;
 
             $applicants = Applicant::find()
-                    ->innerJoin('application', '`applicant`.`applicant.personid` = `application`.`personid`')
+                    ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['application_period.isactive' => 1, 'academic_offering.applicationperiodid' => $application_periodid,
@@ -260,7 +260,7 @@ class ReportsController extends Controller {
                     $applications = Application::find()
                             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.isactive' => 1, 'academic_offering.applicationperiodid' => $application_period_id,
+                            ->where(['application_period.isactive' => 1, 'academic_offering.applicationperiodid' => $application_periodid,
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $applicant->personid
                             ])
                             ->all();
@@ -376,6 +376,9 @@ class ReportsController extends Controller {
                     'dataProvider' => $dataProvider,
                     'header' => $header,
                     'filename' => $filename,
+                    'application_periodid' => $application_periodid,
+                    'programmeid' => null,
+                    'criteria' => null,
         ]);
     }
 
