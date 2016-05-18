@@ -53,12 +53,12 @@
                         'action' => Url::to(['reports/generate-applicant-listing']),
                     ]); 
             ?>
-                <?= Html::hiddenInput('baseUrl', Url::home(true)    /*Url::base()*/); ?>
+                <?= Html::hiddenInput('baseUrl', Url::home(true)); ?>
             
                 <div style="margin-left:2.5%"><br/>
                     <div id="application-period-scope">
                         1. Please select a application period scope.
-                        <?= Html::radioList('period-scope', null, $period_scope, ['class'=> 'form_field', 'onclick'=> 'togglePeriodScope();showUrl();']);?>
+                        <?= Html::radioList('period-scope', null, $period_scope, ['class'=> 'form_field', 'onclick'=> 'togglePeriodScope();']);?>
                     </div></br>
 
                     <div id="application-period-specific" style="display:none">

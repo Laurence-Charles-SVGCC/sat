@@ -364,12 +364,19 @@ function PrepareListing(e)
         listing_type = 3;
     else if(document.getElementById('cape-listing').style.display == "block")
         listing_type = 4;
+    
+    
+    var baseUrl = document.getElementsByName('baseUrl')[0].value;
+    if (baseUrl.search("localhost")!=-1)
+        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
+    else
+        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
         
     //Implementation for live server
 //    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     
     //For local implementation
-    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
+//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
     
     url+= "applicationperiodid=" + applicationperiodid;
     
@@ -630,13 +637,6 @@ function IntakePrepareListing(e)
     httpxml.send(null);
 }
 
-
-
-function showUrl()
-{
-    var string = document.getElementsByName('baseUrl')[0].value;
-    alert(string);
-}
 
 
 
