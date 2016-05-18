@@ -706,7 +706,7 @@ class ReportsController extends Controller {
         {
             $request = Yii::$app->request;
            
-            $application_periodid = $request->post('period');
+            $application_periodid = $request->post('applicationperiod');
             if (!$application_periodid)
                 $application_periodid = Yii::$app->session->get('application_periodid');
             

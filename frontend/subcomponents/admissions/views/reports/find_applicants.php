@@ -123,12 +123,12 @@
                                             $borderline_pass_maths_pass_english = Url::toRoute(['/subcomponents/admissions/reports/borderline', 'passmaths' => 1, 'passenglish' => 1]);
                                             $borderline_pass_maths_fail_english = Url::toRoute(['/subcomponents/admissions/reports/borderline', 'passmaths' => 1, 'passenglish' => 0]);
                                             $borderline_fail_maths_pass_english = Url::toRoute(['/subcomponents/admissions/reports/borderline', 'passmaths' => 0, 'passenglish' => 1]);
-                                            $unregistered_applicants = Url::toRoute(['/subcomponents/admissions/reports/get-unregistered-applicants']);
+//                                            $unregistered_applicants = Url::toRoute(['/subcomponents/admissions/reports/get-unregistered-applicants']);
                                             
                                             echo "<li><a target='_blank' href='$borderline_pass_maths_pass_english'>Borderline - Maths(P) English(P)</a></li>";
                                             echo "<li><a target='_blank' href='$borderline_pass_maths_fail_english'>Borderline - Maths(P) English(F)</a></li>";
                                             echo "<li><a target='_blank' href='$borderline_fail_maths_pass_english'>Borderline - Maths(F) English(P)</a></li>";
-                                            echo "<li><a target='_blank' href='$unregistered_applicants'>Unregistered Applicants</a></li>";
+//                                            echo "<li><a target='_blank' href='$unregistered_applicants'>Unregistered Applicants</a></li>";
                                             
                                         echo "</ul>";
                                     echo "</div>";
