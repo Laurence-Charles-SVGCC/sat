@@ -521,7 +521,8 @@ class ReportsController extends Controller {
             }
 
 
-            foreach ($applicants as $applicant) {
+            foreach ($applicants as $applicant) 
+            {
                 $qualifications = CsecQualification::find()
                         ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->all();
