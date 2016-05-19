@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php endif;?>
 
                     <div>
-                        There are two ways in which you can navigate this application.
+                        There are three ways in which you can navigate this application.
                         <ol>
                             <li>You may begin your search based on your Applicant ID.</li>
 

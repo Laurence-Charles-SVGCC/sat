@@ -9,7 +9,6 @@
 <div class="successful-applicants">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
         'options' => ['style' => 'width: 95%; margin: 0 auto;'],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],

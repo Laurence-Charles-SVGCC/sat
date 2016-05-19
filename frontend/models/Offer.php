@@ -510,19 +510,36 @@ class Offer extends \yii\db\ActiveRecord
      * Date Created: 15/05/2016
      * Date Last Modified: 15/05/2016
      */
-    public static function hasOffer($personid, $applicationperiodid)
+    public static function hasOffer($personid, $applicationperiodid = NULL)
     {
-        $offers = Offer::find()
+        if ($applicationperiodid == NULL)
+        {
+            $offers = Offer::find()
                     ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
-                            'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $applicationperiodid 
+                            'application_period.isactive' => 1, 'application_period.isdeleted' => 0 
                             ])
                     ->groupBy('application.personid')
                     ->orderBy('offer.offerid ASC')
                     ->all();
+        }
+        else
+        {
+            $offers = Offer::find()
+                        ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $applicationperiodid 
+                                ])
+                        ->groupBy('application.personid')
+                        ->orderBy('offer.offerid ASC')
+                        ->all();
+        }
         if ($offers)
             return $offers;
         return false;

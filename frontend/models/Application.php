@@ -1063,6 +1063,7 @@ class Application extends \yii\db\ActiveRecord
      */
     public static function getTarget($applications, $application_status)
     {
+        
         /*
          * if alternative application exist;
          * -> the last altenative application is the the target

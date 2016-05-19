@@ -315,16 +315,24 @@ class Applicant extends \yii\db\ActiveRecord
         array_push($keys, "status");
         
         
-        /*
-         * if alternative application exist;
-         * -> the last altenative application is the the target
-         * else
-         * -> the determination is a bit more complex
+        /**
+         * applications from the 2015DASGS and 2015 DTVE application periods must be 
+         * processed differently as the application handling mechanism was subsequently 
+         * changed
          */
-        $alternatives = Application::getCustomApplications($personid);
-        if($alternatives)
+        $old_applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        
+        if ($old_applications)
         {
-            $target_application = end($alternatives);
+            $target_application = end($old_applications);
             $application_status = $target_application->applicationstatusid;
             
             $programme_record = ProgrammeCatalog::find()
@@ -334,149 +342,170 @@ class Applicant extends \yii\db\ActiveRecord
         }
         else
         {
-            $applications = Application::find()
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
-                                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
-                                ])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
-            $count = count($applications);
-
-            if ($count == 1)
-                $application_status = $applications[0]->applicationstatusid;
-
-            elseif ($count == 2)
+        
+        
+            /*
+             * if alternative application exist;
+             * -> the last altenative application is the the target
+             * else
+             * -> the determination is a bit more complex
+             */
+            $alternatives = Application::getCustomApplications($personid);
+            if($alternatives)
             {
-                //if unverified
-                if($applications[0]->applicationstatusid == 2  && $applications[1]->applicationstatusid == 2)
-                    $application_status = 2;
+                $target_application = end($alternatives);
+                $application_status = $target_application->applicationstatusid;
 
-                //if rejected
-                if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
-                    $application_status = 6;
-
-                //if pending
-                elseif(
-                            ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
-                      )
-                    $application_status = 3;
-
-                //if shortlisted
-                elseif(
-                            ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
-                      )
-                        $application_status = 4;
-
-                //if borderlined
-                elseif(
-                            ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
-                      )
-                        $application_status = 7;
-
-                //if interview-offer
-                elseif(
-                            ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
-                      )
-                        $application_status = 8;
-
-                //if offer
-                elseif(
-                            ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
-                      )
-                        $application_status = 9;
-
-                //is reject of conditional offer
-                elseif(
-                            ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
-                      )
-                        $application_status =10;
-
-                //is abandoned
-                elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11)
-                    $application_status =11;
+                $programme_record = ProgrammeCatalog::find()
+                                    ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                                    ->where(['academic_offering.academicofferingid' => $target_application->academicofferingid])
+                                    ->one();
             }
-
-            elseif ($count == 3)
+            else
             {
-                //if unverified
-                if($applications[0]->applicationstatusid == 2  && $applications[1]->applicationstatusid == 2  && $applications[2]->applicationstatusid == 2)
-                    $application_status = 2;
+                $applications = Application::find()
+                            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                            ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                                    /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
+                                    ])
+                            ->orderBy('application.ordering ASC')
+                            ->all();
+                $count = count($applications);
 
-                //if rejected
-                if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                    $application_status = 6;
+                if ($count == 1)
+                    $application_status = $applications[0]->applicationstatusid;
 
-                //if pending
-                elseif(
-                            ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
-                      )
+                elseif ($count == 2)
+                {
+                    //if unverified
+                    if($applications[0]->applicationstatusid == 2  && $applications[1]->applicationstatusid == 2)
+                        $application_status = 2;
+
+                    //if rejected
+                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                        $application_status = 6;
+
+                    //if pending
+                    elseif(
+                                ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
+                          )
                         $application_status = 3;
 
-                //if shortlisted
-                elseif(
-                            ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
-                      )
-                        $application_status = 4;
+                    //if shortlisted
+                    elseif(
+                                ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
+                          )
+                            $application_status = 4;
 
-                //if borderlined
-                elseif(
-                            ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
-                      )
-                        $application_status = 7;
+                    //if borderlined
+                    elseif(
+                                ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
+                          )
+                            $application_status = 7;
 
-                //if interview-offer
-                if(
-                            ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
-                      )
-                        $application_status = 8;
+                    //if interview-offer
+                    elseif(
+                                ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
+                          )
+                            $application_status = 8;
 
-                //if offer
-                elseif(
-                            ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
-                      )
-                $application_status = 9;
+                    //if offer
+                    elseif(
+                                ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
+                          )
+                            $application_status = 9;
 
-                //is reject of conditional offer
-                if(
-                            ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
-                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
-                      )
-                $application_status =10;
+                    //is reject of conditional offer
+                    elseif(
+                                ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                          )
+                            $application_status =10;
 
-                //is abandoned
-                elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11 && $applications[2]->applicationstatusid == 11)
-                    $application_status =11;
+                    //is abandoned
+                    elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11)
+                        $application_status =11;
+                }
+
+                elseif ($count == 3)
+                {
+                    //if unverified
+                    if($applications[0]->applicationstatusid == 2  && $applications[1]->applicationstatusid == 2  && $applications[2]->applicationstatusid == 2)
+                        $application_status = 2;
+
+                    //if rejected
+                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        $application_status = 6;
+
+                    //if pending
+                    elseif(
+                                ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                          )
+                            $application_status = 3;
+
+                    //if shortlisted
+                    elseif(
+                                ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                          )
+                            $application_status = 4;
+
+                    //if borderlined
+                    elseif(
+                                ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
+                          )
+                            $application_status = 7;
+
+                    //if interview-offer
+                    if(
+                                ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
+                          )
+                            $application_status = 8;
+
+                    //if offer
+                    elseif(
+                                ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                          )
+                    $application_status = 9;
+
+                    //is reject of conditional offer
+                    if(
+                                ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+                          )
+                    $application_status =10;
+
+                    //is abandoned
+                    elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11 && $applications[2]->applicationstatusid == 11)
+                        $application_status =11;
+                }
+
+                $target = Application::getTarget($applications, $application_status);
+
+                $programme_record = ProgrammeCatalog::find()
+                                    ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                                    ->where(['academic_offering.academicofferingid' => $target->academicofferingid])
+                                    ->one();
             }
-        
-            $target = Application::getTarget($applications, $application_status);
-            
-            $programme_record = ProgrammeCatalog::find()
-                                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-                                ->where(['academic_offering.academicofferingid' => $target->academicofferingid])
-                                ->one();
-        }
-        
+        }       
         
         $name = $programme_record->getFullName();
 

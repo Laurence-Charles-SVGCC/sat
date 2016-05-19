@@ -19,6 +19,10 @@
     use frontend\models\EmployeeDepartment;
     use frontend\models\Email;
     use frontend\models\Applicant;
+    use frontend\models\Offer;
+    use frontend\models\StudentRegistration;
+    use frontend\models\Application;
+    use frontend\models\ApplicationCapesubject;
 
 class AdmissionsController extends Controller
 {
@@ -894,12 +898,16 @@ class AdmissionsController extends Controller
                 $cond_arr['academic_offering.isactive'] = 1;
                 $cond_arr['academic_offering.isdeleted'] = 0;
                 $cond_arr['application_period.isactive'] = 1;
-                $cond_arr['application_period.iscomplete'] = 0;
+                
+                if ($status== "pending" )
+                    $cond_arr['application_period.iscomplete'] = 0;
+                
                 $cond_arr['application.isactive'] = 1;
                 $cond_arr['application.isdeleted'] = 0;
                 if ($status == "pending")
                     $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
-                else
+                
+                elseif ($status == "successful")
                 {
                     $cond_arr['application.applicationstatusid'] = 9;
                     $cond_arr['offer.isactive'] = 1;  
@@ -951,24 +959,81 @@ class AdmissionsController extends Controller
                     $data = array();
                     foreach ($applicants as $applicant)
                     {
-                        $app = array();
-                        $user = $applicant->getPerson()->one();
+                        if($status == "pending")
+                        {
+                            $app = array();
+                            $user = $applicant->getPerson()->one();
 
-                        $app['username'] = $user ? $user->username : '';
-                        $app['personid'] = $applicant->personid;
-                        $app['applicantid'] = $applicant->applicantid;
-                        $app['firstname'] = $applicant->firstname;
-                        $app['middlename'] = $applicant->middlename;
-                        $app['lastname'] = $applicant->lastname;
-                        $app['gender'] = $applicant->gender;
-                        $app['dateofbirth'] = $applicant->dateofbirth;
-                        
-                        $info = Applicant::getApplicantInformation($applicant->personid);
-                        
-                        $app['programme_name'] = $info["prog"];
-                        $app['application_status'] = $info["status"];
-                        
-                        $data[] = $app;
+                            $app['username'] = $user ? $user->username : '';
+                            $app['personid'] = $applicant->personid;
+                            $app['applicantid'] = $applicant->applicantid;
+                            $app['firstname'] = $applicant->firstname;
+                            $app['middlename'] = $applicant->middlename;
+                            $app['lastname'] = $applicant->lastname;
+                            $app['gender'] = $applicant->gender;
+                            $app['dateofbirth'] = $applicant->dateofbirth;
+
+                            $info = Applicant::getApplicantInformation($applicant->personid);
+
+                            $app['programme_name'] = $info["prog"];
+                            $app['application_status'] = $info["status"];
+
+                            $data[] = $app;
+                        }
+                        elseif($status =="successful")
+                        {
+                            $offers = Offer::hasOffer($applicant->personid);
+                
+                            if($offers == true)
+                            {
+                                foreach ($offers as $offer) 
+                                {
+                                    $has_enrolled = StudentRegistration::find()
+                                            ->where(['offerid' => $offer->offerid])
+                                            ->one();
+
+                                    if($has_enrolled == false)
+                                    {
+                                        $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
+
+                                        $programme = "N/A";
+                                        $target_application = Application::find()
+                                                ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one();
+                                        if ($target_application) 
+                                        {
+                                            $programme_record = ProgrammeCatalog::find()
+                                                    ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                                                    ->where(['academicofferingid' => $target_application->academicofferingid])
+                                                    ->one();
+                                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $target_application->applicationid]);
+                                            foreach ($cape_subjects as $cs) 
+                                            {
+                                                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
+                                            }
+                                            $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                                        }
+
+                                        $app = array();
+                                        $app['personid'] = $applicant->personid;
+                                        $app['applicantid'] = $applicant->applicantid;
+                                        $app['username'] = $username;
+                                        $app['title'] = $applicant->title;
+                                        $app['firstname'] = $applicant->firstname;
+                                        $app['middlename'] = $applicant->middlename;
+                                        $app['lastname'] = $applicant->lastname;
+                                        $app['offerid'] = $offer->offerid;
+                                        $app['applicationid'] = $offer->applicationid;
+                                        $app['programme_name'] = $programme;
+
+                                        $data[] = $app;
+
+                                        $cape_subjects = NULL;
+                                        $cape_subjects_names = NULL;
+                                    }
+                                }
+                            }
+                        }
                     }
                     $dataProvider = new ArrayDataProvider([
                         'allModels' => $data,

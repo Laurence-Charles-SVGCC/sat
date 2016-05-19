@@ -146,7 +146,7 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])?>"><i class="fa fa-circle-o"></i>Post-Interview Rejections</a></li>
                     <?php endif; ?>
                     
-                    <?php if (Yii::$app->user->can('registerStudent') && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                    <?php if (Yii::$app->user->can('registerStudent') /*&& ApplicationPeriod::incompletePeriodExists()==true*/): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Enroll Applicants</a></li>
                     <?php endif; ?>
                    
@@ -189,6 +189,10 @@ else
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants'])?>"><i class="fa fa-circle-o"></i>View Unregistered Applicants</a></li>
                             <?php endif; ?>
                             
+                            <?php if (Yii::$app->user->can('viewAllStudentOptions') || Yii::$app->user->can('viewAcademicHolds')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds'])?>"><i class="fa fa-circle-o"></i>View Active Academic Holds</a></li>
+                            <?php endif; ?>
+                                
                             <!--<?php if (Yii::$app->user->can('manageTranscripts')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/registry/transcripts/manage-transcripts'])?>"><i class="fa fa-circle-o"></i>Transcript Requests</a></li>
                             <?php endif; ?>-->
@@ -210,14 +214,12 @@ else
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>DASGS/DTVE (2015/2016) <br/> Applicants</a></li>
                             <?php endif; ?>
-                            
+                            <!-- 
                             <?php if (Yii::$app->user->can('registerStudent')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Late Registration</a></li>
                             <?php endif; ?>
+                            -->
                             
-                            <?php if (Yii::$app->user->can('viewAllStudentOptions') || Yii::$app->user->can('viewAcademicHolds')): ?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds'])?>"><i class="fa fa-circle-o"></i>View Active Academic Holds</a></li>
-                            <?php endif; ?>
                         </ul>
                     </li>
                 <?php endif; ?>
