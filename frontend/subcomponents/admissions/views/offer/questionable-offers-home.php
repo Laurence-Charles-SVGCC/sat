@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/offer/offer-details-home', 'offertype' => $offertype, 'criteria' => 'mult']);?>" 
                                 title="Multiple offers"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
-                                Click here to view successful applicants with multiple offers
+                                Click here to view successful applicants with possible multiple offers
                             </a>
                         </li><br/>
                     <?php endif;?>

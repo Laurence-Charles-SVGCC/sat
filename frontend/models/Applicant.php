@@ -1384,7 +1384,7 @@ class Applicant extends \yii\db\ActiveRecord
                                 'application.personid' => $user->personid);
 
                             if ($division_id && $division_id == 1)
-                                $offer_cond = array('application_period.iscopmlete' => 0, 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
+                                $offer_cond = array(/*'application_period.iscopmlete' => 0,*/ 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
                            
                             $offers = Offer::find()
                                     ->joinWith('application')
