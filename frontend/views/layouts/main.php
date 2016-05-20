@@ -211,12 +211,11 @@ else
                             <?php if (Yii::$app->user->can('students') || Yii::$app->user->can('viewAllStudentOptions')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
                             <?php endif; ?>
-                                <!--
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Past Applicant</a></li>
                             <?php endif; ?>
                            
-                            
+                            <!--
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>DASGS/DTVE (2015/2016) <br/> Applicants</a></li>
                             <?php endif; ?>

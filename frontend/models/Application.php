@@ -1567,6 +1567,62 @@ class Application extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns true if applicant has applications related to current imcomplete
+     * application period 
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Creatred: 18/05/2016
+     * Date Last Modified: 18/05/2016
+     */
+    public static function hasActiveApplications($personid)
+    {
+        $applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        if($applications)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true if applicant has applications related to current imcomplete
+     * application period 
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Creatred: 18/05/2016
+     * Date Last Modified: 18/05/2016
+     */
+    public static function hasInactiveApplications($personid)
+    {
+        $applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 1
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        if($applications)
+            return true;
+        return false;
+    }
+    
+    
     
     
     

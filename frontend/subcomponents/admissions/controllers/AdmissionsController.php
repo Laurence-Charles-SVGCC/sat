@@ -989,8 +989,17 @@ class AdmissionsController extends Controller
                             if(Offer::hasActivePublishedFullOffer($applicant->personid))
                                 $app['has_offer'] = true;
                             else
-                                $app['has_offer'] = true;
+                                $app['has_offer'] = false;
                             
+                            if(Application::hasActiveApplications($applicant->personid))
+                                $app['has_active_applications'] = true;
+                            else
+                                $app['has_active_applications'] = false;
+                            
+                            if(Application::hasInactiveApplications($applicant->personid))
+                                $app['has_inactive_applications'] = true;
+                            else
+                                $app['has_inactive_applications'] = false;
                             
                             $data[] = $app;
                         }

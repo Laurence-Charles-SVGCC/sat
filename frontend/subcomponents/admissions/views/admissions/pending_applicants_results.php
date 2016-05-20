@@ -18,16 +18,27 @@
                 'label' => 'Applicant ID',
                 'value' => function($row,$status)
                     {
-                        if ($row['has_deprecated_application'] || $row['has_offer'])
+                        if ($row['has_active_applications'])
                         {
-                            if($status == "pending-unlimited") //no restriction to application period being incomplete
+                            return Html::a($row['username'], 
+                                        Url::to(['process-applications/view-applicant-certificates',
+                                                 'personid' => $row['personid'],
+                                                 'programme' => $row['programme_name'], 
+                                                 'application_status' => $row['application_status']
+                                                ])
+                                    );
+                        }
+                        
+                        else
+                        {
+                            if ($row['has_inactive_applications'])
                             {
                                 return Html::a($row['username'], 
-                                                 Url::to(['view-applicant/applicant-profile',
-                                                          'applicantusername' => $row['username'],
-                                                          'unrestricted' => true
-                                                         ])
-                                             );
+                                                     Url::to(['view-applicant/applicant-profile',
+                                                              'applicantusername' => $row['username'],
+                                                              'unrestricted' => true
+                                                             ])
+                                                 );
                             }
                             else
                             {
@@ -37,16 +48,6 @@
                                                      ])
                                          );
                             }
-                        }
-                        else
-                        {
-                           return Html::a($row['username'], 
-                                        Url::to(['process-applications/view-applicant-certificates',
-                                                 'personid' => $row['personid'],
-                                                 'programme' => $row['programme_name'], 
-                                                 'application_status' => $row['application_status']
-                                                ])
-                                    );
                         }
                     }
             ],
