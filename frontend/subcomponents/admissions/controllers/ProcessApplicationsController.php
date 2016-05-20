@@ -248,7 +248,7 @@
         * Created: 27/07/2015 by Gamal Crichton
         * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles (20/02/2016)
         */
-        public function actionViewApplicantCertificates($personid, $programme, $application_status)
+        public function actionViewApplicantCertificates($personid, $programme, $application_status, $deprecated = NULL)
         {
             $duplicate_message = false;
             
@@ -261,7 +261,7 @@
             $applications = Application::find()
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                        ->where([/*'application_period.iscomplete' => 0,*/ 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
                                 /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $applicant->personid])
                         ->orderBy('application.ordering ASC')
                         ->all();
@@ -426,6 +426,10 @@
 //                
             }
             
+            if($deprecated && $deprecated == 1)
+                $deprecated_application = true;
+            else
+                $deprecated_application = false;
             
             return $this->render('view_applicant_certificates',
                     [
@@ -444,6 +448,7 @@
                         'spaces' => $spaces,
                         'cape' => $cape,
                         'cape_info' => $cape_info,
+                        'deprecated_application' => $deprecated_application,
                     ]);
         }
         

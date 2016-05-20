@@ -1,12 +1,18 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use yii\helpers\Url;
-use yii\grid\GridView;
+    use yii\helpers\Html;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\Url;
+    use yii\grid\GridView;
 
-$this->title = 'Current Applicant Search';
-$this->params['breadcrumbs'][] = $this->title;
+    if($status == "pending")
+        $this->title = 'Current Applicant Search';
+    elseif($status == "pending-unlimited")
+        $this->title = 'Applicant Search';
+    elseif($status == "successful")
+        $this->title = 'Successful Applicant Search';
+    
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="find-current-applicant">
@@ -82,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php ActiveForm::end(); ?>
             
             
-            <?php if ($status == "pending"  && $dataProvider == true) : ?>
+            <?php if (($status == "pending" || $status == "pending-unlimited") && $dataProvider == true) : ?>
                 <h3><?= "Search results for: " . $info_string ?></h3>
                 <?= $this->render('pending_applicants_results', [
                                     'dataProvider' => $dataProvider,

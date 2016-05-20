@@ -899,12 +899,12 @@ class AdmissionsController extends Controller
                 $cond_arr['academic_offering.isdeleted'] = 0;
                 $cond_arr['application_period.isactive'] = 1;
                 
-                if ($status== "pending" )
+                if ($status== "pending")
                     $cond_arr['application_period.iscomplete'] = 0;
                 
                 $cond_arr['application.isactive'] = 1;
                 $cond_arr['application.isdeleted'] = 0;
-                if ($status == "pending")
+                if ($status == "pending" || $status == "pending-unlimited")
                     $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
                 
                 elseif ($status == "successful")
@@ -928,7 +928,7 @@ class AdmissionsController extends Controller
                 elseif ($division_id == 6  || $division_id == 7 )
                     $cond_arr['application.divisionid'] = $division_id;
                 
-                if ($status == "pending")
+                if ($status == "pending" || $status == "pending-unlimited")
                 {
                     $applicants = Applicant::find()
                                 ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -938,7 +938,7 @@ class AdmissionsController extends Controller
                                 ->groupBy('applicant.personid')
                                 ->all();
                 }
-                else
+                elseif($status == "successful")
                 {
                     $applicants = Applicant::find()
                             ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -959,7 +959,7 @@ class AdmissionsController extends Controller
                     $data = array();
                     foreach ($applicants as $applicant)
                     {
-                        if($status == "pending")
+                        if($status == "pending"  || $status == "pending-unlimited")
                         {
                             $app = array();
                             $user = $applicant->getPerson()->one();
@@ -973,11 +973,25 @@ class AdmissionsController extends Controller
                             $app['gender'] = $applicant->gender;
                             $app['dateofbirth'] = $applicant->dateofbirth;
 
-                            $info = Applicant::getApplicantInformation($applicant->personid);
+                            if($status == "pending-unlimited")
+                                $info = Applicant::getApplicantInformation($applicant->personid, true);
+                            else
+                                $info = Applicant::getApplicantInformation($applicant->personid);
 
                             $app['programme_name'] = $info["prog"];
                             $app['application_status'] = $info["status"];
-
+                            
+                            if(Application::hasOldApplication($applicant->personid)==true)
+                                $app['has_deprecated_application'] = true;
+                            else
+                                $app['has_deprecated_application'] = false;
+                            
+                            if(Offer::hasActivePublishedFullOffer($applicant->personid))
+                                $app['has_offer'] = true;
+                            else
+                                $app['has_offer'] = true;
+                            
+                            
                             $data[] = $app;
                         }
                         elseif($status =="successful")
@@ -1013,7 +1027,7 @@ class AdmissionsController extends Controller
                                             }
                                             $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                                         }
-
+                                        
                                         $app = array();
                                         $app['personid'] = $applicant->personid;
                                         $app['applicantid'] = $applicant->applicantid;

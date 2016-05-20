@@ -16,16 +16,38 @@
             [
                 'format' => 'html',
                 'label' => 'Applicant ID',
-                'value' => function($row)
+                'value' => function($row,$status)
                     {
-                       return Html::a($row['username'], 
+                        if ($row['has_deprecated_application'] || $row['has_offer'])
+                        {
+                            if($status == "pending-unlimited") //no restriction to application period being incomplete
+                            {
+                                return Html::a($row['username'], 
+                                                 Url::to(['view-applicant/applicant-profile',
+                                                          'applicantusername' => $row['username'],
+                                                          'unrestricted' => true
+                                                         ])
+                                             );
+                            }
+                            else
+                            {
+                                return Html::a($row['username'], 
+                                             Url::to(['view-applicant/applicant-profile',
+                                                      'applicantusername' => $row['username']
+                                                     ])
+                                         );
+                            }
+                        }
+                        else
+                        {
+                           return Html::a($row['username'], 
                                         Url::to(['process-applications/view-applicant-certificates',
                                                  'personid' => $row['personid'],
                                                  'programme' => $row['programme_name'], 
                                                  'application_status' => $row['application_status']
                                                 ])
                                     );
-
+                        }
                     }
             ],
             [

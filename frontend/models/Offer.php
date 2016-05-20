@@ -391,6 +391,29 @@ class Offer extends \yii\db\ActiveRecord
         return false;
     }
     
+    /**
+     * Returns true if application has an active, published, full offer
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/04/2016
+     * Date Last Modified: 02/04/2016
+     */
+    public static function hasActivePublishedFullOffer($personid)
+    {
+        $offer = Offer::find()
+                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1, 'offer.ispublished' => 1,
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
+                            ])
+                    ->one();
+        if ($offer)
+            return true;
+        return false;
+    }
+    
     
     /**
      * Returns the type name of a particular offer

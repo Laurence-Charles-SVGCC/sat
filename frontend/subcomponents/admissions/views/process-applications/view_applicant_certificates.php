@@ -208,7 +208,7 @@
                         <th>Division</th>
                         <th>Programme</th>
                         <th>Status</th>
-                        <?php if ((Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean')) && $application_status > 2): ?>
+                        <?php if ((Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean')) && $application_status > 2  && $deprecated_application == false): ?>
                             <th>Action</th>
                         <?php endif;?>
                     </tr>
@@ -232,7 +232,7 @@
                                 if ($application_status > 2)
                                 {
                                     // User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
-                                    if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean')))
+                                    if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean')  && $deprecated_application == false))
                                     {
                                         /*
                                          * If user is a member of "All Divisions", "DTE" or "DNE" they have ability to change the application status

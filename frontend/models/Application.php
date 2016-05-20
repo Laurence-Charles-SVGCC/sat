@@ -930,114 +930,137 @@ class Application extends \yii\db\ActiveRecord
          * -> the determination is a bit more complex
          */
         $personid = $applications[0]->personid;
-        $alternatives = self::getCustomApplications($personid);
-        if($alternatives)
+        
+        /**
+         * applications from the 2015DASGS and 2015 DTVE application periods must be 
+         * processed differently as the application handling mechanism was subsequently 
+         * changed
+         */
+        $old_applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        
+        if ($old_applications)
         {
-            $target_application = end($alternatives);
+            $target_application = end($old_applications);
         }
         else
         {
-            $count = count($applications);
-
-            if ($application_status == 6)       //if reject
+            $alternatives = self::getCustomApplications($personid);
+            if($alternatives)
             {
-                $target_application = $applications[($count-1)];
+                $target_application = end($alternatives);
             }
-
-
-            elseif ($application_status == 2)   //if unverifed
+            else
             {
-                foreach($applications as $application)
+                $count = count($applications);
+
+                if ($application_status == 6)       //if reject
                 {
-                    if ($application->applicationstatusid==2)
+                    $target_application = $applications[($count-1)];
+                }
+
+
+                elseif ($application_status == 2)   //if unverifed
+                {
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid==2)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
 
-            elseif ($application_status == 3)   //if pending
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 3)   //if pending
                 {
-                    if ($application->applicationstatusid==3)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid==3)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 4)    //if shortlist
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 4)    //if shortlist
                 {
-                    if ($application->applicationstatusid == 4)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 4)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 7)   //if borderline
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 7)   //if borderline
                 {
-                    if ($application->applicationstatusid == 7)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 7)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 8)    //if conditional offer
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 8)    //if conditional offer
                 {
-                    if ($application->applicationstatusid == 8)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 8)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 9)   //if full-offer
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 9)   //if full-offer
                 {
-                    if ($application->applicationstatusid == 9)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 9)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 10)  //if conditional-offer-reject
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 10)  //if conditional-offer-reject
                 {
-                    if ($application->applicationstatusid == 10)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 10)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 11)    //if abandoned
-            {
-                foreach($applications as $application)
+                elseif ($application_status == 11)    //if abandoned
                 {
-                    if ($application->applicationstatusid == 11)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 11)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
             }
@@ -1513,6 +1536,34 @@ class Application extends \yii\db\ActiveRecord
                         ->orderBy('application.ordering ASC')
                         ->all();
         return $applications;
+    }
+    
+    
+    /**
+     * Returns true if applicant has application from deprecated implementation
+     * of the system, i.e. DASGS2015 or DTVE2015
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Creatred: 18/05/2016
+     * Date Last Modified: 18/05/2016
+     */
+    public static function hasOldApplication($personid)
+    {
+        $old_applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        if($old_applications)
+            return true;
+        return false;
     }
     
     

@@ -788,7 +788,7 @@ class ViewApplicantController extends \yii\web\Controller
      * Date Created: 20/12/2015
      * Date Last Modified: 28/02/2016
      */
-    public function actionApplicantProfile($applicantusername)
+    public function actionApplicantProfile($applicantusername, $unrestricted = false)
     {
         $user = User::findOne(['username' =>$applicantusername]);
         $personid = $user->personid;
@@ -840,7 +840,12 @@ class ViewApplicantController extends \yii\web\Controller
         $nursinginfo = NursingAdditionalInfo::getNursingInfo($personid);
         $teachinginfo = TeachingAdditionalInfo::getTeachingInfo($personid);
         $criminalrecord =  CriminalRecord::getCriminalRecord($personid);
-        $info = Applicant::getApplicantInformation($personid);
+        
+        if ($unrestricted)
+            $info = Applicant::getApplicantInformation($personid, true);
+        else
+            $info = Applicant::getApplicantInformation($personid);
+        
         $status_id = $info['status'];
         $status = ApplicationStatus::find()
                 ->where(['applicationstatusid' => $status_id])

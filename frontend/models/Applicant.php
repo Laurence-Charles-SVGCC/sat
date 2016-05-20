@@ -306,7 +306,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 24/02/2016
      * Date Last Modified: 24/02/2016 | 20/03/2016
      */
-    public static function getApplicantInformation($personid)
+    public static function getApplicantInformation($personid, $unrestricted = false)
     {
         $combined = array();
         $keys = array();
@@ -343,7 +343,6 @@ class Applicant extends \yii\db\ActiveRecord
         else
         {
         
-        
             /*
              * if alternative application exist;
              * -> the last altenative application is the the target
@@ -363,16 +362,33 @@ class Applicant extends \yii\db\ActiveRecord
             }
             else
             {
-                $applications = Application::find()
+                if ($unrestricted)     //if search not limited to current open application periods
+                {
+                    $applications = Application::find()
                             ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                             ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                             ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                                     'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                                    /*'application_period.iscomplete' => 0,*/ 'application_period.isactive' => 1, 
                                     /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
                                     ])
                             ->orderBy('application.ordering ASC')
                             ->all();
+                }
+                else
+                {
+                    $applications = Application::find()
+                                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                                ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                                        /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
+                                        ])
+                                ->orderBy('application.ordering ASC')
+                                ->all();
+                }
+                
                 $count = count($applications);
 
                 if ($count == 1)

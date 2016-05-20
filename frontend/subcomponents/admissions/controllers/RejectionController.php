@@ -100,7 +100,7 @@ class RejectionController extends Controller
          * then only the applocation periods related to that division are considered.
          */
         elseif ($division_id && $division_id != 1)
-            $reject_cond['application_period.divisionid'] = $division_id;
+            $rejection_cond['application_period.divisionid'] = $division_id;
         
         $rejections = Rejection::find()
                 ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
