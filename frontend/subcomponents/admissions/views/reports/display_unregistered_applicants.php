@@ -87,10 +87,23 @@
                             'dataProvider' => $dataProvider,
                             'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                             'columns' => [
+//                                [
+//                                    'attribute' => 'username',
+//                                    'format' => 'text',
+//                                    'label' => 'Username'
+//                                ],
                                 [
-                                    'attribute' => 'username',
-                                    'format' => 'text',
-                                    'label' => 'Username'
+                                    'format' => 'html',
+                                    'label' => 'Applicant ID',
+                                    'value' => function($row)
+                                        {
+                                            return Html::a($row['username'], 
+                                                                 Url::to(['view-applicant/applicant-profile',
+                                                                          'applicantusername' => $row['username'],
+                                                                          'unrestricted' => true
+                                                                         ])
+                                                             );
+                                        }
                                 ],
                                 [
                                     'attribute' => 'firstname',

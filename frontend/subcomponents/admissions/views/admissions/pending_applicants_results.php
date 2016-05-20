@@ -16,7 +16,7 @@
             [
                 'format' => 'html',
                 'label' => 'Applicant ID',
-                'value' => function($row,$status)
+                'value' => function($row)
                     {
                         if ($row['has_active_applications'])
                         {
