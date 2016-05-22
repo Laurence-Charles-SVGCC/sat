@@ -1,46 +1,51 @@
 <?php
 
-namespace app\subcomponents\admissions\controllers;
+    namespace app\subcomponents\admissions\controllers;
 
-use Yii;
-use yii\helpers\Url;
-use yii\base\Model;
+    use Yii;
+    use yii\helpers\Url;
+    use yii\base\Model;
+    use yii\data\ArrayDataProvider;
 
-use common\models\User;
-use frontend\models\Applicant;
-use frontend\models\Application;
-use yii\data\ArrayDataProvider;
-use frontend\models\ProgrammeCatalog;
-use frontend\models\ApplicationCapesubject;
-use frontend\models\Offer;
-use frontend\models\PersonInstitution;
-use frontend\models\Institution;
-use frontend\models\Phone;
-use frontend\models\Email;
-use frontend\models\Relation;
-use frontend\models\ApplicationHistory;
-use frontend\models\Address;
-use frontend\models\MedicalCondition;
-use frontend\models\Division;
-use frontend\models\CsecQualification;
-use frontend\models\CsecCentre;
-use frontend\models\ExaminationBody;
-use frontend\models\Subject;
-use frontend\models\ExaminationProficiencyType;
-use frontend\models\ExaminationGrade;
-use frontend\models\CompulsoryRelation;
-use frontend\models\RelationType;
-use frontend\models\GeneralWorkExperience;
-use frontend\models\Reference;
-use frontend\models\TeachingAdditionalInfo;
-use frontend\models\TeachingExperience;
-use frontend\models\NursingAdditionalInfo;
-use frontend\models\NurseWorkExperience;
-use frontend\models\NursePriorCertification;
-use frontend\models\CriminalRecord;
-use frontend\models\ApplicationStatus;
-use frontend\models\PostSecondaryQualification;
-use frontend\models\ExternalQualification;
+    use common\models\User;
+    use frontend\models\Applicant;
+    use frontend\models\Application;
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\ApplicationCapesubject;
+    use frontend\models\Offer;
+    use frontend\models\PersonInstitution;
+    use frontend\models\Institution;
+    use frontend\models\Phone;
+    use frontend\models\Email;
+    use frontend\models\Relation;
+    use frontend\models\ApplicationHistory;
+    use frontend\models\Address;
+    use frontend\models\MedicalCondition;
+    use frontend\models\Division;
+    use frontend\models\CsecQualification;
+    use frontend\models\CsecCentre;
+    use frontend\models\ExaminationBody;
+    use frontend\models\Subject;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\CompulsoryRelation;
+    use frontend\models\RelationType;
+    use frontend\models\GeneralWorkExperience;
+    use frontend\models\Reference;
+    use frontend\models\TeachingAdditionalInfo;
+    use frontend\models\TeachingExperience;
+    use frontend\models\NursingAdditionalInfo;
+    use frontend\models\NurseWorkExperience;
+    use frontend\models\NursePriorCertification;
+    use frontend\models\CriminalRecord;
+    use frontend\models\ApplicationStatus;
+    use frontend\models\PostSecondaryQualification;
+    use frontend\models\ExternalQualification;
+    use frontend\models\DocumentIntent;
+    use frontend\models\DocumentSubmitted;
+    use frontend\models\DocumentType;
+    use frontend\models\Employee;
+
 
 
 class ViewApplicantController extends \yii\web\Controller
@@ -1119,7 +1124,43 @@ class ViewApplicantController extends \yii\web\Controller
         /********************************* Offers ******************************/
         $offers = Offer::getOffers($personid);
 
-        /****************************************************************************/
+        /*************************** Documents/Submitted ***********************/
+        $document_details = array();
+        $documents = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
+        
+        $keys = array();
+        array_push($keys, 'id');
+        array_push($keys, 'intent');
+        array_push($keys, 'name');
+        array_push($keys, 'verifier');
+        
+        foreach($documents as $doc)
+        {
+            $values = array();
+            $combined = array();
+            
+            $id = $doc->documentsubmittedid;
+            $intent = DocumentIntent::find()
+                    ->where(['documentintentid' => $doc->documentintentid])
+                    ->one()
+                    ->description;
+            $name = DocumentType::find()
+                    ->where(['documenttypeid' => $doc->documenttypeid])
+                    ->one()
+                    ->name;
+            $verifier = Employee::getEmployeeName($doc->recepientid);
+            array_push($values, $id);
+            array_push($values, $intent);
+            array_push($values, $name);
+            array_push($values, $verifier);
+            
+            $combined = array_combine($keys, $values);
+            array_push($document_details, $combined);
+            $values = NULL;
+            $combined = NULL;
+        }
+
+        /***********************************************************************/
         return $this->render('applicant_profile',[
             //models for profile tab
             'user' =>  $user,
@@ -1175,6 +1216,7 @@ class ViewApplicantController extends \yii\web\Controller
             'third' => $third,
             'thirdDetails' =>$thirdDetails,
             'offers' => $offers,
+            'document_details' => $document_details,
         ]);
     }
     

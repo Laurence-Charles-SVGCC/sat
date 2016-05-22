@@ -2462,6 +2462,30 @@
                                         ?>
                                     <?php endif;?>
                                 </div>
+                                
+                                <?php if(Yii::$app->user->can('viewDocuments')):?> 
+                                    <br/>
+                                    <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Application/Registration Documents
+                                            <?php if(Yii::$app->user->can('updateDocuments')):?>
+                                            <?php endif;?>
+                                        </div>
+                                        <table class='table table-hover' style='margin: 0 auto;'>
+                                            <tr>
+                                                <th>Document Type</th>
+                                                <th>Name</th>
+                                                <th>Verifying Officer</th>
+                                            </tr>
+                                            <?php for($i = 0 ; $i<count($document_details) ; $i++): ?>
+                                                <tr>
+                                                    <td><?=$document_details[$i]['intent'];?></td>
+                                                    <td><?=$document_details[$i]['name'];?></td>
+                                                    <td><?=$document_details[$i]['verifier'];?></td>
+                                                </tr>
+                                            <?php endfor;?>
+                                        </table>
+                                    </div>
+                                <?php endif;?>
                             </div>
                             
                             

@@ -82,6 +82,10 @@
     use frontend\models\ClubMemberHistory;
     use frontend\models\Event;
     use frontend\models\EventType;
+    use frontend\models\DocumentIntent;
+    use frontend\models\DocumentSubmitted;
+    use frontend\models\DocumentType;
+    use frontend\models\Employee;
     
     
     class ProfileController extends Controller
@@ -421,6 +425,42 @@
             /********************************* Offers ******************************/
             $offers = Offer::getOffers($personid);
             
+            /*************************** Documents/Submitted ***********************/
+            $document_details = array();
+            $documents = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
+
+            $keys = array();
+            array_push($keys, 'id');
+            array_push($keys, 'intent');
+            array_push($keys, 'name');
+            array_push($keys, 'verifier');
+
+            foreach($documents as $doc)
+            {
+                $values = array();
+                $combined = array();
+
+                $id = $doc->documentsubmittedid;
+                $intent = DocumentIntent::find()
+                        ->where(['documentintentid' => $doc->documentintentid])
+                        ->one()
+                        ->description;
+                $name = DocumentType::find()
+                        ->where(['documenttypeid' => $doc->documenttypeid])
+                        ->one()
+                        ->name;
+                $verifier = Employee::getEmployeeName($doc->recepientid);
+                array_push($values, $id);
+                array_push($values, $intent);
+                array_push($values, $name);
+                array_push($values, $verifier);
+
+                $combined = array_combine($keys, $values);
+                array_push($document_details, $combined);
+                $values = NULL;
+                $combined = NULL;
+            }
+            
             /****************************** Transcript ******************************/
             $is_cape = StudentRegistration::isCape($studentregistrationid);
             $person = User::find()
@@ -590,6 +630,7 @@
                 'third' => $third,
                 'thirdDetails' =>$thirdDetails,
                 'offers' => $offers,
+                'document_details' => $document_details,
                 
                 //models for transcript tab
                 'iscape' => $is_cape,
