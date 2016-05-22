@@ -6,7 +6,7 @@
     use yii\helpers\Url;
     use yii\base\Model;
     use yii\data\ArrayDataProvider;
-
+    
     use common\models\User;
     use frontend\models\Applicant;
     use frontend\models\Application;
@@ -3274,6 +3274,111 @@ class ViewApplicantController extends \yii\web\Controller
         return self::actionApplicantProfile($user->username);
     }
     
+    
+    /**
+     * Updates applicant application/registration documents
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 22/05/2016
+     * Date Last Modified: 22/05/2016
+     */
+    public function actionUpdateDocuments($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid])
+                ->one();
+        
+        //Get documents already submitted
+        $selections = array();
+        foreach (DocumentSubmitted::findAll(['personid' => $personid, 'isactive' =>1, 'isdeleted' => 0]) as $doc)
+        {
+            array_push($selections, $doc->documenttypeid);
+        }
+        
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                //Update document submission
+                $submitted = $request->post('documents');
+                $docs = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
+                $docs_arr = array();
+                
+                /* 
+                 * If applicant has documented that were record previously, there new status is checked
+                 * if status is now unchecked, then they are deleted
+                 */
+                if ($docs)
+                {
+                    //creates collection
+                    foreach ($docs as $doc)
+                    { 
+                        $docs_arr[] = $doc->documenttypeid; 
+                    }
+
+                    foreach ($docs as $doc)
+                    {
+                        if (!in_array($doc->documenttypeid, $submitted))
+                        { 
+                            //Document has been unchecked
+                            $doc->isactive = 0;
+                            $doc->isdeleted = 1;
+                            $document_save_flag = $doc->save();
+                            if ($document_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                                break;
+                            }
+                        }
+                    }  
+                }
+
+                if($submitted)
+                {
+                    /**
+                     * records new documents
+                     */
+                    foreach ($submitted as $sub)
+                    {
+                        if (!in_array($sub, $docs_arr))
+                        { 
+                           $doc = new DocumentSubmitted();
+                           $doc->documenttypeid = $sub;
+                           $doc->personid = $personid;
+                           $doc->recepientid = Yii::$app->user->getId();
+                           $doc->documentintentid = 1;
+                           $document_save_flag = $doc->save(); 
+                           if ($document_save_flag == false)
+                           {
+                               $transaction->rollBack();
+                               Yii::$app->session->setFlash('error', 'Document could not be added');
+                               break;
+                           }
+                        }
+                    }
+                    $transaction->commit();
+                    return self::actionApplicantProfile($user->username);
+                }
+            }catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing your request');
+            }
+        }
+
+        
+        return $this->render('update_documents', [
+            'user' => $user,
+            'selections' => $selections,
+        ]);
+    }
     
     
     

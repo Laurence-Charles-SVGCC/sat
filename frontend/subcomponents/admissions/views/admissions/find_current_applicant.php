@@ -40,7 +40,13 @@
                             Welcome. This module facilitates the search for all applicants associated 
                             with the current open application periods.  
                         </p>
-                    <?php else:?>
+                    <?php elseif ($status == "pending-unlimited"):?>
+                        <p>
+                            Welcome. This module facilitates the search for applicants independant
+                            of application period.
+                            
+                        </p> 
+                    <?php elseif ($status == "successful"):?>
                         <p>
                             Welcome. This module facilitates the search for applicants who have been 
                             given an offer. 

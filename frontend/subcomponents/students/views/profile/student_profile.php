@@ -2468,22 +2468,31 @@
                                     <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Application/Registration Documents
                                             <?php if(Yii::$app->user->can('updateDocuments')):?>
+                                                <?php if(empty($document_details)):?>
+                                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/update-documents', 'personid' => $applicant->personid]);?> role="button"> Add</a>
+                                                <?php else:?>
+                                                    <a style="margin-left:10px;" class="btn btn-success glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/update-documents', 'personid' => $applicant->personid]);?> role="button"> Update</a>
+                                                <?php endif;?>
                                             <?php endif;?>
                                         </div>
-                                        <table class='table table-hover' style='margin: 0 auto;'>
-                                            <tr>
-                                                <th>Document Type</th>
-                                                <th>Name</th>
-                                                <th>Verifying Officer</th>
-                                            </tr>
-                                            <?php for($i = 0 ; $i<count($document_details) ; $i++): ?>
+                                        <?php if(empty($document_details)):?>
+                                            <h3>No documents have been submitted for this student.</h3>
+                                        <?php else:?>
+                                            <table class='table table-hover' style='margin: 0 auto;'>
                                                 <tr>
-                                                    <td><?=$document_details[$i]['intent'];?></td>
-                                                    <td><?=$document_details[$i]['name'];?></td>
-                                                    <td><?=$document_details[$i]['verifier'];?></td>
+                                                    <th>Document Type</th>
+                                                    <th>Name</th>
+                                                    <th>Verifying Officer</th>
                                                 </tr>
-                                            <?php endfor;?>
-                                        </table>
+                                                <?php for($i = 0 ; $i<count($document_details) ; $i++): ?>
+                                                    <tr>
+                                                        <td><?=$document_details[$i]['intent'];?></td>
+                                                        <td><?=$document_details[$i]['name'];?></td>
+                                                        <td><?=$document_details[$i]['verifier'];?></td>
+                                                    </tr>
+                                                <?php endfor;?>
+                                            </table>
+                                        <?php endif;?>
                                     </div>
                                 <?php endif;?>
                             </div>
