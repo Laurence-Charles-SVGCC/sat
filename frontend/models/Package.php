@@ -415,13 +415,13 @@ class Package extends \yii\db\ActiveRecord
          * if offertype of rejectiontype is not specified,
          * look for the presence of any complete packages of that category
          */
-        if($category==true  && $type == NULL)   
+        if($type == NULL)   
         {
-            if($category == 0)  // if dealing with rejects
+            if($category === 0)  // if dealing with rejects
             {
                 $packagetypeids = [1,2];
             }
-            elseif($category == 1)  // if dealing with offers
+            elseif($category === 1)  // if dealing with offers
             {
                 $packagetypeids = [3,4];
             }
