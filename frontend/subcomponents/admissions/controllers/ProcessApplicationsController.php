@@ -115,12 +115,9 @@
          */
         public function actionViewByStatus($division_id, $application_status, $programme = 0)
         {
-            //set as session variable to facilitate their use in UpdateView functionality
+            //set session variables to facilitate their use in UpdateView functionality
             Yii::$app->session->set('division_id', $division_id);
             Yii::$app->session->set('application_status', $application_status);
-//            if ($programme !=0)
-                Yii::$app->session->set('programme', $programme);
-            
             
             $applicants = Applicant::getByStatus($application_status, $division_id);
             
@@ -243,11 +240,10 @@
                 $request = Yii::$app->request;
 //                $application_status = $request->post('application_status');
 //                $division_id = $request->post('division_id');
-//                $programme = $request->post('programme');
+                $programme = $request->post('programme');
                 
                 $division_id = Yii::$app->session->get('division_id');
                 $application_status = Yii::$app->session->get('application_status');
-                $programme = Yii::$app->session->get('programme');
             }
             
             return self::actionViewByStatus($division_id, $application_status, $programme);
