@@ -157,7 +157,7 @@
                                         if (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1) == true)
                                             echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                         else
-                                            echo "<p>No pending offers exist at this time.</p>";
+                                            echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
                                         if ($periods == true)
                                         {
