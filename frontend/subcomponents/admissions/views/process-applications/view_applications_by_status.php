@@ -86,7 +86,9 @@
                 ];
             
             
-                if ($status_name == "InterviewOffer"  ||  $status_name == "Offer")   
+                if ($status_name == "InterviewOffer"  ||  $status_name == "Offer"  
+                    ||  $status_name == "Rejected"  || $status_name == "RejectedConditionalOffer"
+                   )   
                 {
                     echo "<div style = 'margin-left: 2.5%;'>";
                         echo ExportMenu::widget([
