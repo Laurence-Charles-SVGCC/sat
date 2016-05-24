@@ -133,10 +133,15 @@
 
                             <div id="export-buttons" style="display:none">
                                 <?= Html::a('Export All Rejections', ['export-all-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Pending Rejections', ['export-unpublished-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Published Rejections', ['export-published-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Revoked Rejections', ['export-revoked-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-warning']) ?>
-
+                                <?php if(Rejection::hasPendingRejections() == true):?>
+                                    <?= Html::a('Export Pending Rejections', ['export-unpublished-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
+                                <?php endif;?>
+                                <?php if(Rejection::hasPublishedRejections() == true):?>
+                                    <?= Html::a('Export Published Rejections', ['export-published-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-primary']) ?>
+                                <?php endif;?>
+                                <?php if(Rejection::hasRevokededRejections() == true):?>
+                                    <?= Html::a('Export Revoked Rejections', ['export-revoked-rejections', 'rejectiontype' => $rejectiontype], ['class' => 'btn btn-warning']) ?>
+                                <?php endif;?>
                             </div>
 
                             <?php if (Yii::$app->user->can('publishRejection')): ?>

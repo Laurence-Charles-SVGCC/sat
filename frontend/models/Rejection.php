@@ -260,6 +260,116 @@ class Rejection extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns true is pending rejections exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasPendingRejections()
+    {
+        $rejection_cond['rejection.isactive'] = 1;
+        $rejection_cond['rejection.isdeleted'] = 0;
+        $rejection_cond['rejection.ispublished'] = 0;
+        $rejection_cond['rejection.revokedby'] = null;
+        $rejection_cond['rejection_applications.isactive'] = 1;
+        $rejection_cond['rejection_applications.isdeleted'] = 0;
+        $rejection_cond['application.isactive'] = 1;
+        $rejection_cond['application.isdeleted'] = 0;
+        $rejection_cond['academic_offering.isactive'] = 1;
+        $rejection_cond['academic_offering.isdeleted'] = 0;
+        $rejection_cond['application_period.isactive'] = 1;
+        $rejection_cond['application_period.isdeleted'] = 0;
+        $rejection_cond['application_period.iscomplete'] = 0;
+        
+        $rejections = Rejection::find()
+                ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($rejection_cond)
+                ->all();
+        if($rejections)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true is published rejections exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasPublishedRejections()
+    {
+        $rejection_cond['rejection.isactive'] = 1;
+        $rejection_cond['rejection.isdeleted'] = 0;
+        $rejection_cond['rejection.ispublished'] = 1;
+        $rejection_cond['rejection.revokedby'] = null;
+        $rejection_cond['rejection_applications.isactive'] = 1;
+        $rejection_cond['rejection_applications.isdeleted'] = 0;
+        $rejection_cond['application.isactive'] = 1;
+        $rejection_cond['application.isdeleted'] = 0;
+        $rejection_cond['academic_offering.isactive'] = 1;
+        $rejection_cond['academic_offering.isdeleted'] = 0;
+        $rejection_cond['application_period.isactive'] = 1;
+        $rejection_cond['application_period.isdeleted'] = 0;
+        $rejection_cond['application_period.iscomplete'] = 0;
+        
+        $rejections = Rejection::find()
+                ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($rejection_cond)
+                ->all();
+        if($rejections)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true is revoked rejections exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasRevokededRejections()
+    {
+        $rejection_cond['rejection.isdeleted'] = 0;
+        $rejection_cond['rejection_applications.isactive'] = 1;
+        $rejection_cond['rejection_applications.isdeleted'] = 0;
+        $rejection_cond['application.isactive'] = 1;
+        $rejection_cond['application.isdeleted'] = 0;
+        $rejection_cond['academic_offering.isactive'] = 1;
+        $rejection_cond['academic_offering.isdeleted'] = 0;
+        $rejection_cond['application_period.isactive'] = 1;
+        $rejection_cond['application_period.isdeleted'] = 0;
+        $rejection_cond['application_period.iscomplete'] = 0;
+        
+        $rejections = Rejection::find()
+                ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where($rejection_cond)
+                ->andWhere(['not', ['rejection.revokedby' => null]])
+                ->all();
+        if($rejections)
+            return true;
+        return false;
+    }
    
     
     
