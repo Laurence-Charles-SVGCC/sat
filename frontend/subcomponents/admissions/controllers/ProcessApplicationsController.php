@@ -119,7 +119,7 @@
             Yii::$app->session->set('division_id', $division_id);
             Yii::$app->session->set('application_status', $application_status);
 //            if ($programme !=0)
-                Yii::$app->session->set('$programme', $programme);
+                Yii::$app->session->set('programme', $programme);
             
             
             $applicants = Applicant::getByStatus($application_status, $division_id);
@@ -236,7 +236,7 @@
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016
          */
-        public function actionUpdateView($programme = 0)
+        public function actionUpdateView()
         {
             if (Yii::$app->request->post())
             {
