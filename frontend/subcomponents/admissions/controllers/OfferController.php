@@ -28,6 +28,7 @@
     use frontend\models\Subject;
     use frontend\models\ExaminationGrade;
     use frontend\models\EmployeeDepartment;
+    use frontend\models\Package;
 
 /**
  * OfferController implements the CRUD actions for Offer model.

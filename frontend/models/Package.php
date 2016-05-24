@@ -398,4 +398,62 @@ class Package extends \yii\db\ActiveRecord
     
     
     
+    /**
+     * Returns true if 'complete' package exists
+     * 
+     * @param type $category
+     * @param type $type
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/04/2016
+     * Date Last Modified: 10/04/2016
+     */
+    public static function hasCompletePackage($category = NULL, $type = NULL)
+    {
+        /*
+         * if offertype of rejectiontype is not specified,
+         * look for the presence of any complete packages of that category
+         */
+        if($category==true  && $type == NULL)   
+        {
+            if($category == 0)  // if dealing with rejects
+            {
+                $packagetypeids = [1,2];
+            }
+            elseif($category == 1)  // if dealing with offers
+            {
+                $packagetypeids = [3,4];
+            }
+        }
+        /**
+         * package search is now contrained to offertype/rejectiontype
+         */
+        else
+        {
+            if ($category==0 && $type == 1) 
+                $packagetypeids = 1;
+            
+            elseif ($category==0 && $type == 2) 
+                $packagetypeids = 2;
+            
+            elseif ($category==1 && $type == 1) 
+                $packagetypeids = 4;
+            
+            elseif ($category==1 && $type == 2) 
+                $packagetypeids = 3;
+        } 
+            
+        $package = Package::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0, 'packageprogressid' => 4, 'packagetypeied' => $packagetypeids])
+                    ->one();    
+        
+        if ($package)
+            return true;
+        return false;
+    }
+    
+    
+    
+    
 }

@@ -8,6 +8,7 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\Division;
     use frontend\models\Rejection;
+    use frontend\models\Package;
     
 
     /* @var $this yii\web\View */
@@ -148,7 +149,7 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Rejection::anyRejectionExists($periods, $rejectiontype) == true)
+                                        if (Rejection::anyRejectionExists($periods, $rejectiontype) == true  &&  Package::hasCompletePackage(0) == true)
                                             echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                         else
                                             echo "<p>No pending rejections exist at this time.</p>";
@@ -157,7 +158,7 @@
                                         {
                                             foreach ($periods as $period) 
                                             {
-                                                if(Rejection::rejectionExists($period->applicationperiodid, $rejectiontype) == true)
+                                                if(Rejection::rejectionExists($period->applicationperiodid, $rejectiontype) == true  && Package::hasCompletePackage(0, $rejectiontype) == true)
                                                     echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                         }

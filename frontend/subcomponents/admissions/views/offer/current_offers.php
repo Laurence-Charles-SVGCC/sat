@@ -8,6 +8,7 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\Division;
     use frontend\models\Offer;
+    use frontend\models\Package;
 
     /* @var $this yii\web\View */
     /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -153,7 +154,7 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Offer::anyOfferExists($periods, $offertype) == true)
+                                        if (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1) == true)
                                             echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                         else
                                             echo "<p>No pending offers exist at this time.</p>";
@@ -162,7 +163,7 @@
                                         {
                                             foreach ($periods as $period) 
                                             {
-                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true)
+                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage(1, $offertype) == true)
                                                     echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                         }
