@@ -445,7 +445,7 @@ class Package extends \yii\db\ActiveRecord
         } 
             
         $package = Package::find()
-                    ->where(['isactive' => 1, 'isdeleted' => 0, 'packageprogressid' => 4, 'packagetypeied' => $packagetypeids])
+                    ->where(['isactive' => 1, 'isdeleted' => 0, 'packageprogressid' => 4, 'packagetypeid' => $packagetypeids])
                     ->one();    
         
         if ($package)
