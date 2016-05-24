@@ -252,9 +252,9 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     {
         $prog_cond = null;
          if ($division_id == 1)
-             $prog_cond = array('application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0);
+             $prog_cond = array('application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0);
          else
-             $prog_cond = array('application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'application_period.divisionid' => $division_id); 
+             $prog_cond = array('application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'application_period.divisionid' => $division_id); 
         
         $records = ProgrammeCatalog::find()
                     ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
