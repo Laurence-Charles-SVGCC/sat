@@ -101,7 +101,7 @@
                             ],
                             'asDropdown' => false,
                             'showColumnSelector' => false,
-
+                            'filename' => $filename,
                             'exportConfig' => [
                                 ExportMenu::FORMAT_TEXT => false,
 //                                ExportMenu::FORMAT_CSV => false,
