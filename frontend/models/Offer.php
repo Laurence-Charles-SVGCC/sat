@@ -638,7 +638,8 @@ class Offer extends \yii\db\ActiveRecord
             ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-            ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
+            ->where(['offer.isdeleted' => 0,
+                    'application.isactive' => 1, 'application.isdeleted' => 0,
                     'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
                     ])
             ->andWhere(['not', ['offer.revokedby' => null]])
