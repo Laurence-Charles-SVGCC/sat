@@ -115,6 +115,13 @@
          */
         public function actionViewByStatus($division_id, $application_status, $programme = 0)
         {
+            //set as session variable to facilitate their use in UpdateView functionality
+            Yii::$app->session->set('division_id', $division_id);
+            Yii::$app->session->set('application_status', $application_status);
+//            if ($programme !=0)
+                Yii::$app->session->set('$programme', $programme);
+            
+            
             $applicants = Applicant::getByStatus($application_status, $division_id);
             
             $data = array();
@@ -190,7 +197,7 @@
                     ]
             ]);
             
-            //Retrieve programmes for current application period
+            //Retrieve programmes for current application periods
             $programmes = ProgrammeCatalog::getCurrentProgrammes($division_id);
             
             $progs = array(0 => 'None');
@@ -229,14 +236,18 @@
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016
          */
-        public function actionUpdateView()
+        public function actionUpdateView($programme = 0)
         {
             if (Yii::$app->request->post())
             {
                 $request = Yii::$app->request;
-                $application_status = $request->post('application_status');
-                $division_id = $request->post('division_id');
-                $programme = $request->post('programme');
+//                $application_status = $request->post('application_status');
+//                $division_id = $request->post('division_id');
+//                $programme = $request->post('programme');
+                
+                $division_id = Yii::$app->session->get('division_id');
+                $application_status = Yii::$app->session->get('application_status');
+                $programme = Yii::$app->session->get('programme');
             }
             
             return self::actionViewByStatus($division_id, $application_status, $programme);
