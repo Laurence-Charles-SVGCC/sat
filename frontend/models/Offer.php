@@ -567,5 +567,86 @@ class Offer extends \yii\db\ActiveRecord
             return $offers;
         return false;
     }
+    
+    
+    /**
+     * Returns true is pending offers exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasPendingOffers()
+    {
+        $offers = Offer::find()
+            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.revokedby' => null,
+                    'application.isactive' => 1, 'application.isdeleted' => 0,
+                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                    ])
+            ->all();
+        
+        if ($offers)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true is published offers exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasPublishedOffers()
+    {
+        $offers = Offer::find()
+            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.revokedby' => null,
+                    'application.isactive' => 1, 'application.isdeleted' => 0,
+                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                    ])
+            ->all();
+        
+        if ($offers)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Returns true is revoked offers exist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function hasRevokededOffers()
+    {
+        $offers = Offer::find()
+            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
+                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                    ])
+            ->andWhere(['not', ['offer.revokedby' => null]])
+            ->all();
+        
+        if ($offers)
+            return true;
+        return false;
+    }
    
 }

@@ -138,10 +138,15 @@
 
                             <div id="export-buttons" style="display:none">
                                 <?= Html::a('Export All Offers', ['export-all-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Pending Offers', ['export-unpublished-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Published Offers', ['export-published-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a('Export Revoked Offers', ['export-revoked-offers', 'offertype' => $offertype], ['class' => 'btn btn-warning']) ?>
-
+                                <?php if(Offer::hasPendingOffers() == true):?>
+                                    <?= Html::a('Export Pending Offers', ['export-unpublished-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                                <?php endif;?>
+                                <?php if(Offer::hasPublishedOffers() == true):?>
+                                    <?= Html::a('Export Published Offers', ['export-published-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                                <?php endif;?>
+                                <?php if(Offer::hasRevokededOffers() == true):?>
+                                    <?= Html::a('Export Revoked Offers', ['export-revoked-offers', 'offertype' => $offertype], ['class' => 'btn btn-warning']) ?>
+                                <?php endif;?>
                             </div>
 
                             <?php if (Yii::$app->user->can('publishOffer')): ?>
