@@ -307,7 +307,40 @@ class Division extends \yii\db\ActiveRecord
      */
     public static function getDivisions($applicantintent)
     {
-        if ($applicantintent == 1)      //if user is applying for DASGS/DTVE full time
+        if($applicantintent == NULL)
+        {
+            $db = Yii::$app->db;
+            $records = $db->createCommand(
+                                    "SELECT application_period.divisionid, division.name" 
+                                    ." FROM application_period" 
+                                    ." JOIN division"
+                                    ." ON application_period.divisionid = division.divisionid"
+                                    ." WHERE application_period.isactive=1"
+                                    ." AND application_period.isdeleted=0"
+                                    ." AND application_period.divisionid IN (4,5,6,7)" 
+                                    ." GROUP BY divisionid;"
+                                )
+                                ->queryAll();
+
+            $keys = array();
+            array_push($keys, '0');
+            $values = array();
+            array_push($values, 'Select...');
+            $combined = array();
+            
+            foreach($records as $record)
+            {
+                $k = strval($record["divisionid"]);
+                array_push($keys, $k);
+                $v = strval($record["name"]);
+                array_push($values, $v);
+
+            }
+            $combined = array_combine($keys, $values);
+            return $combined;
+        }
+        
+        elseif ($applicantintent == 1)      //if user is applying for DASGS/DTVE full time
         {
             $db = Yii::$app->db;
             $records = $db->createCommand(

@@ -2813,6 +2813,7 @@
                'personid' => $personid,
                'experience' => $experience,
                'action' => $action,
+               
            ]);
        }
 
@@ -2873,7 +2874,7 @@
         * Date Created: 09/03/2016
         * Date Last Modified: 09/03/2016
         */
-       public function actionEditReference($personid, $recordid)
+       public function actionReference($personid, $action, $recordid = NULL)
        {
            $user = User::find()
                    ->where(['personid' => $personid])
@@ -2884,9 +2885,16 @@
                             ->one();
            $studentregistrationid = $student_registration->studentregistrationid;
            
-           $reference = Reference::find()
-                       ->where(['referenceid' => $recordid])
-                       ->one();
+           if($action == "add")
+           {
+               $reference = new Reference();
+           }
+           elseif($action == "edit")
+           {
+            $reference = Reference::find()
+                        ->where(['referenceid' => $recordid])
+                        ->one();
+           }
 
            if ($post_data = Yii::$app->request->post())
            {
@@ -2897,6 +2905,9 @@
                $load_flag = $reference->load($post_data);
                if($load_flag == true)
                {
+                   if($action == "add")
+                       $reference->personid = $personid;
+                   
                    $validation_flag = $reference->validate();
 
                    if($validation_flag == true)
@@ -2917,11 +2928,12 @@
            }
 
 
-           return $this->render('edit_reference', [
+           return $this->render('reference', [
                'user' => $user,
                'personid' => $personid,
                'reference' => $reference,
                'action' => $action,
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 

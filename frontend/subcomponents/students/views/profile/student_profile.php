@@ -1199,7 +1199,18 @@
 
                                             if ($references==false)
                                             {
-                                                echo "</br><div style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>Student has not indicated that they have prior general work experience</div>";
+                                                $val = "Student has not indicated any Reference information.";
+                                                echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                                    echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                                        echo "<tr>";
+                                                            if(Yii::$app->user->can('verifyApplicants'))
+                                                            {
+                                                                $add_reference = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid, 'action' => 'add']);
+                                                                echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_reference role='button'> Add Reference</a></td>";
+                                                            }
+                                                        echo "</tr>";
+                                                    echo "</table>"; 
+                                                
                                             }
                                             else
                                             {
@@ -1207,7 +1218,7 @@
                                                 {
                                                     $val = $i+1;
                                                     $referenceid = $references[$i]->referenceid;
-                                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
+                                                    $editlink = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid,'action' => 'edit', 'recordid' => $referenceid]);
 
                                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                                         

@@ -1977,28 +1977,18 @@
          * 
          * Author: Laurence Charles
          * Date Created: 06/11/2015
-         * Date Last Modified:06/11/2015 | 06/05/2016
+         * Date Last Modified:06/11/2015 | 06/05/2016 | 31/05/2016
          */
         public static function getAcademicOfferingList($division_id, $personid)
         { 
-//            $id = $personid;x/
-//            $id = 2244;
             $intent = Applicant::getApplicantIntent($personid);
             $db = Yii::$app->db;
             
-            if ($intent == 1  || $intent == 4 || $intent == 6)       //if user is applying for full time programme
+            if($intent == NULL)
             {
-                $programmetypeid = 1;   //used to identify full time programmes
-            }
-            
-            else if ($intent == 2 || $intent ==3  || $intent ==5  || $intent ==7)      //if user is applying for part time
-            {
-                $programmetypeid = 2;  //will be used to identify part time programmes
-            } 
-            
-            $records = $db->createCommand(
+                $records = $db->createCommand(
                     'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
-                    . ' FROM programme_catalog '
+                    . ' FROM programme_catalog'
                     . ' JOIN academic_offering'
                     . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
                     . ' JOIN qualification_type'
@@ -2009,7 +1999,6 @@
                     . ' AND academic_offering.isdeleted=0'
                     . ' AND application_period.iscomplete = 0'
                     . ' AND application_period.isactive = 1'
-                    . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
                     . ' AND programme_catalog.departmentid'
                     . ' IN ('
                     . ' SELECT departmentid'
@@ -2018,6 +2007,43 @@
                     . ' );'
                     )
                     ->queryAll();  
+            }
+            else
+            {
+                if ($intent == 1  || $intent == 4 || $intent == 6)       //if user is applying for full time programme
+                {
+                    $programmetypeid = 1;   //used to identify full time programmes
+                }
+
+                elseif ($intent == 2 || $intent ==3  || $intent ==5  || $intent ==7)      //if user is applying for part time
+                {
+                    $programmetypeid = 2;  //will be used to identify part time programmes
+                } 
+
+                $records = $db->createCommand(
+                        'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
+                        . ' FROM programme_catalog'
+                        . ' JOIN academic_offering'
+                        . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
+                        . ' JOIN qualification_type'
+                        . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
+                        . ' JOIN application_period'
+                        . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
+                        . ' WHERE academic_offering.isactive=1'
+                        . ' AND academic_offering.isdeleted=0'
+                        . ' AND application_period.iscomplete = 0'
+                        . ' AND application_period.isactive = 1'
+                        . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
+                        . ' AND programme_catalog.departmentid'
+                        . ' IN ('
+                        . ' SELECT departmentid'
+                        . ' FROM department'
+                        . ' WHERE divisionid = '. $division_id
+                        . ' );'
+                        )
+                        ->queryAll(); 
+            }
+            
 
             $arr = array();
             foreach ($records as $record){
@@ -2110,7 +2136,7 @@
                     try 
                     {
                         $application_save_flag = $application->save();
-                        if ($application_save_flag = false)
+                        if ($application_save_flag == false)
                         {
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error occurred when saving application.');

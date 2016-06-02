@@ -34,9 +34,9 @@ use frontend\models\CsecQualification;
  * @property string $religion
  * @property string $placeofbirth
  * @property string $nationalsports 
-* @property string $othersports 
-* @property string $otheracademics 
-* @property string $isexternal 
+ * @property string $othersports 
+ * @property string $otheracademics 
+ * @property string $isexternal 
  *
  * @property Person $person
  */

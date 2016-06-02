@@ -134,6 +134,7 @@ class Application extends \yii\db\ActiveRecord
         return $this->hasMany(Offer::className(), ['applicationid' => 'applicationid']);
     }
     
+    
     public static function isCapeApplication($academicofferingid)
     {
         $ao = AcademicOffering::findOne(['academicofferingid' => $academicofferingid]);

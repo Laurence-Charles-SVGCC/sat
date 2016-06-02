@@ -172,7 +172,7 @@ else
                             <?php if (Yii::$app->user->can('viewProgramme')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Manage Programmes</a></li>
                             <?php endif; ?>
-                                
+                            
                             <?php if (Yii::$app->user->can('manageAwards')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards'])?>"><i class="fa fa-circle-o"></i>Awards</a></li>
                             <?php endif; ?>
@@ -211,9 +211,15 @@ else
                             <?php if (Yii::$app->user->can('students') || Yii::$app->user->can('viewAllStudentOptions')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
                             <?php endif; ?>
+                            
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Past Applicant</a></li>
                             <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('students')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>"><i class="fa fa-circle-o"></i>Create Student Account</a></li>
+                            <?php endif; ?>
+                                
                            
                             <!--
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>

@@ -54,28 +54,64 @@ class LoginForm extends Model
      * Logs in a user using the provided username and password.
      *
      * @return boolean whether the user is logged in successfully
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 01/06/2016
      */
     public function login()
     {
-        if ($this->validate()) {
+        if ($this->validate())
         {
             $res = Yii::$app->user->login($this->getUser(), 60 * 60 * 5);
             $emp_department = EmployeeDepartment::findOne(['personid' => Yii::$app->user->getId()]);
+            
+            //identify users that are applicants or students
+            $user = User::find()
+                    ->where(['personid' => Yii::$app->user->getId()])
+                    ->one();
+            if($user->persontypeid == 1 || $user->persontypeid == 2)
+            {
+                Yii::$app->user->logout();
+                return -1;
+            }
+              
             $department = $emp_department ? $emp_department->getDepartment()->one() : NULL;
             $division_id = $department ? $department->divisionid : NULL;
-            
+
             if ($division_id)
             {
                 Yii::$app->session->set('divisionid', $division_id);
-                return true;
+                return 1;
             }
-            Yii::$app->session->setFlash('error', 'User not assigned a valid department');
-        }
-        } else {
-            return false;
+        } 
+        else 
+        {
+            return 0;
         }
     }
+//    public function login()
+//    {
+//        if ($this->validate()) {
+//        {
+//            $res = Yii::$app->user->login($this->getUser(), 60 * 60 * 5);
+//            $emp_department = EmployeeDepartment::findOne(['personid' => Yii::$app->user->getId()]);
+//            $department = $emp_department ? $emp_department->getDepartment()->one() : NULL;
+//            $division_id = $department ? $department->divisionid : NULL;
+//            
+//            if ($division_id)
+//            {
+//                Yii::$app->session->set('divisionid', $division_id);
+//                return true;
+//            }
+//            Yii::$app->session->setFlash('error', 'User not assigned a valid department');
+//        }
+//        } else {
+//            return false;
+//        }
+//    }
 
+    
     /**
      * Finds user by [[username]]
      *

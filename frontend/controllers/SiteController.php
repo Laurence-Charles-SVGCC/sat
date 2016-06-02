@@ -83,24 +83,78 @@ class SiteController extends Controller
      * Logs in a user.
      *
      * @return mixed
+     * 
+     * Author: Gamal Crichton
+     * Date Created: ??
+     * Date Last Modified: 01/06/2016
      */
     public function actionLogin()
     {
         $this->layout = 'loginlayout';
         
-        if (!\Yii::$app->user->isGuest) {
+        if (!\Yii::$app->user->isGuest) 
+        {
             return $this->goHome();
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post()))
+        {
+            //if login is successful
+            if ($model->login() == 1) 
+            {
+//                return self::actionIndex();
+                return $this->goBack();
+            }
+            
+            /*
+             * If login is unauthorized; i.e
+             * if applicant or student attempts to log into SAT t
+             */
+            elseif ($model->login() == -1) 
+            {
+                return $this->render('unauthorized_login', [
+                    'model' => $model,
+                ]);
+            }
+            
+            /*
+             * if login failure is not a result of unauthorized access
+             */
+            else 
+            {
+                return $this->render('login', [
+                    'model' => $model,
+                ]);
+            }
         }
-    }
+        return $this->render('login', [
+                    'model' => $model,
+                ]);
+    } 
+        
+//    public function actionLogin()
+//    {
+//        $this->layout = 'loginlayout';
+//        
+//        if (!\Yii::$app->user->isGuest) 
+//        {
+//            return $this->goHome();
+//        }
+//
+//        $model = new LoginForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->login()) 
+//        {
+//            return $this->goBack();
+//        } 
+//        else 
+//        {
+//            return $this->render('login', [
+//                'model' => $model,
+//            ]);
+//        }
+//    }
+    
 
     /**
      * Logs out the current user.
