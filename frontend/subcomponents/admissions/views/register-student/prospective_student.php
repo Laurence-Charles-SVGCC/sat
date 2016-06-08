@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php 
                             $form = ActiveForm::begin(
                                 [
-                                    'action' => Url::to(['register-student/enroll-student']),
+                                    'action' => Url::to(['register-student/enroll-student', 'personid' => $personid, 'programme' => $programme]),
                                 ]); 
                         ?>
                         
