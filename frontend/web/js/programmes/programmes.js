@@ -189,7 +189,7 @@ function courseSearchType()
 
 function toggleProgrammeOptions()
 {
-    var search_by = document.getElementsByName('programme_options');
+    var search_by = document.getElementsByName('programme_options');    //captures input
     if (search_by[0].checked == true)            //if View Course Outlines
     {
          document.getElementById("view-course-outlines").style.display = "block";       
