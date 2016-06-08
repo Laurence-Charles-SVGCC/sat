@@ -20,7 +20,7 @@
     <div class="site-index">
         <div class = "custom_wrapper">
             <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards']);?>" title="Manage Awards">     
+                <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Awards">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="award avatar">
                     <span class="custom_module_label" > Welcome to the Programme Management System</span> 
                     <img src ="<?=Url::to('../images/programme.png');?>" alt="award avatar" class="pull-right">

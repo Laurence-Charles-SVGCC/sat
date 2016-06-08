@@ -187,3 +187,37 @@ function courseSearchType()
 }
 
 
+function toggleProgrammeOptions()
+{
+    var search_by = document.getElementsByName('programme_options');
+    if (search_by[0].checked == true)            //if View Course Outlines
+    {
+         document.getElementById("view-course-outlines").style.display = "block";       
+         document.getElementById("investigate-academic-year").style.display = "none";
+         document.getElementById("view-intake-reports").style.display = "none";
+         document.getElementById("view-student-performance-options").style.display = "none";
+    }
+    else if (search_by[1].checked == true)        //if Investigate Academic Year
+    {
+         document.getElementById("view-course-outlines").style.display = "none";       
+         document.getElementById("investigate-academic-year").style.display = "block";
+         document.getElementById("view-intake-reports").style.display = "none";
+         document.getElementById("view-student-performance-options").style.display = "none";
+    }
+    else if (search_by[2].checked == true)        //if View Intake Reports
+    {
+         document.getElementById("view-course-outlines").style.display = "none";       
+         document.getElementById("investigate-academic-year").style.display = "none";
+         document.getElementById("view-intake-reports").style.display = "block";
+         document.getElementById("view-student-performance-options").style.display = "none";
+    }
+    else if (search_by[3].checked == true)        //if View Student Performance Options
+    {
+         document.getElementById("view-course-outlines").style.display = "none";       
+         document.getElementById("investigate-academic-year").style.display = "none";
+         document.getElementById("view-intake-reports").style.display = "none";
+         document.getElementById("view-student-performance-options").style.display = "block";
+    }
+}
+
+

@@ -322,6 +322,41 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns the full name of a programme given the programme cataalogid
+     * 
+     * @param type $academicofferingid
+     * @return string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/04/2016
+     * Date Last Modified: 28/04/2016
+     */
+    public static function getProgrammeFullName($programmecatalogid)
+    {
+        $programme = ProgrammeCatalog::find()
+                ->where(['programmecatalogid' =>$programmecatalogid])
+                ->one();
+        
+        $fullname = "";
+        
+        $qualificationtype = QualificationType::find()
+                                ->where(['qualificationtypeid' => $programme->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one()->abbreviation;
+        $name = $programme->name;
+        $specialisation = $programme->specialisation;
+        
+        if($specialisation != false && $specialisation != NULL  && $specialisation != ""  && $specialisation != " " )
+            $fullname = $qualificationtype . ". " . $name . " (" . $specialisation . ")";
+        else
+            $fullname = $qualificationtype . ". " . $name;
+        
+        return $fullname;       
+    }
+    
+    
+    
+    
     
     
 }

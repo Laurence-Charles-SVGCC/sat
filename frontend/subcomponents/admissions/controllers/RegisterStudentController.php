@@ -194,6 +194,7 @@ class RegisterStudentController extends \yii\web\Controller
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error saving student record.');
+                     return $this->goBack();
                 }
                 else
                 {
@@ -213,6 +214,7 @@ class RegisterStudentController extends \yii\web\Controller
                     {
                         $transaction->rollBack();
                         Yii::$app->getSession()->setFlash('error', 'Error saving user record.');
+                         return $this->goBack();
                     }
                     else
                     {
@@ -231,6 +233,7 @@ class RegisterStudentController extends \yii\web\Controller
                         {   
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error saving student registration record.');
+                             return $this->goBack();
                         }
                         else
                         {
@@ -256,7 +259,8 @@ class RegisterStudentController extends \yii\web\Controller
                                         {
                                             $transaction->rollBack();
                                             Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
-                                            break;
+//                                            break;
+                                             return $this->goBack();
                                         }
                                     }
                                 }  
@@ -279,7 +283,8 @@ class RegisterStudentController extends \yii\web\Controller
                                        {
                                            $transaction->rollBack();
                                            Yii::$app->session->setFlash('error', 'Document could not be added');
-                                           break;
+//                                           break;
+                                            return $this->goBack();
                                        }
                                     }
                                 }
@@ -292,6 +297,7 @@ class RegisterStudentController extends \yii\web\Controller
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing request.');   
             }
        }
    }
