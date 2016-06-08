@@ -274,11 +274,10 @@ class RegisterStudentController extends \yii\web\Controller
                                     if (!in_array($sub, $docs_arr))
                                     { 
                                        $doc = new DocumentSubmitted();
-                                       $intent = DocumentIntent::findOne(['description' => 'registration']);
                                        $doc->documenttypeid = $sub;
                                        $doc->personid = $applicant->personid;
                                        $doc->recepientid = Yii::$app->user->getId();
-                                       $doc->documentintentid = $intent ? $intent->documentintentid : NULL;
+                                       $doc->documentintentid = 1;
                                        $document_save_flag = $doc->save(); 
                                        if ($document_save_flag == false)
                                        {
