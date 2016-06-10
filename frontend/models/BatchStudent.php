@@ -196,7 +196,7 @@ class BatchStudent extends \yii\db\ActiveRecord
      * Date Created: 11/12/2015
      * Date Last Modified: 11/12/2015
      */
-    private function compareSemester($sem1, $sem2)
+   public static function compareSemester($sem1, $sem2)
     {
         if (strcmp($sem1["academic_year_title"], $sem2["academic_year_title"]) < 0)
                 return true;

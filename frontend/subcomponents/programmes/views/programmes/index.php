@@ -113,8 +113,11 @@
                 </div>
                 
             <?php if ($programme_dataprovider) : ?>
-                <div id="programme_results">
-                    <h2 class="custom_h2"><?= "Search results for: " . $info_string ?></h2>
+                <div id="programme_results" style="width:95%; margin: 0 auto;">
+                    <div id=""programme-header">
+                        <h2 class="custom_h2"><?= "Search results for: " . $info_string ?></h2>
+                        <a class="btn btn-info glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/programme', 'divisionid' => $divisionid]);?> role="button"> Create Programme</a>
+                    </div>
                     <?= $this->render('programme_results', [
                         'dataProvider' => $programme_dataprovider,
                         'info_string' => $info_string,

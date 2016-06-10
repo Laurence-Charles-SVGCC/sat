@@ -40,11 +40,11 @@
 <div class="site-index">
     <div class = "custom_wrapper">
         <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="<?=Url::to('../images/admissions.png');?>" alt="admission-avatar" class="pull-right">
-            </a>    
+            <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Awards">     
+                <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="award avatar">
+                <span class="custom_module_label" > Welcome to the Programme Management System</span> 
+                <img src ="<?=Url::to('../images/programme.png');?>" alt="award avatar" class="pull-right">
+            </a>  
         </div>
         
         
@@ -90,7 +90,7 @@
                             
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle;'>Department</th>";
-                                echo "<td>{$form->field($programme, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->where(['divisionid' => $period->divisionid])->andWhere(['not', ['like', 'name', 'Administrative']])->andWhere(['not', ['like', 'name', 'Library']])->andWhere(['not', ['like', 'name', 'Senior']])->andWhere(['not', ['like', 'name', 'CAPE']])->all(), 'departmentid', 'name'), ['prompt'=>'Select Department'])}</td>";
+                                echo "<td>{$form->field($programme, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->where(['divisionid' => $divisionid])->andWhere(['not', ['like', 'name', 'Administrative']])->andWhere(['not', ['like', 'name', 'Library']])->andWhere(['not', ['like', 'name', 'Senior']])->andWhere(['not', ['like', 'name', 'CAPE']])->all(), 'departmentid', 'name'), ['prompt'=>'Select Department'])}</td>";
                             echo "</tr>";
                                 
                             echo "<tr>";
@@ -100,7 +100,7 @@
                         echo "</table>"; 
 
                         echo "<br/>";
-                        echo Html::a(' Cancel',['admissions/period-setup-step-three'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
+                        echo Html::a(' Cancel',['programmes/index'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
                         echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);        
                     ActiveForm::end();    
                 ?>

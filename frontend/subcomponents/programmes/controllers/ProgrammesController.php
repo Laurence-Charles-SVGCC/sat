@@ -5,6 +5,9 @@ namespace app\subcomponents\programmes\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\data\ArrayDataProvider;
+use yii\web\UploadedFile;
+use yii\helpers\FileHelper;
+use yii\web\Response;
 
 use frontend\models\ProgrammeCatalog;
 use frontend\models\Division;
@@ -20,6 +23,8 @@ use frontend\models\BatchCape;
 use frontend\models\CapeCourse;
 use frontend\models\CapeUnit;
 use frontend\models\CapeSubject;
+use frontend\models\Cordinator;
+use frontend\models\Employee;
 
 
 
@@ -45,6 +50,7 @@ class ProgrammesController extends Controller
         $info_string = "";
         $programme_dataprovider = array();
         $course_dataprovider = array();
+        $divisionid = NULL;
         
         if (Yii::$app->request->post())
         {
@@ -499,16 +505,76 @@ class ProgrammesController extends Controller
             }
         }
         
+        
         return $this->render('index',
             [
                 'info_string' => $info_string,
                 'programme_dataprovider' => $programme_dataprovider,
+                'divisionid' => $divisionid,
                 'course_dataprovider' => $course_dataprovider,
             ]);
     }
     
     
     
+    
+    public function actionProgramme($divisionid, $programmecatalogid = NULL)
+    {
+        if($programmecatalogid == NULL)     //if user is creating new programme catalog record
+        {
+            $programme = new ProgrammeCatalog();
+        }
+        else
+        {
+            $programme = ProgrammeCatalog::find()
+                    ->where(['programmecatalogid' => $programecatalogid])
+                    ->one();
+            if(!$programme) //if programme catalog record was not found
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrive programme record.');
+                 return self::actionIndex();
+            }
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $save_flag = false;
+            
+            $load_flag = $programme->load($post_data);
+            if($load_flag == true)
+            { 
+                if($programmecatalogid == NULL)     
+                    $programme->creationdate = date('Y-m-d');
+                
+                $save_flag = $programme->save();
+                if($save_flag == true)
+                    return self::actionIndex();
+                else
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to create programme record. Please try again.');
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load programme record. Please try again.');              
+        }
+        
+        return $this->render('add_programme', [
+                'divisionid' => $divisionid,
+                'programme' => $programme,
+            ]);
+    }
+    
+    
+    
+    /**
+     * Renders Programme Catalog creation/update and processes associated requests
+     * 
+     * @param type $programmecatalogid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/06/2016
+     * Date LastModified: 09/06/2016
+     */
     public function actionProgrammeOverview($programmecatalogid)
     {
         $programme = ProgrammeCatalog::find()
@@ -548,6 +614,19 @@ class ProgrammesController extends Controller
             $programme_info['creationdate'] = $programme->creationdate;
 
             $programme_container[] = $programme_info;
+            
+            $cohort_array = array();
+            $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
+            array_push( $cohort_array, $cohort_count);
+
+            if ($cohort_count > 0)
+            {
+                $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
+                for($i = 0 ; $i < $cohort_count ; $i++)
+                {
+                    array_push($cohort_array, $cohorts[$i]);
+                }
+            }
         }
         
         $course_outline_dataprovider = array();
@@ -603,7 +682,6 @@ class ProgrammesController extends Controller
         {
             $courses = CourseCatalog::find()
                     ->innerJoin('course_offering', '`course_catalog`.`coursecatalogid` = `course_offering`.`coursecatalogid`')
-//                    ->innerJoin('batch', ' `course_offering`.`courseofferingid`=`batch`.`courseofferingid`')
                     ->innerJoin('academic_offering', '`course_offering`.`academicofferingid`=`academic_offering`.`academicofferingid`')
                     ->groupBy('course_catalog.coursecatalogid')
                     ->where(['academic_offering.programmecatalogid' => $programmecatalogid])
@@ -635,18 +713,130 @@ class ProgrammesController extends Controller
                     ]);            
            }
         
+           $cordinator_details = "";
+           
+           $offerings = AcademicOffering::find()
+                   ->where(['programmecatalogid' => $programme->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
+                   ->all();
+           $offerids = array();
+           foreach($offerings as $offering)
+               array_push($offerids, $offering->academicofferingid);
+              
+          
+           $cordinators = Cordinator::find()
+                   ->where(['academicofferingid' => $offerids , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                   ->orderBy('cordinatorid DESC')
+                   -> all();
+           if($cordinators)
+           {
+               foreach($cordinators as $key => $cordinator)
+               {
+                   $name = "";
+                   $name = Employee::getEmployeeName($cordinator[$key]->personid);
+                   if(count($cordinators) - 1 == 0)
+                    $cordinator_details .= $name;
+                    else 
+                        $cordinator_details .= $name . ", ";
+               }
+           }
+           
         
-        return $this->render('programme_overview',
-            [
-               'programme' => $programme,
-                'programme_name' => $programme_name,
-                'programme_info' => $programme_info,
-                'course_outline_dataprovider' => $course_outline_dataprovider,
-                'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider,
-            ]);
-        
-        
+            return $this->render('programme_overview',
+                [
+                   'programme' => $programme,
+                    'programme_name' => $programme_name,
+                    'programme_info' => $programme_info,
+                    'cohort_array' => $cohort_array,
+                   'cordinator_details' => $cordinator_details,
+                    'course_outline_dataprovider' => $course_outline_dataprovider,
+                    'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider,
+                ]);
     }
+    
+    
+    public function actionDownloadBooklet($divisionid, $programmecatalogid, $academicofferingid)
+    {
+        if($divisionid == 4)
+            $division = "dasgs";
+        elseif($divisionid == 5)
+            $division = "dtve";
+        elseif($divisionid == 6)
+            $division = "dte";
+        elseif($divisionid == 7)
+            $division = "dne";
+        
+        $dir =  Yii::getAlias('@frontend') . "/files/programme_booklets/" . $division . "/" . $programmecatalogid . "_" . $academicofferingid . "/";
+        $files = FileHelper::findFiles($dir);
+        Yii::$app->response->sendFile($files[0], "Download");
+        Yii::$app->response->send();
+    }
+    
+    
+    
+    
+    
+    
+//    public function actionUploadAttachments($recordid, $count, $action = NULL)
+//    {
+//        $package = Package::find()
+//                        ->where(['packageid' => $recordid])
+//                        ->one();
+//
+//        $model = new PackageAttachment();
+//        $model->package_id = $package->packageid;
+//        $model->package_name = $package->name;
+//
+//        $saved_documents = Package::getDocuments($recordid);
+//        $model->limit = $package->documentcount - count($saved_documents);
+//
+//        if ($model->limit == 0)
+//            $mandatory_delete = true;
+//        else
+//            $mandatory_delete = false;
+//
+//        if (Yii::$app->request->isPost) 
+//        {
+//            $model->files = UploadedFile::getInstances($model, 'files');
+//            $pending_count = count($model->files);
+//            $saved_count = count(Package::getDocuments($recordid));
+//
+//            /* 
+//             * if summation of present files count and pending files <= stipulated document count,
+//             * upload is allowed
+//             */
+//            if( ($saved_count+$pending_count) <= $package->documentcount)
+//            {
+//                if ($model->upload())   // file is uploaded successfully
+//                {
+//                    if (Package::hasAllDocuments($recordid) == true)
+//                    {
+//                        $package->packageprogressid = 2;
+//                        $package->save();
+//                    }
+//
+//                    if ($action == NULL)
+//                        return self::actionInitiatePackage($package->packageid);
+//                    else
+//                        return self::actionIndex();
+//                }
+//            }
+//            else
+//            {
+//                Yii::$app->getSession()->setFlash('error', 'You have exceeded you stipulated attachment count.');              
+//            }
+//
+//        }
+//
+//        return $this->render('upload_attachments', 
+//                            [
+//                                'model' => $model,
+//                                'recordid' => $recordid,
+//                                'mandatory_delete' => $mandatory_delete,
+//                                'saved_documents' => $saved_documents,
+//                                'count' => $count,
+//                            ]
+//        );
+//    }
     
     
     

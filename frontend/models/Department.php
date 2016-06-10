@@ -246,4 +246,26 @@ class Department extends \yii\db\ActiveRecord
             return false;
     }
     
+    
+    /**
+     * Returns the divisionid of a particular departmnent
+     * 
+     * @param type $departmentid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/06/2016
+     * Date Last Modified: 10/06/2016
+     */
+     public static function getDivisionID($departmentid)
+    {
+        $department = Department::find()
+                ->where(['departmentid' => $departmentid])
+                ->one();
+        if($department)
+            return $department->divisionid;
+        return false;       
+    }
+    
+    
 }

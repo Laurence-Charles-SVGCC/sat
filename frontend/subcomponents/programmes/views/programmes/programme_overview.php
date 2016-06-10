@@ -43,7 +43,7 @@
                         <?php else:?>
                             <table class='table table-hover' style='width: 90%; margin: 0 auto;'>
                                 <tr>
-                                    <th class="custom_h2" colspan="4" style="text-align:center; color:green">Programme Summary</th>
+                                    <th class="custom_h2" colspan="6" style="text-align:center; color:green">Programme Summary</th>
                                 </tr>
 
                                 <tr>
@@ -51,29 +51,73 @@
                                     <td><?=$programme_info['qualificationtype'];?></td>
                                     <th>Examination Body</th>
                                     <td><?=$programme_info['exambody'];?></td>
+                                    <th>Programme Type</th>
+                                    <td><?=$programme_info['programmetype'];?></td>
                                 </tr>
 
                                  <tr>
-                                    <th>Programme Type</th>
-                                    <td><?=$programme_info['programmetype'];?></td>
                                     <th>Specialisation</th>
                                     <?php if($programme_info['specialisation']):?>
                                         <td><?=$programme_info['specialisation'];?></td>
                                     <?php else:?>
                                         <td><?="N/A";?></td>
                                     <?php endif;?>
-                                </tr>
-
-                                 <tr>
                                     <th>Duration</th>
                                     <td><?= $programme_info['duration'];?></td>
                                     <th>Creation Date</th>
                                     <td><?= $programme_info['creationdate'];?></td>
                                 </tr>
 
-                                <tr>
+                                 <tr>
                                     <th>Department</th>
-                                    <td><?=$programme_info['department'];?></td>
+                                    <td colspan="3"><?=$programme_info['department'];?></td>
+                                    <?php if(true):?>
+                                    <th> Download Progamme Booklet</th>
+                                    <?php
+                                        echo "<td>";                                  
+                                            echo "<div class='dropdown'>
+                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                echo "Select Cohort...";
+                                                echo "<span class='caret'></span>";
+                                                echo "</button>";
+                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                    $cohort_count = $cohort_array[0];
+                                                    if ($cohort_count > 0)
+                                                    {
+                                                        for ($k = 1 ; $k <= $cohort_count ; $k++)
+                                                        {
+                                                            $year_title = AcademicYear::getYearTitle($cohort_array[$k]->academicyearid);
+                                                            $academic_year_id = $cohort_array[$k]->academicyearid;
+                                                            $academic_offering_id = $cohort_array[$k]->academicofferingid;
+                                                            $year_title = AcademicYear::getYearTitle($academic_year_id);
+                                                            $divisionid = Department::getDivisionID($programme['departmentid']);
+                                                            $hyperlink = Url::toRoute(['/subcomponents/programmes/programmes/download-booklet/', 
+                                                                                                'divisionid' => $divisionid,
+                                                                                                'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                                                'academicofferingid' => $academic_offering_id,
+                                                                                             ]);
+                                                            echo "<li><a href='$hyperlink'>$year_title</a></li>";      
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        echo "<li>This programme is yet to be offered</li>";  
+                                                    }    
+                                                echo "</ul>";
+                                            echo "</div>";
+                                        echo "</td>"; 
+                                    echo "</td>";
+                                    ?>
+                                    <?php endif;?>
+                                </tr>
+                                
+                                <tr>
+                                    <th>Most Recent Programme Coordinator(s)</th>
+                                    <?php if($cordinator_details):?>
+                                        <td><?=$cordinator_details?></td>
+                                    <?php else:?>
+                                        <td>No appointees</td>
+                                    <?php endif;?>
                                 </tr>
                             </table></br>
                          <?php endif;?>
