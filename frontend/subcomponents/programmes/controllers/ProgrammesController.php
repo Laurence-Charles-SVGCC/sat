@@ -25,7 +25,7 @@ use frontend\models\CapeUnit;
 use frontend\models\CapeSubject;
 use frontend\models\Cordinator;
 use frontend\models\Employee;
-
+use frontend\models\CourseOutline;
 
 
 class ProgrammesController extends Controller
@@ -661,7 +661,10 @@ class ProgrammesController extends Controller
                             ->subjectname;
                     $course_info['subject'] =  $cape_subject;
                     
-                    $course_info['has_outline'] = true;
+                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->capecourseid) == true)
+                        $course_info['has_outline'] = true;
+                    else
+                        $course_info['has_outline'] = false;
                     $course_container[] = $course_info;
                 }
             }
@@ -696,7 +699,10 @@ class ProgrammesController extends Controller
                     $course_info['coursecode'] = $course->coursecode;
                     $course_info['name'] = $course->name;
                     
-                    $course_info['has_outline'] = true;
+                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->coursecatalogid) == true)
+                        $course_info['has_outline'] = true;
+                    else
+                        $course_info['has_outline'] = false;
                     $course_container[] = $course_info;
                 }
             }
@@ -754,6 +760,17 @@ class ProgrammesController extends Controller
     }
     
     
+    /**
+     * Downloads the programme booklet for a particular academic offering
+     * 
+     * @param type $divisionid
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/06/2016
+     * Date Last Modified: 10/06/2016
+     */
     public function actionDownloadBooklet($divisionid, $programmecatalogid, $academicofferingid)
     {
         if($divisionid == 4)
@@ -769,6 +786,27 @@ class ProgrammesController extends Controller
         $files = FileHelper::findFiles($dir);
         Yii::$app->response->sendFile($files[0], "Download");
         Yii::$app->response->send();
+    }
+    
+    
+    //Code will be completed after feature to enter course outline has been created
+    public function actionCourseDescription($iscape,  $programmecatalogid, $coursecatalogid)
+    {
+        if($iscape == 0)    //if !cape course
+        {
+            $course_outlines = CourseOutline::find()
+                    ->innerJoin('course_offering', '`course_outline`.`courseid` = `course_offering`.`courseofferingid`')
+                    ->where(['course_outline.isactive' => 1, 'course_outline.isdeleted' => 0,
+                                    'course_offering.coursecatalogid' => $coursecatalogid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                ])
+                     ->orderBy('course_offering.courseofferingid DESC')
+                    ->all();
+             $recent = $course_outlines[0];
+        }
+        else
+        {
+            
+        }
     }
     
     

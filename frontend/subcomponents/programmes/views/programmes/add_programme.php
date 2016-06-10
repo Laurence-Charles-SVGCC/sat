@@ -11,10 +11,10 @@
     use yii\bootstrap\Modal;
     use yii\bootstrap\ActiveField;
     use dosamigos\datepicker\DatePicker;
+    use yii\helpers\ArrayHelper;
     
     use frontend\models\Division;
     use frontend\models\AcademicYear;
-    use yii\helpers\ArrayHelper;
     use frontend\models\IntentType;
     use frontend\models\ExaminationBody;
     use frontend\models\QualificationType;

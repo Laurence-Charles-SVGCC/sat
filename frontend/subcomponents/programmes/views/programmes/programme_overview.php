@@ -71,7 +71,6 @@
                                  <tr>
                                     <th>Department</th>
                                     <td colspan="3"><?=$programme_info['department'];?></td>
-                                    <?php if(true):?>
                                     <th> Download Progamme Booklet</th>
                                     <?php
                                         echo "<td>";                                  
@@ -96,7 +95,10 @@
                                                                                                 'programmecatalogid' => $programme_info['programmecatalogid'],
                                                                                                 'academicofferingid' => $academic_offering_id,
                                                                                              ]);
-                                                            echo "<li><a href='$hyperlink'>$year_title</a></li>";      
+                                                            if(ProgrammeCatalog::getBooklets($divisionid, $programme_info['programmecatalogid'],  $academic_offering_id)==true)
+                                                                echo "<li><a href='$hyperlink'>$year_title</a></li>";  
+                                                            else
+                                                                 echo "<li><a>$year_title - Not Availables</a></li>"; 
                                                         }
                                                     }
                                                     else
@@ -108,7 +110,6 @@
                                         echo "</td>"; 
                                     echo "</td>";
                                     ?>
-                                    <?php endif;?>
                                 </tr>
                                 
                                 <tr>

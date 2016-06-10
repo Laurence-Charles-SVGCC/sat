@@ -3,6 +3,12 @@
 namespace frontend\models;
 
 use Yii;
+use yii\web\UploadedFile;
+use yii\helpers\FileHelper;
+use yii\web\Response;
+use yii\base\ErrorException;
+use yii\base\InvalidParamException;
+
 
 /**
  * This is the model class for table "programme_catalog".
@@ -354,6 +360,42 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
         return $fullname;       
     }
     
+    
+    /**
+     * Returns instances of programme booklets
+     * 
+     * @param type $divisionid
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 10/06/2016
+     * Date Last Modified: 10/06/2016
+     */
+    public static function getBooklets($divisionid, $programmecatalogid, $academicofferingid)
+    {
+        $files = false;
+        
+        if($divisionid == 4)
+            $division = "dasgs";
+        elseif($divisionid == 5)
+            $division = "dtve";
+        elseif($divisionid == 6)
+            $division = "dte";
+        elseif($divisionid == 7)
+            $division = "dne";
+        
+        $dir =  Yii::getAlias('@frontend') . "/files/programme_booklets/" . $division . "/" . $programmecatalogid . "_" . $academicofferingid . "/";
+        try
+        {
+             $files = FileHelper::findFiles($dir);
+        } catch (InvalidParamException $e) {
+            return false;
+        }
+        
+        return $files;
+    }
     
     
     
