@@ -1,0 +1,50 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2016.06.06 14:53:02 =~=~=~=~=~=~=~=~=~=~=~=
+Using username "svgccnet".
+svgccnet@svgcc.net's password: 
+Last login: Fri Jun  3 11:38:57 2016 from 69.80.58.84
+svgccnet@svgcc.net [~]# cd public_html/subdomaine s/sat
+svgccnet@svgcc.net [~/public_html/subdomains/sat]# git pull
+remote: Counting objects: 28, done.
+remote: Compressing objects:   6% (1/16)   remote: Compressing objects:  12% (2/16)   remote: Compressing objects:  18% (3/16)   remote: Compressing objects:  25% (4/16)   remote: Compressing objects:  31% (5/16)   remote: Compressing objects:  37% (6/16)   remote: Compressing objects:  43% (7/16)   remote: Compressing objects:  50% (8/16)   remote: Compressing objects:  56% (9/16)   remote: Compressing objects:  62% (10/16)   remote: Compressing objects:  68% (11/16)   remote: Compressing objects:  75% (12/16)   remote: Compressing objects:  81% (13/16)   remote: Compressing objects:  87% (14/16)   remote: Compressing objects:  93% (15/16)   remote: Compressing objects: 100% (16/16)   remote: Compressing objects: 100% (16/16), done.
+remote: Total 16 (delta 11), reused 0 (delta 0)
+Unpacking objects:   6% (1/16)   Unpacking objects:  12% (2/16)   Unpacking objects:  18% (3/16)   Unpacking objects:  25% (4/16)   Unpacking objects:  31% (5/16)   Unpacking objects:  37% (6/16)   Unpacking objects:  43% (7/16)   Unpacking objects:  50% (8/16)   Unpacking objects:  56% (9/16)   Unpacking objects:  62% (10/16)   Unpacking objects:  68% (11/16)   Unpacking objects:  75% (12/16)   Unpacking objects:  81% (13/16)   Unpacking objects:  87% (14/16)   Unpacking objects:  93% (15/16)   Unpacking objects: 100% (16/16)   Unpacking objects: 100% (16/16), done.
+From /home2/svgccnet/public_html/subdomains/sat_dev
+   bdd93b8..b1162fd  master     -> origin/master
+Updating bdd93b8..b1162fd
+Fast-forward
+ ._composer.phar                                          | Bin 0 -> 4096 bytes
+ .../css/plugins/jvectormap/jquery-jvectormap-1.2.2.css   |   2 +-
+ .../images/avatar_female(150\357\200\241150).png"        | Bin
+ .../images/avatar_male(150\357\200\241150).png"          | Bin
+ frontend/views/site/index.php                            |   2 +-
+ 5 files changed, 2 insertions(+), 2 deletions(-)
+ create mode 100644 ._composer.phar
+ rename frontend/images/avatar_female(150*150).png => "frontend/images/avatar_female(150\357\200\241150).png" (100%)
+ rename frontend/images/avatar_male(150*150).png => "frontend/images/avatar_male(150\357\200\241150).png" (100%)
+svgccnet@svgcc.net [~/public_html/subdomains/sat]# cd ../
+svgccnet@svgcc.net [~/public_html/subdomains]# pwd
+/home2/svgccnet/public_html/subdomains
+svgccnet@svgcc.net [~/public_html/subdomains]# ls
+./                     cms/             egrades.zip   sat_dev/
+../                    dasgs/           elearning/    sat_dev.git/
+admissions-lagacy/     dne/             grades/       sat_dev.git.zip
+apply/                 dte/             moodle/       sat_dev_20150803.zip
+apply-dev/             dtve/            my/           satadmin/
+apply-dev-initial.zip  ecampus/         oas-legacy/   studentportal/
+apply-dev1/            ecampus-legacy/  php_copy.ini  support/
+apply-old/             ecampusdev/      sat/
+apply.git/             egrades/         sat-old/
+svgccnet@svgcc.net [~/public_html/subdomains]# cd apply.git
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# ^Vgit config --global p ack.windowMemory "100m"                       svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# ^Vgit config --global p svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# ^Vgit config --global 
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# ^Vgit config --global                     git config --global pac k.windowMemory "100m"svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pagit config --global pa
+ksvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pa pack.vgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globa pack.wvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glob pack.wivgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glo pack.winvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --gl pack.windvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --g pack.windovgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config -- pack.windowvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config - pack.windowMvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.windowMevgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.window
+emory "100m"
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pac k.SizeLimit "100m"svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global paig --global papack.vgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globalpack.Svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globapack.Sivgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globpack.Sizvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glopack.Sizevgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glpack.SizeLvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --gpack.SizeLivgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --pack.SizeLimvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config -pack.SizeLimivgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.SizeLimitvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.SizeLimitgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.SizeLi
+it "100m"
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pac k.SizeLimit "100m"                  svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pac svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pa
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pa                      git config --global pac k.threads "1"svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global pat config --global pa
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --global papack.vgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globalpack.tvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globapack.thvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --globpack.thrvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glopack.threvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --glpack.threavgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --gpack.threadvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config --pack.threadsvgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config -pack.threads vgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.thread
+ "1"
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.threads  "1"cnet@svgcc.net [~/public_html/subdomains/apply.git]# git config pack.SizeLimit "100m"svgcc.net [~/public_html/subdomains/apply.git]# git config pack.windowMemory "100m"cc.net [~/public_html/subdomains/apply.git]# cd apply.git
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# cd apply.gitlscd apply.gitgit config pack.windowMeemory "100m"cc.net [~/public_html/subdomains/apply.git]# git config pack.SizeLimit "100m"svgcc.net [~/public_html/subdomains/apply.git]# git config pack.threads "1"cnet@svgcc.net [~/public_html/subdomains/apply.git]# 
+svgccnet@svgcc.net [~/public_html/subdomains/apply.git]# 

@@ -8,6 +8,7 @@ use yii\data\ArrayDataProvider;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
 use yii\web\Response;
+use yii\base\ErrorException;
 
 use frontend\models\ProgrammeCatalog;
 use frontend\models\Division;
@@ -787,6 +788,38 @@ class ProgrammesController extends Controller
         $files = FileHelper::findFiles($dir);
         Yii::$app->response->sendFile($files[0], "Download");
         Yii::$app->response->send();
+    }
+    
+    
+    /**
+     * Deletes the programme booklet for a particular academic offering
+     * 
+     * @param type $divisionid
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 11/06/2016
+     * Date Last Modified: 11/06/2016
+     */
+    public function actionDeleteBooklet($divisionid, $programmecatalogid, $academicofferingid)
+    {
+        if($divisionid == 4)
+            $division = "dasgs";
+        elseif($divisionid == 5)
+            $division = "dtve";
+        elseif($divisionid == 6)
+            $division = "dte";
+        elseif($divisionid == 7)
+            $division = "dne";
+        
+        $dir =  Yii::getAlias('@frontend') . "/files/programme_booklets/" . $division . "/" . $programmecatalogid . "_" . $academicofferingid . "/";
+        try
+        {
+            FileHelper::removeDirectory($dir);
+        } catch (ErrorExceptionException $ex) {
+            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to delete programme booklet file from server.');
+        }
     }
     
     

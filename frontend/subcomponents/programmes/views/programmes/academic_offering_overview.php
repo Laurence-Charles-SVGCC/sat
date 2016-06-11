@@ -99,14 +99,42 @@
                                             href=<?=Url::toRoute(['/subcomponents/programmes/programmes/download-booklet', 
                                                                                 'divisionid' => $programme_info['divisionid'],
                                                                                 'programmecatalogid' => $programme_info['programmecatalogid'],
-                                                                                'academicofferingid' => $academicofferingid,]);
+                                                                                'academicofferingid' => $academicofferingid]);
                                                     ?> role="button"> Download Booklet
                                     </a>
-                                     <a class="btn btn-info glyphicon glyphicon-remove" style="width:20%; margin-right:15%" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/delete-booklet']);?> role="button"> Delete Booklet</a>
-                                     <a class="btn btn-info glyphicon glyphicon-refresh" style="width:20%;" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/replace-booklet']);?> role="button"> Replace Booklet</a>
-                                <?php else:?>
-                                     <a class="btn btn-info glyphicon glyphicon-plus" style="width:20%; margin:0 auto;" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/upload-booklet']);?> role="button"> Upload Booklet</a>
-                                <?php endif?>
+                                    <?= Html::a(' Replace Booklet', 
+                                                    ['replace-booklet',  'divisionid' => $programme_info['divisionid'],
+                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                     'academicofferingid' => $academicofferingid], 
+                                                    ['class' => 'btn btn-warning glyphicon glyphicon-refresh',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to replace the current booklet?',
+                                                            'method' => 'post',
+                                                        ],
+                                                        'style' => 'width:20%; margin-right:15%',
+                                                    ]);
+                                    ?>
+                                    <?= Html::a(' Delete Booklet', 
+                                                    ['delete-booklet',  'divisionid' => $programme_info['divisionid'],
+                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                     'academicofferingid' => $academicofferingid], 
+                                                    ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to delete thos current booklet?',
+                                                            'method' => 'post',
+                                                        ],
+                                                        'style' => 'width:20%',
+                                                    ]);
+                                    ?>
+                                    <?php else:?>
+                                         <a class="btn btn-info glyphicon glyphicon-plus" style="width:20%; margin:0 auto;" 
+                                            href=<?=Url::toRoute(['/subcomponents/programmes/programmes/upload-booklet',
+                                                                                    'divisionid' => $programme_info['divisionid'],
+                                                                                    'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                                    'academicofferingid' => $academicofferingid,]);
+                                                        ?> role="button"> Upload Booklet
+                                         </a>
+                                    <?php endif?>
                             </fieldset>
                         </div>
 
