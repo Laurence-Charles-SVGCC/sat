@@ -17,8 +17,6 @@
     $menu_items = [
          1 => "View Course Outlines",
          2 => "Investigate Academic Year",
-         3 => "View Intake Reports",
-         4 => "View Student Performance Options",
     ];
 ?>
 
@@ -113,11 +111,11 @@
                                 </tr>
                                 
                                 <tr>
-                                    <th>Most Recent Programme Coordinator(s)</th>
+                                    <th>Most Recent Coordinator(s)</th>
                                     <?php if($cordinator_details):?>
-                                        <td><?=$cordinator_details?></td>
+                                        <td colspan="5"><?=$cordinator_details?></td>
                                     <?php else:?>
-                                        <td>No appointees</td>
+                                        <td colspan="5">No appointees</td>
                                     <?php endif;?>
                                 </tr>
                             </table></br>
@@ -161,7 +159,46 @@
 
                          <div id="investigate-academic-year" style="display:none">
                             <fieldset>
-                                <legend class="custom_h2" style="margin-left:0%;">Courses Offered</legend>
+                                <legend class="custom_h2" style="margin-left:0%;">Academic Year Selection</legend>
+                                <p>
+                                    Select the academic year of the programme you wish to investigate.
+                                    <?php
+                                        echo "<td>";                                  
+                                            echo "<div class='dropdown'>
+                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                echo "Select Cohort...";
+                                                echo "<span class='caret'></span>";
+                                                echo "</button>";
+                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                    $cohort_count = $cohort_array[0];
+                                                    if ($cohort_count > 0)
+                                                    {
+                                                        for ($k = 1 ; $k <= $cohort_count ; $k++)
+                                                        {
+                                                            $year_title = AcademicYear::getYearTitle($cohort_array[$k]->academicyearid);
+                                                            $academic_year_id = $cohort_array[$k]->academicyearid;
+                                                            $academic_offering_id = $cohort_array[$k]->academicofferingid;
+                                                            $divisionid = Department::getDivisionID($programme['departmentid']);
+                                                            $hyperlink = Url::toRoute(['/subcomponents/programmes/programmes/get-academic-offering/' ,
+                                                                                                'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                                                'academicofferingid' => $academic_offering_id,
+                                                                                             ]);
+                                                            if(ProgrammeCatalog::getBooklets($divisionid, $programme_info['programmecatalogid'],  $academic_offering_id)==true)
+                                                                echo "<li><a href='$hyperlink'>$year_title</a></li>";  
+                                                            else
+                                                                 echo "<li><a>$year_title - Not Availables</a></li>"; 
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        echo "<li>This programme is yet to be offered</li>";  
+                                                    }    
+                                                echo "</ul>";
+                                            echo "</div>";
+                                        echo "</td>"; 
+                                    echo "</td>";
+                                    ?>
+                                </p>
                             </fieldset>
                         </div>
 

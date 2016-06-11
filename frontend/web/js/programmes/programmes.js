@@ -186,7 +186,15 @@ function courseSearchType()
     }
 }
 
-
+/**
+ * Manages the radiolist output on the 'programme_overview' view
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 11/06/2016
+ * Date Last Modified: 11/06/2016
+ */
 function toggleProgrammeOptions()
 {
     var search_by = document.getElementsByName('programme_options');    //captures input
@@ -194,30 +202,54 @@ function toggleProgrammeOptions()
     {
          document.getElementById("view-course-outlines").style.display = "block";       
          document.getElementById("investigate-academic-year").style.display = "none";
-         document.getElementById("view-intake-reports").style.display = "none";
-         document.getElementById("view-student-performance-options").style.display = "none";
     }
     else if (search_by[1].checked == true)        //if Investigate Academic Year
     {
          document.getElementById("view-course-outlines").style.display = "none";       
          document.getElementById("investigate-academic-year").style.display = "block";
-         document.getElementById("view-intake-reports").style.display = "none";
-         document.getElementById("view-student-performance-options").style.display = "none";
     }
-    else if (search_by[2].checked == true)        //if View Intake Reports
+}
+
+/**
+ * Manages the radiolist output on the 'academic_offering_overview' view
+ * 
+ * @returns {undefined}
+ * 
+ * Author: Laurence Charles
+ * Date Created: 11/06/2016
+ * Date Last Modified: 11/06/2016
+ */
+function toggleAcademicOfferingOptions()
+{
+    var search_by = document.getElementsByName('academic_offering_options');    //captures input
+    if (search_by[0].checked == true)            //if Manage Programme Booklets
     {
-         document.getElementById("view-course-outlines").style.display = "none";       
-         document.getElementById("investigate-academic-year").style.display = "none";
-         document.getElementById("view-intake-reports").style.display = "block";
-         document.getElementById("view-student-performance-options").style.display = "none";
+         document.getElementById("manage-booklets").style.display = "block";       
+         document.getElementById("manage-courses").style.display = "none";
+         document.getElementById("intake-reports").style.display = "none";
+         document.getElementById("student-performance-reports").style.display = "none";
     }
-    else if (search_by[3].checked == true)        //if View Student Performance Options
+    else if (search_by[1].checked == true)        //if Manage Courses
     {
-         document.getElementById("view-course-outlines").style.display = "none";       
-         document.getElementById("investigate-academic-year").style.display = "none";
-         document.getElementById("view-intake-reports").style.display = "none";
-         document.getElementById("view-student-performance-options").style.display = "block";
-    }
+         document.getElementById("manage-booklets").style.display = "none";       
+         document.getElementById("manage-courses").style.display = "block";
+         document.getElementById("intake-reports").style.display = "none";
+         document.getElementById("student-performance-reports").style.display = "none";
+     }
+     else if (search_by[2].checked == true)        //if View Intake Reports
+    {
+        document.getElementById("manage-booklets").style.display = "none";       
+         document.getElementById("manage-courses").style.display = "none";
+         document.getElementById("intake-reports").style.display = "block";
+         document.getElementById("student-performance-reports").style.display = "none";
+     }
+     else if (search_by[3].checked == true)        //if View Performance Reports
+    {
+         document.getElementById("manage-booklets").style.display = "none";       
+         document.getElementById("manage-courses").style.display = "none";
+         document.getElementById("intake-reports").style.display = "none";
+         document.getElementById("student-performance-reports").style.display = "block";
+     }
 }
 
 

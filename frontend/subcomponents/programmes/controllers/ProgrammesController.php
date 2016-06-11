@@ -26,6 +26,7 @@ use frontend\models\CapeSubject;
 use frontend\models\Cordinator;
 use frontend\models\Employee;
 use frontend\models\CourseOutline;
+use frontend\models\AcademicYear;
 
 
 class ProgrammesController extends Controller
@@ -807,6 +808,91 @@ class ProgrammesController extends Controller
         {
             
         }
+    }
+    
+    
+    public function actionGetAcademicOffering($programmecatalogid, $academicofferingid)
+    {
+        $programme = ProgrammeCatalog::find()
+                ->where(['programmecatalogid' =>$programmecatalogid])
+                ->one();
+        $programme_name =  ProgrammeCatalog::getProgrammeFullName($programme->programmecatalogid);
+        $programme_info = NULL; 
+        
+        if ($programme)
+        {
+            $programme_info['programmecatalogid'] = $programme->programmecatalogid;
+
+            $qualificationtype = QualificationType::find()
+                    ->where(['qualificationtypeid' => $programme->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->abbreviation;
+            $programme_info['qualificationtype'] = $qualificationtype;
+
+            $programme_info['name'] = $programme->name;
+            $programme_info['specialisation'] = $programme->specialisation;
+
+            $department_record = Department::find()
+                    ->where(['departmentid' => $programme->departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $department = $department_record->name;
+            $programme_info['department'] = $department;
+            
+            $divisionid = Department::getDivisionID($department_record->departmentid);
+            $programme_info['divisionid'] = $divisionid;
+
+            $exambody = ExaminationBody::find()
+                    ->where(['examinationbodyid' => $programme->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->abbreviation;
+            $programme_info['exambody'] = $exambody;
+
+            $programmetype = IntentType::find()
+                    ->where(['intenttypeid' => $programme->programmetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->name;
+            $programme_info['programmetype'] = $programmetype;
+
+            $programme_info['duration'] = $programme->duration;
+            $programme_info['creationdate'] = $programme->creationdate;
+
+            $programme_container[] = $programme_info;
+        }
+        
+        $academic_year = AcademicYear::find()
+                 ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                ->where(['academic_offering.academicofferingid' => $academicofferingid])
+                ->one()
+                ->title;
+        
+        $cordinator_details = "";
+      
+       $cordinators = Cordinator::find()
+               ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+               ->orderBy('cordinatorid DESC')
+               -> all();
+       if($cordinators)
+       {
+           foreach($cordinators as $key => $cordinator)
+           {
+               $name = "";
+               $name = Employee::getEmployeeName($cordinator[$key]->personid);
+               if(count($cordinators) - 1 == 0)
+                $cordinator_details .= $name;
+                else 
+                    $cordinator_details .= $name . ", ";
+           }
+       }
+        
+        return $this->render('academic_offering_overview',
+            [
+                'programme' => $programme,
+                'programme_name' => $programme_name,
+                'programme_info' => $programme_info,
+                'cordinator_details' => $cordinator_details,
+                'cohort' => $academic_year,
+                'academicofferingid' => $academicofferingid,
+//                'cohort_array' => $cohort_array,
+//                    'course_outline_dataprovider' => $course_outline_dataprovider,
+//                    'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider,
+                ]);
     }
     
     
