@@ -979,7 +979,7 @@ class ReportsController extends Controller {
             $programmeid = NULL;
             $criteria = NULL;
             
-            $application_periodid = $request->post('period');
+            $application_periodid = $request->post('intakeperiod');
             if (!$application_periodid)
                 $application_periodid = Yii::$app->session->get('application_periodid');
 
@@ -1018,7 +1018,6 @@ class ReportsController extends Controller {
             Yii::$app->session->set('criteria', $criteria);
         }
 
-        
         if ($application_periodid != 0) 
         {
             $divisionid = ApplicationPeriod::find()
@@ -1287,8 +1286,6 @@ class ReportsController extends Controller {
                 $summary_info['enrolled'] = $enrolled_count;
                 $summary_data[] = $summary_info;
             }
-            
-           
         }
         
         $summary_dataProvider = new ArrayDataProvider([
