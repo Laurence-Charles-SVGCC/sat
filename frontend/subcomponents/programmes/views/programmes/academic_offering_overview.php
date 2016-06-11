@@ -94,7 +94,7 @@
                         <div id="manage-booklets" style="display:none;">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Manage Programme Booklets</legend>
-                                <?php if(true):?>
+                                <?php if(ProgrammeCatalog::getBooklets($programme_info['divisionid'], $programme_info['programmecatalogid'], $academicofferingid) == true):?>
                                     <a class="btn btn-info glyphicon glyphicon-download-alt" style="width:20%; margin-left:5%; margin-right:15%"
                                             href=<?=Url::toRoute(['/subcomponents/programmes/programmes/download-booklet', 
                                                                                 'divisionid' => $programme_info['divisionid'],
@@ -102,25 +102,20 @@
                                                                                 'academicofferingid' => $academicofferingid]);
                                                     ?> role="button"> Download Booklet
                                     </a>
-                                    <?= Html::a(' Replace Booklet', 
-                                                    ['replace-booklet',  'divisionid' => $programme_info['divisionid'],
-                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
-                                                                     'academicofferingid' => $academicofferingid], 
-                                                    ['class' => 'btn btn-warning glyphicon glyphicon-refresh',
-                                                        'data' => [
-                                                            'confirm' => 'Are you sure you want to replace the current booklet?',
-                                                            'method' => 'post',
-                                                        ],
-                                                        'style' => 'width:20%; margin-right:15%',
-                                                    ]);
-                                    ?>
+                                    <a class="btn btn-warning glyphicon glyphicon-refresh" style="width:20%; margin-right:15%;" 
+                                            href=<?=Url::toRoute(['/subcomponents/programmes/programmes/replace-booklet',
+                                                                                    'divisionid' => $programme_info['divisionid'],
+                                                                                    'programmecatalogid' => $programme_info['programmecatalogid'],
+                                                                                    'academicofferingid' => $academicofferingid,]);
+                                                        ?> role="button"> Replace Booklet
+                                         </a>
                                     <?= Html::a(' Delete Booklet', 
                                                     ['delete-booklet',  'divisionid' => $programme_info['divisionid'],
                                                                      'programmecatalogid' => $programme_info['programmecatalogid'],
                                                                      'academicofferingid' => $academicofferingid], 
                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                         'data' => [
-                                                            'confirm' => 'Are you sure you want to delete thos current booklet?',
+                                                            'confirm' => 'Are you sure you want to delete the current booklet?',
                                                             'method' => 'post',
                                                         ],
                                                         'style' => 'width:20%',
