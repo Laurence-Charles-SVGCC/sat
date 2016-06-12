@@ -1192,6 +1192,34 @@ class ReportsController extends Controller {
                             ->one();
                 $name = $programme_record->getFullName();
                 
+                $accepted_male_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('applicant.personid')
+                        ->count();
+                
+                $accepted_female_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('applicant.personid')
+                        ->count();
+                
                 $accepted_count = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -1205,6 +1233,38 @@ class ReportsController extends Controller {
                         ->groupby('applicant.personid')
                         ->count();
                 
+                $enrolled_male_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('applicant.personid')
+                        ->count();
+                
+                $enrolled_female_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('applicant.personid')
+                        ->count();
+                
                 $enrolled_count = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -1212,16 +1272,20 @@ class ReportsController extends Controller {
                         ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
-                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
-                                'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
-                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
-                                ])
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
                         ->groupby('applicant.personid')
                         ->count();
                 
                 $summary_info['name'] = $name;
+                $summary_info['accepted_males'] = $accepted_male_count;
+                $summary_info['accepted_females'] = $accepted_female_count;
                 $summary_info['accepted'] = $accepted_count;
+                $summary_info['enrolled_males'] = $enrolled_male_count;
+                $summary_info['enrolled_females'] = $enrolled_female_count;
                 $summary_info['enrolled'] = $enrolled_count;
                 $summary_data[] = $summary_info;
             }
@@ -1249,6 +1313,38 @@ class ReportsController extends Controller {
                                     ->one()
                                     ->subjectname;
                 
+                $accepted_male_count =Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $accepted_female_count =Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
                 $accepted_count = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -1256,11 +1352,47 @@ class ReportsController extends Controller {
                         ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
-                                'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
-                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
-                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
-                                ])
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $enrolled_male_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $enrolled_female_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
                         ->groupby('application.personid')
                         ->count();
                 
@@ -1272,17 +1404,21 @@ class ReportsController extends Controller {
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
                         ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
-                                'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
-                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
-                                'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
-                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
-                                ])
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
                         ->groupby('application.personid')
                         ->count();
                 
                 $summary_info['name'] = $subject_name;
+                $summary_info['accepted_males'] = $accepted_male_count;
+                $summary_info['accepted_females'] = $accepted_female_count;
                 $summary_info['accepted'] = $accepted_count;
+                $summary_info['enrolled_males'] = $enrolled_male_count;
+                $summary_info['enrolled_females'] = $enrolled_female_count;
                 $summary_info['enrolled'] = $enrolled_count;
                 $summary_data[] = $summary_info;
             }

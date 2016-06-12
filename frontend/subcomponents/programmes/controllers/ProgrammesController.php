@@ -10,6 +10,7 @@ use yii\helpers\FileHelper;
 use yii\web\Response;
 use yii\base\ErrorException;
 
+use common\models\User;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\Division;
 use frontend\models\Department;
@@ -29,6 +30,16 @@ use frontend\models\Employee;
 use frontend\models\CourseOutline;
 use frontend\models\AcademicYear;
 use frontend\models\BookletAttachment;
+use frontend\models\Applicant;
+use frontend\models\Offer;
+use frontend\models\Application;
+use frontend\models\ApplicationCapesubject;
+use frontend\models\StudentRegistration;
+use frontend\models\Semester;
+use frontend\models\CourseType;
+use frontend\models\PassCriteria;
+use frontend\models\PassFailType;
+
 
 
 class ProgrammesController extends Controller
@@ -942,7 +953,17 @@ class ProgrammesController extends Controller
         }
     }
     
-    
+    /**
+     * Render control panel for academic offering
+     * 
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 11/06/2016
+     * Date Last Modified: 11/06/2016
+     */
     public function actionGetAcademicOffering($programmecatalogid, $academicofferingid)
     {
         $programme = ProgrammeCatalog::find()
@@ -1021,14 +1042,622 @@ class ProgrammesController extends Controller
                 'cordinator_details' => $cordinator_details,
                 'cohort' => $academic_year,
                 'academicofferingid' => $academicofferingid,
-//                'cohort_array' => $cohort_array,
-//                    'course_outline_dataprovider' => $course_outline_dataprovider,
-//                    'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider,
-                ]);
+                'programmecatalogid' => $programmecatalogid,
+             ]);
     }
     
     
+    /**
+     * Generates the intake report for an academic offering
+     * 
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/06/2016
+     * Date Last Modified: 12/06/2016
+     */
+    public function actionGenerateIntakeReport($academicofferingid)
+    {
+        $is_cape = AcademicOffering::isCape($academicofferingid);
+        
+        $summary_dataProvider = NULL;
+        $accepted_dataProvider = NULL;
+        $enrolled_dataProvider = NULL;
+        
+        $summary_data = array();
+        $accepted_data = array();
+        $enrolled_data = array();
+        
+        $academicoffering = AcademicOffering::find()
+                ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        $application_periodid =  $academicoffering->applicationperiodid;
+        $programme_criteria =  ProgrammeCatalog::find()
+                                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                                ->where(['academicofferingid' => $academicofferingid])
+                                ->one()
+                                ->getFullName();
+        
+        $accepted_cond = array();
+        $accepted_cond['application.isactive'] = 1;
+        $accepted_cond['application.isdeleted'] = 0;
+        $accepted_cond['academic_offering.isactive'] = 1;
+        $accepted_cond['academic_offering.isdeleted'] = 0;
+        $accepted_cond['academic_offering.applicationperiodid'] =  $application_periodid;
+        $accepted_cond['application_period.isactive'] = 1;
+        $accepted_cond['application_period.isdeleted'] = 0;
+        $accepted_cond['application.applicationstatusid'] = 9;
+        $accepted_cond['offer.isactive'] = 1;
+        $accepted_cond['offer.isdeleted'] = 0;
+        $accepted_cond['offer.offertypeid'] = 1;
+        $accepted_cond['application.academicofferingid'] = $academicofferingid;
+
+        $accepted_applicants = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->where($accepted_cond)
+                ->groupby('applicant.personid')
+                ->orderBy('applicant.lastname ASC')
+                ->all();
+      
+        foreach ($accepted_applicants as $accepted_applicant) 
+        {
+            $offers = Offer::hasOffer($accepted_applicant->personid, $application_periodid);
+
+            if($offers == true)
+            {
+                foreach ($offers as $offer) 
+                {
+                    $username = User::findOne(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->username;
+
+                    $programme = "N/A";
+                    $target_application = Application::find()
+                            ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($target_application) 
+                    {
+                        $programme_record = ProgrammeCatalog::find()
+                                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                                ->where(['academicofferingid' => $target_application->academicofferingid])
+                                ->one();
+                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $target_application->applicationid]);
+                        foreach ($cape_subjects as $cs) 
+                        {
+                            $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
+                        }
+                        $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                    }
+                    
+                    $accepted_info = array();
+                    $accepted_info['personid'] = $accepted_applicant->personid;
+                    $accepted_info['applicantid'] = $accepted_applicant->applicantid;
+                    $accepted_info['username'] = $username;
+                    $accepted_info['title'] = $accepted_applicant->title;
+                    $accepted_info['firstname'] = $accepted_applicant->firstname;
+                    $accepted_info['middlename'] = $accepted_applicant->middlename;
+                    $accepted_info['lastname'] = $accepted_applicant->lastname;
+                    $accepted_info['offerid'] = $offer->offerid;
+                    $accepted_info['applicationid'] = $offer->applicationid;
+                    $accepted_info['programme'] = $programme;
+                    $accepted_data[] = $accepted_info;
+
+                    $has_enrolled = StudentRegistration::find()
+                            ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+
+                    if($has_enrolled == true)
+                    {
+                        $enrolled_info = array();
+                        $enrolled_info['personid'] = $accepted_applicant->personid;
+                        $enrolled_info['applicantid'] = $accepted_applicant->applicantid;
+                        $enrolled_info['username'] = $username;
+                        $enrolled_info['title'] = $accepted_applicant->title;
+                        $enrolled_info['firstname'] = $accepted_applicant->firstname;
+                        $enrolled_info['middlename'] = $accepted_applicant->middlename;
+                        $enrolled_info['lastname'] = $accepted_applicant->lastname;
+                        $enrolled_info['offerid'] = $offer->offerid;
+                        $enrolled_info['applicationid'] = $offer->applicationid;
+                        $enrolled_info['programme'] = $programme;
+                        $enrolled_data[] = $enrolled_info;
+                    }
+
+                    $cape_subjects = NULL;
+                    $cape_subjects_names = NULL;
+                }
+            }
+        }
+
+        $accepted_criteria = $programme_criteria;
+        $enrolled_criteria = $programme_criteria;
+
+        /*************************************** prepare programme *****************************************/
+       $programme_record = ProgrammeCatalog::find()
+                    ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid
+                            ])
+                    ->one();
+        $name = $programme_record->getFullName();
+
+        $accepted_male_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['applicant.gender' => 'male',
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $accepted_female_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['applicant.gender' => 'female',
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $accepted_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                        ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $enrolled_male_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['applicant.gender' => 'male',
+                                'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $enrolled_female_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['applicant.gender' => 'female',
+                                'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $enrolled_count = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where(['application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $academicofferingid,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                ])
+                ->groupby('applicant.personid')
+                ->count();
+
+        $summary_info['name'] = $name;
+        $summary_info['accepted_males'] = $accepted_male_count;
+        $summary_info['accepted_females'] = $accepted_female_count;
+        $summary_info['accepted'] = $accepted_count;
+        $summary_info['enrolled_males'] = $enrolled_male_count;
+        $summary_info['enrolled_females'] = $enrolled_female_count;
+        $summary_info['enrolled'] = $enrolled_count;
+        $summary_data[] = $summary_info;
+
+        /*************************************** prepare subjects  *****************************************/
+       if($is_cape)
+       {
+            $subjects = CapeSubject::find()
+                        ->innerJoin('application_capesubject', '`cape_subject`.`capesubjectid` = `application_capesubject`.`capesubjectid`')
+                        ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->where(['cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,
+                                'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0,
+                                'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                ])
+                        ->all();
+            
+            foreach($subjects as $subject)
+            {
+                $subject_name = CapeSubject::find()
+                                    ->where(['capesubjectid' => $subject->capesubjectid])
+                                    ->one()
+                                    ->subjectname;
+                
+                $accepted_male_count =Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $accepted_female_count =Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $accepted_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $enrolled_male_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->where(['applicant.gender' => 'male',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $enrolled_female_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->where(['applicant.gender' => 'female',
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $enrolled_count = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_capesubject', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+                        ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
+                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
+                                        ])
+                        ->groupby('application.personid')
+                        ->count();
+                
+                $summary_info['name'] = $subject_name;
+                $summary_info['accepted_males'] = $accepted_male_count;
+                $summary_info['accepted_females'] = $accepted_female_count;
+                $summary_info['accepted'] = $accepted_count;
+                $summary_info['enrolled_males'] = $enrolled_male_count;
+                $summary_info['enrolled_females'] = $enrolled_female_count;
+                $summary_info['enrolled'] = $enrolled_count;
+                $summary_data[] = $summary_info;
+            }
+       }
+            
+        $summary_dataProvider = new ArrayDataProvider([
+            'allModels' => $summary_data,
+            'pagination' => [
+                'pageSize' => 25,
+            ],
+        ]);
+
+        $accepted_dataProvider = new ArrayDataProvider([
+            'allModels' => $accepted_data,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+
+        $enrolled_dataProvider = new ArrayDataProvider([
+            'allModels' => $enrolled_data,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+
+        $summary_header = "Intake Overview";
+        $summary_title = "Title: " . $programme . $summary_header;
+
+        $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
+        $accepted_title = "Title: " . $programme .  $accepted_header;
+
+        $enrolled_header = "Enrolled Students Report - " . $enrolled_criteria;
+        $enrolled_title = "Title: " . $programme .  $enrolled_header;
+        ;
+
+        $date = "Date Generated: " . date('Y-m-d') . "   ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+
+        $summary_filename = $summary_title . $date . $generating_officer;
+        $accepted_filename = $accepted_title . $date . $generating_officer;
+        $enrolled_filename = $enrolled_title . $date . $generating_officer;
+
+        $page_title = $programme . " Intake Report";
+        
+        
+        return $this->render('display_academic_offering_intake', [
+                    'summary_dataProvider' => $summary_dataProvider,
+                    'accepted_dataProvider' => $accepted_dataProvider,
+                    'enrolled_dataProvider' => $enrolled_dataProvider,
+
+                    'summary_header' =>  $summary_header,
+                    'accepted_header' => $accepted_header,
+                    'enrolled_header' => $enrolled_header,
+
+                    'summary_filename' => $summary_filename,
+                    'accepted_filename' => $accepted_filename,
+                    'enrolled_filename' => $enrolled_filename,
+
+                    'programmecatalogid' => $academicoffering->programmecatalogid,
+                    'academicofferingid' => $academicofferingid,
+                    'programme_name' => $programme_criteria,
+                    'page_title' => $page_title,
+                   
+            ]);
+    }
     
+    
+    /**
+     * Generates the intake report for an academic offering
+     * 
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/06/2016
+     * Date Last Modified: 12/06/2016
+     */
+    public function actionGenerateProgrammeBroadsheet($academicofferingid)
+    {
+        $asc_dataprovider = NULL;
+        $cape_dataprovider = NULL;
+        
+        $asc_data = array();
+        $cape_data =array();
+        
+        $academicoffering = AcademicOffering::find()
+                ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        $programmecatalogid = $academicoffering->programmecatalogid;
+        
+        $is_cape = AcademicOffering::isCape($academicofferingid);
+        
+        $programme_name = ProgrammeCatalog::getProgrammeName($academicofferingid);
+   
+        $course_info = array();
+        
+        if($programmecatalogid == 10)       //if CAPE
+        {
+            $courses = CapeCourse::find()
+                    ->innerJoin('cape_unit', '`cape_course`.`capeunitid` = `cape_unit`.`capeunitid`')
+                    ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
+                    ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
+                    ->groupBy('cape_course.capecourseid')
+                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid])
+                    ->all();
+            
+            if($courses)
+            {
+                foreach($courses as $course)
+                {
+                    $course_info['capecourseid'] = $course->capecourseid;
+                    $course_info['programmecatalogid'] = $programmecatalogid;
+                    $course_info['coursecode'] = $course->coursecode;
+                    $course_info['name'] = $course->name;
+                    
+                    $cape_subject = CapeSubject::find()
+                            ->innerJoin('cape_unit', '`cape_subject`.`capesubjectid` = `cape_unit`.`capesubjectid`')
+                            ->innerJoin('cape_course', ' `cape_unit`.`capeunitid`=`cape_course`.`capeunitid`')
+                             ->where(['cape_course.capecourseid' => $course->capecourseid])
+                            ->one()
+                            ->subjectname;
+                    $course_info['subject'] =  $cape_subject;
+                    
+                    $semester = Semester::find()
+                            ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one()
+                            ->title;
+                    $course_info['semester'] = $semester;
+                    
+                    $course_info['coursework'] = $course->courseworkweight;
+                    $course_info['exam'] = $course->examweight;
+                    
+                    $cape_data[] = $course_info;
+                }
+                $cape_dataprovider = new ArrayDataProvider([
+                        'allModels' => $cape_data,
+                        'pagination' => [
+                            'pageSize' => 25, 
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['code' => SORT_ASC],
+                            'attributes' => ['code'],
+                        ]
+                 ]);
+            }
+        }
+        
+        else        //if !CAPE
+        {
+            $courses = CourseOffering::find()
+                    ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1 , 'isdeleted' => 0])
+                    ->all();
+            
+            if($courses)
+            {
+                foreach($courses as $course)
+                {
+                    $course_info['courseofferingid'] = $course->courseofferingid;
+                    $course_info['programmecatalogid'] = $programmecatalogid;
+                    
+                    $catalog = CourseCatalog::find()
+                            ->where(['coursecatalogid' => $course->coursecatalogid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    $course_info['code'] = $catalog->coursecode;
+                    $course_info['name'] = $catalog->name;
+                    
+                    $semester = Semester::find()
+                            ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one()
+                            ->title;
+                    $course_info['semester'] = $semester;
+                    
+                    $coursetype =  CourseType::find()
+                            ->where(['coursetypeid' => $course->coursetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one()
+                            ->name;
+                    $course_info['coursetype'] = $coursetype;
+                    
+                    $passcriteria = PassCriteria::find()
+                            ->where(['passcriteriaid' => $course->passcriteriaid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one()
+                            ->name;
+                    $course_info['passcriteria'] = $passcriteria;
+                    
+                    $passfailtype = PassFailType::find()
+                            ->where(['passfailtypeid' => $course->passfailtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one()
+                            ->description;
+                    $course_info['passfailtype'] = $passfailtype;
+                    
+                    $course_info['credits'] = $course->credits;
+                    $course_info['coursework'] = $course->courseworkweight;
+                    $course_info['exam'] = $course->examweight;
+                    
+                    
+                    $asc_data[] = $course_info;
+                }
+                
+                $asc_dataprovider = new ArrayDataProvider([
+                                'allModels' => $asc_data,
+                                'pagination' => [
+                                    'pageSize' => 25,
+                            ],
+                             'sort' => [
+                                'defaultOrder' => ['code' => SORT_ASC],
+                                'attributes' => ['code'],
+                            ]
+                    ]);
+            }
+        }
+            
+           
+
+       
+
+        
+       
+        $date = "Date Generated: " . date('Y-m-d') . "   ";
+        
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+
+        $filename = "Title: " . $programme_name. " Performance Report " . $date . $generating_officer;
+        
+        
+       
+        return $this->render('programme_broadsheet', [
+                    'programme_name' => $programme_name,
+                    'asc_dataprovider' => $asc_dataprovider,
+                    'cape_dataprovider' => $cape_dataprovider,
+                    'programmecatalogid' => $programmecatalogid,
+                    'academicofferingid' => $academicofferingid,
+                    'filename' => $filename,
+        ]);
+//        }
+//        else
+//        {
+//            return $this->render('programme_broadsheet', [
+//                        'programme_name' => $programme_name,
+//                        'asc_dataprovider' => $asc_dataprovider,
+//                        'programmecatalogid' => $programmecatalogid,
+//                        'academicofferingid' => $academicofferingid,
+//                        'filename' => $filename,
+//                ]);
+//        }
+    }
     
     
     

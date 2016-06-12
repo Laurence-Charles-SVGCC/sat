@@ -9,17 +9,20 @@
     use frontend\models\Semester;
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
+    use frontend\models\AcademicOffering;
     
     $this->title = 'Academic Offering Overview';
-     $this->params['breadcrumbs'][] = ['label' => 'Programme Overview', 'url' => Url::to(['programmes/programme-overview'])];
     $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = ['label' => 'Programme Overview', 'url' => Url::to(['programmes/programme-overview',
+                                                            'programmecatalogid' => $programmecatalogid
+                                                            ])];
     $this->params['breadcrumbs'][] = $this->title;
     
     $menu_items = [
         1 => "Manage Programme Booklets",
-        2 => "Manage Courses",
+        2 => "View Course Details",
         3 => "View Intake Reports",
-        4 => "View Performance Reports",
+        4 => "View Performance Report",
     ];
 ?>
 
@@ -142,12 +145,26 @@
                          <div id="intake-reports" style="display:none">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Intake Reports</legend>
+                                <p>Select the button below to generate the intake report.</p>
+                                <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                                    href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-intake-report',
+                                                                            'academicofferingid' => $academicofferingid
+                                                                        ]);
+                                                ?> role="button"> Generate Report
+                                </a>
                             </fieldset>
                         </div>
 
                          <div id="student-performance-reports" style="display:none">
                              <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Student Performance</legend>
+                                <p>Select the button below to generate the intake report.</p>
+                                <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                                    href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-programme-broadsheet',
+                                                                            'academicofferingid' => $academicofferingid
+                                                                        ]);
+                                                ?> role="button"> Generate Broadsheet
+                                </a>
                             </fieldset>
                         </div>
                     </div>

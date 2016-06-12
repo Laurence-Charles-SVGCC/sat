@@ -40,9 +40,29 @@
                                                 'label' => 'Programme/Subject'
                                             ],
                                             [
+                                                'attribute' => 'accepted_males',
+                                                'format' => 'text',
+                                                'label' => 'Accepted Males'
+                                            ],
+                                            [
+                                                'attribute' => 'accepted_females',
+                                                'format' => 'text',
+                                                'label' => 'Accepted Females'
+                                            ],
+                                            [
                                                 'attribute' => 'accepted',
                                                 'format' => 'text',
                                                 'label' => 'Number of Students Accepted'
+                                            ],
+                                            [
+                                                'attribute' => 'enrolled_males',
+                                                'format' => 'text',
+                                                'label' => 'Enrolled Males'
+                                            ],
+                                            [
+                                                'attribute' => 'enrolled_females',
+                                                'format' => 'text',
+                                                'label' => 'Enrolled Females'
                                             ],
                                             [
                                                 'attribute' => 'enrolled',
@@ -79,9 +99,29 @@
                                             'label' => 'Programme/Subject'
                                         ],
                                         [
+                                            'attribute' => 'accepted_males',
+                                            'format' => 'text',
+                                            'label' => 'Accepted Males'
+                                        ],
+                                        [
+                                            'attribute' => 'accepted_females',
+                                            'format' => 'text',
+                                            'label' => 'Accepted Females'
+                                        ],
+                                        [
                                             'attribute' => 'accepted',
                                             'format' => 'text',
                                             'label' => 'Number of Students Accepted'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_males',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Males'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_females',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Females'
                                         ],
                                         [
                                             'attribute' => 'enrolled',
