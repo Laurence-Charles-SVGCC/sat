@@ -19,6 +19,8 @@ use frontend\models\ExaminationBody;
 use frontend\models\IntentType;
 use frontend\models\AcademicOffering;
 use frontend\models\Batch;
+use frontend\models\BatchStudent;
+use frontend\models\BatchStudentCape;
 use frontend\models\CourseOffering;
 use frontend\models\CourseCatalog;
 use frontend\models\BatchCape;
@@ -27,6 +29,8 @@ use frontend\models\CapeUnit;
 use frontend\models\CapeSubject;
 use frontend\models\Cordinator;
 use frontend\models\Employee;
+use frontend\models\EmployeeBatch;
+use frontend\models\EmployeeBatchCape;
 use frontend\models\CourseOutline;
 use frontend\models\AcademicYear;
 use frontend\models\BookletAttachment;
@@ -1514,9 +1518,26 @@ class ProgrammesController extends Controller
                     ->innerJoin('cape_unit', '`cape_course`.`capeunitid` = `cape_unit`.`capeunitid`')
                     ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
                     ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
-                    ->groupBy('cape_course.capecourseid')
+//                    ->groupBy('cape_course.capecourseid')
                     ->where(['academic_offering.programmecatalogid' => $programmecatalogid])
                     ->all();
+            
+            $total_courses = count($courses);
+            $total_entered = 0;
+            foreach($courses as $course)
+            {
+                $has_grades = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->count();
+                if($has_grades>0)
+                     $total_entered++;
+            }
+            $total_outstanding = $total_courses - $total_entered;
             
             if($courses)
             {
@@ -1524,7 +1545,7 @@ class ProgrammesController extends Controller
                 {
                     $course_info['capecourseid'] = $course->capecourseid;
                     $course_info['programmecatalogid'] = $programmecatalogid;
-                    $course_info['coursecode'] = $course->coursecode;
+                    $course_info['code'] = $course->coursecode;
                     $course_info['name'] = $course->name;
                     
                     $cape_subject = CapeSubject::find()
@@ -1541,8 +1562,206 @@ class ProgrammesController extends Controller
                             ->title;
                     $course_info['semester'] = $semester;
                     
+                    $lecs = EmployeeBatchCape::find()
+                             ->innerJoin('batch_cape', '`employee_batch_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid`=`cape_course`.`capecourseid`')
+                             ->where(['cape_course.capecourseid' => $course->capecourseid])
+                            ->all();
+                    if($lecs)
+                        $has_lecs = true;
+                    else
+                        $has_lecs = false;
+                    $lecturers = "";
+                            
+                     if($has_lecs)
+                     {
+                         $lec_count = count($lecs);
+                         foreach($lecs as $key=>$lec)
+                         {
+                             if($lec_count - $key == 1 )     //if last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid);
+                             }
+                             else       //not last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                             }
+                         }
+                          $course_info['lecturer'] = $lecturers;
+                     }
+                     else
+                          $course_info['lecturer'] = "Unavailable"; 
+                    
                     $course_info['coursework'] = $course->courseworkweight;
                     $course_info['exam'] = $course->examweight;
+                    
+                    $enrolled_count = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->count();
+                    
+                    $fail_count =  BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['<',  'batch_student_cape.final' , 40]) 
+                            ->count();
+                    $pass_count = $enrolled_count - $fail_count;
+                    
+                    $pass_percentage = 0;
+                    if( $enrolled_count)
+                            $pass_percentage = number_format(($pass_count/$enrolled_count)*100,1);
+                    
+                    $course_info['total'] = $enrolled_count;
+                    $course_info['passes'] = $pass_count;
+                    $course_info['fails'] = $fail_count;
+                    $course_info['pass_percent'] =  $pass_percentage;
+                    
+                    $mode_count = 0;
+                    $mode_val = "N/A";
+                    
+                     $ninty_plus = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' ,  90]) 
+                            ->count();
+                     $course_info['ninety_plus'] =  $ninty_plus;
+                     if($ninty_plus > $mode_count)
+                     {
+                        $mode_count = $ninty_plus;
+                        $mode_val = "90+";
+                     }
+                     
+                     $eighty_to_ninety = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' ,  80]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  90]) 
+                            ->count();
+                     $course_info['eighty_to_ninety'] =  $eighty_to_ninety;
+                     if($eighty_to_ninety > $mode_count)
+                     {
+                        $mode_count = $eighty_to_ninety;
+                        $mode_val = "80-90";
+                     }
+                     
+                     $seventy_to_eighty = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' , 70]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  80]) 
+                            ->count();
+                     $course_info['seventy_to_eighty'] =  $seventy_to_eighty;
+                     if($seventy_to_eighty > $mode_count)
+                     {
+                        $mode_count = $seventy_to_eighty;
+                        $mode_val = "70-80";
+                     }
+                    
+                     $sixty_to_seventy = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' , 60]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  70]) 
+                            ->count();
+                     $course_info['sixty_to_seventy'] =  $sixty_to_seventy;
+                     if($sixty_to_seventy > $mode_count)
+                     {
+                        $mode_count = $sixty_to_seventy;
+                        $mode_val = "60-70";
+                     }
+                     
+                     $fifty_to_sixty = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' , 50]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  60]) 
+                            ->count();
+                     $course_info['fifty_to_sixty'] =  $fifty_to_sixty;
+                     if($fifty_to_sixty > $mode_count)
+                     {
+                        $mode_count = $fifty_to_sixty;
+                        $mode_val = "50-60";
+                     }
+                     
+                      $forty_to_fifty = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' , 40]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  50]) 
+                            ->count();
+                     $course_info['forty_to_fifty'] =  $forty_to_fifty;
+                     if($forty_to_fifty > $mode_count)
+                     {
+                        $mode_count = $forty_to_fifty;
+                        $mode_val = "40-50";
+                     }
+                     
+                     $thirtyfive_to_forty = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                            ->andWhere(['>=',  'batch_student_cape.final' , 35]) 
+                             ->andWhere(['<',  'batch_student_cape.final' ,  40]) 
+                            ->count();
+                     $course_info['thirtyfive_to_forty'] =  $thirtyfive_to_forty;
+                     if($thirtyfive_to_forty > $mode_count)
+                     {
+                        $mode_count = $thirtyfive_to_forty;
+                        $mode_val = "35-40";
+                     }
+                     
+                     $minus_thirtyfive = BatchStudentCape::find()
+                            ->innerJoin('batch_cape', '`batch_student_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                            ->innerJoin('cape_course', '`batch_cape`.`capecourseid` = `cape_course`.`capecourseid`')
+                            ->where(['batch_student_cape.isactive' => 1, 'batch_student_cape.isdeleted' => 0,
+                                            'batch_cape.isactive' => 1, 'batch_cape.isdeleted' => 0, 
+                                            'cape_course.capecourseid' => $course->capecourseid, 'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0
+                                            ])
+                             ->andWhere(['<',  'batch_student_cape.final' ,  35]) 
+                            ->count();
+                     $course_info['minus_thirtyfive'] =  $minus_thirtyfive;
+                     if($minus_thirtyfive > $mode_count)
+                     {
+                        $mode_count = $minus_thirtyfive;
+                        $mode_val = " -35";
+                     }
+                     
+                     $course_info['mode'] =  $mode_val;
                     
                     $cape_data[] = $course_info;
                 }
@@ -1565,6 +1784,24 @@ class ProgrammesController extends Controller
                     ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1 , 'isdeleted' => 0])
                     ->all();
             
+            $total_courses = count($courses);
+            $total_entered = 0;
+            foreach($courses as $course)
+            {
+                $has_grades = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                if($has_grades>0)
+                     $total_entered++;
+            }
+            $total_outstanding = $total_courses - $total_entered;
+            
+            
             if($courses)
             {
                 foreach($courses as $course)
@@ -1578,6 +1815,36 @@ class ProgrammesController extends Controller
                     $course_info['code'] = $catalog->coursecode;
                     $course_info['name'] = $catalog->name;
                     
+                    $lecs = EmployeeBatch::find()
+                             ->innerJoin('batch', '`employee_batch`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid`=`course_offering`.`courseofferingid`')
+                             ->where(['course_offering.courseofferingid' => $course->courseofferingid])
+                            ->all();
+                    if($lecs)
+                        $has_lecs = true;
+                    else
+                        $has_lecs = false;
+                    $lecturers = "";
+                            
+                     if($has_lecs)
+                     {
+                         $lec_count = count($lecs);
+                         foreach($lecs as $key=>$lec)
+                         {
+                             if($lec_count - $key == 1 )     //if last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid);
+                             }
+                             else       //not last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                             }
+                         }
+                          $course_info['lecturer'] = $lecturers;
+                     }
+                     else
+                          $course_info['lecturer'] = "Unavailable"; 
+                     
                     $semester = Semester::find()
                             ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one()
@@ -1603,9 +1870,221 @@ class ProgrammesController extends Controller
                     $course_info['passfailtype'] = $passfailtype;
                     
                     $course_info['credits'] = $course->credits;
-                    $course_info['coursework'] = $course->courseworkweight;
-                    $course_info['exam'] = $course->examweight;
+                    $course_info['coursework'] = round($course->courseworkweight);
+                    $course_info['exam'] = round($course->examweight);
                     
+                    $enrolled_count = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                    
+                    $fail_count =  BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'F', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                    $pass_count = $enrolled_count - $fail_count;
+                    
+                    $pass_percentage = 0;
+                    if( $enrolled_count)
+                            $pass_percentage = number_format(($pass_count/$enrolled_count)*100,1);
+                    
+                    $course_info['total'] = $enrolled_count;
+                    $course_info['passes'] = $pass_count;
+                    $course_info['fails'] = $fail_count;
+                    $course_info['pass_percent'] =  $pass_percentage;
+                    
+                    $mode_count = 0;
+                    $mode_val = "N/A";
+                    
+                    $a_plus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'A+', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['a_plus'] =  $a_plus;
+                     if($a_plus > $mode_count)
+                     {
+                        $mode_count = $a_plus;
+                        $mode_val = "A+";
+                     }
+                    
+                    $a = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'A', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['a'] =  $a;
+                     if($a > $mode_count)
+                     {
+                        $mode_count = $a;
+                        $mode_val = "A";
+                     }
+                    
+                    $a_minus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'A-', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['a_minus'] =  $a_minus;
+                     if($a_minus > $mode_count)
+                     {
+                        $mode_count = $a_minus;
+                        $mode_val = "A-";
+                     }
+                    
+                    $b_plus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'B+', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['b_plus'] =  $b_plus;
+                     if($b_plus > $mode_count)
+                     {
+                        $mode_count = $b_plus;
+                        $mode_val = "B+";
+                     }
+                    
+                    $b = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'B', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['b'] =  $b;
+                     if($b > $mode_count)
+                     {
+                        $mode_count = $b;
+                        $mode_val = "B";
+                     }
+                    
+                    $b_minus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'B-', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['b_minus'] =  $b_minus;
+                     if($b_minus > $mode_count)
+                     {
+                        $mode_count = $b_minus;
+                        $mode_val = "B-";
+                     }
+                    
+                    $c_plus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'C+', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['c_plus'] =  $c_plus;
+                     if($c_plus > $mode_count)
+                     {
+                        $mode_count = $c_plus;
+                        $mode_val = "C+";
+                     }
+                    
+                    $c = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'C', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['c'] =  $c;
+                     if($c > $mode_count)
+                     {
+                        $mode_count = $c;
+                        $mode_val = "C";
+                     }
+                    
+                    $c_minus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'C-', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['c_minus'] =  $c_minus;
+                     if($c_minus > $mode_count)
+                     {
+                        $mode_count = $c_minus;
+                        $mode_val = "C-";
+                     }
+                    
+                    $d_plus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'D+', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['d_plus'] =  $d_plus;
+                     if($d_plus > $mode_count)
+                     {
+                        $mode_count = $d_plus;
+                        $mode_val = "D+";
+                     }
+                    
+                    $d = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'D', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['d'] =  $d;
+                     if($d > $mode_count)
+                     {
+                        $mode_count = $d;
+                        $mode_val = "D";
+                     }
+                    
+                    $d_minus = BatchStudent::find()
+                            ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                            ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                            ->where(['batch_students.grade' => 'D-', 'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                                            'batch.isactive' => 1, 'batch.isdeleted' => 0, 
+                                            'course_offering.courseofferingid' => $course->courseofferingid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
+                                            ])
+                            ->count();
+                     $course_info['d_minus'] =  $d_minus;
+                     if($d_minus > $mode_count)
+                     {
+                        $mode_count = $d_minus;
+                        $mode_val = "D-";
+                     }
+                    
+                     $course_info['mode'] =  $mode_val;
                     
                     $asc_data[] = $course_info;
                 }
@@ -1622,22 +2101,18 @@ class ProgrammesController extends Controller
                     ]);
             }
         }
-            
-           
-
-       
-
-        
        
         $date = "Date Generated: " . date('Y-m-d') . "   ";
-        
+        $academic_year = AcademicYear::find()
+                ->where(['academicyearid' => $academicoffering->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one()
+                ->title;
         $employeeid = Yii::$app->user->identity->personid;
         $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
 
-        $filename = "Title: " . $programme_name. " Performance Report " . $date . $generating_officer;
+        $filename = "Title: " . $programme_name. " (" . $academic_year . ") Performance Report " . $date ."  " .  $generating_officer;
         
         
-       
         return $this->render('programme_broadsheet', [
                     'programme_name' => $programme_name,
                     'asc_dataprovider' => $asc_dataprovider,
@@ -1645,18 +2120,11 @@ class ProgrammesController extends Controller
                     'programmecatalogid' => $programmecatalogid,
                     'academicofferingid' => $academicofferingid,
                     'filename' => $filename,
+                   'total_courses' => $total_courses,
+                   'total_entered' => $total_entered,
+                   'total_outstanding' => $total_outstanding,
+                   'academic_year' => $academic_year,
         ]);
-//        }
-//        else
-//        {
-//            return $this->render('programme_broadsheet', [
-//                        'programme_name' => $programme_name,
-//                        'asc_dataprovider' => $asc_dataprovider,
-//                        'programmecatalogid' => $programmecatalogid,
-//                        'academicofferingid' => $academicofferingid,
-//                        'filename' => $filename,
-//                ]);
-//        }
     }
     
     
