@@ -2129,67 +2129,6 @@ class ProgrammesController extends Controller
     
     
     
-//    public function actionUploadAttachments($recordid, $count, $action = NULL)
-//    {
-//        $package = Package::find()
-//                        ->where(['packageid' => $recordid])
-//                        ->one();
-//
-//        $model = new PackageAttachment();
-//        $model->package_id = $package->packageid;
-//        $model->package_name = $package->name;
-//
-//        $saved_documents = Package::getDocuments($recordid);
-//        $model->limit = $package->documentcount - count($saved_documents);
-//
-//        if ($model->limit == 0)
-//            $mandatory_delete = true;
-//        else
-//            $mandatory_delete = false;
-//
-//        if (Yii::$app->request->isPost) 
-//        {
-//            $model->files = UploadedFile::getInstances($model, 'files');
-//            $pending_count = count($model->files);
-//            $saved_count = count(Package::getDocuments($recordid));
-//
-//            /* 
-//             * if summation of present files count and pending files <= stipulated document count,
-//             * upload is allowed
-//             */
-//            if( ($saved_count+$pending_count) <= $package->documentcount)
-//            {
-//                if ($model->upload())   // file is uploaded successfully
-//                {
-//                    if (Package::hasAllDocuments($recordid) == true)
-//                    {
-//                        $package->packageprogressid = 2;
-//                        $package->save();
-//                    }
-//
-//                    if ($action == NULL)
-//                        return self::actionInitiatePackage($package->packageid);
-//                    else
-//                        return self::actionIndex();
-//                }
-//            }
-//            else
-//            {
-//                Yii::$app->getSession()->setFlash('error', 'You have exceeded you stipulated attachment count.');              
-//            }
-//
-//        }
-//
-//        return $this->render('upload_attachments', 
-//                            [
-//                                'model' => $model,
-//                                'recordid' => $recordid,
-//                                'mandatory_delete' => $mandatory_delete,
-//                                'saved_documents' => $saved_documents,
-//                                'count' => $count,
-//                            ]
-//        );
-//    }
     
     
     

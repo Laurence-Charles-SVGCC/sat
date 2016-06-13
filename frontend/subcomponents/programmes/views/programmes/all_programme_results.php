@@ -121,15 +121,15 @@
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
                             [
-                                'attribute' => 'name',
-                                'format' => 'text',
-                                'label' => 'Programme Name',
-                //                'format' => 'html',
-                //                'value' => function($row)
-                //                    {
-                //                        return Html::a($row['studentno'], 
-                //                                        Url::to(['profile/student-profile', 'personid' => $row['personid'], 'studentregistrationid' => $row['studentregistrationid']]));
-                //                    }
+//                                'attribute' => 'name',
+//                                'format' => 'text',
+//                                'label' => 'Programme Name',
+                                'format' => 'html',
+                                'value' => function($row)
+                                    {
+                                        return Html::a($row['name'], 
+                                                        Url::to(['programmes/programme-overview', 'programmecatalogid' => $row['programmecatalogid']]));
+                                    }
                             ],
                             [
                                 'attribute' => 'qualificationtype',

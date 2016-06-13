@@ -96,12 +96,12 @@
                                                             if(ProgrammeCatalog::getBooklets($divisionid, $programme_info['programmecatalogid'],  $academic_offering_id)==true)
                                                                 echo "<li><a href='$hyperlink'>$year_title</a></li>";  
                                                             else
-                                                                 echo "<li><a>$year_title - Not Availables</a></li>"; 
+                                                                 echo "<li><a>$year_title - Not Available</a></li>"; 
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        echo "<li>This programme is yet to be offered</li>";  
+                                                        echo "<li>This programme has yet to be offered</li>";  
                                                     }    
                                                 echo "</ul>";
                                             echo "</div>";
@@ -188,7 +188,7 @@
                                                     }
                                                     else
                                                     {
-                                                        echo "<li>This programme is yet to be offered</li>";  
+                                                        echo "<li>This programme has yet to be offered</li>";  
                                                     }    
                                                 echo "</ul>";
                                             echo "</div>";
