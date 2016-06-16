@@ -199,17 +199,6 @@
                             </fieldset>
                         </div>
 
-                         <div id="view-intake-reports" style="display:none">
-                            <fieldset>
-                                <legend class="custom_h2" style="margin-left:0%;">Intake Report</legend>
-                            </fieldset>
-                        </div>
-
-                         <div id="view-student-performance-options" style="display:none">
-                             <fieldset>
-                                <legend class="custom_h2" style="margin-left:0%;">Student Performance</legend>
-                            </fieldset>
-                        </div>
                     </div>
             </div>
          </div>

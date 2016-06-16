@@ -3,6 +3,8 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
+    use kartik\grid\GridView;
+    use kartik\export\ExportMenu;
     
     use frontend\models\Division;
     use frontend\models\AcademicYear;
@@ -129,7 +131,7 @@
                                             href=<?=Url::toRoute(['/subcomponents/programmes/programmes/upload-booklet',
                                                                                     'divisionid' => $programme_info['divisionid'],
                                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
-                                                                                    'academicofferingid' => $academicofferingid,]);
+                                                                                    'academicofferingid' => $academicofferingid]);
                                                         ?> role="button"> Upload Booklet
                                          </a>
                                     <?php endif?>
@@ -139,6 +141,21 @@
                          <div id="manage-courses" style="display:none">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Manage Courses</legend>
+                                <?php if ($course_details_dataprovider) : ?>
+                                    <?= $this->render('course_details_results', [
+                                                                'dataProvider' => $course_details_dataprovider,
+                                                                'academicofferingid' => $academicofferingid
+                                                                 ])
+                                    ?>
+                                <?php endif?>
+                                
+                                <?php if ($cape_course_details_dataprovider) : ?>
+                                    <?= $this->render('cape_course_details_results', [
+                                                                'dataProvider' => $cape_course_details_dataprovider,
+                                                                'academicofferingid' => $academicofferingid
+                                                            ])
+                                   ?>
+                                 <?php endif?>
                             </fieldset>
                         </div>
 
@@ -158,13 +175,189 @@
                          <div id="student-performance-reports" style="display:none">
                              <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Student Performance</legend>
-                                <p>Select the button below to generate the intake report.</p>
-                                <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                                <p>
+                                    Select the button below to generate a report that summaries the overall performance of students 
+                                    enrolled in a particular course.
+                                </p>
+                                <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:30%; margin:0 auto;" 
                                     href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-programme-broadsheet',
                                                                             'academicofferingid' => $academicofferingid
                                                                         ]);
-                                                ?> role="button"> Generate Broadsheet
-                                </a>
+                                                ?> role="button"> Generate Programme Summary
+                                </a><br/><br/><br/>
+                                        
+                                <?php if($broadsheet_dataprovider  && $iscape == false):?>
+                                        <p>Click on the following links to download a detailed programme broadsheet in the format of your choice</p>
+                                        <?= ExportMenu::widget([
+                                                'dataProvider' => $broadsheet_dataprovider,
+                                                'columns' => [
+                                                        [
+                                                            'attribute' => 'studentid',
+                                                            'format' => 'text',
+                                                            'label' => 'Student ID'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'title',
+                                                            'format' => 'text',
+                                                            'label' => 'Title'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'firstname',
+                                                            'format' => 'text',
+                                                            'label' => 'First Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'lastname',
+                                                            'format' => 'text',
+                                                            'label' => 'Last Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'coursecode',
+                                                            'format' => 'text',
+                                                            'label' => 'Course Code'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'coursename',
+                                                            'format' => 'text',
+                                                            'label' => 'Course Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'semester',
+                                                            'format' => 'text',
+                                                            'label' => 'Semester'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'coursework',
+                                                            'format' => 'text',
+                                                            'label' => 'Cousework'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'exam',
+                                                            'format' => 'text',
+                                                            'label' => 'Exam'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'final',
+                                                            'format' => 'text',
+                                                            'label' => 'Final'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'grade',
+                                                            'format' => 'text',
+                                                            'label' => 'Grade'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'status',
+                                                            'format' => 'text',
+                                                            'label' => 'Status'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'programme',
+                                                            'format' => 'text',
+                                                            'label' => 'Programme'
+                                                        ],
+                                                    ],
+                                                'fontAwesome' => true,
+                                                'dropdownOptions' => [
+                                                    'label' => 'Select Export Type',
+                                                    'class' => 'btn btn-default'
+                                                ],
+                                                'asDropdown' => false,
+                                                'showColumnSelector' => false,
+                                                'filename' => $filename,
+                                                'exportConfig' => [
+                                                     ExportMenu::FORMAT_PDF => false,
+                                                    ExportMenu::FORMAT_TEXT => false,
+                                                    ExportMenu::FORMAT_HTML => false,
+                                                    ExportMenu::FORMAT_EXCEL => false,
+//                                                    ExportMenu::FORMAT_EXCEL_X => false
+                                                ],
+                                            ]);
+                                        ?>
+                                <?php elseif($broadsheet_dataprovider  && $iscape == true):?>
+                                    <p>Click on the following links to download a detailed programme broadsheet in the format of your choice</p>
+                                    <?= ExportMenu::widget([
+                                            'dataProvider' => $broadsheet_dataprovider,
+                                            'columns' => [
+                                                    [
+                                                        'attribute' => 'studentid',
+                                                        'format' => 'text',
+                                                        'label' => 'Student ID'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'title',
+                                                        'format' => 'text',
+                                                        'label' => 'Title'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'firstname',
+                                                        'format' => 'text',
+                                                        'label' => 'First Name'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'lastname',
+                                                        'format' => 'text',
+                                                        'label' => 'Last Name'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'coursecode',
+                                                        'format' => 'text',
+                                                        'label' => 'Course Code'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'coursename',
+                                                        'format' => 'text',
+                                                        'label' => 'Course Name'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'subject',
+                                                        'format' => 'text',
+                                                        'label' => 'Subject'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'semester',
+                                                        'format' => 'text',
+                                                        'label' => 'Semester'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'coursework',
+                                                        'format' => 'text',
+                                                        'label' => 'Cousework'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'exam',
+                                                        'format' => 'text',
+                                                        'label' => 'Exam'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'final',
+                                                        'format' => 'text',
+                                                        'label' => 'Final'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'programme',
+                                                        'format' => 'text',
+                                                        'label' => 'Programme'
+                                                    ],
+                                                ],
+                                            'fontAwesome' => true,
+                                            'dropdownOptions' => [
+                                                'label' => 'Select Export Type',
+                                                'class' => 'btn btn-default'
+                                            ],
+                                            'asDropdown' => false,
+                                            'showColumnSelector' => false,
+                                            'filename' => $filename,
+                                            'exportConfig' => [
+                                                 ExportMenu::FORMAT_PDF => false,
+                                                ExportMenu::FORMAT_TEXT => false,
+                                                ExportMenu::FORMAT_HTML => false,
+                                                ExportMenu::FORMAT_EXCEL => false,
+//                                                    ExportMenu::FORMAT_EXCEL_X => false
+                                            ],
+                                        ]);
+                                    ?>
+                                <?php endif;?>
                             </fieldset>
                         </div>
                     </div>
