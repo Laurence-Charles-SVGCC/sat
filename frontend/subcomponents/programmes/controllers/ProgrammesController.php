@@ -1409,13 +1409,17 @@ class ProgrammesController extends Controller
         
         if($iscape == 1)       //if CAPE
         {
+//            $course = CapeCourse::find()
+//                    ->innerJoin('cape_unit', '`cape_course`.`capeunitid` = `cape_unit`.`capeunitid`')
+//                    ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
+//                    ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
+//                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid,
+//                                    'cape_subject.academicofferingid' => $academicofferingid,
+//                                    'cape_course.capecourseid' => $code,
+//                            ])
+//                    ->one();
             $course = CapeCourse::find()
-                    ->innerJoin('cape_unit', '`cape_course`.`capeunitid` = `cape_unit`.`capeunitid`')
-                    ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
-                    ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
-                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid,
-                                    'cape_subject.academicofferingid' => $academicofferingid
-                            ])
+                    ->where(['cape_course.capecourseid' => $code])
                     ->one();
            
             if($course)
@@ -1714,7 +1718,7 @@ class ProgrammesController extends Controller
         else        //if !CAPE
         {
             $course = CourseOffering::find()
-                    ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1 , 'isdeleted' => 0])
+                    ->where(['courseofferingid' => $code, 'isactive' => 1 , 'isdeleted' => 0])
                     ->one();
             
 //            $total_courses = count($courses);
