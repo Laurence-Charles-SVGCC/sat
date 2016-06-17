@@ -144,7 +144,7 @@
                                    <?php foreach($asc_batches as $batch):?>
                                    <li>
                                        <?=Html::a($batch['name'], 
-                                                   Url::to(['programmes/batch-management', 'iscape' => 0, 'batchid' => $batch['batchid'], 'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid,  'code' => $batch['course']])); 
+                                                   Url::to(['programmes/batch-management', 'batchid' => $batch['batchid'],  'iscape' => 0,  'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid,  'code' => $batch['course']])); 
                                        ?>
                                    </li>
                                    <?php endforeach;?>
@@ -240,7 +240,7 @@
                                    <?php foreach($cape_batches as $batch):?>
                                    <li>
                                        <?=Html::a($batch['name'], 
-                                                   Url::to(['programmes/batch-management', 'iscape' => 0, 'batchid' => $batch['batchid'], 'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid,  'code' => $batch['course']])); 
+                                                   Url::to(['programmes/batch-management', 'batchid' => $batch['batchid'], 'iscape' => 1,  'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid,  'code' => $batch['course']])); 
                                        ?>
                                    </li>
                                    <?php endforeach;?>

@@ -1,5 +1,6 @@
 <?php
 
+    use yii\web\UrlManager;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -19,7 +20,7 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Awards">     
-                    <img class="custom_logo_students" src ="<?=Url::to(Yii::getAlias('@frontend') . '/images/programme.png');?>" alt="scroll avatar">
+                    <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar">
                     <span class="custom_module_label" > Welcome to the Programme Management System</span> 
                     <img src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar" class="pull-right">
                 </a>    
