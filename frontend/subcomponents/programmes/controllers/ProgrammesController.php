@@ -2440,7 +2440,7 @@ class ProgrammesController extends Controller
 
             $fail_count =  BatchStudent::find()
                    ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
-                    ->where(['batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
+                    ->where(['batch_students.grade' => 'F',  'batch_students.isactive' => 1, 'batch_students.isdeleted' => 0,
                                     'batch.isactive' => 1, 'batch.isdeleted' => 0, 'batch.batchid' => $batchid
                                     ])
                     ->count();
