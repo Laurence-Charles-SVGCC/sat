@@ -22,6 +22,8 @@ use Yii;
  * @property integer $isactive
  * @property integer $isdeleted
  * @property integer $mdlgroupid
+ * @property integer $createdby
+ * @property integer $lastupdatedby
  *
  * @property Batch[] $batches
  * @property Cordinator[] $cordinators
@@ -52,8 +54,8 @@ class CourseOffering extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['coursecatalogid', 'academicofferingid', 'coursetypeid', 'passcriteriaid', 'semesterid', 'courseworkweight', 'examweight', 'passmark'], 'required'],
-            [['coursecatalogid', 'academicofferingid', 'coursetypeid', 'passcriteriaid', 'semesterid', 'prerequisiteid', 'passfailtypeid', 'credits', 'isactive', 'isdeleted', 'mdlgroupid'], 'integer'],
+            [['coursecatalogid', 'academicofferingid', 'coursetypeid', 'passcriteriaid', 'semesterid', 'courseworkweight', 'examweight', 'passmark', 'passfailtypeid'], 'required'],
+            [['coursecatalogid', 'academicofferingid', 'coursetypeid', 'passcriteriaid', 'semesterid', 'prerequisiteid', 'passfailtypeid', 'credits', 'isactive', 'isdeleted', 'mdlgroupid', 'createdby', 'lastupdatedby'], 'integer'],
             [['courseworkweight', 'examweight', 'passmark'], 'number']
         ];
     }
@@ -79,6 +81,8 @@ class CourseOffering extends \yii\db\ActiveRecord
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
             'mdlgroupid' => 'Mdlgroupid',
+            'createdby' => 'Created By',
+            'lastupdatedby' => 'Last Updated By',
         ];
     }
 

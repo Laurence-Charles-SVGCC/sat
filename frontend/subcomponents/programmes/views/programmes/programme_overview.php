@@ -106,7 +106,6 @@
                                                 echo "</ul>";
                                             echo "</div>";
                                         echo "</td>"; 
-                                    echo "</td>";
                                     ?>
                                 </tr>
                                 

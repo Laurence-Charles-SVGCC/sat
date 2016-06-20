@@ -35,6 +35,8 @@
     ];
 
     $this->title = 'Add Programme to Insitution Catalog';
+    $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="site-index">
@@ -52,12 +54,12 @@
             <h1 class="custom_h1">Add New Programme</h1>
             
             <br/>
-            <div style="width:70%; margin: 0 auto; font-size: 20px;">
+            <div style="width:80%; margin: 0 auto; font-size: 20px;">
                 <?php
                     $form = ActiveForm::begin([
                         'id' => 'add-programme-catalog-form',
                         'options' => [
-//                                            'class' => 'form-layout'
+                                            'class' => 'form-layout'
                         ],
                     ]);
 

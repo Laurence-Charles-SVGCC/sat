@@ -10,6 +10,8 @@
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
     use frontend\models\AcademicOffering;
+    use frontend\models\CourseOutline;
+    use frontend\models\CourseOffering;
     
     $this->title = 'Course Management Dashboard';
     $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
@@ -82,7 +84,45 @@
                                     <th>No. of Batches</th>
                                     <td><?=$asc_data[0]['batches'];?></td>
                                     <th>Actions</th>
-                                    <td>N/A</td>
+                                    <?php
+                                        echo "<td>";                                  
+                                            echo "<div class='dropdown'>
+                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                echo "Select Action...";
+                                                echo "<span class='caret'></span>";
+                                                echo "</button>";
+                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                    $edit_course_offering_link = Url::toRoute(['/subcomponents/programmes/programmes/edit-course-offering/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    $add_course_outline_link = Url::toRoute(['/subcomponents/programmes/programmes/add-course-outline/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    $edit_course_outline_link = Url::toRoute(['/subcomponents/programmes/programmes/edit-course-outline/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    echo "<li><a href='$edit_course_offering_link'>Edit Course Offering</a></li>";  
+                                                    if(CourseOutline::getSpecificOutline($code) == false)
+                                                    {
+                                                        echo "<li><a href='$add_course_outline_link'>Add Course Outline</a></li>"; 
+                                                    }
+                                                    else
+                                                    {
+                                                         echo "<li><a href='$edit_course_outline_link'>Edit Course Outline</a></li>"; 
+                                                    }
+                                                echo "</ul>";
+                                            echo "</div>";
+                                        echo "</td>"; 
+                                    ?>
                                 </tr>
                             </table>
                         </fieldset><br/><br/>
@@ -185,7 +225,46 @@
                                     <th>No. of Batches</th>
                                     <td><?=$cape_data[0]['batches'];?></td>
                                     <th>Actions</th>
-                                    <td>N/A</td>
+                                    <?php
+                                        echo "<td>";                                  
+                                            echo "<div class='dropdown'>
+                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                echo "Select Action...";
+                                                echo "<span class='caret'></span>";
+                                                echo "</button>";
+                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                    $edit_course_offering_link = Url::toRoute(['/subcomponents/programmes/programmes/edit-course-offering/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    $add_course_outline_link = Url::toRoute(['/subcomponents/programmes/programmes/add-course-outline/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    $edit_course_outline_link = Url::toRoute(['/subcomponents/programmes/programmes/edit-course-outline/',
+                                                                                                'iscape' => $iscape,
+                                                                                                'code' => $code,
+                                                                                                'programmecatalogid' => $programmecatalogid,
+                                                                                                'academicofferingid' => $academicofferingid,
+                                                                                             ]);
+                                                    echo "<li><a href='$edit_course_offering_link'>Edit Course Offering</a></li>";  
+//                                                    
+                                                    if(CourseOutline::getSpecificOutline($code) == false)
+                                                    {
+                                                        echo "<li><a href='$add_course_outline_link'>Add Course Outline</a></li>"; 
+                                                    }
+                                                    else
+                                                    {
+                                                         echo "<li><a href='$edit_course_outline_link'>Edit Course Outline</a></li>"; 
+                                                    }
+                                                echo "</ul>";
+                                            echo "</div>";
+                                        echo "</td>"; 
+                                    ?>
                                 </tr>
                             </table>
                         </fieldset><br/>

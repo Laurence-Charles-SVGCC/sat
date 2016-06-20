@@ -659,7 +659,11 @@ class ProgrammesController extends Controller
                     ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
                     ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
                     ->groupBy('cape_course.capecourseid')
-                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid])
+                    ->where(['cape_course.isactive' => 1, 'cape_course.isdeleted' => 0,
+                                   'cape_unit.isactive' => 1, 'cape_unit.isdeleted' => 0,
+                                   'cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,  'academic_offering.programmecatalogid' => $programmecatalogid
+                                ])
                     ->all();
             
             if($courses)
@@ -674,12 +678,15 @@ class ProgrammesController extends Controller
                     $cape_subject = CapeSubject::find()
                             ->innerJoin('cape_unit', '`cape_subject`.`capesubjectid` = `cape_unit`.`capesubjectid`')
                             ->innerJoin('cape_course', ' `cape_unit`.`capeunitid`=`cape_course`.`capeunitid`')
-                             ->where(['cape_course.capecourseid' => $course->capecourseid])
+                             ->where(['cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0, 
+                                             'cape_unit.isactive' => 1, 'cape_unit.isdeleted' => 0,
+                                            'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0, 'cape_course.capecourseid' => $course->capecourseid
+                                            ])
                             ->one()
                             ->subjectname;
                     $course_info['subject'] =  $cape_subject;
                     
-                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->capecourseid) == true)
+                    if(CourseOutline::getCourseOutlines(1,  $course->capecourseid) == true)
                         $course_info['has_outline'] = true;
                     else
                         $course_info['has_outline'] = false;
@@ -705,7 +712,10 @@ class ProgrammesController extends Controller
                     ->innerJoin('course_offering', '`course_catalog`.`coursecatalogid` = `course_offering`.`coursecatalogid`')
                     ->innerJoin('academic_offering', '`course_offering`.`academicofferingid`=`academic_offering`.`academicofferingid`')
                     ->groupBy('course_catalog.coursecatalogid')
-                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid])
+                    ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
+                                    'course_catalog.isactive' => 1, 'course_catalog.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.programmecatalogid' => $programmecatalogid
+                                ])
                     ->all();
             
             if($courses)
@@ -717,7 +727,7 @@ class ProgrammesController extends Controller
                     $course_info['coursecode'] = $course->coursecode;
                     $course_info['name'] = $course->name;
                     
-                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->coursecatalogid) == true)
+                    if(CourseOutline::getCourseOutlines(0,  $course->coursecatalogid) == true)
                         $course_info['has_outline'] = true;
                     else
                         $course_info['has_outline'] = false;
@@ -934,27 +944,30 @@ class ProgrammesController extends Controller
     }
     
     
-    
-    
-    
-    //Code will be completed after feature to enter course outline has been created
+    /**
+     * View CourseOutline record
+     * 
+     * @param type $iscape
+     * @param type $programmecatalogid
+     * @param type $coursecatalogid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/06/2016
+     * Date Last Modified: 20/06/2016
+     */
     public function actionCourseDescription($iscape,  $programmecatalogid, $coursecatalogid)
     {
-        if($iscape == 0)    //if !cape course
-        {
-            $course_outlines = CourseOutline::find()
-                    ->innerJoin('course_offering', '`course_outline`.`courseid` = `course_offering`.`courseofferingid`')
-                    ->where(['course_outline.isactive' => 1, 'course_outline.isdeleted' => 0,
-                                    'course_offering.coursecatalogid' => $coursecatalogid, 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0
-                                ])
-                     ->orderBy('course_offering.courseofferingid DESC')
-                    ->all();
-             $recent = $course_outlines[0];
-        }
-        else
-        {
-            
-        }
+        $action = "View";
+        $outlines = CourseOutline::getCourseOutlines($iscape, $coursecatalogid);
+        $outline = $outlines[0];
+         
+         return $this->render('view_course_outline', [
+                    'iscape' => $iscape,
+                    'programmecatalogid' => $programmecatalogid,
+                    'outline' => $outline,
+                    'action' => $action,
+              ]);
     }
     
     /**
@@ -1049,9 +1062,11 @@ class ProgrammesController extends Controller
                     ->innerJoin('cape_unit', '`cape_course`.`capeunitid` = `cape_unit`.`capeunitid`')
                     ->innerJoin('cape_subject', ' `cape_unit`.`capesubjectid`=`cape_subject`.`capesubjectid`')
                     ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid`=`academic_offering`.`academicofferingid`')
-                    ->groupBy('cape_course.capecourseid')
-                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid,
-                                   'cape_subject.academicofferingid' => $academicofferingid
+//                    ->groupBy('cape_course.capecourseid')
+                    ->where(['cape_course.isactive' => 1, 'cape_course.isdeleted' => 0,
+                                    'cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,  'cape_subject.academicofferingid' => $academicofferingid,
+                                    'cape_unit.isactive' => 1, 'cape_unit.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,  'academic_offering.programmecatalogid' => $programmecatalogid
                                 ])
                     ->all();
             
@@ -1068,12 +1083,14 @@ class ProgrammesController extends Controller
                     $cape_subject = CapeSubject::find()
                             ->innerJoin('cape_unit', '`cape_subject`.`capesubjectid` = `cape_unit`.`capesubjectid`')
                             ->innerJoin('cape_course', ' `cape_unit`.`capeunitid`=`cape_course`.`capeunitid`')
-                             ->where(['cape_course.capecourseid' => $course->capecourseid])
+                             ->where(['cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0, 
+                                             'cape_unit.isactive' => 1, 'cape_unit.isdeleted' => 0,
+                                            'cape_course.isactive' => 1, 'cape_course.isdeleted' => 0, 'cape_course.capecourseid' => $course->capecourseid])
                             ->one()
                             ->subjectname;
                     $course_info['subject'] =  $cape_subject;
                     
-                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->capecourseid) == true)
+                    if(CourseOutline::getCourseOutlines(1,  $course->capecourseid) == true)
                         $course_info['has_outline'] = true;
                     else
                         $course_info['has_outline'] = false;
@@ -1112,9 +1129,11 @@ class ProgrammesController extends Controller
             $courses = CourseOffering::find()
                     ->innerJoin('course_catalog', '`course_offering`.`coursecatalogid` = `course_catalog`.`coursecatalogid`')
                     ->innerJoin('academic_offering', '`course_offering`.`academicofferingid`=`academic_offering`.`academicofferingid`')
-                    ->groupBy('course_catalog.coursecatalogid')
-                    ->where(['academic_offering.programmecatalogid' => $programmecatalogid,
-                                     'course_offering.academicofferingid' => $academicofferingid
+//                    ->groupBy('course_catalog.coursecatalogid')
+                    ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,  'course_offering.academicofferingid' => $academicofferingid,
+                                    'course_catalog.isactive' => 1, 'course_catalog.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.programmecatalogid' => $programmecatalogid
+                                    
                                 ])
                     ->all();
             
@@ -1131,7 +1150,7 @@ class ProgrammesController extends Controller
                     $course_info['coursecode'] = $catalog->coursecode;
                     $course_info['name'] = $catalog->name;
                     
-                    if(CourseOutline::getOutlines(0,  $programmecatalogid, $course->coursecatalogid) == true)
+                    if(CourseOutline::getCourseOutlines(0,  $course->coursecatalogid) == true)
                         $course_info['has_outline'] = true;
                     else
                         $course_info['has_outline'] = false;
@@ -2074,6 +2093,7 @@ class ProgrammesController extends Controller
         
         return $this->render('course_overview', [
                     'iscape' => $iscape,
+                    'code' => $code,
                     'programmecatalogid' => $programmecatalogid,
                     'academicofferingid' => $academicofferingid,
             
@@ -2086,8 +2106,237 @@ class ProgrammesController extends Controller
                     'cape_batches' => $cape_batch_container,
                     
                     'filename' => $filename,
+                    
         ]);
     }
+    
+    
+    /**
+     * Edits a CapeCourse/CourseOffering record
+     * 
+     * @param type $iscape
+     * @param type $code
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/06/2016
+     * Date Last Modified: 18/06/2016
+     */
+    public function actionEditCourseOffering($iscape, $code, $programmecatalogid, $academicofferingid)
+    {
+        if($iscape == 0)
+        {
+            $course = CourseOffering::find()
+                    ->where(['courseofferingid' => $code, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        }
+        else
+        {
+            $course = CapeCourse::find()
+                     ->where(['capecourseid' => $code, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $save_flag = false;
+            
+            $load_flag = $course->load($post_data);
+            if($load_flag == true)
+            {
+                $total = $course->courseworkweight + $course->examweight;
+                if($total == 100)
+                {
+                    $updating_officer = Yii::$app->user->identity->personid;
+                    $course->lastupdatedby = $updating_officer;
+                    $save_flag = $course->save();
+                    if($save_flag)
+                    {
+                        return self::actionCourseManagement($iscape, $programmecatalogid, $academicofferingid, $code);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Course update failure.');         
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'The sum of coursework and exam must sum to 100.');         
+                }
+            }
+        }
+         return $this->render('edit_course', [
+                    'iscape' => $iscape,
+                    'code' => $code,
+                    'programmecatalogid' => $programmecatalogid,
+                    'academicofferingid' => $academicofferingid,
+                    'course' => $course,
+              ]);
+    }
+    
+    
+    /**
+     * Add CourseOutline record
+     * 
+     * @param type $iscape
+     * @param type $code
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/06/2016
+     * Data Last Modified: 20/06/2016
+     */
+    public function actionAddCourseOutline($iscape, $code, $programmecatalogid, $academicofferingid)
+    {
+        $action = "Add";
+        
+         if($iscape==0)
+         {
+                $new_code = CourseOffering::find()
+                    ->where(['courseofferingid' => $code])
+                    ->one()
+                    ->coursecatalogid;
+                $outlines = CourseOutline::getCourseOutlines($iscape, $new_code);
+         }
+         else
+         {
+            $outlines = CourseOutline::getCourseOutlines($iscape, $code);
+         }
+        if ($outlines)
+        {
+            $outline == $outlines[0];   //get most recent outline
+            $outline->courseoutlineid = NULL;
+        }
+        else
+            $outline = new CourseOutline();
+        
+        
+        if($iscape==0)
+        {
+            $catalog = CourseCatalog::find()
+                        ->innerJoin('course_offering', '`course_catalog`.`coursecatalogid` = `course_offering`.`coursecatalogid`')
+                        ->where(['course_offering.courseofferingid' => $code])
+                        ->one();
+            $offering = CourseOffering::find()
+                    ->where(['courseofferingid' => $code])
+                    ->one();
+            $outline->code = $catalog->coursecode;
+            $outline->name = $catalog->name;
+            $outline->credits = $offering->credits;
+        }
+        else
+        {
+            $offering = CapeCourse::find()
+                     ->where(['capecourseid' => $code])
+                     ->one();
+            $outline->code = $offering->coursecode;
+            $outline->name = $offering->name;
+            $outline->credits = 0;
+        }
+       
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $save_flag = false;
+            
+            $load_flag = $outline->load($post_data);
+            if($iscape==0)
+            {
+                $offering = CourseOffering::find()
+                        ->where(['courseofferingid' => $code])
+                        ->one();
+                $outline->courseid = $code;
+                $outline->courseparent = $offering->coursecatalogid;
+                $outline->personid  = Yii::$app->user->identity->personid;
+            }
+            else
+            {
+                 $cape_course = CapeCourse::find()
+                        ->where(['capecourseid' => $code])
+                        ->one();
+                $outline->courseid = $code;
+                $outline->courseparent = $cape_course->coursecode;
+                $outline->personid  = Yii::$app->user->identity->personid;
+            }
+            
+            $save_flag = $outline->save();
+            if($save_flag)
+            {
+                return self::actionCourseManagement($iscape, $programmecatalogid, $academicofferingid, $code);
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Course outline update failure.');         
+            }
+        }
+         
+         return $this->render('course_outline', [
+                    'iscape' => $iscape,
+                    'code' => $code,
+                    'programmecatalogid' => $programmecatalogid,
+                    'academicofferingid' => $academicofferingid,
+                    'outline' => $outline,
+                    'action' => $action,
+              ]);
+     }
+     
+     
+     
+     /**
+     * Edit CourseOutline record
+     * 
+     * @param type $iscape
+     * @param type $code
+     * @param type $programmecatalogid
+     * @param type $academicofferingid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/06/2016
+     * Data Last Modified: 20/06/2016
+     */
+    public function actionEditCourseOutline($iscape, $code, $programmecatalogid, $academicofferingid)
+    {
+        $outline = CourseOutline::getSpecificOutline($code);
+        $action = "Edit";
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $save_flag = false;
+            
+            $load_flag = $outline->load($post_data);
+            
+            $outline->personid  = Yii::$app->user->identity->personid;
+            $save_flag = $outline->save();
+            
+            if($save_flag)
+            {
+                return self::actionCourseManagement($iscape, $programmecatalogid, $academicofferingid, $code);
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Course Outline update failure.');         
+            }
+        }
+         
+         return $this->render('course_outline', [
+                    'iscape' => $iscape,
+                    'code' => $code,
+                    'programmecatalogid' => $programmecatalogid,
+                    'academicofferingid' => $academicofferingid,
+                    'outline' => $outline,
+                    'action' => $action,
+              ]);
+     }
+     
+     
     
     
     /**
@@ -2692,6 +2941,9 @@ class ProgrammesController extends Controller
                     'filename' => $filename,
         ]);
     }
+    
+    
+    
     
     
     /**

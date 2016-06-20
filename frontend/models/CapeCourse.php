@@ -16,6 +16,8 @@ use Yii;
  * @property string $examweight
  * @property integer $isactive
  * @property integer $isdeleted
+ * @property integer $createdby
+ * @property integer $lastupdatedby
  *
  * @property BatchCape[] $batchCapes
  * @property CapeUnit $capeunit
@@ -38,7 +40,7 @@ class CapeCourse extends \yii\db\ActiveRecord
     {
         return [
             [['capeunitid', 'semesterid', 'coursecode', 'name', 'courseworkweight', 'examweight'], 'required'],
-            [['capeunitid', 'semesterid', 'isactive', 'isdeleted'], 'integer'],
+            [['capeunitid', 'semesterid', 'isactive', 'isdeleted', 'createdby', 'lastupdatedby'], 'integer'],
             [['courseworkweight', 'examweight'], 'number'],
             [['coursecode'], 'string', 'max' => 45],
             [['name'], 'string', 'max' => 100]
@@ -60,6 +62,8 @@ class CapeCourse extends \yii\db\ActiveRecord
             'examweight' => 'Examweight',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
+            'createdby' => 'Created By',
+            'lastupdatedby' => 'Last Updated By',
         ];
     }
 
