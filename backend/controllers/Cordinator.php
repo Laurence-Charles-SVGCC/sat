@@ -3,24 +3,25 @@
 namespace frontend\models;
 
 use Yii;
+use common\models\User;
+use frontend\models\Employee;
 
 /**
  * This is the model class for table "cordinator".
  *
- * @property string $cordinatorid
- * @property string $cordinatortypeid
- * @property string $personid
- * @property string $academicyearid
- * @property string $departmentid
- * @property string $academicofferingid
- * @property string $courseofferingid
- * @property string $capesubjectid
+ * @property integer $cordinatorid
+ * @property integer $cordinatortypeid
+ * @property integer $personid
+ * @property integer $departmentid
+ * @property integer $academicofferingid
+ * @property integer $courseofferingid
+ * @property integer $capesubjectid
  * @property string $startdate
  * @property string $enddate
  * @property string $dateassigned
  * @property string $assignedby
  * @property string $daterevoked
- * @property string $revokeby
+ *  @property string $revokedby
  * @property integer $isserving
  * @property integer $isactive
  * @property integer $isdeleted
@@ -28,7 +29,6 @@ use Yii;
  * @property CordinatorType $cordinatortype
  * @property Person $person
  * @property Department $department
- * @property AcademicYear $academicyear
  * @property AcademicOffering $academicoffering
  * @property CourseOffering $courseoffering
  * @property CapeSubject $capesubject
@@ -51,7 +51,9 @@ class Cordinator extends \yii\db\ActiveRecord
         return [
             [['cordinatortypeid', 'personid', 'startdate', 'dateassigned', 'assignedby'], 'required'],
             [['cordinatortypeid', 'personid', 'departmentid', 'academicofferingid', 'courseofferingid', 'capesubjectid', 'isserving', 'isactive', 'isdeleted'], 'integer'],
-            [['startdate', 'enddate', 'dateassigned', 'assignedby', 'daterevoked', 'revokeby'], 'safe']
+            [['startdate', 'enddate', 'dateassigned', 'assignedby', 'daterevoked', 'revokedby'], 'safe']
+//            [['title'], 'string', 'max' => 3]
+//            [['firstname', 'lastname'], 'string', 'max' => 45]
         ];
     }
 
@@ -64,17 +66,19 @@ class Cordinator extends \yii\db\ActiveRecord
             'cordinatorid' => 'Cordinatorid',
             'cordinatortypeid' => 'Cordinatortypeid',
             'personid' => 'Personid',
-            'academicyearid' => 'AcademicYear ID',
             'departmentid' => 'Departmentid',
             'academicofferingid' => 'Academicofferingid',
             'courseofferingid' => 'Courseofferingid',
             'capesubjectid' => 'Capesubjectid',
+            'title' => 'Title',
+            'firstname' => 'Firstname',
+            'lastname' => 'Lastname',
             'startdate' => 'Startdate',
             'enddate' => 'Enddate',
-            'dateassigned' => 'Dateassigned',
-            'assignedby' => 'Assignedby',
-            'daterevoked' => 'Daterevoked',
-            'revokeby' => 'Revokeby',
+            'dateassigned' => 'Date Assigned',
+            'assignedby' => 'Assigned By',
+            'daterevoked' => 'Date Revoked',
+            'revokedby' => 'Revoked By',
             'isserving' => 'Isserving',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
@@ -95,14 +99,6 @@ class Cordinator extends \yii\db\ActiveRecord
     public function getPerson()
     {
         return $this->hasOne(Person::className(), ['personid' => 'personid']);
-    }
-    
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function geAcademicYear()
-    {
-        return $this->hasOne(AcademicYear::className(), ['academicyearid' => 'academicyearid']);
     }
 
     /**
@@ -138,7 +134,7 @@ class Cordinator extends \yii\db\ActiveRecord
     }
     
     
-     /**
+    /**
      * Returns the programme cordinator for a particular programme offering
      * 
      * @param type $academic_offering
@@ -159,5 +155,7 @@ class Cordinator extends \yii\db\ActiveRecord
         else
             return false;
     }
+    
+    
     
 }

@@ -17,8 +17,6 @@
                 [
                     ['class' => 'yii\grid\SerialColumn'],
                     [
-//                        'attribute' => 'studentid',
-//                        'format' => 'text',
                         'label' => 'Student ID',
                         'format' => 'html',
                         'value' => function($row)

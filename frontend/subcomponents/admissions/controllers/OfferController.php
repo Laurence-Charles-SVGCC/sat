@@ -112,6 +112,10 @@ class OfferController extends Controller
         $subjects_req = Applicant::getAcceptedWithoutFivePasses($offers);
         $english_req = Applicant::getAcceptedWithoutEnglish($offers);
         $math_req = Applicant::getAcceptedWithoutMath($offers);
+//        $multiple_offers = false;
+//        $subjects_req = false;
+//        $english_req = false;
+//        $math_req = false;
         
         $dte_science_req = false;
         $dne_science_req = false;

@@ -49,11 +49,6 @@ use frontend\models\BatchType;
 
 class ProgrammesController extends Controller
 {
-//    public function actionIndex()
-//    {
-//        return $this->render('index');
-//    }
-    
     
     /**
      * Renders the main programme control dashboard
@@ -4073,6 +4068,10 @@ class ProgrammesController extends Controller
     
     
     
+    public function actionCordinatorDashboard()
+    {
+        
+    }
     
     
     
@@ -4097,6 +4096,12 @@ class ProgrammesController extends Controller
     
     
     
+    
+    
+    
+    
+    
+    //deprecated functionality
     public function actionViewAllCourses()
     {
         $info_string = "";

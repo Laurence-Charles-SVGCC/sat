@@ -18,10 +18,10 @@
 <div class="site-index">
     <div class = "custom_wrapper">
         <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Awards">     
-                <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="award avatar">
+            <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Programmes">     
+                <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar">
                 <span class="custom_module_label" > Welcome to the Programme Management System</span> 
-                <img src ="<?=Url::to('../images/programme.png');?>" alt="award avatar" class="pull-right">
+                <img src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar" class="pull-right">
             </a>    
         </div>
         

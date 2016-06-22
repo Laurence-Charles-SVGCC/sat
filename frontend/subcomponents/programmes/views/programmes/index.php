@@ -11,15 +11,17 @@
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
     
-    
     $this->title = 'Programme Control Panel';
+//    $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title; 
+    
 ?>
 
 
     <div class="site-index">
         <div class = "custom_wrapper">
             <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Awards">     
+                <a href="<?= yii\helpers\Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Programmes">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar">
                     <span class="custom_module_label" > Welcome to the Programme Management System</span> 
                     <img src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar" class="pull-right">
@@ -29,13 +31,20 @@
             <div class="custom_body">  
                 <h1 class="custom_h1"><?=$this->title?></h1>
                 
+                <?php if(Yii::$app->user->can('powerCordinator')):?>
+                        <div id="cordinaor-access">
+                            <a class="btn btn-info glyphicon glyphicon-eye-open pull-right" style="margin-right:10%"
+                                href=<?=Url::toRoute(['/subcomponents/programmes/cordinator/index']);?> role="button"> Manage Co-ordinators
+                            </a>
+                        </div><br/>
+                    <?php endif;?>
+                        
                 <br/>
                 <div class="wide_center_content general_text">
                     <p>
-                        Welcome. This application facilitates the management of the institution's programme
-                        and course catalog.  
+                        Welcome. This application facilitates the management of the institution's programme catalog.
                     </p> 
-
+                    
                     <div>
                         There are two ways in which you can navigate this module.
                         <ol>
@@ -43,7 +52,7 @@
 
                             <li>You may begin your search based on programme.</li>
 
-                            <li>You may begin your search based on course.</li>
+                            <!--<li>You may begin your search based on course.</li>-->
                         </ol>
                         
                         <?php $form = ActiveForm::begin(
@@ -54,7 +63,7 @@
                         
                             <p class="general_text">
                                 Please select a method by which to begin your search.
-                                <?= Html::radioList('overall_search_type', null, ['division' => 'By Division' , 'programme' => 'By Programme', 'course' => 'By Course'], ['class'=> 'form_field', 'onclick'=> 'overallSearchType();']);?>
+                                <?= Html::radioList('overall_search_type', null, ['division' => 'By Division' , 'programme' => 'By Programme'/*, 'course' => 'By Course'*/], ['class'=> 'form_field', 'onclick'=> 'overallSearchType();']);?>
                             </p>
 
 

@@ -24,9 +24,6 @@
                 [
                     ['class' => 'yii\grid\SerialColumn'],
                     [
-//                        'attribute' => 'name',
-//                        'format' => 'text',
-//                        'label' => 'Programme Name',
                         'format' => 'html',
                         'value' => function($row)
                             {
@@ -64,11 +61,6 @@
                         'format' => 'text',
                         'label' => 'Duration'
                     ],
-//                    [
-//                        'attribute' => 'creationdate',
-//                        'format' => 'text',
-//                        'label' => 'Created'
-//                    ],
                 ],
             ]); 
         ?>     
