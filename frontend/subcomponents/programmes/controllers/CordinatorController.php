@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ArrayDataProvider;
+use yii\helpers\Json;
 
 use frontend\models\Cordinator;
 use frontend\models\CordinatorType;
@@ -40,6 +41,7 @@ class CordinatorController extends Controller
         ];
     }
 
+    
     /**
      * Lists all Cordinator models.
      * @return mixed
@@ -148,6 +150,71 @@ class CordinatorController extends Controller
 
     
     /**
+     * Prepares listings for Cordinator assignment feature
+     * 
+     * @param type $listing_type
+     * @param type $academicyearid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/06/2016
+     * Date Last Modified: 24/06/2016
+     */
+    public function actionGetAcademicYearListings($listingtype, $academicyearid)
+    {
+        if ($listingtype == 'department') 
+        {
+            $found = 0;
+            echo Json::encode(['found' => $found]);
+        }
+        
+        elseif ($listingtype == 'academic_offering') 
+        {
+             $academic_offering_listing = AcademicOffering::prepareAcademicOfferingListing($academicyearid);
+             if($academic_offering_listing)
+            {
+                $found = 1;
+                echo Json::encode(['found' => $found, 'listingtype' => $listingtype, 'listing' => $academic_offering_listing]);
+            }
+            else
+            {
+                $found = 0;
+                echo Json::encode(['found' => $found]);
+            }
+        } 
+        
+        elseif ($listingtype == 'course_offering')
+        {
+             $course_offering_listing = CourseOffering::prepareCourseOfferingListing($academicyearid);
+             if($course_offering_listing)
+            {
+                $found = 1;
+                echo Json::encode(['found' => $found, 'listingtype' => $listingtype, 'listing' => $course_offering_listing]);
+            }
+            else
+            {
+                $found = 0;
+                echo Json::encode(['found' => $found]);
+            }
+        }
+        
+        elseif ($listingtype == 'cape_subject')
+        {
+             $cape_subject_listing = CapeSubject::prepareCapeSubjectListing($academicyearid);
+             if($cape_subject_listing)
+            {
+                $found = 1;
+                echo Json::encode(['found' => $found, 'listingtype' => $listingtype, 'listing' => $cape_subject_listing]);
+            }
+            else
+            {
+                $found = 0;
+                echo Json::encode(['found' => $found]);
+            }
+        }
+    }
+    
+    
+    /**
      * Displays a single Cordinator model.
      * 
      * @param string $id
@@ -183,13 +250,17 @@ class CordinatorController extends Controller
     {
         $cordinator = new Cordinator();
     
+        $employees = Employee::getEmployeeListing('Lecturer');
+             
+
         if (Yii::$app->request->post())
         {
             
         }
-
+        
         return $this->render('create', [
             'cordinator' => $cordinator,
+            'employees' => $employees,
         ]);
     }
 
@@ -209,6 +280,10 @@ class CordinatorController extends Controller
          $cordinator = Cordinator::find()
                 ->where(['cordinatorid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
+         
+        $employees = Employee::getEmployeeListing('Lecturer');
+        
+                 
 
         if (Yii::$app->request->post())
         {
@@ -217,6 +292,7 @@ class CordinatorController extends Controller
         
         return $this->render('update', [
             'cordinator' => $cordinator,
+            'employees' => $employees,
         ]);
     }
 

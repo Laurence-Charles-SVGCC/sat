@@ -154,4 +154,44 @@ class Employee extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns an associative array is ['personid'=>'fullname'
+     * 
+     * @param type $employeetitle
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/06/2016
+     * Date Last Modified: 23/06/2016
+     */
+    public static function getEmployeeListing($employeetitle)
+    {
+         $employees = Employee::find()
+                 ->innerJoin('employee_title', '`employee`.`employeetitleid` = `employee_title`.`employeetitleid`')
+                 ->where(['employee.isactive' => 1, 'employee.isdeleted' => 0,
+                                'employee_title.isactive' => 1, 'employee_title.isdeleted' => 0, 'employee_title.name' => $employeetitle
+                                ])
+                 ->all();
+         
+        if ($employees)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select Emploee...');
+
+           foreach($employees as $employee)
+            {
+                $key = $employee->personid;
+                array_push($keys, $key);
+                $value = self::getEmployeeName($employee->personid);
+                array_push($values, $value);
+            }
+         }
+        $combined = array_combine($keys, $values);
+        return $combined;
+    }
+    
+    
 }

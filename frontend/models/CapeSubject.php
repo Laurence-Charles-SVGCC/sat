@@ -246,4 +246,48 @@ class CapeSubject extends \yii\db\ActiveRecord
     
     
     
+    /**
+     * Returns an associative array of ['capesubjectid' => 'subject_name']
+     * 
+     * @param type $academicyearid
+     * @return array
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/06/2016
+     * Date Last Modified: 24/06/2016
+     */
+    public static function prepareCapeSubjectListing($academicyearid)
+    {
+         $records = CapeSubject::find()
+                  ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                 ->where([ 'cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,
+                                'academic_offering.academicyearid' => $academicyearid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
+                                ])
+                 ->all();
+
+        $listing = array();
+        
+        foreach ($records as $record) 
+        {
+            $combined = array();
+            $keys = array();
+            $values = array();
+            array_push($keys, "id");
+            array_push($keys, "name");
+            $k1 = strval($record->capesubjectid);
+            $name = $record->subjectname;
+            $k2 = strval($name);
+            array_push($values, $k1);
+            array_push($values, $k2);
+            $combined = array_combine($keys, $values);
+            array_push($listing, $combined);
+            $combined = NULL;
+            $keys = NULL;
+            $values = NULL;
+        }
+        return $listing;
+    }
+    
+    
+    
 }
