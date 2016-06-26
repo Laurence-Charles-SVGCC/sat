@@ -21,7 +21,8 @@ use frontend\models\CourseCatalog;
 use frontend\models\CapeSubject;
 use frontend\models\AcademicOffering;
 use frontend\models\ProgrammeCatalog;
-use backend\models\AuthItemChild;
+
+use backend\models\AuthAssignment;
 
 
 /**
@@ -93,9 +94,9 @@ class CordinatorController extends Controller
              elseif ($cordinator->cordinatortypeid == 2)        //if programme head
              {
                  $record = ProgrammeCatalog::find()
-                          ->innerJoin('academic_offering', '`prgoramme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                          ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
                          ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
-                                        'academic_offering' => $cordinator->academicofferingid, 'academic_offering.isdeleted' => 0, 'academic_offering.isactive' => 1
+                                        'academic_offering.academicofferingid' => $cordinator->academicofferingid, 'academic_offering.isdeleted' => 0, 'academic_offering.isactive' => 1
                                         ])
                          ->one();
                  if($record)
@@ -103,8 +104,8 @@ class CordinatorController extends Controller
              }
              elseif ($cordinator->cordinatortypeid == 3)        //if course head
              {
-                 $record = CourseCatlog::find()
-                         ->innerJoin('course_offering', '`course_catalog`.`coursecatalogid` = `course_offering`.`courseofferingid`')
+                 $record = CourseCatalog::find()
+                         ->innerJoin('course_offering', '`course_catalog`.`coursecatalogid` = `course_offering`.`coursecatalogid`')
                          ->where(['course_catalog.isactive' => 1, 'course_catalog.isdeleted' => 0,
                                         'course_offering.courseofferingid' => $cordinator->courseofferingid, 'course_offering.isdeleted' => 0, 'course_offering.isactive' => 1
                                         ])
@@ -251,16 +252,78 @@ class CordinatorController extends Controller
         $cordinator = new Cordinator();
     
         $employees = Employee::getEmployeeListing('Lecturer');
-             
+        $departments = Department::getAcademicDepartmentListing();
+        $academicyears =  AcademicYear::getYearListing();     
 
-        if (Yii::$app->request->post())
+        if ($post_data = Yii::$app->request->post())
         {
+            $cordinator_load_flag = false;
+            $cordinator_save_flag = false;
             
+            $request = Yii::$app->request;
+            $departmentid = $request->post('departmentid');
+            $academicofferingid = $request->post('academicofferingid');
+            $courseofferingid = $request->post('courseofferingid');
+            $capesubjectid = $request->post('capesubjectid');
+            
+            $cordinator_load_flag = $cordinator->load($post_data);
+            if($cordinator_load_flag == true)
+            {
+                $cordinator->dateassigned = date('Y-m-d');
+                $cordinator->assignedby = Yii::$app->user->identity->personid;
+                
+               if ($departmentid)
+                   $cordinator->departmentid = $departmentid;
+               if ($academicofferingid)
+                   $cordinator->academicofferingid = $academicofferingid;
+               if ($courseofferingid)
+                   $cordinator->courseofferingid = $courseofferingid;
+               if ($capesubjectid)
+                   $cordinator->capesubjectid = $capesubjectid;
+               
+               $transaction = \Yii::$app->db->beginTransaction();
+               try{
+                   $cordinator_save_flag = $cordinator->save();
+                   if ($cordinator_save_flag == true)
+                   {
+                       $permission_save_flag = false;
+                       $permission = new AuthAssignment();
+                       $permission->created_at =  time();
+                       $permission->item_name = "Cordinator";
+                       $permission->user_id = $cordinator->personid;
+                       $permission_save_flag = $permission->save();
+                       if($permission_save_flag == true)
+                       {
+                           $transaction->commit();
+                           return self::actionIndex();
+                       }
+                       else
+                       {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occured saving permission record.');
+                        }
+                   }
+                   else
+                   {
+                       $transaction->rollBack();
+                       Yii::$app->getSession()->setFlash('error', 'Error occured saving co-ordinator record.');
+                   }
+                   
+               } catch (Exception $ex) {
+                   Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+               }
+            }
+            else
+           {
+               Yii::$app->getSession()->setFlash('error', 'Error occured loading co-ordinator record.');
+           }
         }
         
         return $this->render('create', [
             'cordinator' => $cordinator,
             'employees' => $employees,
+            'departments' => $departments,
+            'academicyears' => $academicyears,
         ]);
     }
 

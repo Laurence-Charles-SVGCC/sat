@@ -268,4 +268,40 @@ class Department extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns an associative array is ['depatmentid'=>'name'
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 24/06/2016
+     * Date Last Modified: 24/06/2016
+     */
+    public static function getAcademicDepartmentListing()
+    {
+         $departments = Department::find()
+                 ->where(['<', 'departmentid', 10])
+                 ->all();
+         
+        if ($departments)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select...');
+
+           foreach($departments as $department)
+            {
+                $key = $department->departmentid;
+                array_push($keys, $key);
+                $value = $department->name;
+                array_push($values, $value);
+            }
+         }
+        $combined = array_combine($keys, $values);
+        return $combined;
+    }
+    
+    
 }

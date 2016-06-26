@@ -15,8 +15,6 @@ use Yii;
  * @property string $academicofferingid
  * @property string $courseofferingid
  * @property string $capesubjectid
- * @property string $startdate
- * @property string $enddate
  * @property string $dateassigned
  * @property string $assignedby
  * @property string $daterevoked
@@ -49,9 +47,9 @@ class Cordinator extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cordinatortypeid', 'personid', 'startdate', 'dateassigned', 'assignedby'], 'required'],
-            [['cordinatortypeid', 'personid', 'departmentid', 'academicofferingid', 'courseofferingid', 'capesubjectid', 'isserving', 'isactive', 'isdeleted'], 'integer'],
-            [['startdate', 'enddate', 'dateassigned', 'assignedby', 'daterevoked', 'revokeby'], 'safe']
+            [['cordinatortypeid', 'personid',  'dateassigned', 'assignedby'], 'required'],
+            [['cordinatortypeid', 'personid', 'academicyearid',  'departmentid', 'academicofferingid', 'courseofferingid', 'capesubjectid', 'isserving', 'isactive', 'isdeleted'], 'integer'],
+            [['dateassigned', 'daterevoked'], 'safe']
         ];
     }
 
@@ -69,8 +67,6 @@ class Cordinator extends \yii\db\ActiveRecord
             'academicofferingid' => 'Academicofferingid',
             'courseofferingid' => 'Courseofferingid',
             'capesubjectid' => 'Capesubjectid',
-            'startdate' => 'Startdate',
-            'enddate' => 'Enddate',
             'dateassigned' => 'Dateassigned',
             'assignedby' => 'Assignedby',
             'daterevoked' => 'Daterevoked',

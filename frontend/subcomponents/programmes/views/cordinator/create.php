@@ -51,7 +51,7 @@
                             
                             <tr>
                                 <th style='width:30%; vertical-align:middle'>Academic Year</th>
-                                <td><?=$form->field($cordinator, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()->all(), 'academicyearid', 'title'), ['prompt'=>'Select Academic Year', 'onchange' => 'toggleCordinatorType();']);?></td>
+                                <td><?= $form->field($cordinator, 'academicyearid')->label('') ->dropDownList($academicyears, ['onchange' => 'toggleCordinatorType();']);?></td>
                             </tr>
                             
                             
@@ -62,7 +62,9 @@
                             
                             <tr>
                                 <th style='width:30%; vertical-align:middle'>Department</th>
-                                <td id="cordinator-department" style="display:none"><?=$form->field($cordinator, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->where(['<', 'departmentid', 10])->all(), 'departmentid', 'name'), ['prompt'=>'Select Department']);?></td>
+                                <td id="cordinator-department" style="display:none">
+                                    <?= Html::dropDownList('departmentid',  "Select...", $departments, ['id' => 'department_field']) ; ?>
+                                </td>
                             </tr>
                             
                             <tr>
@@ -85,7 +87,6 @@
                                     <?= Html::dropDownList('capesubjectid',  "Select...", ['' => 'Select...'], ['id' => 'cape_subject_field']) ; ?>
                                 </td>
                             </tr>
-                       
                         </table>
                     
                         <br/>

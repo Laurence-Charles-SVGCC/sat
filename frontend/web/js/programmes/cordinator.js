@@ -9,7 +9,7 @@ function toggleCordinatorType()
 {
     //resets all dropdownlist selection to 0
     document.getElementById('cordinator-cordinatortypeid').selectedIndex=0;
-    document.getElementById('cordinator-departmentid').selectedIndex=0;
+    document.getElementById('department_field').selectedIndex=0;
     document.getElementById('academic_offering_field').selectedIndex=0;
     document.getElementById('course_offering_field').selectedIndex=0;
     document.getElementById('cape_subject_field').selectedIndex=0;
