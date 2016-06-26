@@ -2,7 +2,8 @@
 
     use yii\helpers\Html;
     use yii\grid\GridView;
-     use yii\helpers\Url;
+    use yii\helpers\Url;
+    use yii\grid\ActionColumn; 
 
     $this->title = 'Co-ordinator Dashboard';
     $this->params['breadcrumbs'][] = $this->title;
@@ -30,7 +31,7 @@
                 <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
+//                            ['class' => 'yii\grid\SerialColumn'],
                             [
                                 'attribute' => 'title',
                                 'format' => 'text',
@@ -66,7 +67,44 @@
                                 'format' => 'boolean',
                                 'label' => 'Serving'
                             ],
-                            ['class' => 'yii\grid\ActionColumn'],
+                            [
+                                'format' => 'html',
+                                'label' => 'Update',
+                                'value' => function($row)
+                                {
+                                    if($row['isserving'] == 1)
+                                    {
+                                        return Html::a('Revoke', 
+                                                                Url::to(['cordinator/update', 
+                                                                          'action' => 'revoke', 
+                                                                          'id' => $row['cordinatorid']
+                                                                      ])
+                                                                );
+                                    }
+                                    else
+                                    {
+                                        return Html::a('Re-assign', 
+                                                                Url::to(['cordinator/update', 
+                                                                            'action' => 'reassign', 
+                                                                            'id' => $row['cordinatorid']
+                                                                      ])
+                                                                );
+                                    }
+                                }
+                            ],
+                            [
+                                'format' => 'html',
+                                'label' => 'Delete',
+                                'value' => function($row)
+                                {
+                                    return Html::a(' ', 
+                                                Url::to(['cordinator/delete-cordinator',
+                                                            'id' =>$row['cordinatorid']
+                                                        ]) ,
+                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove']
+                                            );
+                                }      
+                            ],
                         ],
                     ]); 
                ?>

@@ -216,28 +216,6 @@ class CordinatorController extends Controller
     
     
     /**
-     * Displays a single Cordinator model.
-     * 
-     * @param string $id
-     * @return mixed
-     * 
-     * Author: Laurence Charles
-     * Date Created: 22/06/216
-     * Date Last Modified: 22/06/2016
-     */
-    public function actionView($id)
-    {
-        $cordinator = Cordinator::find()
-                ->where(['cordinatorid' => $id, 'isactive' => 1, 'isdeleted' => 0])
-                ->one();
-        
-        return $this->render('view', [
-            'cordinator' => $cordinator,
-        ]);
-    }
-
-    
-    /**
      * Creates a new Cordinaotr model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * 
@@ -335,30 +313,69 @@ class CordinatorController extends Controller
      * @return mixed
      * 
      * Author: Laurence Charles
-     * Date Created: 22/06/216
+     * Date Created: 22/06/2016
      * Date Last Modified: 22/06/2016
      */
-    public function actionUpdate($id)
+    public function actionUpdate($action, $id)
     {
+         $cordinator_save_flag = false;
          $cordinator = Cordinator::find()
                 ->where(['cordinatorid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
          
-        $employees = Employee::getEmployeeListing('Lecturer');
-        
-                 
-
-        if (Yii::$app->request->post())
-        {
+         if($action == 'revoke')
+         {
+            $cordinator->isserving = 0;
             
-        }
-        
-        return $this->render('update', [
-            'cordinator' => $cordinator,
-            'employees' => $employees,
-        ]);
+            $permission = AuthAssignment::find()
+                            ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
+                            ->one();
+            $permission->delete();
+            
+            $cordinator_save_flag = $cordinator->save();
+            if($cordinator_save_flag == false)
+           {
+               Yii::$app->getSession()->setFlash('error', 'Error occured saving co-ordinator record.');
+           }
+         }
+         
+         elseif ($action == 'reassign')
+         {
+            $cordinator->isserving = 1;
+            $transaction = \Yii::$app->db->beginTransaction();
+            try{
+                $cordinator_save_flag = $cordinator->save();
+                if($cordinator_save_flag == true)
+                {
+                    $permission_save_flag = false;
+                    $permission = new AuthAssignment();
+                    $permission->created_at =  time();
+                    $permission->item_name = "Cordinator";
+                    $permission->user_id = $cordinator->personid;
+                    $permission_save_flag = $permission->save();
+                    if($permission_save_flag == true)
+                    {
+                        $transaction->commit();
+                    }
+                    else
+                    {
+                         $transaction->rollBack();
+                         Yii::$app->getSession()->setFlash('error', 'Error occured saving permission record.');
+                     }
+                }
+                else
+                {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured saving co-ordinator record.');
+                }
+            } catch (Exception $ex) {
+                Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+            }
+         }
+         return self::actionIndex();
     }
 
+    
     /**
      * Deletes an existing ProgrammeCatalog model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -367,21 +384,31 @@ class CordinatorController extends Controller
      * @return mixed
      * 
      * Author: Laurence Charles
-     * Date Created: 22/06/216
-     * Date Last Modified: 22/06/2016
+     * Date Created: 26/06/216
+     * Date Last Modified: 26/06/2016
      */
-    public function actionDelete($id)
+    public function actionDeleteCordinator($id)
     {
         $cordinator = Cordinator::find()
                 ->where(['cordinatorid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-
-        if (Yii::$app->request->post())
-        {
-            
-        }
-
-        return $this->redirect(['index']);
+        
+        $permission = AuthAssignment::find()
+                        ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
+                        ->one();
+        $permission->delete();
+        
+        $cordinator->isserving = 0;
+        $cordinator->isactive = 0;
+        $cordinator->isdeleted = 1;
+        $cordinator_save_flag = false;
+        $cordinator_save_flag = $cordinator->save();
+        if($cordinator_save_flag == false)
+       {
+           Yii::$app->getSession()->setFlash('error', 'Error occured saving co-ordinator record.');
+       }
+       
+       return self::actionIndex();
     }
 
     
