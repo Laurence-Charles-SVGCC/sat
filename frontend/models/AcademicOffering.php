@@ -4,6 +4,7 @@ namespace frontend\models;
 
 use Yii;
 use frontend\models\ProgrammeCatalog;
+use frontend\models\StudentRegistration;
 
 /**
  * This is the model class for table "academic_offering".
@@ -488,6 +489,31 @@ class AcademicOffering extends \yii\db\ActiveRecord
             $values = NULL;
         }
         return $listing;
+    }
+    
+    
+    
+    public static function getHighestGPA($academicofferingid)
+    {
+        $enrolled_students = StudentRegistration::find()
+                            ->where(['student_registration.academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->all();
+        $top_performers = array();
+        $highest_gpa = 0;
+        foreach ($enrolled_students as $student)
+        {
+            $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
+            if($gpa > $highest_gpa)
+                $highest_gpa = $gpa;
+        }
+        
+        foreach ($enrolled_students as $student)
+        {
+            $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
+            if($gpa == $highest_gpa)
+                $top_performers[] = $student->studentregistrationid;
+        }
+        return $top_performers;
     }
        
        

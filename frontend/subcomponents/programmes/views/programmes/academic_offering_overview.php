@@ -176,7 +176,7 @@
                              <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Student Performance</legend>
                                 <p>
-                                    Select the button below to generate a report that summaries the overall performance of students 
+                                    <strong>1.</strong> Select the button below to generate a report that summaries the overall performance of students 
                                     enrolled in a particular course.
                                 </p>
                                 <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:30%; margin:0 auto;" 
@@ -187,7 +187,7 @@
                                 </a><br/><br/><br/>
                                         
                                 <?php if($broadsheet_dataprovider  && $iscape == false):?>
-                                        <p>Click on the following links to download a detailed programme broadsheet in the format of your choice</p>
+                                        <p><strong>2.</strong>Click on the following links to download a detailed ASc. programme broadsheet in the format of your choice</p>
                                         <?= ExportMenu::widget([
                                                 'dataProvider' => $broadsheet_dataprovider,
                                                 'columns' => [
@@ -275,7 +275,7 @@
                                             ]);
                                         ?>
                                 <?php elseif($broadsheet_dataprovider  && $iscape == true):?>
-                                    <p>Click on the following links to download a detailed programme broadsheet in the format of your choice</p>
+                                    <p><strong>2.</strong>Click on the following links to download a detailed CAPE programme broadsheet in the format of your choice</p>
                                     <?= ExportMenu::widget([
                                             'dataProvider' => $broadsheet_dataprovider,
                                             'columns' => [
@@ -358,6 +358,122 @@
                                         ]);
                                     ?>
                                 <?php endif;?>
+                                    
+                                    
+                                <?php if($cumulative_grade_dataprovider  && $iscape == false):?>
+                                        <br/><br/>
+                                        <p>
+                                            <strong>3.</strong>Click on any of the following links to download a student listing of all the enrolled 
+                                            students within this ASc. programme. The primary focus of this report is a student's current cumulative
+                                            academic performance.
+                                        </p>
+                                        <?= ExportMenu::widget([
+                                                'dataProvider' => $cumulative_grade_dataprovider,
+                                                'columns' => [
+                                                        [
+                                                            'attribute' => 'studentid',
+                                                            'format' => 'text',
+                                                            'label' => 'Student ID'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'title',
+                                                            'format' => 'text',
+                                                            'label' => 'Title'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'firstname',
+                                                            'format' => 'text',
+                                                            'label' => 'First Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'lastname',
+                                                            'format' => 'text',
+                                                            'label' => 'Last Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'final',
+                                                            'format' => 'text',
+                                                            'label' => 'Cumulative GPA'
+                                                        ],
+                                                    ],
+                                                'fontAwesome' => true,
+                                                'dropdownOptions' => [
+                                                    'label' => 'Select Export Type',
+                                                    'class' => 'btn btn-default'
+                                                ],
+                                                'asDropdown' => false,
+                                                'showColumnSelector' => false,
+                                                'filename' => $cumulative_grade_filename,
+                                                'exportConfig' => [
+                                                     ExportMenu::FORMAT_PDF => false,
+                                                    ExportMenu::FORMAT_TEXT => false,
+                                                    ExportMenu::FORMAT_HTML => false,
+                                                    ExportMenu::FORMAT_EXCEL => false,
+//                                                    ExportMenu::FORMAT_EXCEL_X => false
+                                                ],
+                                            ]);
+                                        ?>
+                                    <?php endif;?>
+                                        
+                                        
+                                    <?php if($programme_comparison_dataprovider  && $iscape == false):?>
+                                        <br/><br/>
+                                        <p>
+                                            <strong>4.</strong>Click on any of the following links to download a report showing the current top 
+                                            performers form each ASc. Programme.
+                                        </p>
+                                        <?= ExportMenu::widget([
+                                                'dataProvider' => $programme_comparison_dataprovider,
+                                                'columns' => [
+                                                        [
+                                                            'attribute' => 'programme',
+                                                            'format' => 'text',
+                                                            'label' => 'Programme'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'studentid',
+                                                            'format' => 'text',
+                                                            'label' => 'Student ID'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'title',
+                                                            'format' => 'text',
+                                                            'label' => 'Title'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'firstname',
+                                                            'format' => 'text',
+                                                            'label' => 'First Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'lastname',
+                                                            'format' => 'text',
+                                                            'label' => 'Last Name'
+                                                        ],
+                                                        [
+                                                            'attribute' => 'final',
+                                                            'format' => 'text',
+                                                            'label' => 'Cumulative GPA'
+                                                        ],
+                                                    ],
+                                                'fontAwesome' => true,
+                                                'dropdownOptions' => [
+                                                    'label' => 'Select Export Type',
+                                                    'class' => 'btn btn-default'
+                                                ],
+                                                'asDropdown' => false,
+                                                'showColumnSelector' => false,
+                                                'filename' => $cumulative_grade_filename,
+                                                'exportConfig' => [
+//                                                    ExportMenu::FORMAT_PDF => false,
+                                                    ExportMenu::FORMAT_TEXT => false,
+                                                    ExportMenu::FORMAT_HTML => false,
+                                                    ExportMenu::FORMAT_EXCEL => false,
+//                                                    ExportMenu::FORMAT_EXCEL_X => false
+                                                ],
+                                            ]);
+                                        ?>
+                                    <?php endif;?>
                             </fieldset>
                         </div>
                     </div>
