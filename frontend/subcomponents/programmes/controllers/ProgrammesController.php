@@ -1461,6 +1461,18 @@ class ProgrammesController extends Controller
                         $programme_name = ProgrammeCatalog::getProgrammeName($offering->academicofferingid);
                         $programme_comparison_info['programme'] = $programme_name;
                         
+                        $division = Division::find()
+                                ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
+                                ->innerJoin('programme_catalog', '`department`.`departmentid` = `programme_catalog`.`departmentid`')
+                                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                                ->where(['division.isactive' => 1, 'division.isdeleted' => 0,
+                                                'department.isactive' => 1, 'department.isdeleted' => 0,
+                                                'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid])
+                                ->one()
+                                ->name;
+                        $programme_comparison_info['division'] = $division;
+                        
                         $programme_comparison_container[] = $programme_comparison_info;
                     }
                 }

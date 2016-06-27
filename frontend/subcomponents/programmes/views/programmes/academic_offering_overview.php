@@ -425,6 +425,11 @@
                                         <?= ExportMenu::widget([
                                                 'dataProvider' => $programme_comparison_dataprovider,
                                                 'columns' => [
+                                                         [
+                                                            'attribute' => 'division',
+                                                            'format' => 'text',
+                                                            'label' => 'Division'
+                                                        ],
                                                         [
                                                             'attribute' => 'programme',
                                                             'format' => 'text',
