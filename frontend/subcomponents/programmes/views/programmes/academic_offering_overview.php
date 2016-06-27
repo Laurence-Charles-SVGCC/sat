@@ -420,7 +420,7 @@
                                         <br/><br/>
                                         <p>
                                             <strong>4.</strong>Click on any of the following links to download a report showing the current top 
-                                            performers form each ASc. Programme.
+                                            performers from each ASc. Programme.
                                         </p>
                                         <?= ExportMenu::widget([
                                                 'dataProvider' => $programme_comparison_dataprovider,
