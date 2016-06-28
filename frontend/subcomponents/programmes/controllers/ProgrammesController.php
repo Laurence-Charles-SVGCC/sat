@@ -4199,8 +4199,8 @@ class ProgrammesController extends Controller
     
     
     
-    public function actionProgrammeCordinator()
-    {
+//    public function actionProgrammeCordinator()
+//    {
         /*Any programme coridinator for a particular academic_offering with also be granted access to all the
          * to all other corresponding academic_offering for the same programme
          */
@@ -4279,7 +4279,7 @@ class ProgrammesController extends Controller
 //            [
 //                'dataProvider' => $programme_dataprovider,
 //            ]);
-    }
+//    }
     
     
     
