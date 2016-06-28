@@ -6,8 +6,8 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use frontend\models\EmployeeTitle;
 use frontend\models\ApplicationPeriod;
-
 use frontend\models\Employee;
+use frontend\models\CordinatorType;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -154,7 +154,7 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
                         
-                    <?php if (true): ?>    
+                    <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
                     <?php endif; ?>
                   </ul>
@@ -171,6 +171,13 @@ else
                         <ul class="treeview-menu">
                             <?php if (Yii::$app->user->can('viewProgramme')): ?>
                                 <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Manage Programmes</a></li>
+                            <?php endif; ?>
+                                
+                             <?php if (Yii::$app->user->can('Cordinator')
+                                            && (in_array('Head of Department', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid)) 
+                                                        ||  in_array('Programme Head', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid))) 
+                                     ): ?>
+                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator'])?>"><i class="fa fa-circle-o"></i>View Programme Performance</a></li>
                             <?php endif; ?>
                             
                             <?php if (Yii::$app->user->can('manageAwards')): ?>

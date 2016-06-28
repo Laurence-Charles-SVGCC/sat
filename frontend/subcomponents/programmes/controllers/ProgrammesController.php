@@ -4129,6 +4129,7 @@ class ProgrammesController extends Controller
      */
     public function actionViewAllProgrammes()
     {
+       
         $info_string = "";
         $programme_dataprovider = array();
         $course_dataprovider = array();
@@ -4198,9 +4199,86 @@ class ProgrammesController extends Controller
     
     
     
-    public function actionCordinatorDashboard()
+    public function actionProgrammeCordinator()
     {
+        /*Any programme coridinator for a particular academic_offering with also be granted access to all the
+         * to all other corresponding academic_offering for the same programme
+         */
         
+//        $employeeid = Yii::$app->user->identity->personid;
+//        $cordinators = Cordinator::find()
+//                ->where(['personid' => $employeeid, 'cordinatortypeid' => 2, 'isserving' => 1,  'isactive' => 1, 'isdeleted' => 0])
+//                ->all();
+//        
+//        $cordinated_programme_academicofferingids = array();
+//        foreach ($cordinators as $cordinator)
+//        {
+//            $cordinated_programme_academicofferingids[] = $cordinator->academicofferingid;
+//        }
+//        
+//        $programme_dataprovider = NULL;
+//      
+//        $data_package = array();
+//        $programme_container = array();
+//        $programme_info = array();
+//
+//        $programmes = ProgrammeCatalog::find()
+//                ->innerJoin('academic_offering', 'programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+//                ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+//                                 'academic_offering.academicofferingid' => $cordinated_programme_academicofferingids,   'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
+//                            ])
+//                ->groupBy('programme_catalog.programmecatalogid')
+//                ->all();
+//        
+//        foreach ($programmes as $programme)
+//        {
+//            $programme_info['programmecatalogid'] = $programme->programmecatalogid;
+//
+//            $qualificationtype = QualificationType::find()
+//                    ->where(['qualificationtypeid' => $programme->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->one()->abbreviation;
+//            $programme_info['qualificationtype'] = $qualificationtype;
+//
+//            $programme_info['name'] = $programme->name;
+//            $programme_info['specialisation'] = $programme->specialisation;
+//
+//            $department = Department::find()
+//                    ->where(['departmentid' => $programme->departmentid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->one()->name;
+//            $programme_info['department'] = $department;
+//
+//            $exambody = ExaminationBody::find()
+//                    ->where(['examinationbodyid' => $programme->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->one()->abbreviation;
+//            $programme_info['exambody'] = $exambody;
+//
+//            $programmetype = IntentType::find()
+//                    ->where(['intenttypeid' => $programme->programmetypeid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->one()->name;
+//            $programme_info['programmetype'] = $programmetype;
+//
+//            $programme_info['duration'] = $programme->duration;
+//            $programme_info['creationdate'] = $programme->creationdate;
+//
+//            $programme_container[] = $programme_info;
+//        }
+//
+//        $programme_dataprovider = new ArrayDataProvider([
+//                    'allModels' => $programme_container,
+//                    'pagination' => [
+//                        'pageSize' => 20,
+//                    ],
+//                    'sort' => [
+//                        'defaultOrder' => ['programmetype' =>SORT_ASC,  'name' => SORT_ASC],
+//                        'attributes' => ['programmetype', 'name'],
+//                    ]
+//            ]); 
+//        
+//       
+//        return $this->render('cordinator_programme_results',
+//            [
+//                'dataProvider' => $programme_dataprovider,
+//            ]);
     }
     
     
