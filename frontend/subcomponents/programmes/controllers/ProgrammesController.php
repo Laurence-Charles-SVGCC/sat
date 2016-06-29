@@ -28,6 +28,7 @@ use frontend\models\CapeCourse;
 use frontend\models\CapeUnit;
 use frontend\models\CapeSubject;
 use frontend\models\Cordinator;
+use frontend\models\CordinatorType;
 use frontend\models\Employee;
 use frontend\models\EmployeeBatch;
 use frontend\models\EmployeeBatchCape;
@@ -773,12 +774,12 @@ class ProgrammesController extends Controller
             return $this->render('programme_overview',
                 [
                    'programme' => $programme,
-                    'programme_name' => $programme_name,
-                    'programme_info' => $programme_info,
-                    'cohort_array' => $cohort_array,
+                   'programme_name' => $programme_name,
+                   'programme_info' => $programme_info,
+                   'cohort_array' => $cohort_array,
                    'cordinator_details' => $cordinator_details,
-                    'course_outline_dataprovider' => $course_outline_dataprovider,
-                    'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider
+                   'course_outline_dataprovider' => $course_outline_dataprovider,
+                   'cape_course_outline_dataprovider' => $cape_course_outline_dataprovider
                 ]);
     }
     
@@ -4199,87 +4200,104 @@ class ProgrammesController extends Controller
     
     
     
-//    public function actionProgrammeCordinator()
-//    {
+    public function actionProgrammeCordinator()
+    {
         /*Any programme coridinator for a particular academic_offering with also be granted access to all the
          * to all other corresponding academic_offering for the same programme
          */
         
-//        $employeeid = Yii::$app->user->identity->personid;
-//        $cordinators = Cordinator::find()
-//                ->where(['personid' => $employeeid, 'cordinatortypeid' => 2, 'isserving' => 1,  'isactive' => 1, 'isdeleted' => 0])
-//                ->all();
-//        
-//        $cordinated_programme_academicofferingids = array();
-//        foreach ($cordinators as $cordinator)
-//        {
-//            $cordinated_programme_academicofferingids[] = $cordinator->academicofferingid;
-//        }
-//        
-//        $programme_dataprovider = NULL;
-//      
-//        $data_package = array();
-//        $programme_container = array();
-//        $programme_info = array();
-//
-//        $programmes = ProgrammeCatalog::find()
-//                ->innerJoin('academic_offering', 'programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-//                ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
-//                                 'academic_offering.academicofferingid' => $cordinated_programme_academicofferingids,   'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
-//                            ])
-//                ->groupBy('programme_catalog.programmecatalogid')
-//                ->all();
-//        
-//        foreach ($programmes as $programme)
-//        {
-//            $programme_info['programmecatalogid'] = $programme->programmecatalogid;
-//
-//            $qualificationtype = QualificationType::find()
-//                    ->where(['qualificationtypeid' => $programme->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
-//                    ->one()->abbreviation;
-//            $programme_info['qualificationtype'] = $qualificationtype;
-//
-//            $programme_info['name'] = $programme->name;
-//            $programme_info['specialisation'] = $programme->specialisation;
-//
-//            $department = Department::find()
-//                    ->where(['departmentid' => $programme->departmentid, 'isactive' => 1, 'isdeleted' => 0])
-//                    ->one()->name;
-//            $programme_info['department'] = $department;
-//
-//            $exambody = ExaminationBody::find()
-//                    ->where(['examinationbodyid' => $programme->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])
-//                    ->one()->abbreviation;
-//            $programme_info['exambody'] = $exambody;
-//
-//            $programmetype = IntentType::find()
-//                    ->where(['intenttypeid' => $programme->programmetypeid, 'isactive' => 1, 'isdeleted' => 0])
-//                    ->one()->name;
-//            $programme_info['programmetype'] = $programmetype;
-//
-//            $programme_info['duration'] = $programme->duration;
-//            $programme_info['creationdate'] = $programme->creationdate;
-//
-//            $programme_container[] = $programme_info;
-//        }
-//
-//        $programme_dataprovider = new ArrayDataProvider([
-//                    'allModels' => $programme_container,
-//                    'pagination' => [
-//                        'pageSize' => 20,
-//                    ],
-//                    'sort' => [
-//                        'defaultOrder' => ['programmetype' =>SORT_ASC,  'name' => SORT_ASC],
-//                        'attributes' => ['programmetype', 'name'],
-//                    ]
-//            ]); 
-//        
-//       
-//        return $this->render('cordinator_programme_results',
-//            [
-//                'dataProvider' => $programme_dataprovider,
-//            ]);
-//    }
+        $employeeid = Yii::$app->user->identity->personid;
+        
+        $cordinated_programme_academicofferingids = array();
+        
+        $programme_head_cordinator_records = Cordinator::find()
+                ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Programme Head'
+                                ])
+                ->all();
+        foreach ($programme_head_cordinator_records as $programme_head_cordinator)
+        {
+            if(in_array( $programme_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                    $cordinated_programme_academicofferingids[] = $programme_head_cordinator->academicofferingid;
+        }
+        
+        $department_head_cordinator_records = Cordinator::find()
+                ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Head of DEpartment'
+                                ])
+                ->all();
+        foreach ($department_head_cordinator_records as $department_head_cordinator)
+        {
+            if(in_array( $department_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                    $cordinated_programme_academicofferingids[] = $department_head_cordinator->academicofferingid;
+        }
+        
+        $programme_dataprovider = NULL;
+      
+        $data_package = array();
+        $programme_container = array();
+        $programme_info = array();
+
+        $programmes = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                                 'academic_offering.academicofferingid' => $cordinated_programme_academicofferingids,   'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
+                            ])
+                ->groupBy('programme_catalog.programmecatalogid')
+                ->all();
+        
+        foreach ($programmes as $programme)
+        {
+            $programme_info['programmecatalogid'] = $programme->programmecatalogid;
+
+            $qualificationtype = QualificationType::find()
+                    ->where(['qualificationtypeid' => $programme->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->abbreviation;
+            $programme_info['qualificationtype'] = $qualificationtype;
+
+            $programme_info['name'] = $programme->name;
+            $programme_info['specialisation'] = $programme->specialisation;
+
+            $department = Department::find()
+                    ->where(['departmentid' => $programme->departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->name;
+            $programme_info['department'] = $department;
+
+            $exambody = ExaminationBody::find()
+                    ->where(['examinationbodyid' => $programme->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->abbreviation;
+            $programme_info['exambody'] = $exambody;
+
+            $programmetype = IntentType::find()
+                    ->where(['intenttypeid' => $programme->programmetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->name;
+            $programme_info['programmetype'] = $programmetype;
+
+            $programme_info['duration'] = $programme->duration;
+            $programme_info['creationdate'] = $programme->creationdate;
+
+            $programme_container[] = $programme_info;
+        }
+
+        $programme_dataprovider = new ArrayDataProvider([
+                    'allModels' => $programme_container,
+                    'pagination' => [
+                        'pageSize' => 20,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['programmetype' =>SORT_ASC,  'name' => SORT_ASC],
+                        'attributes' => ['programmetype', 'name'],
+                    ]
+            ]); 
+        
+       
+        return $this->render('cordinator_programme_results',
+            [
+                'dataProvider' => $programme_dataprovider,
+            ]);
+    }
     
     
     

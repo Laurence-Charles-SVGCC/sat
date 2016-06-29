@@ -249,15 +249,50 @@ class CordinatorController extends Controller
             {
                 $cordinator->dateassigned = date('Y-m-d');
                 $cordinator->assignedby = Yii::$app->user->identity->personid;
-                
+               
+               //uses must be prevented from creating 
                if ($departmentid)
+               {
                    $cordinator->departmentid = $departmentid;
+                   $duplicate_cordinator = Cordinator::find()
+                           ->where(['cordinatortypedid' => 1, 'departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+               }
                if ($academicofferingid)
+               {
                    $cordinator->academicofferingid = $academicofferingid;
+                   $duplicate_cordinator = Cordinator::find()
+                           ->where(['cordinatortypedid' => 2, 'academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+               }
                if ($courseofferingid)
+               {
                    $cordinator->courseofferingid = $courseofferingid;
+                   $duplicate_cordinator = Cordinator::find()
+                           ->where(['cordinatortypedid' => 3, 'courseofferingid' => $courseofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+               }
                if ($capesubjectid)
+               {
                    $cordinator->capesubjectid = $capesubjectid;
+                   $duplicate_cordinator = Cordinator::find()
+                           ->where(['cordinatortypedid' => 4, 'capesubjectid' => $capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+               }
+               
+               
+               //ensures duplicate cordinator records are not created
+               if($duplicate_cordinator)
+               {
+                   Yii::$app->getSession()->setFlash('error', 'That employee has already been assigned that cordinator role.');
+                   return $this->render('create', [
+                            'cordinator' => $cordinator,
+                            'employees' => $employees,
+                            'departments' => $departments,
+                            'academicyears' => $academicyears,
+                        ]);
+               }
+               
                
                $transaction = \Yii::$app->db->beginTransaction();
                try{
