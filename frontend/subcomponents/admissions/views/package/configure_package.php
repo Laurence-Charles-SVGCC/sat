@@ -130,11 +130,15 @@
                                 }
                             echo "</tr>";
                             
-                            
                             echo "<tr>";
                                 echo "<th style='width:25%; vertical-align:middle'>Email Content</th>";
                                 echo "<td>{$form->field($package, 'emailcontent')->label('', ['class'=> 'form-label'])->textArea(['rows' => 50, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
                             echo "</tr>"; 
+                            
+                             echo "<tr>";
+                                echo "<th style='width:25%; vertical-align:middle'>Disclaimer</th>";
+                                echo "<td>{$form->field($package, 'disclaimer')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
+                            echo "</tr>";
                         echo "</table>"; 
 
                         echo "<br/>";

@@ -23,6 +23,7 @@ use frontend\models\Offer;
  * @property string $datestarted
  * @property string $datecompleted
  * @property integer $documentcount
+ * @property integer $disclaimer
  * @property integer $waspublished
  * @property integer $isactive
  * @property integer $isdeleted
@@ -54,7 +55,7 @@ class Package extends \yii\db\ActiveRecord
             [['datestarted', 'datecompleted'], 'safe'],
             [['name'], 'string', 'max' => 45],
             [['commencementdate'], 'string', 'max' => 100],
-            [['emailtitle', 'emailcontent'], 'string'],
+            [['emailtitle', 'emailcontent', 'disclaimer'], 'string'],
         ];
     }
 
@@ -76,6 +77,7 @@ class Package extends \yii\db\ActiveRecord
             'datestarted' => 'Datestarted',
             'datecompleted' => 'Datecompleted',
             'documentcount' => 'Documentcount',
+            'disclaimer' => 'Disclaimer',
             'waspublished' => 'Has Been Published',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',

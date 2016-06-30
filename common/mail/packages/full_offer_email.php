@@ -7,7 +7,7 @@
 
     <html>
         <div class="conditional_offer_email">
-            <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:200px;">
+            <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:150px;">
             <!--<img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:150px;">-->
             
             <div id="introduction">
