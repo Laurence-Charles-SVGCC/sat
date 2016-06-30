@@ -630,12 +630,25 @@ class ProgrammesController extends Controller
             $programme_container[] = $programme_info;
             
             $cohort_array = array();
-            $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
+            $cordinated_offerings = AcademicOffering::getCordinatedAcademicofferings();
+            $unique_offerings = array();
+            foreach($cordinated_offerings as $offering)
+            {
+                if($offering->programmecatalogid == $programme->programmecatalogid)
+                {
+                    $unique_offerings[] = $offering;
+                }
+            }
+//            $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
+//            $cohort_count = count(AcademicOffering::getCordinatedAcademicofferingids());
+            $cohort_count = count($unique_offerings);
             array_push( $cohort_array, $cohort_count);
 
             if ($cohort_count > 0)
             {
-                $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
+//                $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
+//                $cohorts = AcademicOffering::getCordinatedAcademicofferings();
+                $cohorts = $unique_offerings;
                 for($i = 0 ; $i < $cohort_count ; $i++)
                 {
                     array_push($cohort_array, $cohorts[$i]);
@@ -1459,8 +1472,8 @@ class ProgrammesController extends Controller
                         $cumulative_gpa = StudentRegistration::calculateCumulativeGPA( $studentregistrationid);
                          $programme_comparison_info['final'] = $cumulative_gpa;
                         
-                        $programme_name = ProgrammeCatalog::getProgrammeName($offering->academicofferingid);
-                        $programme_comparison_info['programme'] = $programme_name;
+                        $associated_programme_name = ProgrammeCatalog::getProgrammeName($offering->academicofferingid);
+                        $programme_comparison_info['programme'] = $associated_programme_name;
                         
                         $division = Division::find()
                                 ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
@@ -4205,34 +4218,9 @@ class ProgrammesController extends Controller
         /*Any programme coridinator for a particular academic_offering with also be granted access to all the
          * to all other corresponding academic_offering for the same programme
          */
-        
         $employeeid = Yii::$app->user->identity->personid;
         
-        $cordinated_programme_academicofferingids = array();
-        
-        $programme_head_cordinator_records = Cordinator::find()
-                ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
-                ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
-                                'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Programme Head'
-                                ])
-                ->all();
-        foreach ($programme_head_cordinator_records as $programme_head_cordinator)
-        {
-            if(in_array( $programme_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
-                    $cordinated_programme_academicofferingids[] = $programme_head_cordinator->academicofferingid;
-        }
-        
-        $department_head_cordinator_records = Cordinator::find()
-                ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
-                ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
-                                'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Head of DEpartment'
-                                ])
-                ->all();
-        foreach ($department_head_cordinator_records as $department_head_cordinator)
-        {
-            if(in_array( $department_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
-                    $cordinated_programme_academicofferingids[] = $department_head_cordinator->academicofferingid;
-        }
+        $cordinated_programme_academicofferingids = ( AcademicOffering::getCordinatedAcademicofferingids())?  AcademicOffering::getCordinatedAcademicofferingids(): array();
         
         $programme_dataprovider = NULL;
       

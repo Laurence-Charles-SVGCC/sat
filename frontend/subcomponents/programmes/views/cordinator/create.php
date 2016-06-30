@@ -19,7 +19,7 @@
 <div class="site-index">
         <div class = "custom_wrapper">
             <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/programmes/cordinators/index']);?>" title="Manage Co-ordinators">     
+                <a href="<?= Url::toRoute(['/subcomponents/programmes/cordinator/index']);?>" title="Manage Co-ordinators">     
                     <img class="custom_logo_students" src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar">
                     <span class="custom_module_label" > Welcome to the Co-ordinator Management System</span> 
                     <img src ="<?=Url::to('../images/programme.png');?>" alt="scroll avatar" class="pull-right">
@@ -57,7 +57,16 @@
                             
                              <tr>
                                 <th style='width:30%; vertical-align:middle'>Type</th>
-                                <td  id="cordinator-cordinatortype" style="display:none"><?=$form->field($cordinator, 'cordinatortypeid')->label('')->dropDownList(ArrayHelper::map(CordinatorType::find()->all(), 'cordinatortypeid', 'name'), ['prompt'=>'Select Co-ordinator Type', 'onchange' => 'toggleDetails();respondToAcademicYearSelection(event);']);?></td>
+                                <td  id="cordinator-cordinatortype" style="display:none">
+                                    <?=$form->field($cordinator, 'cordinatortypeid')
+                                            ->label('')
+                                            ->dropDownList(ArrayHelper::map(CordinatorType::find()->where(['cordinatortypeid' => [1,2]])->all(), 'cordinatortypeid', 'name'), 
+                                                                            ['prompt'=>'Select Co-ordinator Type',
+                                                                                'onchange' => 'toggleDetails();respondToAcademicYearSelection(event);'
+                                                                            ]
+                                                                    )
+                                        ;?>
+                                </td>
                             </tr>
                             
                             <tr>

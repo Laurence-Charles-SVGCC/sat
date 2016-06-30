@@ -255,28 +255,28 @@ class CordinatorController extends Controller
                {
                    $cordinator->departmentid = $departmentid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypedid' => 1, 'departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 1, 'departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                if ($academicofferingid)
                {
                    $cordinator->academicofferingid = $academicofferingid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypedid' => 2, 'academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 2, 'academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                if ($courseofferingid)
                {
                    $cordinator->courseofferingid = $courseofferingid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypedid' => 3, 'courseofferingid' => $courseofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 3, 'courseofferingid' => $courseofferingid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                if ($capesubjectid)
                {
                    $cordinator->capesubjectid = $capesubjectid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypedid' => 4, 'capesubjectid' => $capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 4, 'capesubjectid' => $capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                
@@ -289,7 +289,7 @@ class CordinatorController extends Controller
                             'cordinator' => $cordinator,
                             'employees' => $employees,
                             'departments' => $departments,
-                            'academicyears' => $academicyears,
+                            'acaifdemicyears' => $academicyears,
                         ]);
                }
                
@@ -297,38 +297,51 @@ class CordinatorController extends Controller
                $transaction = \Yii::$app->db->beginTransaction();
                try{
                    $cordinator_save_flag = $cordinator->save();
+                   
+                   $is_currently_cordinator =  AuthAssignment::find()
+                               ->where(['user_id' => $cordinator->personid, 'item_name' => 'Cordinator'])
+                               ->one();
                    if ($cordinator_save_flag == true)
                    {
-                       $cordinator_permission_save_flag = false;
-                       $cordinator_permission = new AuthAssignment();
-                       $cordinator_permission->created_at =  time();
-                       $cordinator_permission->item_name = "Cordinator";
-                       $cordinator_permission->user_id = $cordinator->personid;
-                       $cordinator_permission_save_flag = $cordinator_permission->save();
-                       if($cordinator_permission_save_flag == true)
+                       if($is_currently_cordinator == true)
                        {
-                            $registry_permission_save_flag = false;
-                            $registry_permission = new AuthAssignment();
-                            $registry_permission->created_at =  time();
-                            $registry_permission->item_name = "registry";
-                            $registry_permission->user_id = $cordinator->personid;
-                            $registry_permission_save_flag = $registry_permission->save();
-                            if($registry_permission_save_flag == true)
-                            {
-                                $transaction->commit();
-                                return self::actionIndex();
-                            }
-                            else
-                            {
-                                 $transaction->rollBack();
-                                 Yii::$app->getSession()->setFlash('error', 'Error occured saving registry permission record.');
-                             }
+                           $transaction->commit();
+                           return self::actionIndex();
                        }
                        else
                        {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error occured saving cordinator  permission record.');
-                        }
+                            $cordinator_permission_save_flag = false;
+                            $cordinator_permission = new AuthAssignment();
+                            $cordinator_permission->created_at =  time();
+                            $cordinator_permission->item_name = "Cordinator";
+                            $cordinator_permission->user_id = $cordinator->personid;
+                            $cordinator_permission_save_flag = $cordinator_permission->save();
+                       
+                            if($cordinator_permission_save_flag == true)
+                            {
+                                 $registry_permission_save_flag = false;
+                                 $registry_permission = new AuthAssignment();
+                                 $registry_permission->created_at =  time();
+                                 $registry_permission->item_name = "registry";
+                                 $registry_permission->user_id = $cordinator->personid;
+                                 $registry_permission_save_flag = $registry_permission->save();
+                                 if($registry_permission_save_flag == true)
+                                 {
+                                     $transaction->commit();
+                                     return self::actionIndex();
+                                 }
+                                 else
+                                 {
+                                      $transaction->rollBack();
+                                      Yii::$app->getSession()->setFlash('error', 'Error occured saving registry permission record.');
+                                  }
+                             }
+                            else
+                            {
+                                 $transaction->rollBack();
+                                 Yii::$app->getSession()->setFlash('error', 'Error occured saving cordinator  permission record.');
+                             }
+                       }
                    }
                    else
                    {

@@ -162,6 +162,134 @@ class AcademicOffering extends \yii\db\ActiveRecord
        
        
        /**
+        * Returns an array of uniqe academicoffering records associated with a cordinator
+        * 
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 29/06/2016
+        * Date LAst Modified: 29/.6/2016
+        */
+       public static function getCordinatedAcademicofferings()
+       {
+           $employeeid = Yii::$app->user->identity->personid;
+           $cordinated_programme_academicofferingids = array();
+           $cordinated_programme_academicofferings = array();
+
+            $programme_head_cordinator_records = Cordinator::find()
+                    ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                    ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                    'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Programme Head'
+                                    ])
+                    ->all();
+            if( $programme_head_cordinator_records)
+            {
+                foreach ($programme_head_cordinator_records as $programme_head_cordinator)
+                {
+                    if(in_array( $programme_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                    {
+                        $cordinated_programme_academicofferingids[] = $programme_head_cordinator->academicofferingid;
+                        $offering = AcademicOffering::find()
+                                ->where(['academicofferingid' => $programme_head_cordinator->academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                        $cordinated_programme_academicofferings[] = $offering;
+                    }
+                }
+            }
+//            $offering = NULL;
+                    
+            $department_head_cordinator_records = Cordinator::find()
+                    ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                    ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                    'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Head of Department'
+                                    ])
+                    ->all();
+            if($department_head_cordinator_records)
+            {
+                foreach ($department_head_cordinator_records as $department_head_cordinator)
+                {
+                    $offerings  = AcademicOffering::find()
+                            ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                            ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,  'academic_offering.academicyearid' => $department_head_cordinator->academicyearid,
+                                            'programme_catalog.departmentid' => $department_head_cordinator->departmentid, 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                            ])
+                            ->all();
+                    
+                    foreach($offerings as $offering)
+                    {
+                        if(in_array($offering->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                        {
+                            $cordinated_programme_academicofferingids[] = $offering->academicofferingid;
+                            $cordinated_programme_academicofferings[] = $offering;
+                        }
+                    }
+                } 
+            }
+            return $cordinated_programme_academicofferings;
+       }
+       
+       
+       /**
+        * Returns an array of uniqe academicofferingids associated with a cordinator
+        * 
+        * @return type
+        * 
+        * Author: Laurence Charles
+        * Date Created: 29/06/2016
+        * Date LAst Modified: 29/.6/2016
+        */
+       public static function getCordinatedAcademicofferingids()
+       {
+           $employeeid = Yii::$app->user->identity->personid;
+        
+            $cordinated_programme_academicofferingids = array();
+
+            $programme_head_cordinator_records = Cordinator::find()
+                    ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                    ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                    'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Programme Head'
+                                    ])
+                    ->all();
+            if($programme_head_cordinator_records)
+            {
+                foreach ($programme_head_cordinator_records as $programme_head_cordinator)
+                {
+                    if(in_array( $programme_head_cordinator->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                            $cordinated_programme_academicofferingids[] = $programme_head_cordinator->academicofferingid;
+                }
+            }
+
+            $department_head_cordinator_records = Cordinator::find()
+                    ->innerJoin('cordinator_type' , '`cordinator`.`cordinatortypeid` = `cordinator_type`.`cordinatortypeid`')
+                    ->where(['cordinator.personid' => $employeeid, 'cordinator.isserving' => 1,  'cordinator.isactive' => 1, 'cordinator.isdeleted' => 0,
+                                    'cordinator_type.isactive' => 1, 'cordinator_type.isdeleted' => 0, 'cordinator_type.name' => 'Head of Department'
+                                    ])
+                    ->all();
+            if($department_head_cordinator_records)
+            {
+                foreach ($department_head_cordinator_records as $department_head_cordinator)
+                {
+                    $offerings  = AcademicOffering::find()
+                            ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.programmecatalogid')
+                            ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicyearid' => $department_head_cordinator->academicyearid,
+                                            'programme_catalog.departmentid' => $department_head_cordinator->departmentid, 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                            ])
+                            ->all();
+                    
+                    foreach($offerings as $offering)
+                    {
+                        if(in_array($offering->academicofferingid, $cordinated_programme_academicofferingids) == false)
+                        {
+                            $cordinated_programme_academicofferingids[] = $offering->academicofferingid;
+                        }
+                    }
+                } 
+            }
+            return $cordinated_programme_academicofferingids;
+       }
+       
+       
+       /**
         * Determines of a CAPE offering has been created for a particular appolication period
         * 
         * @param type $applicationperiodid
@@ -246,8 +374,6 @@ class AcademicOffering extends \yii\db\ActiveRecord
                 return true;
             return false;
         }
-        
-        
         
         
         /**
