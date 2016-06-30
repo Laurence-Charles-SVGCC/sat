@@ -630,28 +630,45 @@ class ProgrammesController extends Controller
             $programme_container[] = $programme_info;
             
             $cohort_array = array();
-            $cordinated_offerings = AcademicOffering::getCordinatedAcademicofferings();
-            $unique_offerings = array();
-            foreach($cordinated_offerings as $offering)
+            
+            if (Yii::$app->user->can('powerCordinator'))
             {
-                if($offering->programmecatalogid == $programme->programmecatalogid)
+                $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
+                array_push( $cohort_array, $cohort_count);
+                if ($cohort_count > 0)
                 {
-                    $unique_offerings[] = $offering;
+                    $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
+                    for($i = 0 ; $i < $cohort_count ; $i++)
+                    {
+                        array_push($cohort_array, $cohorts[$i]);
+                    }
                 }
             }
-//            $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
-//            $cohort_count = count(AcademicOffering::getCordinatedAcademicofferingids());
-            $cohort_count = count($unique_offerings);
-            array_push( $cohort_array, $cohort_count);
-
-            if ($cohort_count > 0)
+            else
             {
-//                $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
-//                $cohorts = AcademicOffering::getCordinatedAcademicofferings();
-                $cohorts = $unique_offerings;
-                for($i = 0 ; $i < $cohort_count ; $i++)
+                $cordinated_offerings = AcademicOffering::getCordinatedAcademicofferings();
+                $unique_offerings = array();
+                foreach($cordinated_offerings as $offering)
                 {
-                    array_push($cohort_array, $cohorts[$i]);
+                    if($offering->programmecatalogid == $programme->programmecatalogid)
+                    {
+                        $unique_offerings[] = $offering;
+                    }
+                }
+    //            $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid);
+    //            $cohort_count = count(AcademicOffering::getCordinatedAcademicofferingids());
+                $cohort_count = count($unique_offerings);
+                array_push( $cohort_array, $cohort_count);
+
+                if ($cohort_count > 0)
+                {
+    //                $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); 
+    //                $cohorts = AcademicOffering::getCordinatedAcademicofferings();
+                    $cohorts = $unique_offerings;
+                    for($i = 0 ; $i < $cohort_count ; $i++)
+                    {
+                        array_push($cohort_array, $cohorts[$i]);
+                    }
                 }
             }
         }
