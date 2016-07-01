@@ -1052,8 +1052,25 @@ class StudentController extends Controller
         $s_z_info = array();
 
         $academicyear = AcademicYear::getYear($academicyearid);
-        $cordinator = Cordinator::getCordinator($academicofferingid, 2);
-
+//        $cordinator = Cordinator::getCordinator($academicofferingid, 2);
+        $cordinator_details = "";
+        $cordinators = Cordinator::find()
+               ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+               ->orderBy('cordinatorid DESC')
+               -> all();
+       if($cordinators)
+       {
+           foreach($cordinators as $key => $cordinator)
+           {
+               $name = "";
+               $name = Employee::getEmployeeName($cordinators[$key]->personid);
+               if(count($cordinators) - 1 == 0)
+                $cordinator_details .= $name;
+                else 
+                    $cordinator_details .= $name . ", ";
+           }
+       }
+        
         $registrations = StudentRegistration::getStudentRegistration($academicofferingid);
         if ($registrations)
         {
@@ -1331,7 +1348,7 @@ class StudentController extends Controller
             'division_id' => $divisionid,
             'programmename' => $programmename,
             'academicyear' => $academicyear,
-            'cordinator' => $cordinator,
+            'cordinator_details' => $cordinator_details,
             'all_students_provider' => $all_students_provider,
             'a_f_provider' => $a_f_provider,
             'g_l_provider' => $g_l_provider,

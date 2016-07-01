@@ -117,10 +117,10 @@
         <div class = "custom_wrapper" style="min-height:4800px;">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="<?=Url::to('../images/sms_4.png');?>" alt="Find A Student">
+                    <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
                     <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="<?=Url::to('../images/sms_4.png');?>" alt="student avatar" class="pull-right">
-                </a>    
+                    <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
+                </a> 
             </div>
             
             <div class="custom_body" style="min-height:4500px;">
@@ -193,9 +193,9 @@
                                             <td rowspan="3"> 
                                                 <?php if($applicant->photopath == NULL || strcmp($applicant->photopath, "") ==0 ): ?>
                                                     <?php if (strcasecmp($student->gender, "male") == 0): ?>
-                                                        <img src="<?=Url::to('../images/avatar_male(150_150).png');?>" alt="avatar_male" class="img-rounded">
+                                                        <img src="css/dist/img/avatar_male(150_150).png" alt="avatar_male" class="img-rounded">
                                                     <?php elseif (strcasecmp($student->gender, "female") == 0): ?>
-                                                        <img src="<?=Url::to('../images/avatar_female(150_150).png');?>" alt="avatar_female" class="img-rounded">
+                                                        <img src="css/dist/img/avatar_female(150_150).png" alt="avatar_female" class="img-rounded">
                                                     <?php endif;?>
                                                 <?php else: ?>
                                                         <img src="<?=$applicant->photopath;?>" alt="student_picture" class="img-rounded">
@@ -2521,9 +2521,9 @@
                                                     <td rowspan="3"> 
                                                         <?php if($applicant->photopath == NULL || strcmp($applicant->photopath, "") ==0 ): ?>
                                                             <?php if (strcasecmp($student->gender, "male") == 0): ?>
-                                                                <img src="<?=Url::to('../images/avatar_male(150_150).png');?>" alt="avatar_male" class="img-rounded">
+                                                                <img src="css/dist/img/avatar_male(150_150).png" alt="avatar_male" class="img-rounded">
                                                             <?php elseif (strcasecmp($student->gender, "female") == 0): ?>
-                                                                <img src="<?=Url::to('../images/avatar_female(150_150).png');?>" alt="avatar_female" class="img-rounded">
+                                                                <img src="css/dist/img/avatar_female(150_150).png" alt="avatar_female" class="img-rounded">
                                                             <?php endif;?>
                                                         <?php else: ?>
                                                                 <img src="<?=$applicant->photopath;?>" alt="student_picture" class="img-rounded">
@@ -2606,9 +2606,9 @@
                                                     <td rowspan="4"> 
                                                         <?php if($applicant->photopath == NULL || strcmp($applicant->photopath, "") ==0 ): ?>
                                                             <?php if (strcasecmp($student->gender, "male") == 0): ?>
-                                                                <img src="<?=Url::to('../images/avatar_male(150_150).png');?>" alt="avatar_male" class="img-rounded">
+                                                                <img src="css/dist/img/avatar_male(150_150).png" alt="avatar_male" class="img-rounded">
                                                             <?php elseif (strcasecmp($student->gender, "female") == 0): ?>
-                                                                <img src="<?=Url::to('../images/avatar_female(150_150).png');?>" alt="avatar_female" class="img-rounded">
+                                                                <img src="css/dist/img/avatar_female(150_150).png" alt="avatar_female" class="img-rounded">
                                                             <?php endif;?>
                                                         <?php else: ?>
                                                                 <img src="<?=$applicant->photopath;?>" alt="student_picture" class="img-rounded">
@@ -3090,7 +3090,7 @@
                             <div role="tabpanel" class="tab-pane fade" id="finances"> 
                                 <h2 class="custom_h2">Finances</h2>
                                 </br>
-                                <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                                <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
                             </div>
                             
                             <div role="tabpanel" class="tab-pane fade" id="library"> 
@@ -3210,7 +3210,7 @@
                             <div role="tabpanel" class="tab-pane fade" id="attendance"> 
                                 <h2 class="custom_h2">Attendance</h2>
                                 </br>
-                                <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                                <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
                             </div>
                                     
                             <div role="tabpanel" class="tab-pane fade" id="awards"> 

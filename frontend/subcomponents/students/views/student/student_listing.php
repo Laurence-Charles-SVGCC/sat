@@ -43,10 +43,10 @@
                     <tr>
                         <td><?=$academicyear->title?></td>
 
-                        <?php if ($cordinator == false):?>
+                        <?php if ($cordinator_details == false):?>
                             <td>No Cordinator Assigned</td>
                         <?php else:?>
-                            <td><?=$cordinator->title . ". " . $cordinator->firstname . " " . $cordinator->lastname ?></td>
+                            <td><?=$cordinator_details?></td>
                         <?php endif;?>
 
                         <td><?=$academicyear->startdate?></td>
