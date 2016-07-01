@@ -17,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <h3>Student's Applications</h3>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
         'columns' => [
             [
                 'attribute' => 'order',
