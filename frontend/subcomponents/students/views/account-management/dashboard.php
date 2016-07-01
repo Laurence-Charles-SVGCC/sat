@@ -18,9 +18,9 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/create_male.png" alt="Find A Student">
+                    <img class="custom_logo_students" src ="css/dist/img/header_images/create_male.png" alt="Find A Student">
                     <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/create_female.png" alt="student avatar" class="pull-right">
+                    <img src ="css/dist/img/header_images/create_female.png" alt="student avatar" class="pull-right">
                 </a>   
             </div>
         
