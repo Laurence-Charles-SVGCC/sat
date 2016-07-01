@@ -943,7 +943,7 @@
                        $applicationperiod = ApplicationPeriod::find()
                                        ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
                                        ->one();
-                       $applicationperiodids = $applicationperiod->$applicationperiodid ; 
+                       $applicationperiodids = $applicationperiod->applicationperiodid ; 
 
                    }
                    /*
