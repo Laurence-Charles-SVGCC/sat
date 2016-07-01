@@ -532,7 +532,7 @@ class ProgrammesController extends Controller
     
     
     
-    public function actionProgramme($divisionid, $programmecatalogid = NULL)
+    public function actionCreateProgramme($divisionid, $programmecatalogid = NULL)
     {
         if($programmecatalogid == NULL)     //if user is creating new programme catalog record
         {

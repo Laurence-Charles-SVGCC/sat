@@ -20,12 +20,6 @@
                     'attribute' => 'code',
                     'format' => 'text',
                     'label' => 'Course Code',
-    //                'format' => 'html',
-    //                'value' => function($row)
-    //                    {
-    //                        return Html::a($row['studentno'], 
-    //                                        Url::to(['profile/student-profile', 'personid' => $row['personid'], 'studentregistrationid' => $row['studentregistrationid']]));
-    //                    }
                 ],
                 [
                     'attribute' => 'name',
