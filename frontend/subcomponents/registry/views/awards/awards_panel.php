@@ -22,10 +22,11 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/registry/awards/manage-awards']);?>" title="Manage Awards">     
-                    <img class="custom_logo_students" src ="<?=Url::to('../images/award.png');?>" alt="award avatar">
+                    <!--<img class="custom_logo_students" src ="<?=Url::to('../images/award.png');?>" alt="award avatar">-->
+                    <img class="custom_logo_students" src ="css/dist/img/award.png" alt="award avatar">
                     <span class="custom_module_label" style="margin-left:5%;"> Welcome to the Award Management System</span> 
 <!--                    <img src ="<?=Url::to('../images/award.png');?>" alt="award avatar" class="pull-right">-->
-                    <img src ="css/dist/img/award.png" alt="award avatar" class="pull-right">
+                     <img src ="css/dist/img/award.png" alt="award avatar" class="pull-right">
                 </a>    
             </div>
             
