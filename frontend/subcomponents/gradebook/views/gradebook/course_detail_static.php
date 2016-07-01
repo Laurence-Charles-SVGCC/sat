@@ -35,9 +35,9 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Gradebook Home">     
-                    <img class="custom_logo" src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img class="custom_logo" src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                     <span class="custom_module_label">Welcome to the SVGCC Grade Management System</span> 
-                    <img src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                 </a>        
             </div>
             
@@ -53,9 +53,9 @@
                             <td rowspan="3"> 
                                 <?php if($applicant->photopath == NULL || strcmp($applicant->photopath, "") ==0 ): ?>
                                     <?php if (strcasecmp($student->gender, "male") == 0): ?>
-                                        <img src="<?=Url::to('../images/avatar_male(150*150).png');?>" alt="avatar_male" class="img-rounded">
+                                        <img src="css/dist/img/avatar_male(150_150).png" alt="avatar_male" class="img-rounded">
                                     <?php elseif (strcasecmp($student->gender, "female") == 0): ?>
-                                        <img src="<?=Url::to('../images/avatar_female(150*150).png');?>" alt="avatar_female" class="img-rounded">
+                                        <img src="css/dist/img/avatar_female(150_150).png" alt="avatar_female" class="img-rounded">
                                     <?php endif;?>
                                 <?php else: ?>
                                         <img src="<?=$applicant->photopath;?>" alt="student_picture" class="img-rounded">

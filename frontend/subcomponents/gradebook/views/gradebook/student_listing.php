@@ -21,9 +21,9 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Gradebook Home">     
-                    <img class="custom_logo" src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img class="custom_logo" src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                     <span class="custom_module_label">Welcome to the SVGCC Grade Management System</span> 
-                    <img src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                 </a>        
             </div>
         
@@ -35,7 +35,7 @@
                 <table class="table table-hover table-bordered" style="width:95%; margin: 0 auto;">
                     <tr>
                         <th>Academic Year</th>
-                        <th>Programme Cordinator</th>
+                        <th>Programme Cordinator(s)</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                     </tr>
@@ -43,10 +43,10 @@
                     <tr>
                         <td><?=$academicyear->title?></td>
 
-                        <?php if ($cordinator == false):?>
-                            <td>No Cordinator Assigned</td>
+                        <?php if ($cordinator_details == false):?>
+                            <td>No Cordinator(s) Assigned</td>
                         <?php else:?>
-                            <td><?=$cordinator->title . ". " . $cordinator->firstname . " " . $cordinator->lastname ?></td>
+                            <td><?=$cordinator_details?></td>
                         <?php endif;?>
 
                         <td><?=$academicyear->startdate?></td>

@@ -24,9 +24,9 @@
         <div class = "custom_wrapper">
             <div class="custom_header">
                 <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Gradebook Home">     
-                    <img class="custom_logo" src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img class="custom_logo" src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                     <span class="custom_module_label">Welcome to the SVGCC Grade Management System</span> 
-                    <img src ="<?=Url::to('../images/grade_a+.png');?>" alt="A+">
+                    <img src ="css/dist/img/header_images/grade_a+.png" alt="A+">
                 </a>        
             </div>
         
