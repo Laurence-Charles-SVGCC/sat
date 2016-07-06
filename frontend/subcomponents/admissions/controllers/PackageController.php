@@ -766,11 +766,11 @@
             {
                 $offer_cond['application_period.isactive'] = 1;
                 $offer_cond['application_period.iscomplete'] = 0;
+                $offer_cond['application_period.divisionid'] = $divisionid;
                 $offer_cond['offer.offertypeid'] = $sub_category;
                 $offer_cond['offer.isdeleted'] = 0;
                 $offer_cond['offer.ispublished'] = 0;
                 $offer_cond['offer.isactive'] = 1;
-                $offer_cond['application_period.divisionid'] = $divisionid;
                 
                 $offers = Offer::find()
                     ->joinWith('application')
@@ -812,10 +812,6 @@
                             ->where(['personid' => $application->personid,  'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                    
-                    $application = Application::find()
-                                ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
-                                ->one();
-                    
                     $divisioname = Division::getDivisionName($application->divisionid);
                     $prog = ProgrammeCatalog::getApplicantProgramme($application->applicationid);
                     $programme = ($prog->specialisation)? $prog->name . "(" . $prog->specialisation . ")" : $prog->name;
@@ -828,8 +824,6 @@
                     $offer->ispublished = 1;
                     $offer->packageid = $package->packageid;
                     $offer->save();
-                    
-                    $package->publishcount +=1;
                     
                     //ensure package is recorded as being published
                     if($package->waspublished == 0)
