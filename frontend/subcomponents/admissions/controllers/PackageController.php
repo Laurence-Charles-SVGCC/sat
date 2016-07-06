@@ -759,38 +759,18 @@
          * Date Created: 16/04/2016
          * Date Last Modified: 16/04/2016
          */
-        public function actionBulkPublish($category, $sub_category, $divisionid = NULL)
+        public function actionBulkPublish($category, $sub_category, $divisionid)
         {
             //if publishing offer
             if ($category == 1)
-            { 
-                /*
-                 * If no division is selected;
-                 * all outstanding offers are eligible for publishing
-                 */
-                if ($divisionid == NULL)
-                {
-                    $offer_cond['application_period.isactive'] = 1;
-                    $offer_cond['application_period.iscomplete'] = 0;
-                    $offer_cond['offer.offertypeid'] = $sub_category;
-                    $offer_cond['offer.isdeleted'] = 0;
-                    $offer_cond['offer.ispublished'] = 0;
-                    $offer_cond['offer.isactive'] = 1;
-                }
-                /*
-                 * If division is selected;
-                 * all outstanding offers for the particular division are eligible for publishing
-                 */
-                else
-                {
-                    $offer_cond['application_period.isactive'] = 1;
-                    $offer_cond['application_period.iscomplete'] = 0;
-                    $offer_cond['offer.offertypeid'] = $sub_category;
-                    $offer_cond['offer.isdeleted'] = 0;
-                    $offer_cond['offer.ispublished'] = 0;
-                    $offer_cond['offer.isactive'] = 1;
-                    $offer_cond['application_period.divisionid'] = $divisionid;
-                }
+            {
+                $offer_cond['application_period.isactive'] = 1;
+                $offer_cond['application_period.iscomplete'] = 0;
+                $offer_cond['offer.offertypeid'] = $sub_category;
+                $offer_cond['offer.isdeleted'] = 0;
+                $offer_cond['offer.ispublished'] = 0;
+                $offer_cond['offer.isactive'] = 1;
+                $offer_cond['application_period.divisionid'] = $divisionid;
                 
                 $offers = Offer::find()
                     ->joinWith('application')
@@ -805,32 +785,11 @@
                             ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     
-                    /*
-                    * If no division selected;
-                    * ->all posibble applicationperiods are selected
-                    * -> the particular application period is selected
-                    */
-                   if ($divisionid == NULL)
-                   {
-                       $applicationperiods = ApplicationPeriod::find()
-                                       ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
-                                       ->all();
-                       $applicationperiodids = array();
-                       foreach($applicationperiods as $period)
-                       {
-                           $exists = Offer::offerExists($period->applicationperiodid, $sub_category);
-                           if ($exists == true)
-                               $applicationperiodids[] = $period->applicationperiodid;
-                       }
-                   }
-                   else
-                   {
-                       $applicationperiod = ApplicationPeriod::find()
-                                       ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
-                                       ->one();
-                       $applicationperiodids = $applicationperiod->applicationperiodid ; 
+                   $applicationperiod = ApplicationPeriod::find()
+                                   ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                   ->one();
+                   $applicationperiodids = $applicationperiod->applicationperiodid ; 
 
-                   }
                    /*
                     * If $sub_category/offertypeid = conditional;
                     * -> use conditional offer package
@@ -889,35 +848,14 @@
             //if publishing rejection
             elseif ($category == 2)
             {
-                /*
-                 * If no division is selected;
-                 * all outstanding rejections are eligible for publishing
-                 */
-                if ($divisionid == NULL)
-                {
-                    $rejection_cond['application_period.isactive'] = 1;
-                    $rejection_cond['application_period.iscomplete'] = 0;
-                    $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
-                    $rejection_cond['rejection.isdeleted'] = 0;
-                    $rejection_cond['rejection.ispublished'] = 0;
-                    $rejection_cond['rejection_applications.isactive'] = 1;
-                    $rejection_cond['rejection_applications.isdeleted'] = 0;
-                }
-                /*
-                 * If division is selected;
-                 * all outstanding rejections for the particular division are eligible for publishing
-                 */
-                else
-                {
-                    $rejection_cond['application_period.isactive'] = 1;
-                    $rejection_cond['application_period.iscomplete'] = 0;
-                    $rejection_cond['application_period.divisionid'] = $divisionid;
-                    $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
-                    $rejection_cond['rejection.isdeleted'] = 0;
-                    $rejection_cond['rejection.ispublished'] = 0;
-                    $rejection_cond['rejection_applications.isactive'] = 1;
-                    $rejection_cond['rejection_applications.isdeleted'] = 0;
-                }
+                $rejection_cond['application_period.isactive'] = 1;
+                $rejection_cond['application_period.iscomplete'] = 0;
+                $rejection_cond['application_period.divisionid'] = $divisionid;
+                $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
+                $rejection_cond['rejection.isdeleted'] = 0;
+                $rejection_cond['rejection.ispublished'] = 0;
+                $rejection_cond['rejection_applications.isactive'] = 1;
+                $rejection_cond['rejection_applications.isdeleted'] = 0;
                 
                 $rejections = Rejection::find()
                     ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
@@ -930,33 +868,11 @@
                 
                 foreach ($rejections as $rejection) 
                 {
-                    /*
-                    * If no division selected;
-                    * ->all posibble applicationperiods are selected
-                    * ->else;  the particular application period is selected
-                    */
+                   $applicationperiod = ApplicationPeriod::find()
+                                   ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                   ->one();
+                   $applicationperiodids = $applicationperiod->applicationperiodid ; 
 
-                   if ($divisionid == NULL)
-                   {
-                       $applicationperiods = ApplicationPeriod::find()
-                                       ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
-                                       ->all();
-                       $applicationperiodids = array();
-                       foreach($applicationperiods as $period)
-                       {
-                           $exists = Rejection::rejectionExists($period->applicationperiodid, $sub_category);
-                           if ($exists == true)
-                               $applicationperiodids[] = $period->applicationperiodid;
-                       }
-                   }
-                   else
-                   {
-                       $applicationperiod = ApplicationPeriod::find()
-                                       ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
-                                       ->one();
-                       $applicationperiodids = $applicationperiod->applicationperiodid ; 
-
-                   }
                    /*
                     * If $sub_category/rejectiontypeid = pre_interview;
                     * -> use pre_interview rejection package

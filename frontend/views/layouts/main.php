@@ -263,7 +263,7 @@ else
                     
                     
                 <!--Legacy-->
-                <?php if (true/*Yii::$app->user->can('legacy')*/): ?>
+                <?php if (false/*Yii::$app->user->can('legacy')*/): ?>
                     <li class="active treeview">
                         <a href="">
                             <i class="glyphicon glyphicon-leaf"></i> <span>Legacy</span> <i class="fa fa-angle-left pull-right"></i>
