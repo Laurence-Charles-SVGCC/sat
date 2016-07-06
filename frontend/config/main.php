@@ -58,6 +58,9 @@ return [
                 'registry' => [
                     'class' => 'app\subcomponents\registry\RegistryModule',
                 ],
+                 'legacy' => [
+                    'class' => 'app\subcomponents\legacy\LegacyModule',
+                ],
               ]
           ]
     ]

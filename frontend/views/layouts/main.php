@@ -170,14 +170,14 @@ else
                         </a>
                         <ul class="treeview-menu">
                             <?php if (Yii::$app->user->can('viewProgramme')): ?>
-                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Manage Programmes</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index'])?>"><i class="fa fa-circle-o"></i>Manage Programmes</a></li>
                             <?php endif; ?>
                                 
                              <?php if (Yii::$app->user->can('Cordinator')
                                             && (in_array('Head of Department', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid)) 
                                                         ||  in_array('Programme Head', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid))) 
                                      ): ?>
-                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator'])?>"><i class="fa fa-circle-o"></i>View Programme Performance</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator'])?>"><i class="fa fa-circle-o"></i>View Programme Performance</a></li>
                             <?php endif; ?>
                             
                             <?php if (Yii::$app->user->can('manageAwards')): ?>
@@ -216,7 +216,7 @@ else
                         </a>
                         <ul class="treeview-menu">
                             <?php if (Yii::$app->user->can('students') || Yii::$app->user->can('viewAllStudentOptions')): ?>
-                                <li class="active"><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find A Student</a></li>
                             <?php endif; ?>
                             
                             <?php if (Yii::$app->user->can('searchApplicant')): ?>
@@ -250,7 +250,7 @@ else
                         </a>
 
                         <ul class="treeview-menu">
-                            <li class="active">
+                            <li>
                                 <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index'])?>">
                                     <i class="fa fa-circle-o"></i>Find A Student
                                 </a>
@@ -260,6 +260,77 @@ else
                         </ul>                  
                     </li>
                 <?php endif; ?>
+                    
+                    
+                <!--Legacy-->
+                <?php if (true/*Yii::$app->user->can('legacy')*/): ?>
+                    <li class="active treeview">
+                        <a href="">
+                            <i class="glyphicon glyphicon-leaf"></i> <span>Legacy</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+
+                        <ul class="treeview-menu">
+                            <li>
+                                <a href="<?= Url::toRoute(['/subcomponents/legacy/student/find-a-student'])?>">
+                                    <i class="fa fa-circle-o"></i>Find Student Transcript
+                                </a>
+                            </li>
+                            
+                            <?php if (true/*Yii::$app->user->can('manageLegacyYears')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/year/index'])?>">
+                                        <i class="fa fa-circle-o"></i>Manage Academic Year
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                                
+                            <?php if (true/*Yii::$app->user->can('manageLegacyStudents')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/student/manage-students'])?>">
+                                        <i class="fa fa-circle-o"></i>Manage Student Profiles
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                                
+                            <?php if (true/*Yii::$app->user->can('enrollLegacyStudents')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/student/enroll-students'])?>">
+                                        <i class="fa fa-circle-o"></i>Enroll Students
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                            
+                            <?php if (true/*Yii::$app->user->can('manageLegacyGrades')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/grades/enter-grades'])?>">
+                                        <i class="fa fa-circle-o"></i>Enter Grades
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                                
+                            <?php if (true/*Yii::$app->user->can('manageLegacySubjects')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/subjects/manage-subjects'])?>">
+                                        <i class="fa fa-circle-o"></i>Manage Subjects
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                                
+                            <?php if (true/*Yii::$app->user->can('manageLegacyBatches')*/): ?>
+                                <li>
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/batch/manage-batches'])?>">
+                                        <i class="fa fa-circle-o"></i>Manage Batches
+                                    </a>
+                                </li>
+                            <?php endif;?>
+                        </ul>                  
+                    </li>
+                <?php endif; ?>
+                    
+                    
+                    
+                    
+                    
 
                 
                 <?php if (Yii::$app->user->can('payments')): ?>

@@ -159,9 +159,7 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1) == true)
-                                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
-                                        else
+                                        if (Offer::anyOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1) == false)
                                             echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
                                         if ($periods == true)

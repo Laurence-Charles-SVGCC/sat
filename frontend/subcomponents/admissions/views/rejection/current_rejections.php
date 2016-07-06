@@ -154,10 +154,8 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Rejection::anyRejectionExists($periods, $rejectiontype) == true  &&  Package::hasCompletePackage(0) == true)
-                                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
-                                        else
-                                            echo "<p><strong>No rejections can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
+                                        if (Rejection::anyRejectionExists($periods, $rejectiontype) == false  ||  Package::hasCompletePackage(0) == false)
+                                           echo "<p><strong>No rejections can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
                                         if ($periods == true)
                                         {

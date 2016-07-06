@@ -182,7 +182,7 @@ class Rejection extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns true if there is a pending application for the stated application period exists
+     * Returns true if there is a rejection for the stated application period exists
      * 
      * @param type $applicationperiodid
      * @param type $rejectiontype

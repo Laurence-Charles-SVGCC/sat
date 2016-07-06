@@ -869,14 +869,22 @@
                     $offer->ispublished = 1;
                     $offer->packageid = $package->packageid;
                     $offer->save();
+                    
+                    $package->publishcount +=1;
+                    
+                    //ensure package is recorded as being published
+                    if($package->waspublished == 0)
+                    {
+                        $package->waspublished = 1;
+                    }
+                    
+                    $package->publishcount +=1;
+                    $package->save();
+                    
                 }
-                
-                 //ensure package is recorded as nbeing published
-                $package->waspublished = 1;
-                $package->save();
-                
                 return $this->redirect(\Yii::$app->request->getReferrer());
             }
+            
             
             //if publishing rejection
             elseif ($category == 2)
@@ -891,6 +899,7 @@
                     $rejection_cond['application_period.iscomplete'] = 0;
                     $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
                     $rejection_cond['rejection.isdeleted'] = 0;
+                    $rejection_cond['rejection.ispublished'] = 0;
                     $rejection_cond['rejection_applications.isactive'] = 1;
                     $rejection_cond['rejection_applications.isdeleted'] = 0;
                 }
@@ -902,12 +911,14 @@
                 {
                     $rejection_cond['application_period.isactive'] = 1;
                     $rejection_cond['application_period.iscomplete'] = 0;
+                    $rejection_cond['application_period.divisionid'] = $divisionid;
                     $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
                     $rejection_cond['rejection.isdeleted'] = 0;
+                    $rejection_cond['rejection.ispublished'] = 0;
                     $rejection_cond['rejection_applications.isactive'] = 1;
                     $rejection_cond['rejection_applications.isdeleted'] = 0;
-                    $reject_cond['application_period.divisionid'] = $divisionid;
                 }
+                
                 $rejections = Rejection::find()
                     ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
                     ->innerJoin('`application`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
@@ -922,7 +933,7 @@
                     /*
                     * If no division selected;
                     * ->all posibble applicationperiods are selected
-                    * -> the particular pplication period is selected
+                    * ->else;  the particular application period is selected
                     */
 
                    if ($divisionid == NULL)
@@ -1029,12 +1040,17 @@
                     $rejection->ispublished = 1;
                     $rejection->packageid = $package->packageid;
                     $rejection->save();
+                    
+                    //ensure package is recorded as being published
+                    if($package->waspublished == 0)
+                    {
+                        $package->waspublished = 1;
+                    }
+                    
+                    $package->publishcount +=1;
+                    $package->save();
                 }
-                
-                //ensure package is recorded as nbeing published
-                $package->waspublished = 1;
-                $package->save();
-                
+               
                 return $this->redirect(\Yii::$app->request->getReferrer());
             }
         }

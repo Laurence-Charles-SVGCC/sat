@@ -24,6 +24,7 @@ use frontend\models\Offer;
  * @property string $datecompleted
  * @property integer $documentcount
  * @property integer $disclaimer
+ * @property integer $publishcount
  * @property integer $waspublished
  * @property integer $isactive
  * @property integer $isdeleted
@@ -51,7 +52,7 @@ class Package extends \yii\db\ActiveRecord
     {
         return [
             [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'name', 'datestarted', 'emailtitle', 'emailcontent', 'documentcount'], 'required'],
-            [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'documentcount', 'isactive', 'isdeleted', 'waspublished'], 'integer'],
+            [['applicationperiodid', 'packagetypeid', 'packageprogressid', 'createdby', 'lastmodifiedby', 'documentcount', 'isactive', 'isdeleted', 'waspublished', 'publishcount'], 'integer'],
             [['datestarted', 'datecompleted'], 'safe'],
             [['name'], 'string', 'max' => 45],
             [['commencementdate'], 'string', 'max' => 100],
@@ -78,6 +79,7 @@ class Package extends \yii\db\ActiveRecord
             'datecompleted' => 'Datecompleted',
             'documentcount' => 'Documentcount',
             'disclaimer' => 'Disclaimer',
+            'publishcount' => 'PublishCount',
             'waspublished' => 'Has Been Published',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
@@ -257,7 +259,7 @@ class Package extends \yii\db\ActiveRecord
         else
         {
             $package = Package::find()
-                ->where(['packageid' => $packageid])
+                ->where(['packageid' => $packageid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
         }
 
@@ -414,7 +416,7 @@ class Package extends \yii\db\ActiveRecord
     public static function hasCompletePackage($category = NULL, $type = NULL)
     {
         /*
-         * if offertype of rejectiontype is not specified,
+         * if offertype or rejectiontype is not specified,
          * look for the presence of any complete packages of that category
          */
         if($type == NULL)   
