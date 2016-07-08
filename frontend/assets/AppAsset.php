@@ -59,6 +59,7 @@ class AppAsset extends AssetBundle
         'js/registry/registry.js',
         'js/programmes/programmes.js',
         'js/programmes/cordinator.js',
+        'js/legacy/students.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

@@ -10,8 +10,10 @@ use Yii;
  * @property string $legacystudentid
  * @property string $title
  * @property string $firstname
- * @property string $middleinitial
+ * @property string $middlename
  * @property string $lastname
+ * @property string $dateofbirth
+ * @property string $address
  * @property string $gender
  * @property string $legacyyearid
  * @property string $legacyfacultyid
@@ -44,12 +46,12 @@ class LegacyStudent extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'firstname', 'middleinitial', 'lastname', 'gender', 'legacyyearid', 'legacyfacultyid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
+            [['title', 'firstname', 'middlename', 'lastname', 'gender', 'legacyyearid', 'legacyfacultyid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
             [['legacyyearid', 'legacyfacultyid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
-            [['datecreated', 'datemodified'], 'safe'],
+            [['datecreated', 'datemodified', 'dateofbirth'], 'safe'],
+            [['address'], 'string'],
             [['title'], 'string', 'max' => 4],
-            [['firstname', 'lastname', 'gender'], 'string', 'max' => 100],
-            [['middleinitial'], 'string', 'max' => 1]
+            [['firstname', 'lastname', 'gender', 'middlename'], 'string', 'max' => 100]
         ];
     }
 
@@ -62,7 +64,7 @@ class LegacyStudent extends \yii\db\ActiveRecord
             'legacystudentid' => 'Legacystudentid',
             'title' => 'Title',
             'firstname' => 'Firstname',
-            'middleinitial' => 'Middleinitial',
+            'middlename' => 'Middlename',
             'lastname' => 'Lastname',
             'gender' => 'Gender',
             'legacyyearid' => 'Legacyyearid',

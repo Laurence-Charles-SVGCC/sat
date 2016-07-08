@@ -286,7 +286,7 @@ else
                                 
                             <?php if (true/*Yii::$app->user->can('manageLegacyStudents')*/): ?>
                                 <li>
-                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/student/manage-students'])?>">
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/student/index'])?>">
                                         <i class="fa fa-circle-o"></i>Manage Student Profiles
                                     </a>
                                 </li>

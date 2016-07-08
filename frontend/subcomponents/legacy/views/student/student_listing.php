@@ -5,30 +5,69 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+   
     use yii\helpers\Html;
+    use yii\grid\GridView;
     use yii\helpers\Url;
-
-     $this->title = 'Student Search';
-     $this->params['breadcrumbs'][] = $this->title;
-     
 ?>
 
-
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/legacy/legacy/index']);?>" title="Manage Legacy Records">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/legacy.png" alt="legacy avatar">
-                <span class="custom_module_label" > Welcome to the Legacy Management System</span> 
-                <img src ="css/dist/img/header_images/legacy.png" alt="legacy avatar" class="pull-right">
-            </a>  
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title;?></h1>
-            
-            
-        </div>
-    </div>
+<div class="legacy_student_listing">
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            [
+                'attribute' => 'title',
+                'format' => 'text',
+                'label' => 'Title'
+            ],
+            [
+                'format' => 'html',
+                'label' => 'Full Name',
+                'value' => function($row)
+                {
+                    return Html::a($row['firstname'], 
+                                            Url::to(['student/view', 
+                                                      'id' => $row['studentid']
+                                                  ])
+                                            );
+                }
+            ],
+            [
+                'attribute' => 'middlename',
+                'format' => 'text',
+                'label' => 'Middle Name(s)'
+            ],
+            [
+                'attribute' => 'lastname',
+                'format' => 'text',
+                'label' => 'Last Name'
+            ],
+            [
+                'attribute' => 'dateofbirth',
+                'format' => 'text',
+                'label' => 'Date of Birth'
+            ],
+            [
+                'attribute' => 'gender',
+                'format' => 'text',
+                'label' => 'Gender'
+            ],
+             [
+                'attribute' => 'address',
+                'format' => 'text',
+                'label' => 'Address'
+            ],
+            [
+                'attribute' => 'admissionyear',
+                'format' => 'text',
+                        'label' => 'Year of Admission'
+            ],
+            [
+                'attribute' => 'faculty',
+                'format' => 'text',
+                'label' => 'Faculty'
+            ],
+        ],
+    ]); ?>     
 </div>
+
