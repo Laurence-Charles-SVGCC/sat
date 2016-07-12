@@ -7,6 +7,7 @@
  */
     use yii\helpers\Html;
     use yii\helpers\Url;
+    use yii\grid\GridView;
 
      $this->title = 'Batch Listing';
      $this->params['breadcrumbs'][] = $this->title;
@@ -28,7 +29,37 @@
         <div class="custom_body">  
             <h1 class="custom_h1"><?=$this->title;?></h1>
             
+            <p>
+                <?php if (true/*Yii::$app->user->can('createLegacySubject')*/): ?>
+                    <?= Html::a(' Create Batch', ['batch/create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
+                <?php endif; ?>
+            </p>
             
+             <br/>
+            <div style="width:98%; margin: 0 auto;">
+                <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
+                            [
+                                'attribute' => 'name',
+                                'format' => 'text',
+                                'label' => 'Subject Name'
+                            ],
+                            [
+                                'attribute' => 'type',
+                                'format' => 'text',
+                                'label' => 'Subject Type'
+                            ],
+                            [
+                                'attribute' => 'count',
+                                'format' => 'text',
+                                'label' => 'No. of Batches'
+                            ],
+                        ],
+                    ]); 
+               ?>
+            </div>
         </div>
     </div>
 </div>

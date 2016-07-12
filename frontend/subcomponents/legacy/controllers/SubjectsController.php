@@ -9,55 +9,191 @@
     namespace app\subcomponents\legacy\controllers;
     
     use Yii;
+    use yii\data\ActiveDataProvider;
+    use yii\web\Controller;
+    use yii\data\ArrayDataProvider;
+    use yii\helpers\Json;
+    
+    use frontend\models\LegacySubject;
+    use frontend\models\LegacySubjectType;
 
 
     class SubjectsController extends Controller
     {
 
+        /**
+         * Reneders Subject listing
+         * 
+         * @return type
+         * 
+         * Author: Laurence Chrles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016
+         */
         public function actionIndex()
         {
-            if (true/*Yii::$app->user->can('manageLegacySubjects') == false*/)
+            if (false/*Yii::$app->user->can('manageLegacySubjects') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
-            return $this->render('index',
+            $dataProvider = NULL;
+            $subject_container = array();
+            $subject_info = array();
+
+            $subjects = LegacySubject::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+
+            foreach ($subjects as $subject)
+            {
+                $subject_info['subjectid'] = $subject->legacysubjectid;
+                $subject_info['name'] = $subject->name;
+                
+                $type = LegacySubjectType::find()
+                        ->where(['legacysubjecttypeid' => $subject->legacysubjecttypeid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->name;
+                $subject_info['type'] = $type;
+                
+                $subject_container[] = $subject_info;
+            }
+
+            $dataProvider = new ArrayDataProvider([
+                        'allModels' => $subject_container,
+                        'pagination' => [
+                            'pageSize' => 25,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['type' => SORT_ASC, 'name' =>SORT_ASC],
+                            'attributes' => ['type', 'name'],
+                        ]
+                ]);
+
+            return $this->render('index', [
+                'dataProvider' => $dataProvider,
+            ]);
+        }
+        
+        
+        /**
+         * Renders subject creation form and processes user entry.
+         * 
+         * @return type
+         * 
+         * Author: Laurence Chrles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016
+         */
+        public function actionCreate()
+        {
+            if (false/*Yii::$app->user->can('createLegacySubjects') == false*/)
+            {
+                 return $this->render('unauthorized');
+            }
+            
+            $subject = new LegacySubject();
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                
+                $load_flag = $subject->load($post_data);
+                if($load_flag == true)
+                {
+                    $save_flag = $subject->save();
+                    if($save_flag == true)
+                    {
+                        return self::actionIndex();
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured saving subject record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured loading subject record.');
+                }  
+            }
+            
+            return $this->render('create_subject',
                     [
-                        
+                        'subject' => $subject,
                     ]);
         }
         
         
-        public function actionCreateSubject()
+        public function actionDeleteSubject($id)
         {
-            if (true/*Yii::$app->user->can('createLegacySubjects') == false*/)
+            if (false/*Yii::$app->user->can('deleteLegacySubjects') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
             if ($post_data = Yii::$app->request->post())
             {
-                
+                $subject = LegacySubject::find()
+                        ->where(['legacysubjectid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $subject->isactive = 0;
+                $subject->isdeleted = 1;
+                $save_flag = $subject->save();
+                if($save_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when deleting subject.');
+                }
             }
-            
-            return $this->render('create_subject',
-                    [
-                        
-                    ]);
+            return self::actionIndex();
         }
         
         
-        public function actionDeleteSubject()
+        /**
+         * Returns a JSON formatted listing of LegacySubject records
+         * 
+         * @param type $subjecttypeid
+         * 
+         * Author: Laurence Charles
+         * Date Created: 12/07/2016
+         * Date Last Modified: 12/07/2016
+         */
+        public function actionGetListing($subjecttypeid) 
         {
-            if (true/*Yii::$app->user->can('deleteLegacySubjects') == false*/)
+            $subjects = LegacySubject::find()
+                    ->where(['legacysubjecttypeid' => $subjecttypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+           
+            $listing = array();
+            foreach ($subjects as $subject) 
             {
-                 return $this->render('unauthorized');
+                $combined = array();
+                $keys = array();
+                $values = array();
+                array_push($keys, "id");
+                array_push($keys, "name");
+                $k1 = strval($subject->legacysubjecttypeid);
+                $k2 = strval($subject->name);
+                array_push($values, $k1);
+                array_push($values, $k2);
+                $combined = array_combine($keys, $values);
+                array_push($listing, $combined);
+                $combined = NULL;
+                $keys = NULL;
+                $values = NULL;
             }
             
-            
+            if ($listing) 
+            {
+                $found = 1;
+                echo Json::encode(['found' => $found, 'subjects' => $listing]);
+            } 
+            else 
+            {
+                $found = 0;
+                echo Json::encode(['found' => $found]);
+            }
         }
-        
-        
         
     }
 

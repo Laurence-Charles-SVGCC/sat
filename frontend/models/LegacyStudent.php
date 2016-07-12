@@ -3,6 +3,8 @@
 namespace frontend\models;
 
 use Yii;
+use frontend\models\LegacyYear;
+use frontend\models\LegacyFaculty;
 
 /**
  * This is the model class for table "legacy_student".
@@ -27,8 +29,8 @@ use Yii;
  * @property LegacyMarksheet[] $legacyMarksheets
  * @property LegacyYear $legacyyear
  * @property LegacyFaculty $legacyfaculty
- * @property Person $createdby0
- * @property Person $lastmodifiedby0
+ * @property Person $createdby
+ * @property Person $lastmodifiedby
  */
 class LegacyStudent extends \yii\db\ActiveRecord
 {
@@ -46,7 +48,7 @@ class LegacyStudent extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'firstname', 'middlename', 'lastname', 'gender', 'legacyyearid', 'legacyfacultyid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
+            [['title', 'firstname', 'lastname', 'gender', 'legacyyearid', 'legacyfacultyid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
             [['legacyyearid', 'legacyfacultyid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
             [['datecreated', 'datemodified', 'dateofbirth'], 'safe'],
             [['address'], 'string'],
@@ -105,7 +107,7 @@ class LegacyStudent extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedby0()
+    public function getCreatedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'createdby']);
     }
@@ -113,8 +115,48 @@ class LegacyStudent extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLastmodifiedby0()
+    public function getLastmodifiedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'lastmodifiedby']);
+    }
+    
+    
+    /**
+     * Returns true is record is a dummy record,
+     * the dummy records are generated in javascript to facilitate a successful validation check
+     * when submitting data on the 'batch studend
+     * 
+     * @param type $legacy_student
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/07/2016
+     * Date Created: 09/07/2016
+     */
+    public static function isDummyRecord($legacy_student)
+    {
+        $years = LegacyYear::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        $first_year_record = $years[0]->name;
+        $selected_year = LegacyYear::find()
+                ->where(['legacyyearid' => $legacy_student->legacyyearid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one()
+                ->name;
+        
+        $faculties = LegacyFaculty::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        $first_faculty_record = $faculties[0]->name;
+        $selected_faculty = LegacyFaculty::find()
+                ->where(['legacyfacultyid' => $legacy_student->legacyfacultyid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one()
+                ->name;
+        
+        if ($legacy_student->title=='Mr'  && $legacy_student->firstname=='default' && /*$legacy_student->middlename=='default'  &&*/ 
+                $legacy_student->lastname=='default' && /*$legacy_student->dateofbirth=='2000-01-01' && $legacy_student->address=='default'  &&*/ 
+                $legacy_student->gender=='Male' && $selected_year==$first_year_record && $selected_faculty==$first_faculty_record)
+            return true;
+        return false;
     }
 }

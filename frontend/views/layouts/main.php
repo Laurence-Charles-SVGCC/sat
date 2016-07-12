@@ -310,7 +310,7 @@ else
                                 
                             <?php if (true/*Yii::$app->user->can('manageLegacySubjects')*/): ?>
                                 <li>
-                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/subjects/manage-subjects'])?>">
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/subjects/index'])?>">
                                         <i class="fa fa-circle-o"></i>Manage Subjects
                                     </a>
                                 </li>
@@ -318,7 +318,7 @@ else
                                 
                             <?php if (true/*Yii::$app->user->can('manageLegacyBatches')*/): ?>
                                 <li>
-                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/batch/manage-batches'])?>">
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/batch/index'])?>">
                                         <i class="fa fa-circle-o"></i>Manage Batches
                                     </a>
                                 </li>

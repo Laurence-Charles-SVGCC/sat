@@ -194,39 +194,111 @@
             }
         }
         
-        public function actionCreateMultipleStudents()
+        /**
+         * Saves records entered on batch student entry form
+         * 
+         * @param type $record_count
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016
+         */
+        public function actionCreateMultipleStudents($record_count)
         {
             if (false/*Yii::$app->user->can('studentLegacyStudent') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
-            $students = array();
-            for ($i = 0 ; $i< 25; $i++)
+            if ($post_data = Yii::$app->request->post())
             {
-                $student = new LegacyStudent();
-                $students[] = $student;
+                $students = array();
+                for($i=0; $i<$record_count ; $i++)
+                {
+                    $student = new LegacyStudent();
+                    $students[] = $student;
+                }
+                
+                $load_flag = false;
+                $all_saves_successful = true;
+                $load_flag = Model::loadMultiple($students, $post_data);
+                if($load_flag == true)
+                {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
+                    {
+                        foreach($students as $student)
+                        {
+                            if(LegacyStudent::isDummyRecord($student) == false)
+                            {
+                                $save_flag = false;
+                                $date = date('Y-m-d');
+                                $employeeid = Yii::$app->user->identity->personid;
+                                $student->createdby = $employeeid;
+                                $student->datecreated = $date;
+                                $student->lastmodifiedby =$employeeid ;
+                                $student->datemodified = $date;
+                                $save_flag = $student->save();
+                                if($save_flag == false)
+                                {
+                                    $all_saves_successful = false;
+                                    $transaction->rollback();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving records.');
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if($all_saves_successful ==true)
+                            $transaction->commit();
+                    } catch (Exception $ex) {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured loading student record.');
+                }
             }
+            return self::actionIndex();
+        }
+        
+        
+        /**
+         * Updates a student record
+         * 
+         * @param type $id
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016
+         */
+        public function actionUpdateStudent($id)
+        {
+            if (false/*Yii::$app->user->can('updateLegacyStudent') == false*/)
+            {
+                 return $this->render('unauthorized');
+            }
+            
+            $student = LegacyStudent::find()
+                        ->where(['legacystudentid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
             
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = false;
                 $save_flag = false;
                 
-                $load_flag = Model::loadMultiple($students, $post_data);
-                if($oad_flag == true)
+                $load_flag = $student->load($post_data);
+                if($load_flag == true)
                 {
-                    foreach($students as $student)
-                    {
-                        
-                    }
                     $date = date('Y-m-d');
                     $employeeid = Yii::$app->user->identity->personid;
-                    $student->createdby = $employeeid;
-                    $student->datecreated = $date;
                     $student->lastmodifiedby =$employeeid ;
                     $student->datemodified = $date;
-                    $save_flag = $studet->save();
+                    $save_flag = $student->save();
                     if($save_flag == true)
                     {
                         return self::actionIndex();
@@ -239,43 +311,47 @@
                 else
                 {
                     Yii::$app->getSession()->setFlash('error', 'Error occured loading student record.');
-                }
-                       
+                }  
             }
             
-            return $this->render('batch_student_form',
+            return $this->render('update_student',
                     [
-                        'students' => $students,
+                        'student' => $student,
                     ]);
         }
         
         
-        public function actionUpdateStudent()
+        /**
+         * Soft deletes a student record
+         * 
+         * @param type $id
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016
+         */
+        public function actionDeleteStudent($id)
         {
-            if (true/*Yii::$app->user->can('updateLegacyStudent') == false*/)
+            if (false/*Yii::$app->user->can('deleteLegacyStudent') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
             if ($post_data = Yii::$app->request->post())
             {
-                
+                $student = LegacyStudent::find()
+                        ->where(['legacystudentid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $student->isactive = 0;
+                $student->isdeleted = 1;
+                $save_flag = $student->save();
+                if($save_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when deleting student.');
+                }
             }
-            
-            return $this->render('update_student',
-                    [
-                        
-                    ]);
-        }
-        
-        
-        public function actionDeleteStudent()
-        {
-            if (true/*Yii::$app->user->can('deleteLegacyStudent') == false*/)
-            {
-                 return $this->render('unauthorized');
-            }
-           
+            return self::actionIndex();
         }
         
         

@@ -29,7 +29,7 @@
             <h1 class="custom_h1"><?=$this->title;?></h1>
             
             <p>
-                <?php if (true/*Yii::$app->user->can('powerCordinator')*/): ?>
+                <?php if (true/*Yii::$app->user->can('createLegacyStudent')*/): ?>
                     <?= Html::a(' Create Student', ['student/choose-create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
                 <?php endif; ?>
             </p>

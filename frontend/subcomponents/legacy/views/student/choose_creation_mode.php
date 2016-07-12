@@ -14,6 +14,7 @@
      $this->params['breadcrumbs'][] = $this->title;
      
      $no_of_students = [
+         0 => 0,
          1 => 1,
          2 => 2,
          3 => 3,
