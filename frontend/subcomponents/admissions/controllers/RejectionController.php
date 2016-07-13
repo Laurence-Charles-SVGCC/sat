@@ -78,7 +78,7 @@ class RejectionController extends Controller
             elseif (strcmp($criteria, "ispublished") == 0)
             {
                 $rejection_cond['rejection.ispublished'] = 1;
-                $rejection_cond['rejection.isactive'] = 1;
+//                $rejection_cond['rejection.isactive'] = 1;
             }
             elseif (strcmp($criteria, "revoked") == 0)
             {
