@@ -54,7 +54,7 @@
                     <table class='table table-condensed' style='width:100%; margin: 0 auto;'>
                     <?php for ($i=0 ; $i<count($students) ; $i++): ?>
                         <tr style='border-top:solid 5px'>
-                            <th style='vertical-align:middle;'>Title</th>
+                            <th style='vertical-align:middle;'><?=($i+1);?> .Title</th>
                             <td><?=$form->field($students[$i], "[$i]title")->label('')->dropDownList(['' => 'Select..', 'Mr' => 'Mr', 'Ms' => 'Ms', 'Mrs' => 'Mrs']);?></td>
                             
                             <th style='vertical-align:middle;'>Firstname</th>

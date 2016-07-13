@@ -114,7 +114,7 @@
                  return $this->render('unauthorized');
             }
             
-             if (Yii::$app->request->post()) 
+            if (Yii::$app->request->post()) 
             {
                 $request = Yii::$app->request;
                 $batchtypeid = $request->post('batch_type_field');

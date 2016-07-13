@@ -1,8 +1,8 @@
 <?php
 
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this license header&& choose License Headers in Project Properties.
+ * To change this template file&& choose Tools | Templates
  * and open the template in the editor.
  */
 
@@ -17,6 +17,8 @@
     use frontend\models\LegacyStudent;
     use frontend\models\LegacyFaculty;
     use frontend\models\LegacyYear;
+    use frontend\models\LegacyBatch;
+    use frontend\models\LegacyMarksheet;
     
     
     class StudentController extends Controller
@@ -433,7 +435,7 @@
                                     ],
                                     'sort' => [
                                         'defaultOrder' => ['admissionyear' => SORT_ASC],
-                                        'attributes' => ['firstname', 'lastname','admissionyear', 'faculty'],
+                                        'attributes' => ['firstname', 'lastname', 'admissionyear', 'faculty']
                                     ]
                             ]);
                     }
@@ -448,25 +450,6 @@
                 'dataProvider' => $dataProvider,
                 'info_string' => $info_string,
             ]);
-        }
-        
-        
-        public function actionEnrollStudents()
-        {
-            if (true/*Yii::$app->user->can('enrollLegacyStudents') == false*/)
-            {
-                 return $this->render('unauthorized');
-            }
-            
-            if ($post_data = Yii::$app->request->post())
-            {
-                
-            }
-        
-            return $this->render('enroll_students',
-                    [
-                        
-                    ]);
         }
         
         
@@ -486,25 +469,214 @@
         }
         
         
-        
-        public function actionEnroll()
+        /**
+         * Preconfigure student to facilitate data entry
+         *
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 13/07/2016
+         * Date Last Modified: 13/07/2016
+         */
+        public function actionEnrollStudentsStepOne()
         {
-            if (true/*Yii::$app->user->can('enrollLegacyStudents') == false*/)
+            if (false/*Yii::$app->user->can('enrollLegacyStudents') == false*/)
+            {
+                 return $this->render('unauthorized');
+            }
+            
+            if (Yii::$app->request->post()) 
+            {
+                $request = Yii::$app->request;
+                $batchtypeid = $request->post('enroll_batch_type_field');
+                $levelid = $request->post('enroll_level_field');
+                $subjecttypeid = $request->post('enroll_subject_type_field');
+                $subjectid = $request->post('enroll_subject_field');
+                $yearid = $request->post('enroll_year_field');
+                $termid = $request->post('enroll_term_field');
+                $student_count = $request->post('enroll_student_count_field');
+                
+                if ($batchtypeid && $levelid  &&  $subjecttypeid  && $subjectid  && $yearid  && $termid  && $student_count)
+                {
+                    $marksheets = array();
+                    for($i = 0; $i<$student_count ; $i++)
+                    {
+                        $marksheet = new LegacyMarksheet();
+                        $marksheets[] = $marksheet;
+                    }
+                    
+                    $batch = LegacyBatch::find()
+                            ->where(['legacybatchtypeid' => $batchtypeid , 'legacylevelid' => $levelid  , 'legacysubjectid' => $subjectid, 
+                                            'legacytermid' => $termid , 'isactive' => 1 , 'isdeleted' => 0
+                                        ])
+                            ->one();
+                    if($batch == true)
+                    {
+                    $possible_years = array();
+                        $target_year = LegacyYear::find()
+                                ->where(['legacyyearid' => $yearid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                        $possible_years[] = $yearid;
+
+                        $possible_year = intval(substr($target_year->name, 0, 4));
+
+                        $plus_one = ($possible_year + 1);
+                        $plus_one_year = $plus_one . "/" . $plus_one+1;
+                        $target_year_plus_one = LegacyYear::find()
+                                ->where(['name' => $plus_one_year , 'isactive' => 1 , 'isdeleted' => 0])
+                                ->one();
+                        if ($target_year_plus_one)
+                             $possible_years[] = $target_year_plus_one->legacyyearid;
+
+                        $plus_two = $possible_year + 2;
+                        $plus_two_year = $plus_two . "/" . $plus_two+1;
+                        $target_year_plus_two = LegacyYear::find()
+                                ->where(['name' =>$plus_two_year , 'isactive' => 1 , 'isdeleted' => 0])
+                                ->one();
+                         if ($target_year_plus_two)
+                             $possible_years[] = $target_year_plus_two->legacyyearid;
+
+                        $students = LegacyStudent::find()
+                                ->where(['legacyyearid' => $possible_years , 'isactive' => 1 , 'isdeleted' => 0])
+                                ->orderBy('lastname ASC')
+                                ->all();
+
+                        $keys = array();
+                        array_push($keys, 0);
+
+                        $values = array();
+                        array_push($values, "Select...");
+
+                        $student_listing = array();
+
+                        foreach ($students as $student) 
+                        {
+                            $id = strval($student->legacystudentid);
+                            array_push($keys, $id);
+
+                            $record = LegacyStudent::find()
+                                    ->where(['legacystudentid' =>$student->legacystudentid , 'isactive' => 1 , 'isdeleted' => 0])
+                                    ->one();
+                            $name = $record->lastname . ", " . $record->firstname . " " . $record->middlename;
+                            array_push($values, $name);
+                        }
+
+                        $student_listing = array_combine($keys, $values);
+
+                        return $this->render('enroll_student_step_two',
+                                [
+                                    'marksheets' => $marksheets,
+                                    'legacybatchid' => $batch->legacybatchid,
+                                    'student_listing' => $student_listing,
+                                ]);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No batch currently exists matching your entered criteria.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                }
+            }
+            return $this->render('enroll_student_step_one');
+        }
+        
+        
+        /**
+         * Creates LegacyMarksheet records
+         * 
+         * @param type $record_count
+         * @param type $batchid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 13/07/2016
+         * Date Last Modified: 13/07/2016
+         */
+        public function actionEnrollStudentsStepTwo($record_count, $batchid)
+        {
+            if (false/*Yii::$app->user->can('enrollLegacyStudents') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
             if ($post_data = Yii::$app->request->post())
             {
+                $marksheets = array();
+                for($i=0; $i<$record_count ; $i++)
+                {
+                    $marksheet = new LegacyMarksheet();
+                    $marksheets[] = $marksheet;
+                }
                 
-            }
-            
-            return $this->render('enroll',
-                    [
+                $load_flag = false;
+                $unique_studentids = array();
+//                $all_entries_unique = true;
+                $all_saves_successful = true;
+                $load_flag = Model::loadMultiple($marksheets, $post_data);
+                if($load_flag == true)
+                {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
+                    {
                         
-                    ]);
-        }
+                        foreach($marksheets as $marksheet)
+                        {
+                            if(in_array($marksheet->legacystudentid , $unique_studentids) == false)
+                            {
+                                $unique_studentids[] = $marksheet->legacystudentid;
+                            }
+                            else
+                            {
+                                $all_saves_successful = false;
+                                $transaction->rollback();
+                                Yii::$app->getSession()->setFlash('error', 'You have entered a duplicate enrollment record.');
+                                break;
+                            }
+                            
+                            if($marksheet->legacystudentid != 0)
+                            {
+                                $save_flag = false;
+                                $date = date('Y-m-d');
+                                $employeeid = Yii::$app->user->identity->personid;
+                                
+                                $marksheet->legacybatchid =$batchid;
+                                $marksheet->createdby = $employeeid;
+                                $marksheet->datecreated = $date;
+                                $marksheet->lastmodifiedby =$employeeid ;
+                                $marksheet->datemodified = $date;
+                                $save_flag = $marksheet->save();
+                                if($save_flag == false)
+                                {
+                                    $all_saves_successful = false;
+                                    $transaction->rollback();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving records.');
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if($all_saves_successful ==true)
+                        {
+                            $transaction->commit();
+                            return self::actionIndex();
+                        }
+                    } catch (Exception $ex) {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured loading marksheet record.');
+                }
+            }
+            return $this->redirect(\Yii::$app->request->getReferrer());
+         }
         
+        
+       
         
         
         

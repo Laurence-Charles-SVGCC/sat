@@ -28,9 +28,15 @@
         <div class="custom_body">  
             <h1 class="custom_h1"><?=$this->title;?></h1>
             
+             <p>
+                <?php if (true/*Yii::$app->user->can('enrollLegacyStudent')*/): ?>
+                    <?= Html::a(' Enroll Student(s)', ['student/enroll-students-step-one'], ['class' => 'btn btn-success pull-right glyphicon glyphicon-thumbs-up', 'style' => 'margin-right:2.5%;']) ?>
+                <?php endif; ?>
+            </p>
+            
             <p>
                 <?php if (true/*Yii::$app->user->can('createLegacyStudent')*/): ?>
-                    <?= Html::a(' Create Student', ['student/choose-create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
+                    <?= Html::a(' Create Student(s)', ['student/choose-create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:2.5%;']) ?>
                 <?php endif; ?>
             </p>
             

@@ -291,14 +291,6 @@ else
                                     </a>
                                 </li>
                             <?php endif;?>
-                                
-                            <?php if (true/*Yii::$app->user->can('enrollLegacyStudents')*/): ?>
-                                <li>
-                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/student/enroll-students'])?>">
-                                        <i class="fa fa-circle-o"></i>Enroll Students
-                                    </a>
-                                </li>
-                            <?php endif;?>
                             
                             <?php if (true/*Yii::$app->user->can('manageLegacyGrades')*/): ?>
                                 <li>
