@@ -10,7 +10,7 @@ use Yii;
  * @property string $legacymarksheetid
  * @property string $legacystudentid
  * @property string $legacybatchid
- * @property integer $mark
+ * @property string $mark
  * @property string $createdby
  * @property string $datecreated
  * @property string $lastmodifiedby
@@ -40,7 +40,8 @@ class LegacyMarksheet extends \yii\db\ActiveRecord
     {
         return [
             [['legacystudentid', 'legacybatchid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
-            [['legacystudentid', 'legacybatchid', 'mark', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
+            [['legacystudentid', 'legacybatchid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
+            [['mark'], 'number'],
             [['datecreated', 'datemodified'], 'safe']
         ];
     }

@@ -287,14 +287,14 @@ else
                             <?php if (true/*Yii::$app->user->can('manageLegacyStudents')*/): ?>
                                 <li>
                                     <a href="<?= Url::toRoute(['/subcomponents/legacy/student/index'])?>">
-                                        <i class="fa fa-circle-o"></i>Manage Student Profiles
+                                        <i class="fa fa-circle-o"></i>Manage Students
                                     </a>
                                 </li>
                             <?php endif;?>
                             
                             <?php if (true/*Yii::$app->user->can('manageLegacyGrades')*/): ?>
                                 <li>
-                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/grades/enter-grades'])?>">
+                                    <a href="<?= Url::toRoute(['/subcomponents/legacy/grades/find-batch-marksheet'])?>">
                                         <i class="fa fa-circle-o"></i>Enter Grades
                                     </a>
                                 </li>

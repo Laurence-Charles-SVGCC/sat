@@ -624,6 +624,7 @@
                         
                         foreach($marksheets as $marksheet)
                         {
+                            //must ensure no duplicate entries from session are saved
                             if(in_array($marksheet->legacystudentid , $unique_studentids) == false)
                             {
                                 $unique_studentids[] = $marksheet->legacystudentid;
@@ -638,22 +639,29 @@
                             
                             if($marksheet->legacystudentid != 0)
                             {
-                                $save_flag = false;
-                                $date = date('Y-m-d');
-                                $employeeid = Yii::$app->user->identity->personid;
-                                
-                                $marksheet->legacybatchid =$batchid;
-                                $marksheet->createdby = $employeeid;
-                                $marksheet->datecreated = $date;
-                                $marksheet->lastmodifiedby =$employeeid ;
-                                $marksheet->datemodified = $date;
-                                $save_flag = $marksheet->save();
-                                if($save_flag == false)
+                                //must ensure marksheet record was not created in previous operation
+                                $saved_marksheet_records = LegacyMarksheet::find()
+                                        ->where(['legacybatchid' => $batchid, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+                                if($saved_marksheet_records == false)
                                 {
-                                    $all_saves_successful = false;
-                                    $transaction->rollback();
-                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving records.');
-                                    break;
+                                    $save_flag = false;
+                                    $date = date('Y-m-d');
+                                    $employeeid = Yii::$app->user->identity->personid;
+
+                                    $marksheet->legacybatchid =$batchid;
+                                    $marksheet->createdby = $employeeid;
+                                    $marksheet->datecreated = $date;
+                                    $marksheet->lastmodifiedby =$employeeid ;
+                                    $marksheet->datemodified = $date;
+                                    $save_flag = $marksheet->save();
+                                    if($save_flag == false)
+                                    {
+                                        $all_saves_successful = false;
+                                        $transaction->rollback();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving records.');
+                                        break;
+                                    }
                                 }
                             }
                         }

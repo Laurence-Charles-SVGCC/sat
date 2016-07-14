@@ -61,6 +61,7 @@ class AppAsset extends AssetBundle
         'js/programmes/cordinator.js',
         'js/legacy/students.js',
         'js/legacy/batch.js',
+        'js/legacy/grades.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
