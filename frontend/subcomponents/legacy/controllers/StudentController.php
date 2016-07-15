@@ -19,6 +19,9 @@
     use frontend\models\LegacyYear;
     use frontend\models\LegacyBatch;
     use frontend\models\LegacyMarksheet;
+    use frontend\models\LegacySubject;
+    use frontend\models\LegacySubjectType;
+    use frontend\models\LegacyTerm;
     
     
     class StudentController extends Controller
@@ -454,17 +457,210 @@
         
         
         
-        public function actionView()
+        public function actionView($id)
         {
-            if (true/*Yii::$app->user->can('viewLegacyStudent') == false*/)
+            if (false/*Yii::$app->user->can('viewLegacyStudent') == false*/)
             {
                  return $this->render('unauthorized');
             }
             
+            $student = LegacyStudent::find()
+                    ->where(['legacystudentid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            $admission_year = LegacyYear::find()
+                    ->where(['legacyyearid' => $student->legacyyearid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()
+                    ->name;
+            
+            $faculty = LegacyFaculty::find()
+                    ->where(['legacyfacultyid' => $student->legacyfacultyid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()
+                    ->name;
+            
+            /*
+             * student_type must either to 'TBD' or 'CAPE' or 'GCE' the below is done to help identify any  human errors
+             * that may have caused grades for subjects of different type to be entered.
+             */
+//            $student_types = "TBD";
+//            $temp = LegacyMarksheet::find()
+//                    ->innerJoin('')
+//                                     ->where(['legacystudentid' => $final_batch->legacybatchid,  'isactive' => 1, 'isdeleted' => 0])
+//                                     ->one();
+            
+            $academic_years = LegacyYear::find()
+                    ->innerJoin('legacy_term', '`legacy_year`.`legacyyearid` = `legacy_term`.`legacyyearid`')
+                    ->innerJoin('legacy_batch', '`legacy_term`.`legacytermid` = `legacy_batch`.`legacytermid`')
+                    ->innerJoin('legacy_marksheet', '`legacy_batch`.`legacybatchid` = `legacy_marksheet`.`legacybatchid`')
+                    ->where(['legacy_year.isactive' => 1,  'legacy_year.isdeleted' => 0,
+                                    'legacy_term.isactive' => 1,  'legacy_term.isdeleted' => 0,
+                                    'legacy_batch.isactive' => 1,  'legacy_batch.isdeleted' => 0,
+                                    'legacy_marksheet.legacystudentid'=> $id,  'legacy_marksheet.isactive' => 1,  'legacy_marksheet.isdeleted' => 0
+                                ])
+                    ->all();
+            
+            $years_container = array();
+            $academic_year_info_keys = array();
+            $academic_year_info_values = array();
+            array_push($academic_year_info_keys, "name");
+            array_push($academic_year_info_keys, "details");
+            
+            foreach($academic_years as $year)
+            {
+                $academic_year_info = array();
+                $academic_year_combined = array();
+                array_push($academic_year_info_values, $year->name);
+                
+                $terms_container = array();
+                $term_info_keys = array();
+                $term_info_values = array();
+                array_push($term_info_keys, "name");
+                array_push($term_info_keys, "details");
+                $terms = LegacyTerm::find()
+                    ->where(['legacyyearid' => $year->legacyyearid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+                
+                foreach($terms as $term)
+                {
+                    $term_info = array();
+                    $term_combined = array();
+                    array_push($term_info_values, $term->name);
+                    
+                    $subjects = LegacySubject::find()
+                        ->innerJoin('legacy_batch', '`legacy_subject`.`legacysubjectid` = `legacy_batch`.`legacysubjectid`')
+                        ->innerJoin('legacy_term', '`legacy_batch`.`legacytermid` = `legacy_term`.`legacytermid`')
+                        ->where(['legacy_subject.isactive' => 1,  'legacy_subject.isdeleted' => 0,
+                                        'legacy_batch.isactive' => 1,  'legacy_batch.isdeleted' => 0,
+                                        'legacy_term.legacytermid' => $term->legacytermid,  'legacy_term.isactive' => 1,  'legacy_term.isdeleted' => 0
+                                    ])
+                        ->all(); 
+                    
+                     $subjects_container = array();
+                     $subject_info_keys = array();
+                     $subject_info_values = array();
+                     array_push($subject_info_keys, "name");
+                     array_push($subject_info_keys, "details");
+                    
+                     foreach($subjects as $subject)
+                     {
+                         $subject_info = array();
+                         $subject_type = LegacySubjectType::find()
+                                 ->where(['legacysubjecttypeid' => $subject->legacysubjecttypeid, 'isactive' => 1, 'isdeleted' => 0])
+                                 ->one()
+                                 ->name;
+                         $subject_name = $subject_type . " - " . $subject->name;
+                         array_push($subject_info_values, $subject_name);
+                         
+                         $term_batch = LegacyBatch::find()
+                                  ->where(['legacytermid' => $term->legacytermid, 'legacysubjectid' => $subject->legacysubjectid,
+                                                'legacybatchtypeid' => 1,  'isactive' => 1, 'isdeleted' => 0
+                                                ])
+                                  ->one();
+                         $exam_batch = LegacyBatch::find()
+                                  ->where(['legacytermid' => $term->legacytermid, 'legacysubjectid' => $subject->legacysubjectid,
+                                                'legacybatchtypeid' => 2,  'isactive' => 1, 'isdeleted' => 0
+                                                ])
+                                  ->one();
+                         $final_batch = LegacyBatch::find()
+                                  ->where(['legacytermid' => $term->legacytermid, 'legacysubjectid' => $subject->legacysubjectid,
+                                                'legacybatchtypeid' => 3,  'isactive' => 1, 'isdeleted' => 0
+                                                ])
+                                  ->one();
+                         
+                         $keys = array();
+                         $values = array();
+                         array_push($keys, "term");
+                         array_push($keys, "exam");
+                         array_push($keys, "final");
+                         $term_mark = "--";
+                         $exam_mark = "--";
+                         $final_mark = "--";
+                         
+                         /*
+                          * As final batches are not auto-generated when LegacyYear records are created;
+                          * it is assumed that if it exists that is as a result of the absence of a 'term' and 'exam'
+                          * exam marksheet for a particular subject.
+                          * 
+                          * The above models that fact the if both term and exam marks are not avaiable,
+                          * the mark present is recorded as the full mark. 
+                          */
+                         if($final_batch == true)
+                         {
+                             $final_mark_record = LegacyMarksheet::find()
+                                     ->where(['legacybatchid' => $final_batch->legacybatchid,  'isactive' => 1, 'isdeleted' => 0])
+                                     ->one();
+                             if($final_mark_record == true  && $final_mark_record->mark == true && $final_mark_record->mark>=0)
+                             {
+                                 $final_mark = $final_mark_record->mark;
+                             }
+                         }
+                        else
+                        {
+                            $final_total = 0;
+                            if($term_batch == true)
+                            {
+                                $term_mark_record = LegacyMarksheet::find()
+                                         ->where(['legacybatchid' => $term_batch->legacybatchid,  'isactive' => 1, 'isdeleted' => 0])
+                                         ->one();
+                                 if($term_mark_record == true  && $term_mark_record->mark == true && $term_mark_record->mark>=0)
+                                 {
+                                     $term_mark = $term_mark_record->mark;
+                                     $final_total += $term_mark;
+                                 }
+                            }
+                             
+                            if ($exam_batch == true)
+                            {
+                                $exam_mark_record = LegacyMarksheet::find()
+                                        ->where(['legacybatchid' => $exam_batch->legacybatchid,  'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+                                if($exam_mark_record == true  && $exam_mark_record->mark == true && $exam_mark_record->mark>=0)
+                                {
+                                    $exam_mark = $exam_mark_record->mark;
+                                    $final_total += $exam_mark;
+                                }
+                            }
+                            
+                            if($final_total > 0)
+                            {
+                                $final_mark  = $final_total;
+                            }
+                        }
+                        
+                         array_push($values, $term_mark);
+                         array_push($values, $exam_mark);
+                         array_push($values, $final_mark);
+                         
+                         $combined = array_combine($keys, $values);
+                         array_push($subject_info_values, $combined);
+                         
+                         $subject_info = array_combine($subject_info_keys, $subject_info_values);
+                         array_push($subjects_container, $subject_info);
+                         
+                         $keys = NULL;
+                         $values = NULL;
+                         $combined = NULL;
+                         $subject_info = NULL;
+                         $subject_info_keys = NULL;
+                         $subject_info_values = NULL;
+                     }
+                     
+                     array_push($term_info_values, $subjects_container);
+                     $term_combined = array_combine($term_info_keys, $term_info_values);
+                     array_push($terms_container, $term_combined);
+                }
+                array_push($academic_year_info_values, $terms_container);
+                $academic_year_combined = array_combine($academic_year_info_keys, $academic_year_info_values);
+                array_push($years_container, $academic_year_combined);
+            }
+
             
             return $this->render('view_student',
                     [
-                        
+                        'student' => $student,
+                        'admission_year' => $admission_year,
+                        'faculty' => $faculty,
+                        'records' => $years_container,
                     ]);
         }
         
