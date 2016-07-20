@@ -141,6 +141,43 @@
                          <div id="manage-courses" style="display:none">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Manage Courses</legend>
+                                <?php if ($unique_course_listing_dataprovider): ?>
+                                    <p>Click one of the following links to download the course listing.</p>
+                                        <?= ExportMenu::widget([
+                                            'dataProvider' => $unique_course_listing_dataprovider,
+                                            'columns' => 
+                                                [
+                                                    [
+                                                        'attribute' => 'coursecode',
+                                                        'format' => 'text',
+                                                        'label' => 'Course Code'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'name',
+                                                        'format' => 'text',
+                                                        'label' => 'Course Name'
+                                                    ],
+                                                ],
+                                                'fontAwesome' => true,
+                                                'dropdownOptions' => [
+                                                    'label' => 'Select Export Type',
+                                                    'class' => 'btn btn-default'
+                                                ],
+                                                'asDropdown' => false,
+                                                'showColumnSelector' => false,
+                                                'filename' => $unique_listing_filename,
+                                                'exportConfig' => [
+//                                                     ExportMenu::FORMAT_PDF => false,
+                                                    ExportMenu::FORMAT_TEXT => false,
+                                                    ExportMenu::FORMAT_HTML => false,
+                                                    ExportMenu::FORMAT_EXCEL => false,
+                                                    ExportMenu::FORMAT_EXCEL_X => false
+                                                ],
+                                            ]);
+                                        ?>
+                                        <br/>
+                                <?php endif?>
+                                
                                 <?php if ($course_details_dataprovider) : ?>
                                     <?= $this->render('course_details_results', [
                                                                 'dataProvider' => $course_details_dataprovider,
