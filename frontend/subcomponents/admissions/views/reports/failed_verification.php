@@ -5,7 +5,7 @@
     use kartik\grid\GridView;
     use kartik\export\ExportMenu;
 
-    use frontend\models\Offer;
+    use frontend\models\Application;
     
     $this->title = $header;
 ?>
@@ -23,9 +23,42 @@
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
             
+            <div style = "margin-left: 2.5%;" id="correction-controls">
+                <?php if(Application::hasVerificationFailures(4) ==true || Application::hasVerificationFailures(5) ==true
+                            || Application::hasVerificationFailures(6) ==true || Application::hasVerificationFailures(7) ==true):?>
+                             <h2>Resolution Links</h2>
+                             <p>Click on of the following links to resolve the verification errors.</p>
+                <?php endif;?>
+                             
+                <?php if(Application::hasVerificationFailures(4) ==true):?>
+                    <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                        href=<?=Url::toRoute(['/subcomponents/admissions/reports/resolve-verification-failures','divisionid' => 4]);?> role="button"> Resolve DASGS Applicants
+                    </a>
+                <?php endif;?>
+                
+                <?php if(Application::hasVerificationFailures(5) ==true):?>
+                    <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                        href=<?=Url::toRoute(['/subcomponents/admissions/reports/resolve-verification-failures','divisionid' => 5]);?> role="button"> Resolve DTVEApplicants
+                    </a>
+                <?php endif;?>
+                
+                <?php if(Application::hasVerificationFailures(6) == true):?>
+                    <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                        href=<?=Url::toRoute(['/subcomponents/admissions/reports/resolve-verification-failures','divisionid' => 6]);?> role="button"> Resolve DTE Applicants
+                    </a>
+                <?php endif;?>
+                
+                <?php if(Application::hasVerificationFailures(7) ==true):?>
+                    <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:20%; margin:0 auto;" 
+                        href=<?=Url::toRoute(['/subcomponents/admissions/reports/resolve-verification-failures','divisionid' => 7]);?> role="button"> Resolve DNE Applicants
+                    </a>
+                <?php endif;?>
+            </div><br/>
+            
             <div id="listing">
                 <?php if($dataProvider):?>
-                    <h2 style="margin-left:2.5%">Applicant Listing</h3>
+                    <h2 style="margin-left:2.5%">Applicant Listing</h2>
+                    <p style="margin-left:2.5%">Click one of the following links to download a detailed version of the report seen below.</p>
 
                     <div style = 'margin-left: 2.5%;'>
                         
@@ -98,48 +131,47 @@
                                     ExportMenu::FORMAT_EXCEL_X => false
                                 ],
                             ]);
+                        ?><br/>
+                    
+
+                        <?= GridView::widget([
+                                'dataProvider' => $dataProvider,
+                                'options' => ['style' => 'width: 100%; margin: 0 auto;'],
+                                'columns' => [
+                                    [
+                                        'attribute' => 'username',
+                                        'format' => 'text',
+                                        'label' => 'Username'
+                                    ],
+                                    [
+                                        'attribute' => 'firstname',
+                                        'format' => 'text',
+                                        'label' => 'First Name'
+                                    ],
+                                    [
+                                        'attribute' => 'lastname',
+                                        'format' => 'text',
+                                        'label' => 'Last Name'
+                                    ],
+                                    [
+                                        'attribute' => 'programme',
+                                        'format' => 'text',
+                                        'label' => 'Programme'
+                                    ],
+                                    [
+                                        'attribute' => 'division',
+                                        'format' => 'text',
+                                        'label' => 'Division'
+                                    ],
+                                    [
+                                        'attribute' => 'year',
+                                        'format' => 'text',
+                                        'label' => 'Year'
+                                    ],
+                                ],
+                            ]); 
                         ?>
                     </div>
-
-                    
-                    
-                    <?= GridView::widget([
-                            'dataProvider' => $dataProvider,
-                            'options' => ['style' => 'width: 100%; margin: 0 auto;'],
-                            'columns' => [
-                                [
-                                    'attribute' => 'username',
-                                    'format' => 'text',
-                                    'label' => 'Username'
-                                ],
-                                [
-                                    'attribute' => 'firstname',
-                                    'format' => 'text',
-                                    'label' => 'First Name'
-                                ],
-                                [
-                                    'attribute' => 'lastname',
-                                    'format' => 'text',
-                                    'label' => 'Last Name'
-                                ],
-                                [
-                                    'attribute' => 'programme',
-                                    'format' => 'text',
-                                    'label' => 'Programme'
-                                ],
-                                [
-                                    'attribute' => 'division',
-                                    'format' => 'text',
-                                    'label' => 'Division'
-                                ],
-                                [
-                                    'attribute' => 'year',
-                                    'format' => 'text',
-                                    'label' => 'Year'
-                                ],
-                            ],
-                        ]); 
-                    ?>
                 <?php endif;?>
             </div>
         </div>

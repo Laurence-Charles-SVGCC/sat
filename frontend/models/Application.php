@@ -1624,6 +1624,41 @@ class Application extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns true
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/07/2016
+     * Date Last Modified: 27/07/2016
+     */
+    public static function hasVerificationFailures($divisionid)
+    {
+        $unverified_applications = Application::find()
+                ->where(['applicationstatusid' => 2, 'divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                ->groupBy('personid')
+                ->all();
+        foreach($unverified_applications as $application)
+        {
+            $all_qualifications = CsecQualification::find()
+                    ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+            
+            if(!$all_qualifications)
+                continue;
+            
+             $verified_qualifications = CsecQualification::find()
+                    ->where(['personid' => $application->personid, 'isverified' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+             
+             if(count($verified_qualifications) == count($all_qualifications))   //target applicant   
+                 return true;
+        }
+    }
+    
+    
     
     
     

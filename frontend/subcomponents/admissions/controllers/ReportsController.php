@@ -1494,6 +1494,17 @@ class ReportsController extends Controller {
     }
     
     
+    /**
+     * Generate report of all applicant that system did not verify properly
+     * I still not have figured out why this happened
+     * For some reason controller actinos were only partially executing.
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 26/07/2016
+     * Date LAst Modified: 26/07/2016
+     */
     public function actionFailedVerification()
     {
         $dataProvider = NULL;
@@ -1503,6 +1514,7 @@ class ReportsController extends Controller {
                 ->where(['applicationstatusid' => 2, 'isactive' => 1, 'isdeleted' => 0])
                 ->groupBy('personid')
                 ->all();
+        
         foreach($unverified_applications as $application)
         {
             $all_qualifications = CsecQualification::find()
@@ -1575,7 +1587,67 @@ class ReportsController extends Controller {
                     'header' => $header,
                     'filename' => $filename,
         ]);
+    }
+    
+    
+    /**
+     * Resolves the verification errors for a particular division
+     * 
+     * @param type $divsionid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 26/07/2016
+     * Date LAst Modified: 26/07/2016
+     */
+    public function actionResolveVerificationFailures($divisionid)
+    {
+         $unverified_applications = Application::find()
+                ->where(['applicationstatusid' => 2, 'divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+         
+        $transaction = \Yii::$app->db->beginTransaction();
+        try 
+        {
+            foreach($unverified_applications as $application)
+            {
+                $save_flag = false;
+                $all_saves_successful = true;
+                
+                $all_qualifications = CsecQualification::find()
+                        ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+
+                if(!$all_qualifications)
+                    continue;
+
+                 $verified_qualifications = CsecQualification::find()
+                        ->where(['personid' => $application->personid, 'isverified' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+
+                 if(count($verified_qualifications) == count($all_qualifications))   //target applicant   
+                 {
+                     $application->applicationstatusid = 3;
+                     $save_flag = $application->save();
+                     if($save_flag == false)
+                     {
+                        $all_saves_successful = false;
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured saving application');
+                     }
+                 }
+            }
+            
+            if($all_saves_successful == true)
+            {
+                $transaction->commit();
+            }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Yii::$app->getSession()->setFlash('error', 'Error occured processing request');
+        }
         
+        return self::actionFailedVerification();
     }
     
     
