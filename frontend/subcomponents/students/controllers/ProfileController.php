@@ -511,14 +511,7 @@
             
             /******************************* Statuses *********************************/
             $academic_status = StudentRegistration::getUpdatedAcademicStatus($studentregistrationid);
-//            if ($academic_status == false)
-//                $academic_status == "Determination Pending";
-            $academic_status = "Determination Pending";
-            $academic_status_record = AcademicStatus::find()
-                        ->where(['academicstatusid' => $studentregistration->academicstatusid, 'isactive' => 1, 'isdeleted' => 0])
-                        ->one();
-            $academic_status =  $academic_status_record->name;
-
+            
             $student_status = "Determination Pending";
             $student_status_record = StudentStatus::find()
                         ->where(['studentstatusid' => $studentregistration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])

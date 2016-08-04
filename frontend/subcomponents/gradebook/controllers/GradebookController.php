@@ -847,6 +847,7 @@
                 elseif ($is_cape == false && Yii::$app->user->can('accessTranscript') == true)      
                 {
                     $cumulative_gpa = StudentRegistration::calculateCumulativeGPA($studentregistrationid);
+                    $academic_status = StudentRegistration::getUpdatedAcademicStatus($studentregistrationid);
                     
                     return $this->render('associate_transcript', [
                         'person' => $person,
@@ -859,6 +860,7 @@
                         'divisionid' => $divisionid,
                         'cumulative_gpa' => $cumulative_gpa,
                         'programme_description' =>$programme_description,
+                        'academic_status' => $academic_status
                     ]);
                 }
             }      

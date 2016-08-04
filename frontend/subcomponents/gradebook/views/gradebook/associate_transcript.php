@@ -66,7 +66,7 @@
                     </tr>
                     <tr>
                         <th>Academic Status</th>
-                        <td><?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
+                        <td><?= $academic_status; ?>
                         <th>Cumlative GPA</th>
                         <td><?=$cumulative_gpa?></td>
                     </tr>

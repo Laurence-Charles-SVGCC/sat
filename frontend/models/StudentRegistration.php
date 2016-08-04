@@ -6,6 +6,7 @@ use Yii;
 use common\models\User;
 use frontend\models\BatchStudent;
 use frontend\models\BatchStudentCape;
+use frontend\models\Hold;
 
 /**
  * This is the model class for table "student_registration".
@@ -253,85 +254,29 @@ class StudentRegistration extends \yii\db\ActiveRecord
         }
     }
     
+    
     public static function getUpdatedAcademicStatus($studentregistrationid)
     {
-        $db = Yii::$app->db;
-        $academic_status = NULL;
-        $denominator_records = array();
-        $numerator_records = array();
-        $percentage_pass = NULL;
+        $status = "Good";
         
-        $is_cape = self::isCape($studentregistrationid);
-        if ($is_cape == true)
+        $warning_hold = Hold::find()
+                ->where(['studentregistrationid' => $studentregistrationid, 'holdtypeid' => 6,  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        
+        $probation_hold = Hold::find()
+                ->where(['studentregistrationid' => $studentregistrationid, 'holdtypeid' => 7,  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        
+        if ($probation_hold)
         {
-//            $grades = BatchStudentCape::find()
-//                    ->where(['studentregistratonid' => $studentregistratonid])
+            $status = "Academic Probation";
         }
-        else
+        elseif ($warning_hold)
         {
-            $denominator_records = $records = $db->createCommand(
-                 "SELECT batch_students.studentregistrationid AS 'studentregistration',"
-                . " batch_students.courseworktotal AS 'coursework',"
-                . " batch_students.examtotal AS 'exam',"
-                . " batch_students.final AS 'final'"
-                . " FROM batch_students"
-                . " JOIN batch"
-                . " ON batch_students.batchid = batch.batchid"
-                . " JOIN course_offering"
-                . " ON batch.courseofferingid = course_offering.courseofferingid"
-                . " WHERE batch_students.studentregistrationid = ". $studentregistrationid
-                . " AND batch_students.courseworktotal IS NOT NULL"
-                . " AND batch_students.examtotal IS NOT NULL"
-                . " AND batch_students.isactive = 1"
-                . " AND batch_students.isdeleted = 0"
-                . " AND batch.batchtypeid = 1"
-                . " AND course_offering.passfailtypeid IN (1,3);"
-                )
-                ->queryAll();
-            $denominator_count = count($denominator_records);
-            
-            if (count($denominator_records) == 0)
-            {
-                return false;
-            }
-            else
-            {    
-                $numerator_records = $db->createCommand(
-                    "SELECT batch_students.studentregistrationid AS 'studentregistration',"
-                    . " batch_students.courseworktotal AS 'coursework',"
-                    . " batch_students.examtotal AS 'exam',"
-                    . " batch_students.final AS 'final'"
-                    . " FROM batch_students"
-                    . " JOIN batch"
-                    . " ON batch_students.batchid = batch.batchid"
-                    . " JOIN course_offering"
-                    . " ON batch.courseofferingid = course_offering.courseofferingid"
-                    . " WHERE batch_students.studentregistrationid = ". $studentregistrationid
-                    . " AND batch_students.courseworktotal IS NOT NULL"
-                    . " AND batch_students.examtotal IS NOT NULL"
-                    . " AND batch_students.isactive = 1"
-                    . " AND batch_students.isdeleted = 0"
-                    . " AND batch.batchtypeid = 1"
-                    . " AND course_offering.passfailtypeid IN (1,3)"
-                    . " AND batch_students.final > course_offering.passmark;"      
-                    )
-                    ->queryAll();
-                $numerator_count = count($numerator_records);
-
-                if ($denominator_count > 0  && $numerator_count < $denominator_count)
-                {
-                    $percentage_pass = round((($numerator_count/$denominator_count)*100));
-                    $percentage_fail = 100 - $percentage_pass;
-                    if ($percentage_fail < 50)
-                        $academic_status = "Good";
-                    elseif ($percentage_fail >= 50 && $percentage_fail <= 60)
-                        $academic_status = "Academic Warning";
-                    else
-                        $academic_status = "Academic Probation";
-                }
-            }
+             $status = "Academic Warning";
         }
-        return $academic_status;
+        
+        return $status;
     }
     
     
