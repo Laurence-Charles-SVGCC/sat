@@ -11,24 +11,12 @@
     use yii\bootstrap\Modal;
     use yii\bootstrap\ActiveField;
     use dosamigos\datepicker\DatePicker;
+    use yii\helpers\ArrayHelper;
     
     use frontend\models\Division;
     use frontend\models\AcademicYear;
-    
-    $type = [
-        '' => 'Select Type',
-        1 => 'Full-time Enrollment',
-        2 => 'Part-time Enrollment',
-    ];
-    
-    $divisions = [
-        '' => 'Select Division',
-        4 => 'DASGS',
-        5 => 'DTVE',
-        6 => 'DTE',
-        7 => 'DNE',
-    ];
-
+    use frontend\models\ApplicationPeriodType;
+  
     $this->title = 'Application Period Setup Step-2';
 ?>
 
@@ -65,12 +53,12 @@
 
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle;'>Division</th>";
-                                    echo "<td>{$form->field($template_period, 'divisionid')->label('')->dropDownList($divisions)}</td>";
+                                    echo "<td>{$form->field($template_period, 'divisionid')->label('')->dropDownList(ArrayHelper::map(Division::find()->where(['abbreviation' => ["DASGS", "DTVE", "DTE", "DNE"]])->all(), 'divisionid', 'abbreviation')/*, ['disabled' => true]*/)}</td>";
                                 echo "</tr>";
 
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle;'>Academic Year</th>";
-                                    echo "<td>{$form->field($template_period, 'academicyearid')->label('')->dropDownList(AcademicYear::getCurrentAcademicYearPrepared())}</td>";
+                                    echo "<td>{$form->field($template_period, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()->all(), 'academicyearid', 'title')/*, ['disabled' => true]*/)}</td>";
                             echo "</tr>";
 
                             echo "<tr>";
@@ -95,7 +83,7 @@
 
                             echo "<tr>";
                                 echo "<th>Type</th>";
-                                echo "<td>{$form->field($template_period, 'applicationperiodtypeid')->label('', ['class'=> 'form-label'])->dropDownList($type)}</td>";
+                                echo "<td>{$form->field($template_period, 'applicationperiodtypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriodType::find()->all(), 'applicationperiodtypeid', 'name')/*, ['disabled' => true]*/)}</td>";
                             echo "</tr>";
                         echo "</table>"; 
 

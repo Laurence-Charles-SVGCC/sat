@@ -290,30 +290,36 @@ class AcademicOffering extends \yii\db\ActiveRecord
        
        
        /**
-        * Determines of a CAPE offering has been created for a particular appolication period
+        * Determines if a CAPE offering has been created for a particular application period
         * 
         * @param type $applicationperiodid
         * @return boolean
         * 
         * Author: Laurence Charles
         * Date Created: 14/02/2016
-        * Date Last Modified: 14/02/2016
+        * Date Last Modified: 13/08/2016
         */
        public static function hasCapeOffering($applicationperiodid)
        {
-            $db = Yii::$app->db;
-            $records = $db->createCommand(
-                    "SELECT *"
-                    . " FROM academic_offering" 
-                    . " JOIN programme_catalog"
-                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
-                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
-                    . " AND programme_catalog.name = 'CAPE'"
-                    . " AND academic_offering.isactive = 1"
-                    . " AND academic_offering.isdeleted = 0"
-                    . ";"
-                )
-                ->queryAll();
+//            $db = Yii::$app->db;
+//            $records = $db->createCommand(
+//                    "SELECT *"
+//                    . " FROM academic_offering" 
+//                    . " JOIN programme_catalog"
+//                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+//                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
+//                    . " AND programme_catalog.name = 'CAPE'"
+//                    . " AND academic_offering.isactive = 1"
+//                    . " AND academic_offering.isdeleted = 0"
+//                    . ";"
+//                )
+//                ->queryAll();
+            $records = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->where(['academic_offering.applicationperiodid' => $applicationperiodid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                   'programme_catalog.name' => 'CAPE', 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                ])
+                    ->all();
             if (count($records) > 0)
                 return true;
             return false;
@@ -328,15 +334,14 @@ class AcademicOffering extends \yii\db\ActiveRecord
         * 
         * Author: Laurence Charles
         * Date Created: 15/02/2016
-        * Date Last Modified: 15/02/2016
+        * Date Last Modified: 13/08/2016
         */
        public static function getCapeOffering($applicationperiodid)
        {
            $record = AcademicOffering::find()
                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-                   ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
-                   ->andWhere(['programme_catalog.name' => 'CAPE'])
-                   ->andWhere(['academic_offering.applicationperiodid' => $applicationperiodid])
+                   ->where(['academic_offering.applicationperiodid' => $applicationperiodid,'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
+                   ->andWhere([ 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0, 'programme_catalog.name' => 'CAPE'])
                    ->one();
 
             if ($record)
@@ -353,23 +358,32 @@ class AcademicOffering extends \yii\db\ActiveRecord
         * 
         * Author: Laurence Charles
         * Date Created: 14/02/2016
-        * Date Last Modified: 14/02/2016
+        * Date Last Modified: 13/08/2016
         */
        public static function hasNoneCapeOffering($applicationperiodid)
        {
-            $db = Yii::$app->db;
-            $records = $db->createCommand(
-                    "SELECT *"
-                    . " FROM academic_offering" 
-                    . " JOIN programme_catalog"
-                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
-                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
-                    . " AND academic_offering.isactive = 1"
-                    . " AND academic_offering.isdeleted = 0"
-                    . " AND programme_catalog.name <> 'CAPE'"
-                    . ";"
-                )
-                ->queryAll();
+//            $db = Yii::$app->db;
+//            $records = $db->createCommand(
+//                    "SELECT *"
+//                    . " FROM academic_offering" 
+//                    . " JOIN programme_catalog"
+//                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+//                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
+//                    . " AND academic_offering.isactive = 1"
+//                    . " AND academic_offering.isdeleted = 0"
+//                    . " AND programme_catalog.isactive = 1"
+//                    . " AND programme_catalog.isdeleted = 0"
+//                    . " AND programme_catalog.name <> 'CAPE'"
+//                    . ";"
+//                )
+//                ->queryAll();
+            $records = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->where(['academic_offering.applicationperiodid' => $applicationperiodid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                ])
+                    ->andWhere(['not', ['programme_catalog.name' => 'CAPE']])
+                    ->all();
             if (count($records) > 0)
                 return true;
             return false;
@@ -384,16 +398,17 @@ class AcademicOffering extends \yii\db\ActiveRecord
         * 
         * Author: Laurence Charles
         * Date Created: 15/02/2016
-        * Date Last Modified: 15/02/2016
+        * Date Last Modified: 13/08/2016
         */
        public static function getNoneCapeOffering($applicationperiodid)
        {
-           $records = AcademicOffering::find()
-                   ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-                   ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
-                   ->andWhere(['not', ['programme_catalog.name' => 'CAPE']])
-                   ->andWhere(['academic_offering.applicationperiodid' => $applicationperiodid])
-                   ->all();
+            $records = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->where(['academic_offering.applicationperiodid' => $applicationperiodid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                ])
+                    ->andWhere(['not', ['programme_catalog.name' => 'CAPE']])
+                    ->all();
             if (count($records) > 0)
                 return $records;
             return false;

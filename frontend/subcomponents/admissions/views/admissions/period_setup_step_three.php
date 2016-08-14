@@ -102,7 +102,7 @@
                         </table> 
                             
                         
-                    <?php elseif ($period->divisionid == 5):?>
+                    <?php else:?>
                         <?php $count = count($programmes);?>
                             <table class="table table-condensed">
                                 <tr>
@@ -121,70 +121,6 @@
                                                     $specialisation = "";
                                             ?>
                                                 <td><?= $programmes[$i]["qualification"] . ". " . $programmes[$i]["name"] . $specialisation?></td>
-                                        <?php else:?> 
-                                            <td></td>
-                                        <?php endif;?>
-                                    </tr>
-                                <?php endfor;?>
-
-                                <tr>
-                                    <td></td>
-                                    <td><?= Html::a(' Add New Programme',['admissions/add-programme-catalog'], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-plus pull-left', 'style' => 'margin:10px;']);?></th>
-                                </tr>
-                            </table> 
-                    
-                    
-                    <?php elseif ($period->divisionid == 6):?>
-                        <?php $count = count($programmes);?>
-                            <table class="table table-condensed">
-                                <tr>
-                                    <th></th>
-                                    <th><strong>Programmes</strong></th>
-                                </tr>
-
-                                <?php for($i = 0 ; $i < $count ; $i++):?>
-                                    <tr>
-                                        <td><?=($i+1)?></td>
-                                        <?php if($i < count($programmes)):?>
-                                            <?php 
-                                                if($programmes[$i]["specialisation"]!=NULL || strcmp($programmes[$i]["specialisation"],"") != 0)
-                                                    $specialisation = " (" . $programmes[$i]["specialisation"] . ")";
-                                                else
-                                                    $specialisation = "";
-                                            ?>
-                                            <td><?= $programmes[$i]["qualification"] . ". " . $programmes[$i]["name"] . $specialisation?></td>
-                                        <?php else:?> 
-                                            <td></td>
-                                        <?php endif;?>
-                                    </tr>
-                                <?php endfor;?>
-
-                                <tr>
-                                    <td></td>
-                                    <td><?= Html::a(' Add New Programme',['admissions/add-programme-catalog'], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-plus pull-left', 'style' => 'margin:10px;']);?></th>
-                                </tr>
-                            </table> 
-                    
-                    
-                    <?php elseif ($period->divisionid == 7):?>
-                        <?php $count = count($programmes);?>
-                            <table class="table table-condensed">
-                                <tr>
-                                    <th></th>
-                                    <th><strong>Programmes</strong></th>
-                                </tr>
-
-                                <?php for($i = 0 ; $i < $count ; $i++):?>
-                                    <tr>
-                                        <td><?=($i+1)?></td>
-                                        <?php if($i < count($programmes)):?>
-                                            <?php 
-                                                if($programmes[$i]["specialisation"]!=NULL || strcmp($programmes[$i]["specialisation"],"") != 0)
-                                                    $specialisation = " (" . $programmes[$i]["specialisation"] . ")";
-                                                else
-                                                    $specialisation = "";
-                                            ?>
-                                            <td><?= $programmes[$i]["qualification"] . ". " . $programmes[$i]["name"] . $specialisation?></td>
                                         <?php else:?> 
                                             <td></td>
                                         <?php endif;?>
@@ -267,25 +203,16 @@
                                          <div class="col-md-4">
                                             <?= $form->field($subject_groups[$j], '['.$j.']capegroupid')->label('Group')->dropDownList(ArrayHelper::map(CapeGroup::find()->all(), 'capegroupid', 'name'), ['prompt'=>'Select Cape Group']) ?>
                                         </div>
-                                        
-                                        
                                     </div>
                                 <hr>
                                 <?php endfor; ?>
                             <?php endif;?>
                                 
                             
-                
-                            
                             <?=Html::a(' Back',['admissions/initiate-period', 'recordid' => $period->applicationperiodid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;', 'id' => 'back-button']);?>
                             <?=Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
                      <?php ActiveForm::end();?>   
-                    
-                <!--</div>-->  
-                
-                
             </div>
-            
         </div>
     </div>
 </div>

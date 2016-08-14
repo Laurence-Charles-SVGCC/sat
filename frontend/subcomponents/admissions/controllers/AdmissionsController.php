@@ -6,6 +6,7 @@
     use yii\web\Controller;
     use yii\base\Model;
     use yii\data\ArrayDataProvider;
+    use yii\helpers\Json;
     
     use common\models\User;
     use frontend\models\ApplicationPeriod;
@@ -23,6 +24,9 @@
     use frontend\models\StudentRegistration;
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
+    use frontend\models\ApplicationPeriodType;
+    use frontend\models\Division;
+    use frontend\models\ApplicantIntent;
 
 class AdmissionsController extends Controller
 {
@@ -164,72 +168,73 @@ class AdmissionsController extends Controller
      * Date Created: 10/02/2016
      * Date Last Modified: 10/02/2016
      */
-    public function actionPeriodSetupStepOne($reuse_year = NULL)
+    public function actionPeriodSetupStepOne()
     {
-        $new_year_save_flag = false;
-        $current_year_load_flag = false;
-        $current_year_save_flag = false;
         $period_save_flag = false;
+        $year_save_flag = false;
         
-        $current_year = AcademicYear::getCurrentYear();
         $new_year = new AcademicYear();
         $period = ApplicationPeriod::getIncompletePeriod();
-        
-        if ($reuse_year == 1)
-        {
-            /*
-             * If openeing a full time application period for DASGS or DTVE the academic year must be updated
-             */
-            if($period->divisionid == 4  ||  $period->divisionid == 5  && ($period->applicationperiodtypeid == 1))
-            {
-                $new_year = AcademicYear::getMostRecentlyCreatedYear();
-                if($new_year == true)
-                {
-                    $new_year->iscurrent = 1;
-                    $new_year->save();
-                }
-            }
-            $period->applicationperiodstatusid = 2;
-            $period_save_flag = $period->save();
-            if($period_save_flag == true)
-            {
-                return $this->redirect(['admissions/initiate-period',
-                                'recordid' => $period->applicationperiodid
-                            ]);
-            }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
-        }
-        
+        $period->divisionid = NULL;
+        $period->applicationperiodtypeid = NULL;
+       
         if ($post_data = Yii::$app->request->post())
         {
+            $period = ApplicationPeriod::getIncompletePeriod();
+            
+            $period_load_flag = $period->load($post_data);
             $year_load_flag = $new_year->load($post_data);
-            if($year_load_flag == true)
+            
+            if($period_load_flag == true  && $year_load_flag == true)
             {
-                $new_year->iscurrent = 0;
-//                $new_year->iscurrent = 1;
-//                $current_year->iscurrent = 0;
-                $period->applicationperiodstatusid = 2;
-                
-                $new_year_save_flag = $new_year->save();
-                $current_year_save_flag = $current_year->save();
-                $period_save_flag = $period->save();
-                
-                if($new_year_save_flag == true  && $current_year_save_flag == true && $period_save_flag == true)
-                    return $this->redirect(['admissions/initiate-period',
-                                'recordid' => $period->applicationperiodid
-                            ]);
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update record. Please try again.');
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    if($new_year->title == true   && $new_year->startdate == true  && $new_year->enddate == true)    //if new year record creation was necessary
+                    {
+                        $applicantintentid = ApplicantIntent::getApplicantIntent($period->divisionid, $period->applicationperiodtypeid);
+                        $new_year->applicantintentid =  $applicantintentid; 
+                        $new_year->iscurrent = 1;
+                        $year_save_flag = $new_year->save();
+                        if (!$year_save_flag)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occured saving new academic year.');
+                            return self::actionInitiatePeriod($period->applicationperiodid);
+                        }
+                    }
+                    else        //only executes when DASGS  OR DTVE full time application period is is being creatd and its counterpart already exists
+                    {
+                        $new_year = AcademicYear::find()
+                                ->where(['applicantintentid' => 1,  'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                    }
+                    
+                    $period->academicyearid = $new_year->academicyearid;
+                    $period->applicationperiodstatusid = 2;
+                    $period_save_flag = $period->save();
+                    if (!$period_save_flag)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                        return self::actionInitiatePeriod($period->applicationperiodid);
+                    }
+                     
+                    $transaction->commit();
+                    return self::actionInitiatePeriod($period->applicationperiodid);
+                            
+                } catch (Exception $ex) {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                }
             }
             else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load records. Please try again.');              
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load records. Please try again.');  
         }
-        
+              
         return $this->render('period_setup_step_one', [
-                'current_year' => $current_year,
                 'new_year' => $new_year,
-                'period' => $period
+                'period' => $period,
             ]);
     }
     
@@ -245,13 +250,17 @@ class AdmissionsController extends Controller
      */
     public function actionPeriodSetupStepTwo()
     {
-        $template_period = new ApplicationPeriod();
         $period = ApplicationPeriod::getIncompletePeriod();
+        $template_period = new ApplicationPeriod();
+        $template_period->divisionid = $period->divisionid;
+        $template_period->academicyearid = $period->academicyearid;
+        $template_period->applicationperiodtypeid = $period->applicationperiodtypeid;
         
         if ($post_data = Yii::$app->request->post())
         {
             $load_flag = false;
             $save_flag = false;
+            $template_period = new ApplicationPeriod();
             
             $load_flag = $template_period->load($post_data);
             if($load_flag == true)
@@ -309,38 +318,20 @@ class AdmissionsController extends Controller
         $cape_check = false;
         $none_cape_check = false;
         
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $year = AcademicYear::getCurrentYear();
+        $period = ApplicationPeriod::getIncompletePeriod();+
+        $year = $period->academicyearid;
             
         $programmes = NULL;
         $all_programmes = NULL;
         $subjects = NULL;
         
+        $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
+        
         if ($period->divisionid == 4)
         {
-            $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-//            $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
             $subjects = Subject::findAll(['examinationbodyid' => 2, 'isactive' => 1, 'isdeleted' => 0]);
         }
-        
-        elseif ($period->divisionid == 5)
-        {
-            $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-//            $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-        }
-        
-        elseif ($period->divisionid == 6)
-        {
-            $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid);
-//            $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-        }
-        
-        elseif ($period->divisionid == 7)
-        {
-           $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid);
-//           $all_programmes = ProgrammeCatalog::getFullProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-        }
-        
+       
         //process programmes
         $programme_count = count($programmes);
         $offerings = array();
@@ -479,7 +470,7 @@ class AdmissionsController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-                    if($saved_offerings == true)    //if previous offering exist in database
+                    if($saved_offerings == true)    //if previous offering exists in database
                     {
                         $period_id = $period->applicationperiodid;
                         AcademicOffering::deleteAll(['and', 'applicationperiodid = ' . $period_id, 'programmecatalogid != 10']);
@@ -705,7 +696,6 @@ class AdmissionsController extends Controller
         return $this->render('period_setup_step_three', [
                 'period' => $period,
                 'programmes' => $programmes,
-//                'all_programmes' => $all_programmes,
                 'subjects' => $subjects,
                 'offerings' => $offerings,
                 'cape_subjects' => $cape_subjects,
@@ -1078,6 +1068,35 @@ class AdmissionsController extends Controller
             'status' => $status,
             'info_string' => $info_string,
         ]);
+    }
+    
+    
+    
+    public function actionProcessApplicantIntentid($divisionid, $applicationperiodtypeid, $applicantintentid)
+    {
+        $academicYearExists = 0;
+        $applicationPeriodExists = 0;
+        
+        if ($applicantintentid == 1)
+        {
+            $academicYear = AcademicYear::find()
+                    ->where(['applicantintentid' => $applicantintentid, 'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+             if ($academicYear)   
+             {
+                 $academicYearExists = 1;
+                 $period = ApplicationPeriod::find()
+                         ->where(['divisionid' => $divisionid, 'iscomplete' => 0, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                         ->one();
+                 if ($period)
+                 {
+                     $applicationPeriodExists = 1;
+                 }
+             }
+        }
+        
+        
+        echo Json::encode(['academicYearExists' => $academicYearExists, 'applicationPeriodExists' => $applicationPeriodExists]);
     }
     
     

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $academicyearid
  * @property string $title
+ * @property string applicantintentid
  * @property boolean $iscurrent
  * @property string $startdate
  * @property string $enddate
@@ -32,6 +33,7 @@ class AcademicYear extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'startdate'], 'required'],
+            [['applicantintentid'], 'integer'],
             [['iscurrent', 'isactive', 'isdeleted'], 'boolean'],
             [['startdate', 'enddate'], 'safe'],
             [['title'], 'string', 'max' => 45]
@@ -249,5 +251,6 @@ class AcademicYear extends \yii\db\ActiveRecord
         $combined = array_combine($keys, $values);
         return $combined;
     }
+    
     
 }

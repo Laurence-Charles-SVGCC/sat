@@ -35,19 +35,20 @@
                 <!--Step 1 button-->
                 <fieldset id="step-one">
                     <legend>Step 1: Configure Academic Year</legend>
-                    <a href="<?= Url::toRoute(['admissions/period-setup-step-one'])?>" title="Configure Academic Year">
+                    <?php if ($period->applicationperiodstatusid > 1):?>  
                         <!--If academic year record for new application period is confirmed as available-->
-                        <?php if ($period->applicationperiodstatusid > 1):?>     
+                        <a href="<?= Url::toRoute(['admissions/period-setup-step-one'])?>" title="Configure Academic Year" disabled>
                             <div class="alert in alert-block fade alert-success mainButtons">
-                                Click here to edit available academic years
+                                Academic year configured
                             </div>
-                        <!--If academic year not yet verified as available-->
-                        <?php elseif ($period->applicationperiodstatusid == 1):?>
+                        </a>
+                    <?php elseif ($period->applicationperiodstatusid == 1):?>
+                        <a href="<?= Url::toRoute(['admissions/period-setup-step-one'])?>" title="Configure Academic Year">
                             <div class="alert in alert-block fade alert-error mainButtons">
-                                Click here to verify availability of academic year
+                                Configure academic year
                             </div> 
-                        <?php endif; ?>
-                    </a>
+                        </a>
+                     <?php endif; ?>
                 </fieldset></br> 
                 
                 

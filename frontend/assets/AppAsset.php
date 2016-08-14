@@ -56,6 +56,7 @@ class AppAsset extends AssetBundle
         'js/admissions/reports.js',
         'js/admissions/register_student.js',
         'js/admissions/qualification_ajax_functions.js',
+        'js/admissions/period_setup_one.js',
         'js/registry/registry.js',
         'js/programmes/programmes.js',
         'js/programmes/cordinator.js',
