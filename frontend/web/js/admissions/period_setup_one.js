@@ -164,7 +164,7 @@ function calculateApplicantIntent(e)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
     else
 //        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2admissions%2Fprocess-applicant-intentid&";
-        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
+        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid1&";
 
 
 
