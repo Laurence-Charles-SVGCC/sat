@@ -26,15 +26,17 @@
                 'class' => \yii\filters\Cors::className(),
                 'cors' => [
                     // restrict access to
-                    'Origin' => ['http://sat.svgcc.vc',
-                                        'http://www.sat.svgcc.vc',
-                                        'http://www.svgcc.vc',
-                                        'http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fperiod-setup-step-one'
-                                      ],
-                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
+//                    'Origin' => ['http://sat.svgcc.vc',
+//                                        'http://www.sat.svgcc.vc',
+//                                        'http://www.svgcc.vc',
+//                                        'http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fperiod-setup-step-one'
+//                                      ],
+//                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
                     
-//                    'Access-Control-Allow-Origin' => ['http://www.sat.svgcc.vc'],
-//                    'Origin' => ['http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fperiod-setup-step-one'],
+//                    'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
+                    
+                     'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
+                    
                     
                 
                 
