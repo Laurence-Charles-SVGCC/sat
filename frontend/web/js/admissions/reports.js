@@ -622,15 +622,10 @@ function IntakePrepareListing(e)
     if (baseUrl.search("localhost")!=-1)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
     else
-        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+//        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+        url = "http://www.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
         
-        
-    //Implementation for live server
-//    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
-    
-    //For local implementation
-//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    
+ 
     url+= "applicationperiodid=" + applicationperiodid;
     
     url+= "&listing_type="+listing_type;
