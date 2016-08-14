@@ -266,14 +266,14 @@ function toggleSearchButton()
 }
     
  /**
- * Load appropriate data into Subject, Proficiency and Grade dropdown lists
+ *??
  * 
  * @param {type} e
  * @returns {Boolean}
  * 
  * Author: Laurence Charles
  * Date Created: 18/03/2016
- * Date Last Modified: 18/03/2016
+ * Date Last Modified: 14//08/2016
  */
 function PrepareListing(e)
 {
@@ -520,14 +520,14 @@ function toggleIntakeSearchButton()
 
 
 /**
- * Load appropriate data into Subject, Proficiency and Grade dropdown lists
+ * Load appropriate data listing for the Intake Report
  * 
  * @param {type} e
  * @returns {Boolean}
  * 
  * Author: Laurence Charles
  * Date Created: 15/05/2016
- * Date Last Modified: 15/05/2016
+ * Date Last Modified: 18/08/2016
  */
 function IntakePrepareListing(e)
 {
