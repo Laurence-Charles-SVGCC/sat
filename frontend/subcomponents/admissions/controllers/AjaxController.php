@@ -40,9 +40,16 @@
 //                     'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
                     
                     
-                    'Origin' => ['http://sat.svgcc.vc'],
-                    'Access-Control-Request-Method' => ['GET'],
+//                    'Origin' => ['http://sat.svgcc.vc'],
+//                    'Access-Control-Request-Method' => ['GET'],
+//                    'Access-Control-Allow-Credentials' => true,
+                    
+                    
+                    'Origin' => ['*'],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+                    'Access-Control-Request-Headers' => ['*'],
                     'Access-Control-Allow-Credentials' => true,
+                    'Access-Control-Max-Age' => 86400,
                     
                 
                 
