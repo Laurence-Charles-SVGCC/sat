@@ -26,11 +26,19 @@
                 'class' => \yii\filters\Cors::className(),
                 'cors' => [
                     // restrict access to
-//                    'Origin' => ['http://sat.svgcc.vc'],
-//                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
+                    'Origin' => ['http://sat.svgcc.vc'],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
                     
-                    'Access-Control-Allow-Origin' => ['http://www.sat.svgcc.vc'],
+//                    'Access-Control-Allow-Origin' => ['http://www.sat.svgcc.vc'],
+//                    'Origin' => ['http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fperiod-setup-step-one'],
                     
+                
+                
+                
+                
+                
+                
+                
                     // Allow only POST and PUT methods
 //                    'Access-Control-Request-Headers' => ['X-Wsse'],
                     
