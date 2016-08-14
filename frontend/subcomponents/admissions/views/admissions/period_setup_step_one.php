@@ -20,7 +20,7 @@
     $this->title = 'Application Period Setup Step-1';
 ?>
 
-<?php header('Access-Control-Allow-Origin: *'); ?>
+<?php // header('Access-Control-Allow-Origin: *'); ?>
 
 <div class="site-index">
     <div class = "custom_wrapper">
