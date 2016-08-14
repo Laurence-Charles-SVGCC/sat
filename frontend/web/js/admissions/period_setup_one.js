@@ -164,18 +164,8 @@ function calculateApplicantIntent(e)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
     else
 //        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-//        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fajax%2Fprocess-applicant-intentid&";
         url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-
-
-
-//Implementation for live server
-//    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
-    
-    //For local implementation
-//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
-    
-    
+ 
     url+= "divisionid=" + divisionid;
     
     url+= "&applicationperiodtypeid="+ applicationperiodtypeid;
