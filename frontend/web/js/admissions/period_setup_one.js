@@ -184,7 +184,7 @@ function calculateApplicantIntent(e)
     
     httpxml.onreadystatechange=stateck;
    
-    httpxml.open("GET",url,true);
+    httpxml.open("GET", url, true);
     httpxml.send(null);
 }
 
