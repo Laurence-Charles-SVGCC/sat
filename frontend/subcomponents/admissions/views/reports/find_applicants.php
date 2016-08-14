@@ -142,7 +142,7 @@
 
                     <div id="application-period-aggregate" style="display:none">
                         <h3>No aggregate reports available at this time.</h3><br/>
-                        <img style="display: block; margin: auto;" src ="<?=Url::to('../images/under_construction.jpg');?>" alt="Under Construction">
+                        <img style="display: block; margin: auto;" src ="<?=Url::to('css/dist/img/under_construction.jpg');?>" alt="Under Construction">
                     </div>
 
             
