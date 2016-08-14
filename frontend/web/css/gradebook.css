@@ -12,7 +12,7 @@ and open the template in the editor.
 .custom_wrapper
 {
     /*background-image:url(../../images/watermark.jpg);*/
-    background-image:url(css/dist/imgwatermark.jpg);
+    background-image:url(/dist/img/watermark.jpg);
     background-repeat:repeat;
     
     margin: 0 auto;
