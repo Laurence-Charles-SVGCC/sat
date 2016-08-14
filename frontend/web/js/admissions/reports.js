@@ -623,7 +623,7 @@ function IntakePrepareListing(e)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
     else
 //        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-        url = "http://www.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
         
  
     url+= "applicationperiodid=" + applicationperiodid;
@@ -632,7 +632,7 @@ function IntakePrepareListing(e)
     
     httpxml.onreadystatechange=stateck;
    
-    httpxml.open("GET",url,true);
+    httpxml.open("GET", url, true);
     httpxml.send(null);
 }
 
