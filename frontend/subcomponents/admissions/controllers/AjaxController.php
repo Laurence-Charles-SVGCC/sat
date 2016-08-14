@@ -29,7 +29,7 @@
 //                    'Origin' => ['http://sat.svgcc.vc'],
 //                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
                     
-                    'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
+                    'Access-Control-Allow-Origin' => ['http://www.sat.svgcc.vc'],
                     
                     // Allow only POST and PUT methods
 //                    'Access-Control-Request-Headers' => ['X-Wsse'],
