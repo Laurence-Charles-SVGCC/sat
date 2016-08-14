@@ -33,10 +33,16 @@
 //                                      ],
 //                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT'],
                     
+                    
 //                    'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
                     
-                     'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
                     
+//                     'Access-Control-Allow-Origin' => ['http://sat.svgcc.vc'],
+                    
+                    
+                    'Origin' => ['http://sat.svgcc.vc'],
+                    'Access-Control-Request-Method' => ['GET'],
+                    'Access-Control-Allow-Credentials' => true,
                     
                 
                 
