@@ -10,7 +10,7 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\AcademicYear;
     
-    class AdmissionsController extends ActiveController
+    class AjaxController extends ActiveController
     {   
         
         public function behaviors()
