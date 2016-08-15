@@ -117,6 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'saved-records-form'
                     ]); 
                 ?>
+                    <?= Html::hiddenInput('viewApplicantQualifications_baseUrl', Url::home(true)); ?>
+                
                     <br/><fieldset style="width:100%">
                         <legend><strong>Certificate Results</strong></legend>
                         <table id="certificate_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">

@@ -273,11 +273,21 @@ function EditCsecQualificationAjaxFunction(e)
     var targetID = targ.id;
     
     /**************************************************************************/
+    var baseUrl = document.getElementsByName('editCsecQualification_baseUrl')[0].value;
+    if (baseUrl.search("localhost")!=-1)
+    {
+        var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    }
+    else
+    {
+        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+    }
+    
     //For live sat_dev implementation
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
     
     //Implementation for live server
-    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+//    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
      
        
     //For local implementation

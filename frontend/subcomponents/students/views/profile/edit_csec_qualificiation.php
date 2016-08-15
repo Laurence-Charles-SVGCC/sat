@@ -41,7 +41,9 @@
 //                                    'class' => 'form-inline',
                                 ],
                             ]);
-
+                        
+                        echo Html::hiddenInput('editCsecQualification_baseUrl', Url::home(true));
+                        
                         echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
                             echo "<tr>";
                                 echo "<th style='vertical-align:middle'>Examination Centre</th>";
