@@ -13,8 +13,8 @@ use Yii;
  * @property string $personid
  * @property string $recepientid
  * @property string $documentpath
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  *
  * @property DocumentIntent $documentintent
  * @property DocumentType $documenttype
@@ -38,8 +38,7 @@ class DocumentSubmitted extends \yii\db\ActiveRecord
     {
         return [
             [['documentintentid', 'documenttypeid', 'personid', 'recepientid'], 'required'],
-            [['documentintentid', 'documenttypeid', 'personid', 'recepientid'], 'integer'],
-            [['isactive', 'isdeleted'], 'boolean'],
+            [['documentintentid', 'documenttypeid', 'personid', 'recepientid', 'isactive', 'isdeleted'], 'integer'],
             [['documentpath'], 'string', 'max' => 100]
         ];
     }

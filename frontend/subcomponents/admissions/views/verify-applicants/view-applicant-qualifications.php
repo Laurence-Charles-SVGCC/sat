@@ -68,6 +68,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 Modal::end();
             ?>
            
+            <?php if ($applicant->applicantintentid == 4  || $applicant->applicantintentid == 6 ):?>
+            <br/><fieldset style='margin-left:2.5%'>
+                    <legend><strong>Supporting Documentation Verification</strong></legend>
+                    <p>
+                        Would you like to verify the submission of the applicant's supporting documents at this time?
+                         <?= Html::radioList('verify-documents-choice', 'No', ['Yes' => 'Yes' , 'No' => 'No'], ['class'=> 'form_field', 'onclick'=> 'checkVerifyDocuments();']);?>
+                        <?=Html::a(' Verify Documents', 
+                                ['verify-applicants/view-documents', 'applicantid' => $applicantid,  'centrename' => $centrename, 'cseccentreid' => $centreid, 'type' => $type, 'personid' => $applicant->personid], 
+                                ['class' => 'btn btn-info glyphicon glyphicon-plus pull-left',
+                                    'style' => 'display: none;',
+                                    'id' => 'go-to-verify-documents'
+                                ]);?> 
+                    </p>
+                </fieldset><br/>
+            <?php endif;?>    
+                
             <?php if(Application::getAbandonedApplicantApplications($applicant->personid) == true):?>
                 <div id="set_application_as_active">
                     <?=Html::a(' Reactivate Application', 

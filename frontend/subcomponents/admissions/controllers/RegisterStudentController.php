@@ -241,6 +241,27 @@ class RegisterStudentController extends \yii\web\Controller
                             //Update document submission
                             $submitted = $request->post('documents');
                             $docs = DocumentSubmitted::findAll(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                            
+                            //if form has non selected then any documents that were prevously selected must be deleted
+                            if (!$submitted)
+                            {
+                                foreach ($docs as $doc)
+                                {
+                                    $doc->isactive = 0;
+                                    $doc->isdeleted = 1;
+                                    $document_save_flag = $doc->save();
+                                    if ($document_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                                        return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                                    }
+                                }
+                                $transaction->commit();
+                                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type, $personid);
+                            }
+                            
+                            
                             $docs_arr = array();
                             if ($docs)
                             {

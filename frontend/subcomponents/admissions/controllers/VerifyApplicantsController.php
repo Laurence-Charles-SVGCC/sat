@@ -11,6 +11,7 @@ use yii\base\Model;
 
 use common\models\User;
 use frontend\models\Applicant;
+use frontend\models\DocumentSubmitted;
 use frontend\models\CsecQualification;
 use frontend\models\ApplicationStatus;
 use frontend\models\Application;
@@ -1252,13 +1253,14 @@ class VerifyApplicantsController extends \yii\web\Controller
                         'csecqualifications' => $qualifications,
                         'applicant' => $applicant_model,
                         'username' => $username,
+                        'applicantid' => $applicantid, 
                         'centrename' => $centrename,
                         'centreid' => $cseccentreid,
                         'type' => $type,
                         'isexternal' => $applicant_model->isexternal,
                         'post_qualification' => $post_qualification,
                         'record_count' => $record_count,
-                        'external_qualification' => $external_qualification,
+                        'external_qualification' => $external_qualification
                     ]);
         }
     }
@@ -1703,8 +1705,137 @@ class VerifyApplicantsController extends \yii\web\Controller
             }
         }
         return self::actionIndexAbandoned();
-        
     }
+    
+    
+    
+    public function actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid)
+    {
+        $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            
+        $username = $applicant->getPerson()->one()->username;
+        
+        //Get documents already submitted
+        $selections = array();
+        foreach (DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]) as $doc)
+        {
+            array_push($selections, $doc->documenttypeid);
+        }
+        
+        return $this->render('prospective_student',
+                    [
+                        'username' => $username,
+                        'applicant' => $applicant,
+                        
+                        'applicantid' => $applicantid, 
+                        'centrename' => $centrename,
+                        'centreid' => $cseccentreid,
+                        'type' => $type,
+                        'selections' => $selections,
+                        
+                        'personid' => $personid,
+                    ]);
+    }
+    
+    
+    
+    public function actionVerifyDocuments($applicantid, $centrename, $cseccentreid, $type, $personid)
+    {
+        $document_save_flag = false;
+        
+        if (Yii::$app->request->post())
+        {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $request = Yii::$app->request;
+                //Update document submission
+                $submitted = $request->post('documents');
+                
+                $docs = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
+                
+                 //if form has non selected then any documents that were prevously selected must be deleted
+                if (!$submitted)
+                {
+                    foreach ($docs as $doc)
+                    {
+                        $doc->isactive = 0;
+                        $doc->isdeleted = 1;
+                        $document_save_flag = $doc->save();
+                        if ($document_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                            return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                        }
+                    }
+                    $transaction->commit();
+                    return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type, $personid);
+                }
+                
+                
+                $docs_arr = array();
+                if ($docs)
+                {
+                    foreach ($docs as $doc)
+                    { 
+                        $docs_arr[] = $doc->documenttypeid; 
+                    }
+
+//                    foreach ($docs as $doc)
+                    foreach ($docs as $doc)
+                    {
+                        if (!in_array($doc->documenttypeid, $submitted))
+                        { 
+                            //Document has been unchecked
+                            $doc->isactive = 0;
+                            $doc->isdeleted = 1;
+                            $document_save_flag = $doc->save();
+                            if ($document_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                            }
+                        }
+                    }  
+                }
+
+                if($submitted)
+                {
+                    foreach ($submitted as $sub)
+                    {
+                        if (!in_array($sub, $docs_arr))
+                        { 
+                           $doc = new DocumentSubmitted();
+                           $doc->documenttypeid = $sub;
+                           $doc->personid = $personid;
+                           $doc->recepientid = Yii::$app->user->getId();
+                           $doc->documentintentid = 1;
+                           $document_save_flag = $doc->save(); 
+                           if ($document_save_flag == false)
+                           {
+                               $transaction->rollBack();
+                               Yii::$app->session->setFlash('error', 'Document could not be added');
+                               return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                           }
+                        }
+                    }
+                }
+                $transaction->commit();
+                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type, $personid);
+                
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing request.');   
+                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+            }
+        }
+    }
+            
+       
     
     
 }
