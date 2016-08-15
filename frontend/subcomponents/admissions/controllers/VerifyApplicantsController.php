@@ -22,7 +22,7 @@ use frontend\models\ExaminationGrade;
 use frontend\models\ExaminationBody;
 use frontend\models\Division;
 use frontend\models\ExternalQualification;
-
+use frontend\models\Employee;
 
 
 class VerifyApplicantsController extends \yii\web\Controller
@@ -395,7 +395,24 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
-
+                
+                 if (!Applicant::isVerified($applicant->personid))
+                 {
+                    $verifier = "N/A";
+                 }
+                 else
+                 {
+                     if (!$applicant->verifier)
+                     {
+                         $verifier = "Unknown";
+                     }
+                     else
+                     {
+                         $verifier = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+                     }
+                 }
+                 $container["verifier"] = $verifier;
+                    
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
                 $division = Division::getDivisionAbbreviation($divisionid);
@@ -442,6 +459,23 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+                    
+                    if (!Applicant::isVerified($applicant->personid))
+                    {
+                       $verifier = "N/A";
+                    }
+                    else
+                    {
+                        if (!$applicant->verifier)
+                        {
+                            $verifier = "Unknown";
+                        }
+                        else
+                        {
+                            $verifier = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+                        }
+                    }
+                    $container["verifier"] = $verifier;
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;
@@ -532,6 +566,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
+                $container["verifier"] = "N/A";
 
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
@@ -578,6 +613,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+                    $container["verifier"] = "N/A";
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;
@@ -670,6 +706,16 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
+                
+                if (!$applicant->verifier)
+                {
+                    $verifier = "Unknown";
+                }
+                else
+                {
+                    $verifier = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+                }
+                $container["verifier"] = $verifier;
 
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
@@ -715,6 +761,17 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+                    
+                    if (!$applicant->verifier)
+                    {
+                        $verifier = "Unknown";
+                    }
+                    else
+                    {
+                        $verifier = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+                    }
+                    $container["verifier"] = $verifier;
+
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;
@@ -804,6 +861,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
+                $container["verifier"] = "N/A";
 
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
@@ -850,6 +908,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+                    $container["verifier"] = "N/A";
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;

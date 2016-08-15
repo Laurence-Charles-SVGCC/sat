@@ -48,6 +48,7 @@ class AcademicYear extends \yii\db\ActiveRecord
         return [
             'academicyearid' => 'Academicyearid',
             'title' => 'Title',
+            'applicantintentid' => 'Applicant Intent ID',
             'iscurrent' => 'Iscurrent',
             'startdate' => 'Startdate',
             'enddate' => 'Enddate',

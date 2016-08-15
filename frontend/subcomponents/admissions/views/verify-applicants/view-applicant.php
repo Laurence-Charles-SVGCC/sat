@@ -99,6 +99,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'division',
                         'format' => 'text',
                         'label' => 'Division'
+                    ],
+                    [
+                        'attribute' => 'verifier',
+                        'format' => 'text',
+                        'label' => 'Verifying Officer'
                     ], 
                 ],
             ]); ?>

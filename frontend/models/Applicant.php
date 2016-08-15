@@ -37,6 +37,7 @@ use frontend\models\CsecQualification;
  * @property string $othersports 
  * @property string $otheracademics 
  * @property string $isexternal 
+ * @property string $verifier
  *
  * @property Person $person
  */
@@ -56,7 +57,7 @@ class Applicant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'potentialstudentid', 'applicantintentid', 'bursarystatus', 'isactive', 'isdeleted', 'isexternal'], 'integer'],
+            [['personid', 'potentialstudentid', 'applicantintentid', 'bursarystatus', 'isactive', 'isdeleted', 'isexternal', 'verifier'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
             [['title'], 'string', 'max' => 3],
@@ -98,6 +99,7 @@ class Applicant extends \yii\db\ActiveRecord
             'othersports' => 'Other Sports',
             'otheracademics' => 'Other Academics',
             'isexternal' => 'External',
+            'verifier' => 'Verifier'
         ];
     }
 
