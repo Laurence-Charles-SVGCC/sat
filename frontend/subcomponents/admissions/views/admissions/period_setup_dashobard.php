@@ -37,7 +37,7 @@
                     <legend>Step 1: Configure Academic Year</legend>
                     <?php if ($period->applicationperiodstatusid > 1):?>  
                         <!--If academic year record for new application period is confirmed as available-->
-                        <a href="<?= Url::toRoute(['admissions/period-setup-step-one'])?>" title="Configure Academic Year" disabled>
+                        <a href="<?= Url::toRoute(['admissions/period-setup-step-one'])?>" title="Configure Academic Year" class="disabled">
                             <div class="alert in alert-block fade alert-success mainButtons">
                                 Academic year configured
                             </div>
