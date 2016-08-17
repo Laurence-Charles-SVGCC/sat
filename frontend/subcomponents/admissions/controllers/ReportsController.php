@@ -888,8 +888,14 @@ class ReportsController extends Controller {
     {
         if ($listing_type == 1)     //if all programmes selected
         {    
+//            $records = AcademicOffering::find()
+//                    ->where(['applicationperiodid' => $applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->all();
+            
             $records = AcademicOffering::find()
-                    ->where(['applicationperiodid' => $applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                    ->where(['academic_offering.applicationperiodid' => $applicationperiodid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                   'application.applicationstatusid' => 9, 'application.isactive' => 1, 'application.isdeleted' => 0])
                     ->all();
 
             $listing = array();
