@@ -530,7 +530,7 @@ class AdmissionsController extends Controller
                                 {
                                     $cape_model = new AcademicOffering();
                                     $cape_model->programmecatalogid = 10;
-                                    $cape_model->academicyearid = $year->academicyearid;
+                                    $cape_model->academicyearid = $period->academicyearid;
                                     $cape_model->applicationperiodid = $period->applicationperiodid;
                                     $cape_model->spaces = NULL;
                                     $cape_model->interviewneeded = 0;
