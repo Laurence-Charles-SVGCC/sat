@@ -804,7 +804,7 @@ class AdmissionsController extends Controller
                 ->one();
         if($period)
         {
-            $period->applicationperiodstatusid = 5;
+            $period->applicationperiodstatusid = 6;
             $period->isactive = 1;
             $period->isdeleted = 0;
             $save_flag = $period->save();
