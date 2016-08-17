@@ -487,7 +487,7 @@ class AdmissionsController extends Controller
                             //Checkbox for this programme is ticked
                             $ao_model = new AcademicOffering();
                             $ao_model->programmecatalogid = $programmes[$index]["id"];
-                            $ao_model->academicyearid = $year->academicyearid;
+                            $ao_model->academicyearid = $period->academicyearid;
                             $ao_model->applicationperiodid = $period->applicationperiodid;
                             $ao_model->spaces = $offering->spaces;
                             $ao_model->interviewneeded = $offering->interviewneeded;
