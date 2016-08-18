@@ -29,6 +29,7 @@ use frontend\models\Offer;
 use frontend\models\StudentRegistration;
 use frontend\models\Division;
 use frontend\models\CsecCentre;
+use frontend\models\Phone;
 
 class ReportsController extends Controller {
 
@@ -1654,6 +1655,130 @@ class ReportsController extends Controller {
         }
         
         return self::actionFailedVerification();
+    }
+    
+    
+    public function actionSnapshot()
+    {
+        $divisionid = EmployeeDepartment::getUserDivision();
+        
+        if ($divisionid == 1)
+        {
+            $academic_offerings = AcademicOffering::find()
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                                ])
+                    ->all();
+        }
+        else 
+        {
+            $academic_offerings = AcademicOffering::find()
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0, 'application_period.divisionid' => $divisionid
+                                ])
+                    ->all();
+        }
+        
+        $listing = array();
+        $keys = array();
+        $values = array();
+        foreach ($academic_offerings as $record) 
+        {
+            $k1 = $record->academicofferingid;
+            $k2 = ProgrammeCatalog::getProgrammeName($record->academicofferingid);
+            array_push($keys, $k1);
+            array_push($values, $k2);
+        }
+        $listing = array_combine($keys, $values);
+        
+        
+        if (Yii::$app->request->post()) 
+        {
+            $request = Yii::$app->request;
+            
+            $offerings = $request->post('offerings');
+            $ordering = $request->post('ordering');
+            
+            $applicants = Applicant::find()
+                    ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where(['applicant.isactive' => 1,  'applicant.isdeleted'=> 0,
+                                    'application.academicofferingid' => $offerings, 'application.ordering' => $ordering, 'application.isactive' => 1,  'application.isdeleted'=> 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10], 
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                     'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                    ])
+                    ->all();
+            
+            $data = array();
+            foreach ($applicants as $applicant)
+            {
+                $info = array();
+                $info['username'] = User::findOne(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])->username;
+                $info['title'] = $applicant->title;
+                $info['firstname'] = $applicant->firstname;
+                $info['middlename'] = $applicant->middlename;
+                $info['lastname'] = $applicant->lastname;
+                   
+                $application = Application::find()
+                       ->where(['ordering' => $ordering, 'isactive' => 1, 'isdeleted' => 0])
+                       ->one();
+                $info['programme'] = ProgrammeCatalog::getProgrammeName($application->academicofferingid);
+                   
+                $email = Email::find()
+                       ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                       ->one()
+                        ->email;
+                $info['email'] = $email;
+                
+                $phone_record = Phone::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $phone = "";
+                if($phone_record->homephone)
+                    $phone .= $phone_record->homephone . "  /   ";
+                if($phone_record->cellphone)
+                    $phone .= $phone_record->cellphone . "  /   ";
+                if($phone_record->workphone)
+                    $phone .= $phone_record->workphone;
+                $info['phone'] = $phone;
+                
+                $data[] = $info;
+            }
+            
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 25,
+                ],
+                 'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['lastname', 'firstname', 'programme'],
+                    ],
+            ]);
+            
+            $header = "Programme Choices Snapshot";
+            $title = "Title: " . $header . "   ";
+            $date = "Date Generated: " . date('Y-m-d') . "   ";
+            $employeeid = Yii::$app->user->identity->personid;
+            $generating_officer = "Generated By: " . Employee::getEmployeeName($employeeid);
+            $filename = $title . $date . $generating_officer;
+            
+            return $this->render('applicants_snapshot_results', [
+                        'dataProvider' => $dataProvider,
+                        'header' => $header,
+                        'filename' => $filename,
+            ]);
+        }
+       
+        
+        return $this->render('find_applicants_snapshot', [
+                    'listing' => $listing,
+        ]);
+        
+        
     }
     
     

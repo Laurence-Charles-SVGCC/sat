@@ -154,6 +154,11 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                     <?php endif; ?>
                         
+                    <?php if (Yii::$app->user->can('viewCurrentApplicantsSnapshot')): ?>    
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/snapshot'])?>"><i class="fa fa-circle-o"></i>Current Applicants Snapshot</a></li>
+                    <?php endif; ?>
+                        
+                        
                     <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
                     <?php endif; ?>
