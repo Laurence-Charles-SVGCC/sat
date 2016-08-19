@@ -158,7 +158,7 @@ function ProcessExaminationBody(e)
     }
     else
     {
-        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     }
     //For live sat_dev implementation
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
