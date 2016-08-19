@@ -11,6 +11,7 @@ use yii\web\Response;
 use yii\base\ErrorException;
 
 use common\models\User;
+use frontend\models\EmployeeDepartment;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\Division;
 use frontend\models\Department;
@@ -138,6 +139,7 @@ class ProgrammesController extends Controller
             //if user initiates search based on programme name
             elseif ($programme_name != NULL  && strcmp($programme_name, "") != 0)
             {
+                $divisionid = EmployeeDepartment::getUserDivision();
                 $division_name = Division::getDivisionAbbreviation($divisionid);
                 $info_string .= " Programme Name: " . $programme_name;
                 
@@ -145,9 +147,22 @@ class ProgrammesController extends Controller
                 $programme_container = array();
                 $programme_info = array();
                 
-                $programmes = ProgrammeCatalog::find()
+                if ($divisionid == 1)
+                {
+                    $programmes = ProgrammeCatalog::find()
                         ->where(['name' => $programme_name,'isactive' => 1, 'isdeleted' => 0])
                         ->all();
+                }
+                else
+                {
+                    $programmes = ProgrammeCatalog::find()
+                        ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
+                        ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                                        'department.divisionid' => $divisionid, 'department.isactive' => 1, 'department.isdeleted' => 0
+                                        ])
+                        ->all();
+                }
+               
                 if ($programmes)
                 {
                     foreach ($programmes as $programme)
@@ -4252,9 +4267,22 @@ class ProgrammesController extends Controller
         $programme_container = array();
         $programme_info = array();
 
-        $programmes = ProgrammeCatalog::find()
+        $divisionid = EmployeeDepartment::getUserDivision();
+        if ($divisionid == 1)
+        {
+            $programmes = ProgrammeCatalog::find()
                 ->where(['isactive' => 1, 'isdeleted' => 0])
                 ->all();
+        }
+        else
+        {
+            $programmes = ProgrammeCatalog::find()
+                 ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
+                ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                                'department.divisionid' => $divisionid, 'department.isactive' => 1, 'department.isdeleted' => 0
+                                ])
+                ->all();
+        }
         
         foreach ($programmes as $programme)
         {

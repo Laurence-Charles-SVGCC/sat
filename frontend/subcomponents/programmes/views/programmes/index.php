@@ -68,7 +68,7 @@
 
 
                             <div id="div" style="display:none">
-                                <?= Html::dropDownList('division_search', null, Division::getAllDivisions());?>
+                                <?= Html::dropDownList('division_search', null, Division::getDivisionsInScope());?>
                                 <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
                             </div>
 

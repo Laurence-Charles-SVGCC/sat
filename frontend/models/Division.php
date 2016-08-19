@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use frontend\models\EmployeeDepartment;
+
 /**
  * This is the model class for table "division".
  *
@@ -122,6 +124,52 @@ class Division extends \yii\db\ActiveRecord
     
     
     /********************* Author Defined Functions ***********************************/
+    /**
+     * Returns an associative array of all divisions within user management scope
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/08/2016
+     * Date Last Modified: 18/08/2016
+     */
+    public static function getDivisionsInScope()
+    {
+        $divisionid = EmployeeDepartment::getUserDivision();
+        
+        if ($divisionid == 1)
+        {
+            $divisions = Division::find()
+                        ->where(['isactive' => 1, 'isdeleted' => 0])
+                        ->andWhere(['not', ['abbreviation' => 'SVGCC']])
+                        ->andWhere(['not', ['abbreviation' => 'PC']])
+                        ->all();
+        }
+        else 
+        {
+            $divisions = Division::find()
+                        ->where(['divisionid' =>$divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+        }
+        
+        $keys = array();
+        array_push($keys, '0');
+        
+        $values = array();
+        array_push($values, 'Select Division...');
+        
+        foreach($divisions as $division)
+        {
+            $key = strval($division->divisionid);
+            array_push($keys, $key);
+            $value = strval($division->abbreviation);
+            array_push($values, $value);
+        }
+        
+        $combined = array_combine($keys, $values);
+        return $combined;
+    }
+    
     
     /**
      * Returns an associative array of all divisions
