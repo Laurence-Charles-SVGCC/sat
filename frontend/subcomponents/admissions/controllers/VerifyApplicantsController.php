@@ -1166,6 +1166,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                      */
                     if ($all_certs == $verified_certs)
                     {
+                        $target_applicant= Applicant::find()
+                                ->where(['personid' => $applicantid, 'isactive' =>1, 'isdeleted' => 0])
+                                ->one();
+                        $target_applicant->verifier = Yii::$app->user->identity->personid;
+                        $target_applicant->save();
+                        
                         $pending = ApplicationStatus::findOne(['name' => 'Pending']);
                         if ($pending)
                         {

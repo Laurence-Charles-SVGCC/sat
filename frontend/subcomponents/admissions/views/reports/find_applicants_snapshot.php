@@ -60,7 +60,7 @@
                         <legend>1. Select one or more programmes for search:</legend>
                         <div class="row">
                             <div class="col-lg-4">
-                                <?= Html::checkboxList('offerings', null, $listing, ['style' => 'display:block ;float:left']);?>
+                                <?= Html::checkboxList('offerings', null, $listing, []);?>
                             </div>
                         </div>
                     </fieldset><br/>
