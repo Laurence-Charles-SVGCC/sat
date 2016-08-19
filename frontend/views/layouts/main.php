@@ -122,7 +122,7 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
                     <?php endif; ?>
                     
-                    <?php if (Yii::$app->user->can('reviewApplications')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                    <?php if (Yii::$app->user->can('reviewApplications')  && Yii::$app->user->can('System Administrator')   && ApplicationPeriod::incompletePeriodExists()==true): ?>
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                     <?php endif; ?>
                     
