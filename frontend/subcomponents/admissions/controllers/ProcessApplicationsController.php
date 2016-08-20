@@ -207,7 +207,7 @@
                 $app_details['twos_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 2);
                 $app_details['threes_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 3);
                 
-                $edittable = ($division_id == 1 || $target_application->divisionid == $division_id) ? true : false;
+                $edittable = ($division_id == 1 || $target_application->divisionid == $division_id) ?  "Editable": "View-Only";
                 $app_details['can_edit'] = $edittable;
                         
                 $data[] = $app_details;
@@ -219,7 +219,7 @@
                     'pageSize' => 25,
                 ],
                 'sort' => [
-                    'defaultOrder' => ['subjects_no' => SORT_DESC, 'ones_no' => SORT_DESC, 'twos_no' => SORT_DESC, 'threes_no' => SORT_DESC],
+                    'defaultOrder' => ['can_edit' =>SORT_ASC,  'subjects_no' => SORT_DESC, 'ones_no' => SORT_DESC, 'twos_no' => SORT_DESC, 'threes_no' => SORT_DESC],
                     'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no', 'programme', 'can_edit'],
                     ]
             ]);
@@ -293,6 +293,8 @@
         */
         public function actionViewApplicantCertificates($personid, $programme, $application_status/*, $deprecated = NULL*/)
         {
+            $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
+             
             $duplicate_message = false;
             
             $applicant = Applicant::find()
@@ -476,6 +478,7 @@
 //            
             return $this->render('view_applicant_certificates',
                     [
+                        'division_id' => $divisionid,
                         'duplicate_message' => $duplicate_message,
                         'username' => $username,
                         'applicant' => $applicant,

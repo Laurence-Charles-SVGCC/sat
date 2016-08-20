@@ -181,17 +181,25 @@
                 ]); ?>
             </div><br/>
             
+            <?php if ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)):?>
             <div>
+            <?php else:?>
+            <div style="opacity:0.6;">
+                 <br/><p id="offer-message" class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; opacity:1">
+                    You currently have 'View-Only' access to this applicant because the current programme choice under selection
+                    is being offered by another division
+                </p>
+            <?php endif;?>
                 <h2 class="custom_h2">
                     Applications
-                    <?php if(Applicant::getApplicantIntent($applicant->personid)  == 1):?>
+                    <?php if(Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
                         <div class="pull-right" style="margin-right:2.5%">
                             <?=Html::a(' Create Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                                         ['class' => 'btn btn-danger',
                                             'style' => '',
                                             'data' => [
-                                                'confirm' => 'Are you sure you want to create a cutomized offer for student?',
+                                                'confirm' => 'Are you sure you want to create a customized offer for student?',
 //                                                'method' => 'post',
                                             ],
                                         ]);?>
@@ -231,82 +239,94 @@
                             <?php
                                 if ($application_status > 2)
                                 {
-                                    // User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
+                                    /*Application cchoice must not be one suggested by Dean/DEputy Dean and;
+                                     * User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
+                                     */
                                     if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') /*&& $deprecated_application == false*/))
                                     {
                                         /*
-                                         * If user is a member of "All Divisions", "DTE" or "DNE" they have ability to change the application status
-                                         * of any application that is the one under current consideration; or any application above it
+                                         * All users that are not 'System Admin' are only allowed to edit applicatio nchoices that belong to their division 
                                          */
-                                        if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  || EmployeeDepartment::getUserDivision() == 1)
+                                        if ($division_id != 1 && $target_application->divisionid != $division_id)
                                         {
-                                            if($application_container[$i]["application"]->ordering <= $target_application->ordering)
-                                            {
-                                                echo "<td>";                                  
-                                                    echo "<div class='dropdown'>";
-                                                        echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                            echo "Update Status...";
-                                                            echo "<span class='caret'></span>";
-                                                        echo "</button>";
-                                                        echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
-                                                            $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
-                                                            $status_count = count($statuses[0]);
-                                                            for ($k = 0 ; $k < $status_count ; $k++)
-                                                            {
-                                                                $hyperlink = Url::toRoute(['/subcomponents/admissions/process-applications/update-application-status', 
-                                                                                                    'applicationid' => $application_container[$i]["application"]->applicationid, 
-                                                                                                    'new_status' => $statuses[0][$k],
-
-                                                                                                    //for 'actionViewByStatus($division_id, $application_status)' redirect
-                                                                                                    'old_status' => $target_application->applicationstatusid,
-                                                                                                    'divisionid' => $application_container[$i]["application"]->divisionid,
-                                                                                                    'programme' => $programme
-                                                                                                 ]);
-                                                                echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";      
-                                                            }
-                                                        echo "</ul>";
-                                                    echo "</div>";
-                                                echo "</td>";  
-                                            }
-                                        }                            
+                                            echo "<td> N/A </td>";
+                                        }
                                         else
                                         {
                                             /*
-                                            * If user is a member of "DASGS", "DTVE" they have ability to change any application status directly above the one under
-                                            * current consideration if the current application is pending and the previous application is a programme offered by their division.
-                                            */
-                                            if(    $application_container[$i]["istarget"] == true 
-                                                || ($target_application->applicationstatusid == 3  
-                                                        && ($target_application->ordering - $application_container[$i]["application"]->ordering == 1)  
-                                                        && $application_container[$i]["application"]->divisionid == EmployeeDepartment::getUserDivision() 
-                                                    )
-                                               )
+                                             * If user is a member of "All Divisions", "DTE" or "DNE" they have ability to change the application status
+                                             * of any application that is the one under current consideration; or any application above it
+                                             */
+                                            if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  || EmployeeDepartment::getUserDivision() == 1)
                                             {
-                                                echo "<td>";                                  
-                                                    echo "<div class='dropdown'>
-                                                        <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                          echo "Update Status...";
-                                                          echo "<span class='caret'></span>";
-                                                        echo "</button>";
-                                                        echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>";
-                                                            $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
-                                                            $status_count = count($statuses[0]);
-                                                            for ($k = 0 ; $k < $status_count ; $k++)
-                                                            {
-                                                                $hyperlink = Url::toRoute(['/subcomponents/admissions/process-applications/update-application-status', 
-                                                                                                    'applicationid' => $application_container[$i]["application"]->applicationid, 
-                                                                                                    'new_status' => $statuses[0][$k], 
+                                                if($application_container[$i]["application"]->ordering <= $target_application->ordering)
+                                                {
+                                                    echo "<td>";                                  
+                                                        echo "<div class='dropdown'>";
+                                                            echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                                echo "Update Status...";
+                                                                echo "<span class='caret'></span>";
+                                                            echo "</button>";
+                                                            echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                                $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
+                                                                $status_count = count($statuses[0]);
+                                                                for ($k = 0 ; $k < $status_count ; $k++)
+                                                                {
+                                                                    $hyperlink = Url::toRoute(['/subcomponents/admissions/process-applications/update-application-status', 
+                                                                                                        'applicationid' => $application_container[$i]["application"]->applicationid, 
+                                                                                                        'new_status' => $statuses[0][$k],
 
-                                                                                                    //for 'actionViewByStatus($division_id, $application_status)' redirect
-                                                                                                    'old_status' => $target_application->applicationstatusid,
-                                                                                                    'divisionid' => $application_container[$i]["application"]->divisionid,
-                                                                                                    'programme' => $programme
-                                                                                                 ]);
-                                                                echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";
-                                                            }
-                                                        echo "</ul>";
-                                                    echo "</div>";
-                                                echo "</td>";  
+                                                                                                        //for 'actionViewByStatus($division_id, $application_status)' redirect
+                                                                                                        'old_status' => $target_application->applicationstatusid,
+                                                                                                        'divisionid' => $application_container[$i]["application"]->divisionid,
+                                                                                                        'programme' => $programme
+                                                                                                     ]);
+                                                                    echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";      
+                                                                }
+                                                            echo "</ul>";
+                                                        echo "</div>";
+                                                    echo "</td>";  
+                                                }
+                                            }                            
+                                            else
+                                            {
+                                                /*
+                                                * If user is a member of "DASGS", "DTVE" they have ability to change any application status directly above the one under
+                                                * current consideration if the current application is pending and the previous application is a programme offered by their division.
+                                                */
+                                                if(    $application_container[$i]["istarget"] == true 
+                                                    || ($target_application->applicationstatusid == 3  
+                                                            && ($target_application->ordering - $application_container[$i]["application"]->ordering == 1)  
+                                                            && $application_container[$i]["application"]->divisionid == EmployeeDepartment::getUserDivision() 
+                                                        )
+                                                   )
+                                                {
+                                                    echo "<td>";                                  
+                                                        echo "<div class='dropdown'>
+                                                            <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                              echo "Update Status...";
+                                                              echo "<span class='caret'></span>";
+                                                            echo "</button>";
+                                                            echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>";
+                                                                $statuses = ApplicationStatus::generateAvailableStatuses($application_container[$i]["application"]->applicationid, $application_container[$i]["application"]->applicationstatusid);
+                                                                $status_count = count($statuses[0]);
+                                                                for ($k = 0 ; $k < $status_count ; $k++)
+                                                                {
+                                                                    $hyperlink = Url::toRoute(['/subcomponents/admissions/process-applications/update-application-status', 
+                                                                                                        'applicationid' => $application_container[$i]["application"]->applicationid, 
+                                                                                                        'new_status' => $statuses[0][$k], 
+
+                                                                                                        //for 'actionViewByStatus($division_id, $application_status)' redirect
+                                                                                                        'old_status' => $target_application->applicationstatusid,
+                                                                                                        'divisionid' => $application_container[$i]["application"]->divisionid,
+                                                                                                        'programme' => $programme
+                                                                                                     ]);
+                                                                    echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";
+                                                                }
+                                                            echo "</ul>";
+                                                        echo "</div>";
+                                                    echo "</td>";  
+                                                }
                                             }
                                         }
                                     }
@@ -318,8 +338,8 @@
                             ?>
                         </tr>
                     <?php endfor; ?> 
-                </table>
-            </div><br/>
+                </table><br/>
+            </div>
             
             <div><br/>
                 <a class="btn btn-success glyphicon glyphicon-folder-open" style="margin-left:2.5%;" href=<?=Url::toRoute(['/subcomponents/admissions/process-applications/view-applicant-details', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status]);?> role="button">  View Application Snapshot</a>

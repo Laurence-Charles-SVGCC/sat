@@ -85,8 +85,8 @@
                     ],
                     [
                         'attribute' => 'can_edit',
-                        'format' => 'boolean',
-                        'label' => 'Active'
+                        'format' => 'text',
+                        'label' => 'Access Status'
                     ],
                 ];
             
