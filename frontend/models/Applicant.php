@@ -548,7 +548,7 @@ class Applicant extends \yii\db\ActiveRecord
     public static function isRejected($personid)
     {
         /*
-         * There mus be separate algorithms to determine if an applicant is classified as 'rejected'
+         * There must be separate algorithms to determine if an applicant is classified as 'rejected'
          * based on where they possess application chosen soley by them or 
          * their programme was chosen for them by the Dean/ Deputy Dean.
          * 
@@ -1062,6 +1062,211 @@ class Applicant extends \yii\db\ActiveRecord
                 {
                     if(self::isRejectedConditionalOffer($app->personid) == false)
                         unset($apps[$key]);
+                }
+            }
+            $applicants = $apps;
+        }
+        return $applicants;
+    }
+    
+    
+    
+    public static function getAuthorizedByStatus($status_id, $division_id)
+    {
+        $applicants = array();
+        
+//        $apps = self::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
+        
+        $apps = self::getActiveApplicants($division_id);
+        
+        if ($apps)
+        {
+            foreach($apps as $key => $app)
+            {
+                
+                // If seeking 'Rejected'
+                if ($status_id == 6)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isRejected($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 6)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isRejected($app->personid) == false  || (self::isRejected($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+                
+                // If seeking 'Pending'
+                elseif ($status_id == 3)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isPending($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 3)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isPending($app->personid) == false  || (self::isPending($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+                
+                // If seeking 'Shortlisted'
+                elseif ($status_id == 4)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isShortlisted($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 4)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isShortlisted($app->personid) == false  || (self::isShortlisted($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+
+                // If seeking 'Borderline'
+                elseif ($status_id == 7)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isBorderline($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 7)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isBorderline($app->personid) == false  || (self::isBorderline($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+                // If seeking 'InterviewOffer'
+                elseif ($status_id == 8)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isInterviewOffer($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 8)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isInterviewOffer($app->personid) == false  || (self::isInterviewOffer($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+                // If seeking 'Offer'
+                elseif ($status_id == 9)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isOffer($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 7)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isOffer($app->personid) == false  || (self::isOffer($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
+                }
+
+                // If seeking 'RejectedConditionalOffer'
+                elseif ($status_id == 10)        
+                {
+                    if ($division_id == 1)
+                    {
+                        if(self::isRejectedConditionalOffer($app->personid) == false)
+                            unset($apps[$key]);
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                    ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 10)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if(self::isRejectedConditionalOffer($app->personid) == false  || (self::isRejectedConditionalOffer($app->personid) == true  && $target_division != $division_id))
+                            unset($apps[$key]);
+                    }
                 }
             }
             $applicants = $apps;

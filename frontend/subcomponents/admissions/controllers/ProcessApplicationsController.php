@@ -79,24 +79,50 @@
             $division_id = EmployeeDepartment::getUserDivision();
             
             $pending_count = count(Applicant::getByStatus(3, $division_id));
+            $authorized_pending_count = count(Applicant::getAuthorizedByStatus(3, $division_id));
+            
             $shortlist_count = count(Applicant::getByStatus(4, $division_id));
+            $authorized_shortlist_count = count(Applicant::getAuthorizedByStatus(4, $division_id));
+            
             $borderline_count = count(Applicant::getByStatus(7, $division_id));
+            $authorized_borderline_count = count(Applicant::getAuthorizedByStatus(7, $division_id));
+            
             $interviewoffer_count = count(Applicant::getByStatus(8, $division_id));
+            $authorized_interviewoffer_count = count(Applicant::getAuthorizedByStatus(8, $division_id));
+            
             $offer_count = count(Applicant::getByStatus(9, $division_id));
+            $authorized_offer_count = count(Applicant::getAuthorizedByStatus(9, $division_id));
+            
             $rejected_count = count(Applicant::getByStatus(6, $division_id));
+            $authorized_rejected_count = count(Applicant::getAuthorizedByStatus(6, $division_id));
+            
             $conditional_reject_count = count(Applicant::getByStatus(10, $division_id));
-        
+            $authorized_conditional_reject_count = count(Applicant::getAuthorizedByStatus(10, $division_id));
             
             return $this->render('index', 
                         [
                             'division_id' => $division_id,
+                            
                             'pending' => $pending_count,
+                            'authorized_pending' => $authorized_pending_count,
+                            
                             'shortlist' => $shortlist_count,
+                            'authorized_shortlist' => $authorized_shortlist_count,
+                            
                             'borderline' => $borderline_count,
+                            'authorized_borderline' => $authorized_borderline_count,
+                            
                             'interviewoffer' => $interviewoffer_count,
+                            'authorized_interviewoffer' => $authorized_interviewoffer_count,
+                            
                             'offer' => $offer_count,
+                            'authorized_offer' => $authorized_offer_count,
+                            
                             'rejected' => $rejected_count,
-                            'conditionalofferreject' => $conditional_reject_count
+                            'authorized_rejected' => $authorized_rejected_count,
+                            
+                            'conditionalofferreject' => $conditional_reject_count,
+                            'authorized_conditionalofferreject' => $authorized_conditional_reject_count
                         ]);
         }
     
@@ -504,7 +530,7 @@
                 /*
                  * If user is a member of "DTE" of "DNE", many condiseration can be negated such as application spanning multiple divsions
                  */
-                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  || EmployeeDepartment::getUserDivision() == 1)
+                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  /*|| EmployeeDepartment::getUserDivision() == 1*/)
                 {
                     /*
                      * If an application is pending all subsequent applications
@@ -1138,6 +1164,23 @@
                      */
                     if($new_status == 3)
                     {
+                        /*If new status is 'Pending'
+                         * all subsequent applications are set to pending
+                         */
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 3;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
                         /*
                         * If previous status was "pre interview rejection"
                         * then that rejection is rescinded
@@ -1199,6 +1242,38 @@
                      */
                     elseif($new_status == 4  || $new_status == 7)
                     {
+                        //updates subsequent applications
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 3;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+
+                        //updates preceeding applications
+                        if($position > 0)
+                        {
+                            for ($i = $position-1 ; $i >= 0 ; $i--)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                        
                         /*
                         * If previous status was "pre interview rejection"
                         * then that rejection is rescinded
@@ -1262,6 +1337,38 @@
                      */
                     elseif($new_status == 8)
                     {
+                        //updates subsequent applications
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                               $applications[$i]->applicationstatusid = 6;
+                               $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+
+                        //updates preceeding applications
+                        if($position > 0)
+                        {
+                            for ($i = $position-1 ; $i >= 0 ; $i--)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                            
                         /**
                          * this should prevent the creation of multiple offers,
                          * which is suspected to occur when internet timeout 
@@ -1309,11 +1416,42 @@
                      */
                     elseif($new_status == 6)
                     {
+                        //updates preceeding applications
+                        if($position > 0)
+                        {
+                            for ($i = $position-1 ; $i >= 0 ; $i--)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                        
+                       //if  not last application -> updates subsequent applications
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 3;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
                         /*
                          * If current application being updated is the last application,
                          * then a rejection must be issued
                          */
-                        if($count - $position <= 1)
+                        else
                         {
                             /**
                             * this should prevent the creation of multiple rejections,
@@ -1325,7 +1463,7 @@
                                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                     ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
-                                            'application.isdeleted' => 0, 'application.personid' => $$update_candidate->personid,
+                                            'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
                                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                             ])
@@ -1356,7 +1494,7 @@
                                     if ($miscellaneous_save_flag == false)
                                     {
                                         $transaction->rollBack();
-                                        Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving record.');
                                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
                                     }
                                 }
@@ -1510,6 +1648,38 @@
                      */
                     elseif($new_status == 10  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
+                        //updates subsequent applications
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+
+                        //updates preceeding applications
+                        if($position > 0)
+                        {
+                            for ($i = $position-1 ; $i >= 0 ; $i--)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                        
                         /*
                          * If previous status was"conditional offer",
                          * then that offer is revoked
