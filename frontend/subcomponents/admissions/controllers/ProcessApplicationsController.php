@@ -206,7 +206,10 @@
                 $app_details['ones_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 1);
                 $app_details['twos_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 2);
                 $app_details['threes_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 3);
-
+                
+                $edittable = ($division_id == 1 || $target_application->divisionid == $division_id) ? true : false;
+                $app_details['can_edit'] = $edittable;
+                        
                 $data[] = $app_details;
             }
             
@@ -217,7 +220,7 @@
                 ],
                 'sort' => [
                     'defaultOrder' => ['subjects_no' => SORT_DESC, 'ones_no' => SORT_DESC, 'twos_no' => SORT_DESC, 'threes_no' => SORT_DESC],
-                    'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no'],
+                    'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no', 'programme', 'can_edit'],
                     ]
             ]);
             

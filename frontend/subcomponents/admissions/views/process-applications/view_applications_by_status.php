@@ -48,11 +48,11 @@
                         'format' => 'text',
                         'label' => 'First Name'
                     ],
-                    [
-                        'attribute' => 'middlename',
-                        'format' => 'text',
-                        'label' => 'Middle Name(s)'
-                    ],
+//                    [
+//                        'attribute' => 'middlename',
+//                        'format' => 'text',
+//                        'label' => 'Middle Name(s)'
+//                    ],
                     [
                         'attribute' => 'lastname',
                         'format' => 'text',
@@ -82,6 +82,11 @@
                         'attribute' => 'threes_no',
                         'format' => 'text',
                         'label' => 'No. of Threes'
+                    ],
+                    [
+                        'attribute' => 'can_edit',
+                        'format' => 'boolean',
+                        'label' => 'Active'
                     ],
                 ];
             
