@@ -161,6 +161,7 @@
                 
                 $applications = Application::find()
                                 ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
                                 ->all();
                 $count = count($applications);
                 
