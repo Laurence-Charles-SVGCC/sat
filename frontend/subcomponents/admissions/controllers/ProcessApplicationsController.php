@@ -1016,6 +1016,32 @@
                                 }
                             }
                        }
+                       else
+                       {
+                           // create offer
+                            $offer = new Offer();
+                            $offer->applicationid = $applicationid;
+                            $offer->offertypeid = 1;
+                            $offer->issuedby = Yii::$app->user->getId();
+                            $offer->issuedate = date("Y-m-d");
+                            $offer_save_flag = $offer->save();
+                            if($offer_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
+                            // Generate potentialstudentid
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
+                            }
+                       }
                     }
 
 
