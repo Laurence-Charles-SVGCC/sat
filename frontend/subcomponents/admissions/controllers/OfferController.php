@@ -1179,7 +1179,7 @@ class OfferController extends Controller
         $prog_cond['programme_catalog.isdeleted'] = 0;
         
         if ($division_id && $division_id != 1)
-            $prog_cond['application_period.divisionid'] = $divisionid;
+            $prog_cond['application_period.divisionid'] = $division_id;
             
         
         $programmes = ProgrammeCatalog::find()
