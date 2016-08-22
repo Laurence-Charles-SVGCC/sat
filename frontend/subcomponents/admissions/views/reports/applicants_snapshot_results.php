@@ -74,7 +74,7 @@
                     <?php if ($dataProvider):?>
                         <h2 class="custom_h2" style="margin-left:2.5%">Export List</h2>
                         <?php $form = ActiveForm::begin([
-                            'action' => Url::to(['reports/export-snapshot']),
+                            'action' => Url::to(['reports/export-snapshot', 'selected_ordering' => $selected_ordering]),
                         ]);?>
                             <div style="width:95%; margin: 0 auto"><br/>
                                 <fieldset>
@@ -86,14 +86,14 @@
                                     </div>
                                 </fieldset><br/>
                                 
-                                <fieldset>
+<!--                                <fieldset>
                                     <legend>2. Select priority of programme search:</legend>
                                     <div class="row">
                                         <div class="col-lg-3">
                                             <?= Html::radioList('ordering', null, [1 => 'First Choice', 2 => 'Second Choice', 3 => 'Child Choice'], ['class'=> 'form_field']);?>
                                         </div>
                                     </div>
-                                </fieldset>
+                                </fieldset>-->
 
                                  <div class="form-group">
                                     <br/><?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: left']) ?>
