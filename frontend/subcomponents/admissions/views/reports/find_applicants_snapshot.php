@@ -9,29 +9,6 @@
 
     $this->title = 'Applicant Snapshot Generator';
     //$this->params['breadcrumbs'][] = $this->title;
-    
-    $report_categories = [
-        '0' => 'Programme',
-        '1' => 'Applicant Summary',
-        '2' => 'Exception Reports',
-    ];
-    
-    $period_scope = [
-        '0' => 'Application Period Specific',
-        '1' => 'Application Period Aggregate',
-    ];
-    
-    $dasgs_programme_search_criteria = [
-        '0' => 'All Programmes',
-        '1' => 'Associate Programmes',
-        '2' => 'CAPE Subjects',
-    ];
-            
-     $none_dasgs_programme_search_criteria = [
-        '0' => 'All Programmes'
-    ];
-
-
 ?>
 
 <div class="report-index">
@@ -77,7 +54,6 @@
                      <div class="form-group">
                         <br/><?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: left']) ?>
                     </div>
-                    
                 </div>
             <?php ActiveForm::end(); ?>
             
