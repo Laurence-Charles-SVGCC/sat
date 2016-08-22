@@ -251,6 +251,7 @@ class OfferController extends Controller
             'dte_science_req' => $dte_science_req,
             'dne_science_req' => $dne_science_req,
             'offertype' => $offertype,
+            'division_id' => $division_id,
         ]);
     }
     
@@ -1226,6 +1227,7 @@ class OfferController extends Controller
             'english_req' => $english_req,
             'subjects_req' => $subjects_req,
             'offertype' => $offertype,
+            'division_id' => $division_id,
         ]);
     } 
     
