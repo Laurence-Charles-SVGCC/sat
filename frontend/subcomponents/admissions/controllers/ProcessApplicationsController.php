@@ -925,6 +925,23 @@
                      */
                     elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
+                        //all subsequent applications are rejected
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+
+                        
                         if($old_status == 8)
                         {
                             $old_offer = Offer::find()
