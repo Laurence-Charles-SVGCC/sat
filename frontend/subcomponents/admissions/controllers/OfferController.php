@@ -58,7 +58,7 @@ class OfferController extends Controller
         
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 5*/]);
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
