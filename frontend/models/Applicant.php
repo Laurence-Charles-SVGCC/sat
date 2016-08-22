@@ -1232,7 +1232,7 @@ class Applicant extends \yii\db\ActiveRecord
                                     ->all();
                         foreach($target_applications as $record)
                         {
-                            if ($record->applicationstatusid == 7)
+                            if ($record->applicationstatusid == 9)
                             {
                                 $target_division = $record->divisionid;
                                 break;
