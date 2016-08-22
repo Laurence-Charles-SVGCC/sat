@@ -283,7 +283,7 @@
                 $application_status = Yii::$app->session->get('application_status');
                
             }
-            return $this->redirect(['view-by-status', 'divisionid' => $division_id, 'application_status' => $application_status, 'programme' => $programme]);
+            return $this->redirect(['view-by-status', 'division_id' => $division_id, 'application_status' => $application_status, 'programme' => $programme]);
 //            return self::actionViewByStatus($division_id, $application_status, $programme);
         }
         
