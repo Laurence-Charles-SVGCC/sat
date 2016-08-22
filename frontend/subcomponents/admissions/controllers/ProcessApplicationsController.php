@@ -281,13 +281,10 @@
                 
                 $division_id = Yii::$app->session->get('division_id');
                 $application_status = Yii::$app->session->get('application_status');
-                
-                //set session variables to facilitate their use in UpdateView functionality
-                Yii::$app->session->set('division_id', $division_id);
-                Yii::$app->session->set('application_status', $application_status);
+               
             }
-            
-            return self::actionViewByStatus($division_id, $application_status, $programme);
+            return $this->redirect(['view-by-status', 'divisionid' => $division_id, 'application_status' => $application_status, 'programme' => $programme]);
+//            return self::actionViewByStatus($division_id, $application_status, $programme);
         }
         
         
