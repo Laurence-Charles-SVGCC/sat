@@ -3381,6 +3381,55 @@ class ViewApplicantController extends \yii\web\Controller
     }
     
     
+    public function actionResetApplications($personid)
+    {
+        $applications = Application::getActiveApplications($personid);
+        
+        if($applications == false)
+        {
+            Yii::$app->session->setFlash('error', 'No applications found for this applicant for any active application period(s).');
+             return $this->redirect(Yii::$app->request->referrer);
+        }
+        
+        /*Ensure applications can not be reset if their application has already been processed.*/
+        foreach ($applications as $application)
+        {
+            if ($application->applicationstatusid > 2)
+            {
+                Yii::$app->session->setFlash('error', 'Applications can not be reset as it has already been verified.  Consult System Administrator.');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+        }
+        
+        
+        $transaction = \Yii::$app->db->beginTransaction();
+        try 
+        {
+            /* Resets applications */
+            foreach ($applications as $application)
+            {
+                $save_flag = false;
+                $application->applicationstatusid = 1;
+                $save_flag = $application->save();
+                if ($save_flag == false)
+                {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Error occured resetting application.');
+                    return $this->redirect(Yii::$app->request->referrer);
+                }
+            }
+             $transaction->commit();
+             Yii::$app->session->setFlash('error', 'Application was successfully reset.');
+              return $this->redirect(Url::to(['admissions/find-current-applicant', 'status' => 'pending']));
+              
+              
+        }catch (Exception $e) 
+        {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('error', 'Error occured processing request.');
+        }
+    }
+    
     
     
 

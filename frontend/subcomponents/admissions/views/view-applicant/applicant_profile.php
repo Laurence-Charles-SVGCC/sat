@@ -143,6 +143,21 @@
                         <?php endif;?>
                     </ul>
 
+                    
+                    <?php if(true /*Yii::$app->user->can('editGeneral')*/):?>  
+                        <div style="width:95%; margin: 0 auto;">
+                            <br/><?=Html::a(' Reset Application', 
+                                ['view-applicant/reset-applications', 'personid' => $applicant->personid], 
+                                ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                    'data' => [
+                                        'confirm' => 'Are you sure you want to reset this application?',
+                                        'method' => 'post',
+                                    ],
+                                ]);?><br/>
+                    </div>
+                            <?php endif;?>
+                                    
+                                    
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane fade in active" id="personal_information"> 
