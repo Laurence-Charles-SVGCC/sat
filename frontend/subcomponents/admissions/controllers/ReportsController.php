@@ -1723,7 +1723,7 @@ class ReportsController extends Controller {
                 $info['lastname'] = $applicant->lastname;
                    
                 $application = Application::find()
-                       ->where(['ordering' => $ordering, 'isactive' => 1, 'isdeleted' => 0])
+                       ->where(['personid' => $applicant->personid, 'ordering' => $ordering, 'isactive' => 1, 'isdeleted' => 0])
                        ->one();
                 $info['programme'] = ProgrammeCatalog::getProgrammeName($application->academicofferingid);
                    
@@ -1846,7 +1846,7 @@ class ReportsController extends Controller {
                 $info['lastname'] = $applicant->lastname;
                    
                 $application = Application::find()
-                       ->where(['ordering' => $ordering, 'isactive' => 1, 'isdeleted' => 0])
+                       ->where(['personid' => $applicant->personid, 'ordering' => $ordering, 'isactive' => 1, 'isdeleted' => 0])
                        ->one();
                 $info['programme'] = ProgrammeCatalog::getProgrammeName($application->academicofferingid);
                    
