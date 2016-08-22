@@ -925,23 +925,6 @@
                      */
                     elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
-                        //all subsequent applications are rejected
-                        if($count - $position > 1)
-                        {
-                            for ($i = $position+1 ; $i < $count ; $i++)
-                            {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
-                                {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
-                                }
-                            }
-                        }
-
-                        
                         if($old_status == 8)
                         {
                             $old_offer = Offer::find()
@@ -1031,32 +1014,6 @@
                                     Yii::$app->session->setFlash('error', 'Error occured when creating offer');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
                                 }
-                            }
-                       }
-                       else
-                       {
-                           // create offer
-                            $offer = new Offer();
-                            $offer->applicationid = $applicationid;
-                            $offer->offertypeid = 1;
-                            $offer->issuedby = Yii::$app->user->getId();
-                            $offer->issuedate = date("Y-m-d");
-                            $offer_save_flag = $offer->save();
-                            if($offer_save_flag == false)
-                            {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
-                            }
-                            // Generate potentialstudentid
-                            else
-                            {
-                                $applicant = Applicant::find()
-                                            ->where(['personid' => $update_candidate->personid])
-                                            ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
-                                $applicant->potentialstudentid = $generated_id;
-                                $applicant->save();
                             }
                        }
                     }
@@ -1596,6 +1553,38 @@
                      */
                     elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
+                        //all subsequent applications are rejected
+                        if($count - $position > 1)
+                        {
+                            for ($i = $position+1 ; $i < $count ; $i++)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                        
+                        //rejects all preceeding applications
+                        if($position > 0)
+                        {
+                            for ($i = $position-1 ; $i >= 0 ; $i--)
+                            {
+                                $applications[$i]->applicationstatusid = 6;
+                                $applications_save_flag = $applications[$i]->save();
+                                if ($applications_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                }
+                            }
+                        }
+                        
                         if($old_status == 8)
                         {
                             $old_offer = Offer::find()
@@ -1685,6 +1674,32 @@
                                     Yii::$app->session->setFlash('error', 'Error occured when creating offer');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
                                 }
+                            }
+                       }
+                       else
+                       {
+                           // create offer
+                            $offer = new Offer();
+                            $offer->applicationid = $applicationid;
+                            $offer->offertypeid = 1;
+                            $offer->issuedby = Yii::$app->user->getId();
+                            $offer->issuedate = date("Y-m-d");
+                            $offer_save_flag = $offer->save();
+                            if($offer_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                            }
+                            // Generate potentialstudentid
+                            else
+                            {
+                                $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $applicant->potentialstudentid = $generated_id;
+                                $applicant->save();
                             }
                        }
                     }
