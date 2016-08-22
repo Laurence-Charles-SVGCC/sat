@@ -80,7 +80,7 @@
                                 <fieldset>
                                     <legend>1. Select one or more programmes for search:</legend>
                                     <div class="row">
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-9">
                                             <?= Html::checkboxList('offerings', null, $listing, []);?>
                                         </div>
                                     </div>
