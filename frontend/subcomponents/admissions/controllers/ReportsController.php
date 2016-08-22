@@ -1874,7 +1874,7 @@ class ReportsController extends Controller {
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $data,
                 'pagination' => [
-                    'pageSize' => 25,
+                    'pageSize' => 1000,
                 ],
                  'sort' => [
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
