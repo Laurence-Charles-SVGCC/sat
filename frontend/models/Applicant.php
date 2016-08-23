@@ -1103,6 +1103,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1130,6 +1131,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1157,6 +1159,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1184,6 +1187,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1210,6 +1214,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1236,6 +1241,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {
@@ -1262,6 +1268,7 @@ class Applicant extends \yii\db\ActiveRecord
                     {
                         $target_applications = Application::find()
                                     ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->orderBy('ordering ASC')
                                     ->all();
                         foreach($target_applications as $record)
                         {

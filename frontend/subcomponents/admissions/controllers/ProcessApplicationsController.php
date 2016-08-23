@@ -78,50 +78,50 @@
             //Determine user's division_id
             $division_id = EmployeeDepartment::getUserDivision();
             
-//            $pending_count = count(Applicant::getByStatus(3, $division_id));
+            $pending_count = count(Applicant::getByStatus(3, $division_id));
             $authorized_pending_count = count(Applicant::getAuthorizedByStatus(3, $division_id));
             
-//            $shortlist_count = count(Applicant::getByStatus(4, $division_id));
+            $shortlist_count = count(Applicant::getByStatus(4, $division_id));
             $authorized_shortlist_count = count(Applicant::getAuthorizedByStatus(4, $division_id));
             
-//            $borderline_count = count(Applicant::getByStatus(7, $division_id));
+            $borderline_count = count(Applicant::getByStatus(7, $division_id));
             $authorized_borderline_count = count(Applicant::getAuthorizedByStatus(7, $division_id));
             
-//            $interviewoffer_count = count(Applicant::getByStatus(8, $division_id));
+            $interviewoffer_count = count(Applicant::getByStatus(8, $division_id));
             $authorized_interviewoffer_count = count(Applicant::getAuthorizedByStatus(8, $division_id));
             
-//            $offer_count = count(Applicant::getByStatus(9, $division_id));
+            $offer_count = count(Applicant::getByStatus(9, $division_id));
             $authorized_offer_count = count(Applicant::getAuthorizedByStatus(9, $division_id));
             
-//            $rejected_count = count(Applicant::getByStatus(6, $division_id));
+            $rejected_count = count(Applicant::getByStatus(6, $division_id));
             $authorized_rejected_count = count(Applicant::getAuthorizedByStatus(6, $division_id));
             
-//            $conditional_reject_count = count(Applicant::getByStatus(10, $division_id));
+            $conditional_reject_count = count(Applicant::getByStatus(10, $division_id));
             $authorized_conditional_reject_count = count(Applicant::getAuthorizedByStatus(10, $division_id));
             
-            return $this->render('index', 
+            return $this->render('index_1', 
                         [
                             'division_id' => $division_id,
                             
-//                            'pending' => $pending_count,
+                            'pending' => $pending_count,
                             'authorized_pending' => $authorized_pending_count,
                             
-//                            'shortlist' => $shortlist_count,
+                            'shortlist' => $shortlist_count,
                             'authorized_shortlist' => $authorized_shortlist_count,
                             
-//                            'borderline' => $borderline_count,
+                            'borderline' => $borderline_count,
                             'authorized_borderline' => $authorized_borderline_count,
                             
-//                            'interviewoffer' => $interviewoffer_count,
+                            'interviewoffer' => $interviewoffer_count,
                             'authorized_interviewoffer' => $authorized_interviewoffer_count,
                             
-//                            'offer' => $offer_count,
+                            'offer' => $offer_count,
                             'authorized_offer' => $authorized_offer_count,
                             
-//                            'rejected' => $rejected_count,
+                            'rejected' => $rejected_count,
                             'authorized_rejected' => $authorized_rejected_count,
                             
-//                            'conditionalofferreject' => $conditional_reject_count,
+                            'conditionalofferreject' => $conditional_reject_count,
                             'authorized_conditionalofferreject' => $authorized_conditional_reject_count
                         ]);
         }
