@@ -577,6 +577,7 @@ class Applicant extends \yii\db\ActiveRecord
         {
             $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
             $count = count($applications);
             if ($count > 0)
@@ -630,6 +631,7 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($applications);
         if ($count > 0)
@@ -690,6 +692,7 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($applications);
         if ($count > 0)
@@ -750,6 +753,7 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($applications);
         if ($count > 0)
@@ -810,6 +814,7 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($applications);
         if ($count > 0)
@@ -887,6 +892,7 @@ class Applicant extends \yii\db\ActiveRecord
         {
             $applications = Application::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->orderBy('ordering ASC')
                         ->all();
             $count = count($applications);
             if ($count > 0)
@@ -947,6 +953,7 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applications = Application::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($applications);
         if ($count > 0)
