@@ -769,7 +769,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     }
                     else
                     {
-                        $verifier = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+                        $verifier = Employee::getEmployeeName($applicant->verifier);
                     }
                     $container["verifier"] = $verifier;
 
