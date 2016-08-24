@@ -144,7 +144,7 @@
                     </ul>
 
                     
-                    <?php if(Application::getVerifiedApplications($applicant->personid) == false):?>  
+                    <?php if(Application::getAllVerifiedApplications($applicant->personid) == false):?>  
                         <div style="width:95%; margin: 0 auto;">
                             <br/><?=Html::a(' Reset Application', 
                                 ['view-applicant/reset-applications', 'personid' => $applicant->personid], 

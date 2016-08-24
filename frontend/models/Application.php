@@ -1437,6 +1437,34 @@ class Application extends \yii\db\ActiveRecord
     }
     
     
+     /**
+     * Returns an array of all verifed applications
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Luarence Charles
+     * Date Creatred: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
+    public static function getAllVerifiedApplications($personid)
+    {
+        $applications = Application::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->where(['application_period.isdeleted' => 0, 'application_period.isactive' => 1,
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                'academic_offering.isdeleted' => 0
+                                ])
+                        ->andWhere(['>', 'application.applicationstatusid', 2])
+                        ->orderBy('application.ordering ASC')
+                        ->all();
+        return $applications;
+    }
+    
+    
+    
+    
     /**
      * Gets all abandoned applications for a particular applicant
      * 
