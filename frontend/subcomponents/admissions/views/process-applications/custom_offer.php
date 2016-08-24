@@ -87,7 +87,7 @@
                         <h3 style='text-align:center'>CAPE Subject Selection</h3>
                         <p><strong>
                                 The options below represents the CAPE subjects from which you can select.
-                                You are allowed to select 3 or 4 subjects. You can not select two
+                                You are allowed to select 2 - 4 subjects. You can not select two
                                 subjects from the same group.
                         </strong></p>
                         

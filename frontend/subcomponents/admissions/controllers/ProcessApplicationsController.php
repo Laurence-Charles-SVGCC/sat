@@ -521,6 +521,7 @@
             
             $applications = Application::find()
                             ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->orderBy('ordering ASC')
                             ->all();
             $count = count($applications);
             
@@ -2362,7 +2363,9 @@
                     $application->applicationtimestamp = date('Y-m-d H:i:s' );
                     $application->submissiontimestamp = date('Y-m-d H:i:s' );
             
+                    
                     $current_applications = Application::getVerifiedApplications($personid);
+                    
                     /* if applicant has less than three applications; 
                      * -> the first alternative offer has an ordering of 4
                      * else
@@ -2475,7 +2478,7 @@
                                                 }
                                             }
 
-                                            if($selected == 3 || $selected == 4)            //if valid number of CAPE subjects have been selected
+                                            if($selected >= 2 && $selected <= 4)            //if valid number of CAPE subjects have been selected
                                             {       
                                                 $temp_status = true;
                                                 foreach ($applicationcapesubject as $subject) 
@@ -2502,7 +2505,7 @@
                                             else         //if incorrect number of CAPE subjects selected.
                                             { 
                                                 $transaction->rollBack();
-                                                Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 3(min)  or 4(max) CAPE subjects.'); 
+                                                Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 2(min) to 4(max) CAPE subjects.'); 
                                                 return self::actionViewApplicantCertificates($personid, $programme, 9);
                                             } 
                                         }  
