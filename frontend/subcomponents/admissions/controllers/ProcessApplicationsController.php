@@ -252,6 +252,7 @@
                     'division_id' => $division_id,
                     'status' => $status_name,
                     'filename' => $filename,
+                    'programme_id' => $programme
                 ]);
         }
         
@@ -291,9 +292,9 @@
         /*
         * Purpose: Prepares Applications and applicants info for displaying 
         * Created: 27/07/2015 by Gamal Crichton
-        * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles (20/02/2016)
+        * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles (20/02/2016) | 24/08/2016
         */
-        public function actionViewApplicantCertificates($personid, $programme, $application_status/*, $deprecated = NULL*/)
+        public function actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id)
         {
             $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
              
@@ -496,6 +497,7 @@
                         'spaces' => $spaces,
                         'cape' => $cape,
                         'cape_info' => $cape_info,
+                        'programme_id' => $programme_id
 //                        'deprecated_application' => $deprecated_application,
                     ]);
         }
@@ -513,7 +515,7 @@
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016
          */
-        public function actionUpdateApplicationStatus($applicationid, $new_status, $old_status, $divisionid, $programme)
+        public function actionUpdateApplicationStatus($applicationid, $new_status, $old_status, $divisionid, $programme, $programme_id)
         {
             $update_candidate = Application::find()
                             ->where(['applicationid' => $applicationid])
@@ -557,7 +559,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -573,7 +575,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -588,7 +590,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -602,7 +604,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -634,7 +636,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -650,7 +652,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -666,7 +668,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -681,7 +683,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -695,7 +697,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -729,7 +731,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -745,7 +747,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -770,7 +772,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -785,7 +787,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                     }
@@ -808,7 +810,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -824,7 +826,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -862,7 +864,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
 
                                 //crete associate RejectionApplications records
@@ -876,7 +878,7 @@
                                     {
                                         $transaction->rollBack();
                                         Yii::$app->session->setFlash('error', 'Error occured when saving record.');
-                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                     }
                                 }
                             }
@@ -893,7 +895,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -907,7 +909,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -937,7 +939,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Applicant corresponding conditional offer was not found');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -967,7 +969,7 @@
                                     {
                                         $transaction->rollBack();
                                         Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                     }
                                     // Generate potentialstudentid
                                     else
@@ -984,7 +986,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Applicant conditional offer must be published before full offer can be made');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1000,7 +1002,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1015,7 +1017,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                        }
@@ -1040,7 +1042,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1056,7 +1058,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1072,7 +1074,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -1086,7 +1088,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1127,7 +1129,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
 
                             //create associate RejectionApplications records
@@ -1141,7 +1143,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving record');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1153,12 +1155,12 @@
                     {
                         $transaction->rollBack();
                         Yii::$app->session->setFlash('error', 'Error occured when saving target application');
-                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
                     else
                     {
                         $transaction->commit();
-                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
                     
                 }
@@ -1186,7 +1188,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1201,7 +1203,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -1216,7 +1218,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -1230,7 +1232,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1262,7 +1264,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1278,7 +1280,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1294,7 +1296,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -1309,7 +1311,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -1323,7 +1325,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1357,7 +1359,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1373,7 +1375,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1398,7 +1400,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
 
@@ -1413,7 +1415,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                     }
@@ -1436,7 +1438,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1452,7 +1454,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1490,7 +1492,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
 
                                 //crete associate RejectionApplications records
@@ -1504,7 +1506,7 @@
                                     {
                                         $transaction->rollBack();
                                         Yii::$app->session->setFlash('error', 'Error occured when saving record.');
-                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                     }
                                 }
                             }
@@ -1521,7 +1523,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -1535,7 +1537,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1567,7 +1569,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1583,7 +1585,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1597,7 +1599,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Applicant corresponding conditional offer was not found');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1627,7 +1629,7 @@
                                     {
                                         $transaction->rollBack();
                                         Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                     }
                                     // Generate potentialstudentid
                                     else
@@ -1644,7 +1646,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Applicant conditional offer must be published before full offer can be made');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1660,7 +1662,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1675,7 +1677,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                        }
@@ -1703,7 +1705,7 @@
                                  {
                                      $transaction->rollBack();
                                      Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                  }
                                  // Generate potentialstudentid
                                  else
@@ -1738,7 +1740,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1754,7 +1756,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1770,7 +1772,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                         /*
@@ -1784,7 +1786,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                             else
                             {
@@ -1825,7 +1827,7 @@
                             {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
 
                             //create associate RejectionApplications records
@@ -1839,7 +1841,7 @@
                                 {
                                     $transaction->rollBack();
                                     Yii::$app->session->setFlash('error', 'Error occured when saving record');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
                         }
@@ -1851,13 +1853,13 @@
                     {
                         $transaction->rollBack();
                         Yii::$app->session->setFlash('error', 'Error occured when saving target application');
-                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
                     else
                     {
                         $transaction->commit();
                         // cant be redirected to applicant as their following application may not be related to the official's division
-                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
                 }
                 
@@ -1865,7 +1867,7 @@
             {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
-                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status);
+                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
             }
         }
         

@@ -279,7 +279,8 @@
                                                                                                         //for 'actionViewByStatus($division_id, $application_status)' redirect
                                                                                                         'old_status' => $target_application->applicationstatusid,
                                                                                                         'divisionid' => $application_container[$i]["application"]->divisionid,
-                                                                                                        'programme' => $programme
+                                                                                                        'programme' => $programme,
+                                                                                                        'programme_id' => $programme_id
                                                                                                      ]);
                                                                     echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";      
                                                                 }
@@ -319,7 +320,8 @@
                                                                                                         //for 'actionViewByStatus($division_id, $application_status)' redirect
                                                                                                         'old_status' => $target_application->applicationstatusid,
                                                                                                         'divisionid' => $application_container[$i]["application"]->divisionid,
-                                                                                                        'programme' => $programme
+                                                                                                        'programme' => $programme,
+                                                                                                        'programme_id' => $programme_id
                                                                                                      ]);
                                                                     echo "<li><a href='$hyperlink'>{$statuses[1][$k]}</a></li>";
                                                                 }
