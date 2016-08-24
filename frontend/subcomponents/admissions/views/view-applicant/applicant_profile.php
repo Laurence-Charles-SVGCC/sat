@@ -176,9 +176,9 @@
                                         <td rowspan="3"> 
                                             <?php if($applicant->photopath == NULL || strcmp($applicant->photopath, "") ==0 ): ?>
                                                 <?php if (strcasecmp($applicant->gender, "male") == 0): ?>
-                                                    <img src="<?=Url::to('../images/avatar_male(150_150).png');?>" alt="avatar_male" class="img-rounded">
+                                                    <img src="<?=Url::to('css/dist/img/avatar_male(150_150).png');?>" alt="avatar_male" class="img-rounded">
                                                 <?php elseif (strcasecmp($applicant->gender, "female") == 0): ?>
-                                                    <img src="<?=Url::to('../images/avatar_female(150_150).png');?>" alt="avatar_female" class="img-rounded">
+                                                    <img src="<?=Url::to('css/dist/img/avatar_female(150_150).png');?>" alt="avatar_female" class="img-rounded">
                                                 <?php endif;?>
                                             <?php else: ?>
                                                     <img src="<?=$applicant->photopath;?>" alt="student_picture" class="img-rounded">
