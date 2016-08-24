@@ -561,7 +561,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                     'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0, 'programme_catalog.name' => "CAPE",
-                                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscompleted' => 0
+                                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
                                 ])
                     ->one();
         if ($offering)
