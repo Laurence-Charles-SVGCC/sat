@@ -144,7 +144,7 @@
                     </ul>
 
                     
-                    <?php if(true /*Yii::$app->user->can('editGeneral')*/):?>  
+                    <?php if(Application::getVerifiedApplications($applicant->personid) == false):?>  
                         <div style="width:95%; margin: 0 auto;">
                             <br/><?=Html::a(' Reset Application', 
                                 ['view-applicant/reset-applications', 'personid' => $applicant->personid], 

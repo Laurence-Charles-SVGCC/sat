@@ -3381,6 +3381,15 @@ class ViewApplicantController extends \yii\web\Controller
     }
     
     
+    /**
+     * Resets all of an applicant's active applications to "Unsubmitted"
+     * 
+     * @param type $personid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 20/08/2016
+     */
     public function actionResetApplications($personid)
     {
         $applications = Application::getActiveApplications($personid);
