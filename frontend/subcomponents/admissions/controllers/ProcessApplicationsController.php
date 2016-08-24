@@ -294,7 +294,7 @@
         * Created: 27/07/2015 by Gamal Crichton
         * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles (20/02/2016) | 24/08/2016
         */
-        public function actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id)
+        public function actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id = 0)
         {
             $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
              
