@@ -77,7 +77,6 @@
                                 'pluginOptions'=>[
                                     'depends'=>['division-id'],
                                     'placeholder'=>'Select...',
-//                                    'url'=> Url::toRoute(['/subcomponents/admissions/process-applications/academic-offering', 'personid' => $personid])
                                     'url'=> Url::to(['process-applications/academic-offering', 'personid' => $personid])
                                     ]
                             ])->label('Select your programme of choice:');?>
