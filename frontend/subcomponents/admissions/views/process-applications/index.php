@@ -61,8 +61,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </a>
                     
                     <?php if (Yii::$app->user->can('System Administrator')): ?>
-                        <a style="width:12%; height:100px; margin-left:10%; margin-right:10%; margin-top:5%; margin-bottom:5%; font-size:16px; <?php if($exception==0) echo 'pointer-events:none;cursor: default;opacity: 0.6;'?>"" class="btn btn-app" href="<?= Url::to(['process-applications/view-by-status', 'division_id' => $division_id, 'application_status' => 0])?>">
-                            <span class="badge bg-red" style="font-size:16px;"><?= $exception ?></span>
+                        <a style="width:12%; height:100px; margin-left:10%; margin-right:10%; margin-top:5%; margin-bottom:5%; font-size:16px;" class="btn btn-app" href="<?= Url::to(['process-applications/view-by-status', 'division_id' => $division_id, 'application_status' => 0])?>">
+                            <span class="badge bg-red" style="font-size:16px;">?</span>
                             <i class="fa fa-cart-plus"></i><strong> Exceptions</strong>
                         </a>
                     <?php endif;?>

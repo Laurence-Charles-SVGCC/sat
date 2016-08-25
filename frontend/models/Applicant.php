@@ -1108,6 +1108,21 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+//    public static function getAuhtorizedStatusCollection($division_id)
+//    {
+//        $container = array();
+//        $keys = array();
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//         array_push($keys, "id");
+//        $applicants = array();
+//    }
+    
     
     public static function getAuthorizedByStatus($status_id, $division_id)
     {
