@@ -99,6 +99,8 @@
 //            $conditional_reject_count = count(Applicant::getByStatus(10, $division_id));
             $authorized_conditional_reject_count = count(Applicant::getAuthorizedByStatus(10, $division_id));
             
+            $exception_count = count(Applicant::getExceptions());
+            
             return $this->render('index', 
                         [
                             'division_id' => $division_id,
@@ -122,7 +124,9 @@
                             'authorized_rejected' => $authorized_rejected_count,
                             
 //                            'conditionalofferreject' => $conditional_reject_count,
-                            'authorized_conditionalofferreject' => $authorized_conditional_reject_count
+                            'authorized_conditionalofferreject' => $authorized_conditional_reject_count,
+                            
+                            'exception' => $exception_count
                         ]);
         }
     
@@ -2568,6 +2572,9 @@
                         'personid' => $personid,
                     ]);
         }
+        
+        
+        
         
         
 

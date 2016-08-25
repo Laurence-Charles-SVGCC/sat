@@ -996,7 +996,38 @@ class Applicant extends \yii\db\ActiveRecord
             }
         }
         return false;
+    }
+    
+    
+    
+    
+    /**
+     * Return applications that dont fall into prescribed categories
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 25/08/2016
+     * Date Last Modified: 25/08/2016
+     */
+    public static function getExceptions()
+    {
+        $applicants = array();
         
+        $apps = self::getActiveApplicants(1);
+        
+        if ($apps)
+        {
+            foreach($apps as $key => $app)
+            {
+                if (self::isRejected($app->personid) == true  ||  self::isPending($app->personid) == true  ||  self::isShortlisted($app->personid) == true
+                        ||  self::isBorderline($app->personid) == true  ||  self::isInterviewOffer($app->personid) == true  || self::isOffer($app->personid) == true
+                        ||  self::isRejectedConditionalOffer($app->personid) == true)
+                    unset($apps[$key]);
+            }
+            $applicants = $apps;
+        }
+        return $applicants;
     }
     
     
@@ -1014,7 +1045,6 @@ class Applicant extends \yii\db\ActiveRecord
     {
         $applicants = array();
         
-//        $apps = self::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
         $apps = self::getActiveApplicants($division_id);
         
         if ($apps)
@@ -1070,6 +1100,7 @@ class Applicant extends \yii\db\ActiveRecord
                     if(self::isRejectedConditionalOffer($app->personid) == false)
                         unset($apps[$key]);
                 }
+                
             }
             $applicants = $apps;
         }
