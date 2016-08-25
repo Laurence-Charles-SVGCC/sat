@@ -99,7 +99,8 @@
 //            $conditional_reject_count = count(Applicant::getByStatus(10, $division_id));
             $authorized_conditional_reject_count = count(Applicant::getAuthorizedByStatus(10, $division_id));
             
-            $exception_count = count(Applicant::getExceptions());
+            $exception_count = 0;
+//            $exception_count = count(Applicant::getExceptions());
             
             return $this->render('index', 
                         [
