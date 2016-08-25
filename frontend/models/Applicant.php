@@ -999,38 +999,6 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
-    
-    
-    /**
-     * Return applications that dont fall into prescribed categories
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 25/08/2016
-     * Date Last Modified: 25/08/2016
-     */
-    public static function getExceptions()
-    {
-        $applicants = array();
-        
-        $apps = self::getActiveApplicants(1);
-        
-        if ($apps)
-        {
-            foreach($apps as $key => $app)
-            {
-                if (self::isRejected($app->personid) == true  ||  self::isPending($app->personid) == true  ||  self::isShortlisted($app->personid) == true
-                        ||  self::isBorderline($app->personid) == true  ||  self::isInterviewOffer($app->personid) == true  || self::isOffer($app->personid) == true
-                        ||  self::isRejectedConditionalOffer($app->personid) == true)
-                    unset($apps[$key]);
-            }
-            $applicants = $apps;
-        }
-        return $applicants;
-    }
-    
-    
     /**
      * Retrieves applicants based on the current application status 
      * 
@@ -1108,20 +1076,230 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
-//    public static function getAuhtorizedStatusCollection($division_id)
-//    {
-//        $container = array();
-//        $keys = array();
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//         array_push($keys, "id");
-//        $applicants = array();
-//    }
+    public static function getAuhtorizedStatusCollection($division_id)
+    {
+        $container = array();
+        
+        $keys = array();
+        array_push($keys, "pending");
+        array_push($keys, "shortlist");
+        array_push($keys, "borderline");
+        array_push($keys, "pre_interview_rejects");
+        array_push($keys, "interviewees");
+        array_push($keys, "post_interview_rejects");
+        array_push($keys, "offer");
+        array_push($keys, "exceptions");
+        
+        $pending = array();
+        $shortlist = array();
+        $borderline = array();
+        $pre_interview_rejects = array();
+        $interviewees = array();
+        $post_interview_rejects = array();
+        $offer = array();
+        $exceptions = array();
+         
+        $apps = self::getActiveApplicants($division_id);
+        
+        if ($apps)
+        {
+            foreach($apps as $key => $app)
+            {
+                if(self::isRejected($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $pre_interview_rejects[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 6)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $pre_interview_rejects[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isPending($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $pending[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 3)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $pending[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isShortlisted($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $shortlist[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 4 )
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $shortlist[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isBorderline($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $borderline[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 7)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $borderline[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isInterviewOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $interviewees[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 8)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $interviewees[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $offer[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 9)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $offer[] = $apps[$key];
+                    }
+                }
+                
+                elseif(self::isRejectedConditionalOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $post_interview_rejects[] = $apps[$key];
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 10)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $post_interview_rejects[] = $apps[$key];
+                    }
+                }
+                
+                else
+                {
+                    $exceptions[] = $apps[$key];
+                }
+            }
+            
+            $values = array();
+            array_push($values, $pending);
+            array_push($values, $shortlist);
+            array_push($values, $borderline);
+            array_push($values, $pre_interview_rejects);
+            array_push($values, $interviewees);
+            array_push($values, $post_interview_rejects);
+            array_push($values, $offer);
+            array_push($values, $exceptions);
+            
+            $container = array_combine($keys, $values);
+            return $container;
+        }
+    }
     
     
     public static function getAuthorizedByStatus($status_id, $division_id)
