@@ -1734,12 +1734,12 @@
                      */
                     elseif($new_status == 10  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
-                        //updates subsequent applications
+                        //updates subsequent applications pending
                         if($count - $position > 1)
                         {
                             for ($i = $position+1 ; $i < $count ; $i++)
                             {
-                                $applications[$i]->applicationstatusid = 6;
+                                $applications[$i]->applicationstatusid = 3;
                                 $applications_save_flag = $applications[$i]->save();
                                 if ($applications_save_flag == false)
                                 {
@@ -2441,7 +2441,7 @@
                                     $offer_save_flag = true;
                                     foreach($offers as $offer)
                                     {
-                                        $offer_flag = Offer::rescindOffer($offer->applicationid, 1);
+                                        $offer_flag = Offer::rescindOffer($offer->applicationid, $offer->offertypeid);
                                         if ($offer_flag == false)
                                         {
                                             $offer_save_flag = false;
