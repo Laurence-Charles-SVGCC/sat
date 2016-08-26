@@ -86,6 +86,31 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
         return $subjects;
     }
     
+    /**
+     * Returns an array of cape subjects associated with a particular CapeGroup for active period
+     * 
+     * @param type $groupid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 26/08/2016
+     * Date Last Modified: 26/08/2016
+     */
+    public static function getActiveSubjects($groupid)
+    {
+        $subjects = CapeSubjectGroup::find()
+                ->innerJoin('cape_subject', '`cape_subject_group`.`capesubjectid` = `cape_subject`.`capesubjectid`')
+                ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['cape_subject_group.capegroupid' => $groupid, 'cape_subject_group.isactive' => 1, 'cape_subject_group.isdeleted' => 0,
+                                'cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                'application_period.iscomplete' => 0,  'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                              ])
+            ->all();
+        return $subjects;
+    }
+    
     
     /**
      * Returns an array of the associated CapeSubjectGroup records

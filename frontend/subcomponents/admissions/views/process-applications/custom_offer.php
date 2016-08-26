@@ -96,7 +96,7 @@
                                 echo "<fieldset>";
                                 echo "<legend>".$group->name;echo"</legend>";                         
                                 $groupid = $group->capegroupid;
-                                $subjects = CapeSubjectGroup::getSubjects($groupid);                         
+                                $subjects = CapeSubjectGroup::getActiveSubjects($groupid);                         
                                 $vals =  CapeSubject::processGroup($subjects);
                                 echo $form->field($applicationcapesubject[$key], "[{$key}]capesubjectid")->label("")->radioList($vals, ['id' => 'choice1-group1', 'class' => 'radio1']);
                                 echo "</fieldset>"; 

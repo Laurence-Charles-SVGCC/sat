@@ -416,7 +416,7 @@
             if ($ao)
             {
                 $cape_prog = ProgrammeCatalog::findOne(['name' => 'CAPE']);
-                $cape = $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : False;
+                $cape = $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : false;
 
                 if ($cape)
                 {
@@ -428,15 +428,15 @@
                     foreach ($cape_subjects as $cape)
                     {
                         $cape_info[$cape->subjectname]['offers_made'] = count(Offer::find()
-                            ->joinWith('application')
-                            ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
-                            ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 
-                                    'application_period.isactive' => 1, 'application_period.iscomplete' => 0,
-                                    'offer.isdeleted' => 0
-                                    ])
-                            ->all());
+                                                                                                        ->joinWith('application')
+                                                                                                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                                                                                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                                                                                        ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
+                                                                                                        ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 
+                                                                                                                'application_period.isactive' => 1, 'application_period.iscomplete' => 0,
+                                                                                                                'offer.isdeleted' => 0
+                                                                                                                ])
+                                                                                                        ->all());
                         $cape_info[$cape->subjectname]['capacity'] = $cape->capacity;
                     }
                 }
