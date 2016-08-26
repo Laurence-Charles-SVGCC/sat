@@ -1073,7 +1073,7 @@ class Applicant extends \yii\db\ActiveRecord
                 {
                     if(self::isRejected($app->personid) == true ||  self::isPending($app->personid) == true
                             || self::isShortlisted($app->personid) == true  || self::isBorderline($app->personid) == true
-                            || self::isInterviewOffer($app->personid) == false  || self::isOffer($app->personid) == true
+                            || self::isInterviewOffer($app->personid) == true  || self::isOffer($app->personid) == true
                             || self::isRejectedConditionalOffer($app->personid) == true)
                          unset($apps[$key]);
                 }
