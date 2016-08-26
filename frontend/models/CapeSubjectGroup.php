@@ -105,7 +105,7 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
                 ->where(['cape_subject_group.capegroupid' => $groupid, 'cape_subject_group.isactive' => 1, 'cape_subject_group.isdeleted' => 0,
                                 'cape_subject.isactive' => 1, 'cape_subject.isdeleted' => 0,
                                 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                'application_period.iscomplete' => 0,  'application_period.applicationperiodstatusid' => 5, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                'application_period.iscomplete' => 0,  'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                               ])
             ->all();
         return $subjects;
