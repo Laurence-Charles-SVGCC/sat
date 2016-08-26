@@ -30,65 +30,59 @@
             </a>    
         </div>
         
-        <?php if ($application_status > 2):?>
-             <!-- Duplicate Flag-->
-            <?php if ($duplicate_message):?>
-                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= $duplicate_message;?>
-                </p>
-            <?php endif;?>
-                
-            <!-- Offer Flag-->
-            <?php if (Offer::hasRecords($applicant->personid) == true):?>
-                <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant has " . Offer::getPriorityOffer($applicant->personid) . ".";?>
-                </p>
-            <?php endif;?>
-
-            <!-- No English Flag-->
-            <?php if (CsecQualification::hasCsecEnglish($applicant->personid) == false):?>
-                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant did not pass CSEC/GCE English Language";?>
-                </p>
-            <?php endif;?>
-
-            <!-- No Mathematics Flag-->
-            <?php if (CsecQualification::hasCsecMathematics($applicant->personid) == false):?>
-                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant did not pass CSEC/GCE Mathematics";?>
-                </p>
-            <?php endif;?>
-
-            <!-- Has Less Than 5 Subjects Flag-->
-            <?php if (CsecQualification::hasFiveCsecPasses($applicant->personid) == false):?>
-                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                    <?= "Applicant does not have 5 CSEC passes";?>
-                </p>
-            <?php endif;?>
-
-            <!-- DTE Relevant Science Subjects Flag-->
-            <?php if ($applicant->applicantintentid == 4):?>
-                <?php if (CsecQualification::hasDteRelevantSciences($applicant->personid) == false):?>
-                    <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                        <?= "Applicant does not have the necessary passes in relevant science subjects";?>
-                    </p>
-                <?php endif;?>
-            <?php endif;?> 
-
-            <!-- DNE Relevant Science Subjects Flag-->
-            <?php if ($applicant->applicantintentid == 6):?>
-                <?php if (CsecQualification::hasDneRelevantSciences($applicant->personid) == false):?>
-                    <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                        <?= "Applicant does not have the necessary passes in relevant science subjects";?>
-                    </p>
-                <?php endif;?>
-            <?php endif;?> 
-        <?php else:?>
-            <!-- Applicant's certificates have not been verified-->
+         <!-- Duplicate Flag-->
+        <?php if ($duplicate_message):?>
             <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
-                <?= "Applicant's certificates have not been verified yet.";?>
-            </p>    
+                <?= $duplicate_message;?>
+            </p>
         <?php endif;?>
+
+        <!-- Offer Flag-->
+        <?php if (Offer::hasRecords($applicant->personid) == true):?>
+            <br/><p id="offer-message" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant has " . Offer::getPriorityOffer($applicant->personid) . ".";?>
+            </p>
+        <?php endif;?>
+
+        <!-- No English Flag-->
+        <?php if (CsecQualification::hasCsecEnglish($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant did not pass CSEC/GCE English Language";?>
+            </p>
+        <?php endif;?>
+
+        <!-- No Mathematics Flag-->
+        <?php if (CsecQualification::hasCsecMathematics($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant did not pass CSEC/GCE Mathematics";?>
+            </p>
+        <?php endif;?>
+
+        <!-- Has Less Than 5 Subjects Flag-->
+        <?php if (CsecQualification::hasFiveCsecPasses($applicant->personid) == false):?>
+            <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                <?= "Applicant does not have 5 CSEC passes";?>
+            </p>
+        <?php endif;?>
+
+        <!-- DTE Relevant Science Subjects Flag-->
+        <?php if ($applicant->applicantintentid == 4):?>
+            <?php if (CsecQualification::hasDteRelevantSciences($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                </p>
+            <?php endif;?>
+        <?php endif;?> 
+
+        <!-- DNE Relevant Science Subjects Flag-->
+        <?php if ($applicant->applicantintentid == 6):?>
+            <?php if (CsecQualification::hasDneRelevantSciences($applicant->personid) == false):?>
+                <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;"> 
+                    <?= "Applicant does not have the necessary passes in relevant science subjects";?>
+                </p>
+            <?php endif;?>
+        <?php endif;?> 
+        
         
         <div class="custom_body">
             <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2>
