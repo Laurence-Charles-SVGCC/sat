@@ -35,13 +35,23 @@
                         'label' => 'Applicant ID',
                         'value' => function($row) use ($application_status, $programme_id)
                             {
-                                return Html::a($row['username'], 
-                                       Url::to(['process-applications/view-applicant-certificates',
-                                                'personid' => $row['personid'],
-                                                'programme' => $row['programme'], 
-                                                'application_status' => $application_status,
-                                                'programme_id' => $programme_id,
-                                               ]));
+                                if($application_status == 0)
+                                {
+                                    return Html::a($row['username'], 
+                                           Url::to(['process-applications/view-exception-applicant-certificates',
+                                                    'personid' => $row['personid'],
+                                                   ]));
+                                }
+                                else
+                                {
+                                    return Html::a($row['username'], 
+                                           Url::to(['process-applications/view-applicant-certificates',
+                                                    'personid' => $row['personid'],
+                                                    'programme' => $row['programme'], 
+                                                    'application_status' => $application_status,
+                                                    'programme_id' => $programme_id,
+                                                   ]));
+                                }
                             }
                     ],
                     [

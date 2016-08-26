@@ -461,11 +461,6 @@
 //                
             }
             
-//            if($deprecated && $deprecated == 1)
-//                $deprecated_application = true;
-//            else
-//                $deprecated_application = false;
-//            
             return $this->render('view_applicant_certificates',
                     [
                         'division_id' => $divisionid,
@@ -488,6 +483,178 @@
 //                        'deprecated_application' => $deprecated_application,
                     ]);
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        /**
+         * Renders the qualification and programme choices of an 'exception' applicant
+         * 
+         * @param type $personid
+         * @param type $programme
+         * @param type $application_status
+         * @param type $programme_id
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 25/08/2016
+         * Date Last Modified: 25/08/2016
+         */
+        public function actionViewExceptionApplicantCertificates($personid)
+        {
+            $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
+             
+            $duplicate_message = false;
+            
+            $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            
+            $username = $applicant->getPerson()->one()->username;
+
+            $applications = Application::find()
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid])
+                        ->orderBy('application.ordering ASC')
+                        ->all();
+            
+            $certificates = CsecQualification::getSubjects($personid);
+            
+            $application_container = array();
+            
+            $target_application = null;
+            
+            foreach($applications as $application)
+            {
+                
+                $combined = array();
+                $keys = array();
+                $values = array();
+                
+                array_push($keys, "application");
+                array_push($keys, "division");
+                array_push($keys, "programme");
+                array_push($keys, "status");
+                
+                array_push($values, $application);
+               
+                $division = Division::find()
+                            ->where(['divisionid' => $application->divisionid])
+                            ->one()
+                            ->abbreviation;
+                array_push($values, $division);
+                
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::find()
+                            ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                            ->where(['application.applicationid' => $application->applicationid,
+                                    'application.isactive' => 1,
+                                    'application.isdeleted' => 0]
+                                    )
+                            ->all();
+                
+                $programme_record = ProgrammeCatalog::find()
+                            ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                            ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                            ->where(['application.applicationid' => $application->applicationid])
+                            ->one();
+                
+                foreach ($cape_subjects as $cs) 
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                
+                $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                array_push($values, $programme_name);
+                
+                $status = ApplicationStatus::find()
+                        ->where(['applicationstatusid' => $application->applicationstatusid])
+                        ->one()
+                        ->name;
+                array_push($values, $status);
+                
+                $combined = array_combine($keys, $values);
+                array_push($application_container, $combined);
+            }
+           
+
+            /*Get possible duplicates. needs work to deal with multiple years of certificates, 
+             * but should catch majority
+             */
+            if ($certificates)
+            {
+                $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                $message = '';
+                if ($dups)
+                {
+                    $dupes = '';
+                    foreach($dups as $dup)
+                    {
+                        $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                        $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
+                    }
+                    $message = 'Possible Duplicate of applicant(s) ' . $dupes;
+                    
+                }
+                $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                if ($reapp)
+                {
+                    $message = $message . ' Applicant applied to College in academic year prior to 2015/2016.';
+                }
+                if ($dups || $reapp)
+                {
+                    //Yii::$app->session->setFlash('warning', $message);
+                    $duplicate_message = $message;
+                }
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Applicant certificates not yet verified OR Applicant has external Certificates.');
+            }
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $certificates,
+                'pagination' => [
+                    'pageSize' => 50,
+                ],
+            ]);
+            
+            return $this->render('view_applicant_certificates',
+                    [
+                        'division_id' => $divisionid,
+                        'duplicate_message' => $duplicate_message,
+                        'username' => $username,
+                        'applicant' => $applicant,
+                        'applications' => $applications,
+                        'application_container' => $application_container,
+                        'dataProvider' => $dataProvider,
+                        'application_status' => $application_status,
+                    ]);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         /**
