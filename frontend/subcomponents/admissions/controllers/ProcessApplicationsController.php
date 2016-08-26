@@ -1109,7 +1109,7 @@
                                 * If conditional exists;
                                 * it must be published before applicant can be given a full offer
                                 */
-                                if($old_offer->ispublished == 1  && $existing_current_offer == false)
+                                if($old_offer == true  && $existing_current_offer == false)
                                 {
                                     // create offer
                                     $offer = new Offer();
