@@ -219,8 +219,10 @@
                 $progs[$prog->programmecatalogid] = $prog->getFullName();
             }
             
-            $status_name = ApplicationStatus::find()->where(['applicationstatusid' => $application_status])->one()->name;
-
+            $status = ApplicationStatus::find()->where(['applicationstatusid' => $application_status])->one();
+            $status_name = ($status)? $status->name : "Exceptions";
+            
+            
             //format filename
             $title = "Title: " . $status_name . " Listing   ";
             $date = "Date Generated: " . date('Y-m-d') . "   ";
