@@ -624,7 +624,7 @@
                 ],
             ]);
             
-            return $this->render('view_applicant_certificates',
+            return $this->render('view_exception_applicant_certificates',
                     [
                         'division_id' => $divisionid,
                         'duplicate_message' => $duplicate_message,
@@ -633,7 +633,6 @@
                         'applications' => $applications,
                         'application_container' => $application_container,
                         'dataProvider' => $dataProvider,
-                        'application_status' => $application_status,
                     ]);
         }
         
