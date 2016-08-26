@@ -171,10 +171,6 @@
                         </tr>
                     <?php endfor; ?> 
                 </table><br/><br/>
-                
-                 <div>
-                    <a class="btn btn-success glyphicon glyphicon-user" style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
-                </div>
             </div>
         </div>
     </div>
