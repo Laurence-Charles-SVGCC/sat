@@ -2724,6 +2724,38 @@
         
         
         
+        public function actionResetApplications($personid)
+        {
+            $applications = Application::getVerifiedApplications($personid);
+                
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                foreach ($applications as $application)
+                {
+                    $save_flag = false;
+                    $application->applicationstatusid = 3;
+                    $save_flag = $application->save();
+                    if ($save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occurred resetting application.');
+                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+                    }
+                }
+                
+                $transaction->commit();
+                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+            }catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing your request');
+                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+            }
+        }
+        
+        
+        
         
         
 

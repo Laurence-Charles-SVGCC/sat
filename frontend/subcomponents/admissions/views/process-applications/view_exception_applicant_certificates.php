@@ -171,6 +171,18 @@
                         </tr>
                     <?php endfor; ?> 
                 </table><br/><br/>
+                
+                <div class="pull-right" style="margin-right:2.5%">
+                    <?=Html::a(' Reset Applications', 
+                            ['process-applications/reset-applications', 'personid' => $applicant->personid], 
+                            ['class' => 'btn btn-danger',
+                                'style' => '',
+                                'data' => [
+                                    'confirm' => 'Are you sure you want to reset all programme choices?',
+//                                                'method' => 'post',
+                                ],
+                            ]);?>
+                 </div>
             </div>
         </div>
     </div>
