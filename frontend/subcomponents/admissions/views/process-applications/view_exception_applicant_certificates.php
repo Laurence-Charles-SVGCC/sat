@@ -94,7 +94,7 @@
                 <p style="font-size:20px"><strong>Applicant ID:</strong><?= $username; ?></p><br/>
 
                 <p style="font-size:20px"><strong>Applicant Name:</strong><?= $applicant->title . ". " .  $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></p><br/>
-            </div><br/>  
+            </div> 
             
             <div>
                 <h2 class="custom_h2">Certificate Information</h2>
@@ -173,7 +173,7 @@
                 </table><br/><br/>
                 
                  <div>
-                    <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
+                    <a class="btn btn-success glyphicon glyphicon-user" style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
                 </div>
             </div>
         </div>
