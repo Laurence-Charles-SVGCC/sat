@@ -969,7 +969,7 @@ class Applicant extends \yii\db\ActiveRecord
             
             /* If applicant has 2 applications; they are considered Rejected-conditional-offer if; 
              * Application 1 -> RejectedConditionalOffer | Rejected
-             * Application 2 -> Rejected                 | RejectedConditionalOffer
+             * Application 2 -> Rejected                           | RejectedConditionalOffer
              */
             elseif($count == 2)
             {

@@ -422,7 +422,7 @@
                 {
                     $cape_subjects = CapeSubject::find()
                             ->innerJoin('application_capesubject', '`application_capesubject`.`capesubjectid` = `cape_subject`.`capesubjectid`')
-                            ->where(['application_capesubject.applicationid' => $application->applicationid])
+                            ->where(['application_capesubject.applicationid' => $target_application->applicationid])
                             ->all();
 
                     foreach ($cape_subjects as $cape)
@@ -1892,16 +1892,17 @@
                          * If previous status was"conditional offer",
                          * then that offer is revoked
                          */
-                        if($old_status == 8)
-                        {
-                            $result = Offer::rescindOffer($update_candidate->applicationid, 2);
-                            if ($result == false)
-                            {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                            }
-                        }
+//                        if($old_status == 8)
+//                        {
+//                            $result = Offer::rescindOffer($update_candidate->applicationid, 2);
+//                            if ($result == false)
+//                            {
+//                                $transaction->rollBack();
+//                                Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
+//                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+//                            }
+//                        }
+                        
                         /*
                          * If previous status was "offer",
                          * then that offer is revoked
@@ -1936,7 +1937,7 @@
                                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                 ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
-                                        'application.isdeleted' => 0, 'application.personid' => $$update_candidate->personid,
+                                        'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                         ])
