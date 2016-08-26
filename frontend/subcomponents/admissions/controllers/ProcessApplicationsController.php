@@ -480,17 +480,10 @@
                         'cape' => $cape,
                         'cape_info' => $cape_info,
                         'programme_id' => $programme_id
-//                        'deprecated_application' => $deprecated_application,
                     ]);
         }
         
-        
-        
-        
-        
-        
-        
-        
+      
         /**
          * Renders the qualification and programme choices of an 'exception' applicant
          * 
@@ -635,25 +628,6 @@
                         'dataProvider' => $dataProvider,
                     ]);
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         /**
