@@ -1103,8 +1103,12 @@ class Application extends \yii\db\ActiveRecord
         else
         {
             $count = count($applications);
+            if ($application_status == 0)
+            {
+                $target_application = $applications[0];     //chooses default application
+            }
 
-            if ($application_status == 6)       //if reject
+            elseif ($application_status == 6)       //if reject
             {
                 $target_application = $applications[($count-1)];
             }
