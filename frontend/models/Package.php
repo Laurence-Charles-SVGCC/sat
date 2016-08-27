@@ -413,7 +413,7 @@ class Package extends \yii\db\ActiveRecord
      * Date Created: 10/04/2016
      * Date Last Modified: 10/04/2016
      */
-    public static function hasCompletePackage($category = NULL, $type = NULL)
+    public static function hasCompletePackage($divisionid, $category = NULL, $type = NULL)
     {
         /*
          * if offertype or rejectiontype is not specified,
@@ -448,9 +448,22 @@ class Package extends \yii\db\ActiveRecord
                 $packagetypeids = 3;
         } 
             
-        $package = Package::find()
-                    ->where(['isactive' => 1, 'isdeleted' => 0, 'packageprogressid' => 4, 'packagetypeid' => $packagetypeids])
-                    ->one();    
+        if($divisionid == 1)
+        {
+            $package = Package::find()
+                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid')
+                        ->where(['package.isactive' => 1, 'package.isdeleted' => 0, 'package.packageprogressid' => 4, 'package.packagetypeid' => $packagetypeids,
+                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0])
+                        ->one();    
+        }
+        else
+        {
+            $package = Package::find()
+                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid')
+                        ->where(['package.isactive' => 1, 'package.isdeleted' => 0, 'package.packageprogressid' => 4, 'package.packagetypeid' => $packagetypeids,
+                                        'application_period.divisionid' => $divisionid, 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0])
+                        ->one();    
+        }
         
         if ($package)
             return true;

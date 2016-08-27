@@ -162,14 +162,14 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Offer::anyOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1) == false)
+                                        if (Offer::anyOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1,1) == false)
                                             echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
                                         if ($periods == true)
                                         {
                                             foreach ($periods as $period) 
                                             {
-                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage(1, $offertype) == true)
+                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
                                                     echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                         }
