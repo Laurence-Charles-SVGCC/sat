@@ -21,7 +21,7 @@
                 </p>
             </div>
 
-            <div id="body" style="white-space: pre;">
+            <div id="body" style="white-space: pre-wrap;">
                 <?= $package->emailcontent?>
             </div>
 
@@ -34,7 +34,7 @@
                     <br/>Registrar
                 </p><br/>
                 
-                 <div id="disclaimer">
+                 <div id="disclaimer" style="white-space: pre-wrap;">
                     <?= $package->disclaimer?>
                 </div>
             </div>
