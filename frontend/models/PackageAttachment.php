@@ -19,7 +19,7 @@
         public function rules()
         {
             return [
-                [['files'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, pdf, doc, docx', 'maxFiles' => 7],
+                [['files'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, pdf, doc, docx', 'maxFiles' => 10],
             ];
         }
 
