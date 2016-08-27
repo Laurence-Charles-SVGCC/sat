@@ -70,7 +70,7 @@
 
                                 echo "<tr>";
                                     echo "<th style='width:25%; vertical-align:middle'>Application Period</th>";
-                                    echo "<td>{$form->field($package, 'applicationperiodid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period', 'readonly' => true, 'disabled' => true])}</td>";
+                                    echo "<td>{$form->field($package, 'applicationperiodid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['readonly' => true, 'disabled' => true])}</td>";
                                 echo "</tr>";
 
                                 echo "<tr>";

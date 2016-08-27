@@ -137,7 +137,7 @@
                             
                              echo "<tr>";
                                 echo "<th style='width:25%; vertical-align:middle'>Disclaimer</th>";
-                                echo "<td>{$form->field($package, 'disclaimer')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
+                                echo "<td>{$form->field($package, 'disclaimer')->label('', ['class'=> 'form-label'])->textArea(['rows' => 5, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
                             echo "</tr>";
                         echo "</table>"; 
 

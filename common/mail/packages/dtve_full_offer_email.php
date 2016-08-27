@@ -32,7 +32,11 @@
                 <p>
                     Samantha Minors-Rouse
                     <br/>Registrar
-                </p>
+                </p><br/>
+                
+                 <div id="disclaimer" style="white-space: pre-wrap;">
+                    <?= $package->disclaimer?>
+                </div>
             </div>
         </div>
     </html>
