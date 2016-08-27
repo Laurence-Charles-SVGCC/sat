@@ -22,6 +22,7 @@
             </div>
 
             <div id="body" style="white-space: pre;">
+                <br/>
                 <?= $package->emailcontent?>
             </div>
 
