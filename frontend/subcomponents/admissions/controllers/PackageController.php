@@ -442,12 +442,25 @@
                     ->where(['applicant.applicantid' => $applicantid, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0])
                     ->one();
             
+            $period = ApplicationPeriod::find()
+                    ->where(['applicationperiodid' => $package->applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $divsionid = $period->divisionid;
+            
             if ($package->packagetypeid == 1 || $package->packagetypeid == 2)
                 $viewfile = '@common/mail/packages/rejection_email.php';
             elseif ($package->packagetypeid == 3)
                 $viewfile = '@common/mail/packages/conditional_offer_email.php';
             elseif ($package->packagetypeid == 4)
-                $viewfile = '@common/mail/packages/full_offer_email.php';
+            {
+                if ($divisionid == 4)
+                    $viewfile = '@common/mail/packages/dasgs_full_offer_email.php';
+                if ($divisionid == 5)
+                    $viewfile = '@common/mail/packages/dtve_full_offer_email.php';
+                elseif ($divisionid == 6  || $divisionid == 7)
+                    $viewfile = '@common/mail/packages/full_offer_email.php';
+            }
+                
             
             /*
              * Creates files directory for applicants package and saves email
