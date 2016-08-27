@@ -20,7 +20,7 @@
                 </p>
             </div>
 
-            <div id="body" style="white-space: pre;">
+            <div id="dasgs-body" style="white-space: pre;">
                 <?= $package->emailcontent?>
             </div>
 
