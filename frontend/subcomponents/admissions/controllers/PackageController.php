@@ -174,7 +174,7 @@
                 if($load_flag == true)
                 { 
                     $period = ApplicationPeriod::find()
-                            ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->where(['applicationperiodid' => $package->applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     $divisionid = $period->divisionid;
                     
