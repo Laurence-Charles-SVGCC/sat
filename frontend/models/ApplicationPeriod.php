@@ -380,12 +380,12 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 06/03/2016
-     * Date Last Modified: 06/03/2016
+     * Date Last Modified: 06/03/2016 | 26/08/2016
      */
     public static function getOpenPeriodIDs()
     {
         $periods = ApplicationPeriod::find()
-                ->where(['isactive' => 1, 'isdeleted' => 0/*, 'applicationperiodstatusid' => 5*/])
+                ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0 /*'applicationperiodstatusid' => 5*/])
                 ->all();
         if (count($periods) > 0)
         {
