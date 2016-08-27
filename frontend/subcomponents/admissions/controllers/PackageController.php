@@ -445,7 +445,7 @@
             $period = ApplicationPeriod::find()
                     ->where(['applicationperiodid' => $package->applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            $divsionid = $period->divisionid;
+            $divisionid = $period->divisionid;
             
             if ($package->packagetypeid == 1 || $package->packagetypeid == 2)
                 $viewfile = '@common/mail/packages/rejection_email.php';
