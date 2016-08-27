@@ -34,7 +34,7 @@
                     <br/>Registrar
                 </p><br/>
                 
-                 <div id="disclaimer" style="white-space: pre-wrap;">
+                 <div id="disclaimer" style="white-space: pre;">
                     <?= $package->disclaimer?>
                 </div>
             </div>
