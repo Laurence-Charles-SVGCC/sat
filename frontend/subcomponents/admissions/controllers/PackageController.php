@@ -28,6 +28,7 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\RejectionApplications;
     use frontend\models\Application;
+    use frontend\models\ApplicationCapesubject;
     
     
     
@@ -803,10 +804,21 @@
                     $application = Application::find()
                             ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
+                    if($application == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving application');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
                     
                    $applicationperiod = ApplicationPeriod::find()
                                    ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
                                    ->one();
+                   if($applicationperiod == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicationperiod');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
                    $applicationperiodids = $applicationperiod->applicationperiodid ; 
 
                    /*
@@ -822,18 +834,48 @@
                     $package = Package::find()
                        ->where(['applicationperiodid' => $applicationperiodids, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
                        ->one();
+                    if($package == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving package');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
 
                     $applicant = Applicant::find()
                            ->where(['personid' => $application->personid,  'isactive' => 1, 'isdeleted' => 0])
                            ->one();
+                    if($applicant == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicant');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
                      
+                    
                     $email = Email::find()
                             ->where(['personid' => $application->personid,  'isactive' => 1, 'isdeleted' => 0])
                            ->one();
+                    if($email == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving email address');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
                    
+                    
                     $divisioname = Division::getDivisionName($application->divisionid);
+                    if($divisioname == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving divisionname');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
                     
                     $prog = ProgrammeCatalog::getApplicantProgramme($application->applicationid);
+                    if($prog == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving programme');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
                     
                     if($prog->name == "CAPE")
                     {
