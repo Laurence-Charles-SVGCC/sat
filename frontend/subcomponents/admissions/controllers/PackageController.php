@@ -799,6 +799,7 @@
                 
                 foreach ($offers as $offer) 
                 {
+                    $cape_subjects_names = array();
                     $application = Application::find()
                             ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
@@ -831,8 +832,25 @@
                            ->one();
                    
                     $divisioname = Division::getDivisionName($application->divisionid);
+                    
                     $prog = ProgrammeCatalog::getApplicantProgramme($application->applicationid);
-                    $programme = ($prog->specialisation)? $prog->name . "(" . $prog->specialisation . ")" : $prog->name;
+                    
+                    if($prog->name == "CAPE")
+                    {
+                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                        if ( $cape_subjects == true)
+                        {
+                            foreach ($cape_subjects as $cs)
+                            { 
+                                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                            }
+                        }
+                        $programme = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                    }
+                    else
+                    {
+                        $programme =  $prog->getFullName();
+                    }
                     
                     $studentno = $applicant->potentialstudentid;
                     $attachments = Package::getDocuments($package->packageid);
