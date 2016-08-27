@@ -167,8 +167,8 @@ class Package extends \yii\db\ActiveRecord
                 . " JOIN person"
                 . " ON package.createdby = person.personid"
                 . " WHERE package.isdeleted = 0"
-                . " AND package.packageprogressid = 4"
-                . " AND application_period.iscomplete=0;"
+                . " AND package.packageprogressid = 4;"
+//                . " AND application_period.iscomplete=0;"
             )
             ->queryAll();
 
