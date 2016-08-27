@@ -289,7 +289,7 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->where(['programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0, 
                                 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
-                                'application.isactive' => 1, 'application.isdeleted' => 1, 'application.applicationid' => $applicationid
+                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationid' => $applicationid
                             ])
                 ->one();
         if ($programme)
