@@ -389,11 +389,13 @@ class Package extends \yii\db\ActiveRecord
      * Date Created: 19/04/2016
      * Date Last Modified: 19/04/2016
      */
-    public static function currentPackageTypeExists($packagetypeid)
+    public static function currentPackageTypeExists($packagetypeid, $divisionid)
     {
         $package = Package::find()
                 ->innerJoin('`application_period`', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['package.packagetypeid' => $packagetypeid, 'package.isactive' => 1, 'package.isdeleted' => 0, 'application_period.iscomplete' => 0])
+                ->where(['package.packagetypeid' => $packagetypeid, 'package.isactive' => 1, 'package.isdeleted' => 0, 
+                                'application_period.divisionid' => $divisionid, 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                            ])
                 ->one();
         if ($package)
             return true;

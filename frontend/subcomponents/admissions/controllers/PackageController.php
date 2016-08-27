@@ -173,7 +173,12 @@
                 $load_flag = $package->load($post_data);
                 if($load_flag == true)
                 { 
-                    if (Package::currentPackageTypeExists($package->packagetypeid) == true)
+                    $period = ApplicationPeriod::find()
+                            ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    $divisionid = $period->divisionid;
+                    
+                    if (Package::currentPackageTypeExists($package->packagetypeid, $divisionid) == true)
                     {
                         Yii::$app->getSession()->setFlash('error', 'Package of this type currently exists. This existing package must be deactivate first.');
                         return self::actionIndex();
