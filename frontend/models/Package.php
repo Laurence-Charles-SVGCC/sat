@@ -451,7 +451,7 @@ class Package extends \yii\db\ActiveRecord
         if($divisionid == 1)
         {
             $package = Package::find()
-                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid')
+                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->where(['package.isactive' => 1, 'package.isdeleted' => 0, 'package.packageprogressid' => 4, 'package.packagetypeid' => $packagetypeids,
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0])
                         ->one();    
@@ -459,7 +459,7 @@ class Package extends \yii\db\ActiveRecord
         else
         {
             $package = Package::find()
-                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid')
+                        ->innerJoin('application_period', '`package`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->where(['package.isactive' => 1, 'package.isdeleted' => 0, 'package.packageprogressid' => 4, 'package.packagetypeid' => $packagetypeids,
                                         'application_period.divisionid' => $divisionid, 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0])
                         ->one();    
