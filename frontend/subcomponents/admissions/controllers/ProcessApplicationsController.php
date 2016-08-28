@@ -26,7 +26,6 @@
     use frontend\models\CapeSubject;
     use frontend\models\EmployeeDepartment;
     use frontend\models\Employee;
-//    use frontend\models\applicantregistration\ApplicantRegistration;
     use frontend\models\ApplicantSearchModel;
     use frontend\models\Applicant;
     use frontend\models\Address;
@@ -77,23 +76,25 @@
         {
             $division_id = EmployeeDepartment::getUserDivision();
             
-//            $authorized_pending_count = count(Applicant::getAuthorizedByStatus(3, $division_id));
-//            $authorized_shortlist_count = count(Applicant::getAuthorizedByStatus(4, $division_id));
-//            $authorized_borderline_count = count(Applicant::getAuthorizedByStatus(7, $division_id));
-//            $authorized_interviewoffer_count = count(Applicant::getAuthorizedByStatus(8, $division_id));
-//            $authorized_offer_count = count(Applicant::getAuthorizedByStatus(9, $division_id));
-//            $authorized_rejected_count = count(Applicant::getAuthorizedByStatus(6, $division_id));
-//            $authorized_conditional_reject_count = count(Applicant::getAuthorizedByStatus(10, $division_id));
+//            $sorted_applicants = Applicant::getAuhtorizedStatusCollection($division_id);
+//            $authorized_pending_count = count($sorted_applicants["pending"]);
+//            $authorized_shortlist_count = count($sorted_applicants["shortlist"]);
+//            $authorized_borderline_count = count($sorted_applicants["borderline"]);
+//            $authorized_interviewoffer_count = count($sorted_applicants["interviewees"]);
+//            $authorized_offer_count = count($sorted_applicants["offer"]);
+//            $authorized_rejected_count = count($sorted_applicants["pre_interview_rejects"]);
+//            $authorized_conditional_reject_count = count($sorted_applicants["post_interview_rejects"]);
+//            $exceptions = count($sorted_applicants["exceptions"]);
             
-            $sorted_applicants = Applicant::getAuhtorizedStatusCollection($division_id);
-            $authorized_pending_count = count($sorted_applicants["pending"]);
-            $authorized_shortlist_count = count($sorted_applicants["shortlist"]);
-            $authorized_borderline_count = count($sorted_applicants["borderline"]);
-            $authorized_interviewoffer_count = count($sorted_applicants["interviewees"]);
-            $authorized_offer_count = count($sorted_applicants["offer"]);
-            $authorized_rejected_count = count($sorted_applicants["pre_interview_rejects"]);
-            $authorized_conditional_reject_count = count($sorted_applicants["post_interview_rejects"]);
-            $exceptions = count($sorted_applicants["exceptions"]);
+            $application_count_collection = Applicant::getAuhtorizedStatusCollectionCounts($division_id);
+            $authorized_pending_count = $application_count_collection["pending"];
+            $authorized_shortlist_count = $application_count_collection["shortlist"];
+            $authorized_borderline_count = $application_count_collection["borderline"];
+            $authorized_interviewoffer_count = $application_count_collection["interviewees"];
+            $authorized_offer_count = $application_count_collection["offer"];
+            $authorized_rejected_count = $application_count_collection["pre_interview_rejects"];
+            $authorized_conditional_reject_count = $application_count_collection["post_interview_rejects"];
+            $exceptions = $application_count_collection["exceptions"];
             
             return $this->render('index', 
                         [

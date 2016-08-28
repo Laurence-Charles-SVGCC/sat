@@ -1085,6 +1085,16 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns collection of each application status type
+     * 
+     * @param type $division_id
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/08/2016
+     * Date Last Modified: 27/08/2016
+     */
     public static function getAuhtorizedStatusCollection($division_id)
     {
         $container = array();
@@ -1311,11 +1321,246 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns count of each collection of each application status type
+     * 
+     * @param type $division_id
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 27/08/2016
+     * Date Last Modified: 27/08/2016
+     */
+    public static function getAuhtorizedStatusCollectionCounts($division_id)
+    {
+        $container = array();
+        
+        $keys = array();
+        array_push($keys, "pending");
+        array_push($keys, "shortlist");
+        array_push($keys, "borderline");
+        array_push($keys, "pre_interview_rejects");
+        array_push($keys, "interviewees");
+        array_push($keys, "post_interview_rejects");
+        array_push($keys, "offer");
+        array_push($keys, "exceptions");
+        
+        $pending = 0;
+        $shortlist = 0;
+        $borderline = 0;
+        $pre_interview_rejects = 0;
+        $interviewees = 0;
+        $post_interview_rejects = 0;
+        $offer = 0;
+        $exceptions = 0;
+         
+        $apps = self::getActiveApplicants($division_id);
+        
+        if ($apps)
+        {
+            foreach($apps as $key => $app)
+            {
+                if(self::isRejected($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $pre_interview_rejects++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 6)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $pre_interview_rejects++;
+                    }
+                }
+                
+                elseif(self::isPending($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $pending++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 3)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $pending++;
+                    }
+                }
+                
+                elseif(self::isShortlisted($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $shortlist++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 4 )
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $shortlist++;
+                    }
+                }
+                
+                elseif(self::isBorderline($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $borderline++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 7)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $borderline++;
+                    }
+                }
+                
+                elseif(self::isInterviewOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $interviewees++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 8)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $interviewees++;
+                    }
+                }
+                
+                elseif(self::isOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $offer++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 9)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $offer++;
+                    }
+                }
+                
+                elseif(self::isRejectedConditionalOffer($app->personid) == true)
+                {
+                    if ($division_id == 1)
+                    {
+                        $post_interview_rejects++;
+                    }
+                    else
+                    {
+                        $target_applications = Application::find()
+                                ->where(['personid' => $app->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->orderBy('ordering ASC')
+                                ->all();
+                        foreach($target_applications as $record)
+                        {
+                            if ($record->applicationstatusid == 10)
+                            {
+                                $target_division = $record->divisionid;
+                                break;
+                            }
+                        }
+                        if($target_division == $division_id)
+                            $post_interview_rejects++;
+                    }
+                }
+                
+                else
+                {
+                    $exceptions[] = $apps[$key];
+                }
+            }
+            
+            $values = array();
+            array_push($values, $pending);
+            array_push($values, $shortlist);
+            array_push($values, $borderline);
+            array_push($values, $pre_interview_rejects);
+            array_push($values, $interviewees);
+            array_push($values, $post_interview_rejects);
+            array_push($values, $offer);
+            array_push($values, $exceptions);
+            
+            $container = array_combine($keys, $values);
+            return $container;
+        }
+    }
+    
+    
+    
     public static function getAuthorizedByStatus($status_id, $division_id)
     {
         $applicants = array();
-        
-//        $apps = self::getApplicantsByYear(AcademicYear::getCurrentYear()->title, $division_id);
         
         $apps = self::getActiveApplicants($division_id);
         
