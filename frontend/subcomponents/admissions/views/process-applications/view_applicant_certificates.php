@@ -192,7 +192,7 @@
             <?php endif;?>
                 <h2 class="custom_h2">
                     Applications
-                    <?php if(Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
+                    <?php if(Applicant::isVerified($applicant->personid) == true  && Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
                         <div class="pull-right" style="margin-right:2.5%">
                             <?=Html::a(' Create Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 

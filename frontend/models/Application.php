@@ -1718,6 +1718,39 @@ class Application extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Retrurns the lowest order application for the current application period for an applicant
+     * 
+     * @param type $personid
+     * @param type $isactive
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/08/2016
+     * Date Last Created: 28/08/2016
+     */
+    public static function istLastChosenApplication($application)
+    {
+        $applications =Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $application->personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                            ])
+                ->andWhere(['<', 'application.ordering', 4])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        if($applications)
+        {
+            $count = count($applications);
+            $last_application = $applications[$count-1];
+            if($application->applicationid == $last_application->applicationid)
+                return true;
+        }
+        return false;
+        
+    }
+    
     
     
     

@@ -592,23 +592,31 @@ class Applicant extends \yii\db\ActiveRecord
                 }
 
                 /* If applicant has 2 applications; they are considered rejected if; 
-                 * Application 1 -> Rejected
-                 * Application 2 -> Rejected
+                 * Application 1 -> Rejected | RejectedConditionalOffer
+                 * Application 2 -> Rejected | Rejected
                  */
                 elseif($count == 2)
                 {
-                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                    if(
+                            ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                              || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
+                       )
                         return true;
                 }
 
                 /* If applicant has 3 applications; they are considered rejected if; 
-                 * Application 1 -> Rejected
-                 * Application 2 -> Rejected
-                 * Application 3 -> Rejected
+                 * Application 1 -> Rejected | RejectedConditionalOffer | Rejected                            | RejectedConditionalOffer
+                 * Application 2 -> Rejected | Rejected                           | RejectedConditionalOffer  | RejectedConditionalOffer
+                 * Application 3 -> Rejected | Rejected                           | Rejected                            | Rejected
                  */
                 elseif($count == 3)
                 {
-                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    if(
+                        ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        || ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                        || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                        )
                         return true;
                 }
             }
@@ -646,29 +654,34 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered pending if; 
-             * Application 1 -> Rejected | Pending
-             * Application 2 -> Pending  | Pending
+             * Application 1 -> Rejected | Pending | RejectedConditionalOffer
+             * Application 2 -> Pending  | Pending | Pending
              */
             elseif($count == 2)
             {
                 if(
                         ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3)
                   )
                     return true;
             }
             
             /* If applicant has 3 applications; they are considered pending if; 
-             * Application 1 -> Pending | Rejected | Rejected
-             * Application 2 -> Pending | Pending  | Rejected
-             * Application 3 -> Pending | Pending  | Pending
+             * Application 1 -> Pending | Rejected | RejectedConditionalOffer | Rejected | Rejected                             | RejectedConditionalOffer | RejectedConditionalOffer
+             * Application 2 -> Pending | Pending  | Pending                            | Rejected | RejectedConditionalOffer   | Rejected                           | RejectedConditionalOffer
+             * Application 3 -> Pending | Pending  | Pending                            | Pending  | Pending                              | Pending                            | Pending
              */
             elseif($count == 3)
             {
                 if(
                         ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
                   )
                     return true;
             }
@@ -707,29 +720,34 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered shortlisted if; 
-             * Application 1 -> Shortlisted | Rejected
-             * Application 2 -> Pending    | Shortlisted
+             * Application 1 -> Shortlisted | Rejected   | RejectedConditionalOffer
+             * Application 2 -> Pending    | Shortlisted | Shortlisted
              */
             elseif($count == 2)
             {
                 if(
                         ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 4)
                   )
                     return true;
             }
             
             /* If applicant has 3 applications; they are considered shortlisted if; 
-             * Application 1 -> Shortlisted | Rejected     | Rejected
-             * Application 2 -> Pending     | Shortlisted  | Rejected
-             * Application 3 -> Pending     | Pending      | Shortlisted
+             * Application 1 -> Shortlisted | Rejected     | RejectedConditionalOffer  | Rejected     | RejectedConditionalOffer | RejectedConditionalOffer | Rejected
+             * Application 2 -> Pending     | Shortlisted  | Shortlisted                        | Rejected     | RejectedConditionalOffer  | Rejected                           | RejectedConditionalOffer 
+             * Application 3 -> Pending     | Pending      | Pending                             | Shortlisted | Shortlisted                         | Shortlisted                       | Shortlisted
              */
             elseif($count == 3)
             {
                 if(
                         ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                    ||  ($applications[0]->applicationstatusid == 10 && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 4)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 4)
                   )
                     return true;
             }
@@ -768,29 +786,34 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered borderline if; 
-             * Application 1 -> Borderline  | Rejected
-             * Application 2 -> Pending   | Borderline
+             * Application 1 -> Borderline  | Rejected    | RejectedConditionalOffer
+             * Application 2 -> Pending      | Borderline | Borderline
              */
             elseif($count == 2)
             {
                 if(
                         ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 7)
                   )
                     return true;
             }
             
             /* If applicant has 3 applications; they are considered borderline if; 
-             * Application 1 -> Borderline  | Rejected     | Rejected
-             * Application 2 -> Pending     | Borderline   | Rejected
-             * Application 3 -> Pending     | Pending      | Borderline
+             * Application 1 -> Borderline  | Rejected     | RejectedConditionalOffer  | Rejected    | RejectedConditionalOffer  | RejectedConditionalOffer  | Rejected
+             * Application 2 -> Pending     | Borderline   | Borderline                        | Rejected     | RejectedConditionalOffer  | Rejected                            | RejectedConditionalOffer
+             * Application 3 -> Pending     | Pending       | Pending                            | Borderline  |  Borderline                        | Borderline                         | Borderline
              */
             elseif($count == 3)
             {
                 if(
                         ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 7)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 7)
                   )
                     return true;
             }
@@ -829,29 +852,34 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered interview-offer if; 
-             * Application 1 -> InterviewOffer  | Rejected
-             * Application 2 -> Rejected        | InterviewOffer
+             * Application 1 -> InterviewOffer  | Rejected             | RejectedConditionalOffer
+             * Application 2 -> Rejected            | InterviewOffer   | InterviewOffer
              */
             elseif($count == 2)
             {
                 if(
                         ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8)
                   )
                     return true;
             }
             
             /* If applicant has 3 applications; they are considered interview-offer if; 
-             * Application 1 -> InterviewOffer  | Rejected         | Rejected
-             * Application 2 -> Rejected        | InterviewOffer   | Rejected
-             * Application 3 -> Rejected        | Rejected         | InterviewOffer
+             * Application 1 -> InterviewOffer  | Rejected            | RejectedConditionalOffer | Rejected             | RejectedConditionalOffer  | RejectedConditionalOffer  | Rejected
+             * Application 2 -> Rejected            | InterviewOffer  | InterviewOffer                 | Rejected             | RejectedConditionalOffer  | Rejected                            | RejectedConditionalOffer 
+             * Application 3 -> Rejected            | Rejected            | Rejected                           | InterviewOffer   | InterviewOffer                  | InterviewOffer                  | InterviewOffer
              */
             elseif($count == 3)
             {
                 if(
                         ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 8)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 8)
                   )
                     return true;
             }
@@ -907,29 +935,34 @@ class Applicant extends \yii\db\ActiveRecord
                 }
 
                 /* If applicant has 2 applications; they are considered offer if; 
-                 * Application 1 -> Offer   | Rejected
-                 * Application 2 -> Rejected| Offer
+                 * Application 1 -> Offer       | Rejected | RejectedConditionalOffer
+                 * Application 2 -> Rejected  | Offer      | Offer
                  */
                 elseif($count == 2)
                 {
                     if(
                             ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9)
                       )
                         return true;
                 }
 
                 /* If applicant has 3 applications; they are considered offer if; 
-                 * Application 1 -> Offer           | Rejected         | Rejected
-                 * Application 2 -> Rejected        | Offer            | Rejected
-                 * Application 3 -> Rejected        | Rejected         | Offer
+                 * Application 1 -> Offer             | Rejected   | RejectedConditionalOffer | Rejected | RejectedConditionalOffer | RejectedConditionalOffer  | Rejected
+                 * Application 2 -> Rejected        | Offer        | Offer                                | Rejected | RejectedConditionalOffer | Rejected                            | RejectedConditionalOffer
+                 * Application 3 -> Rejected        | Rejected   | Rejected                            | Offer     | Offer                                | Offer                                 | Offer
                  */
                 elseif($count == 3)
                 {
                     if(
                             ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 9)
                       )
                         return true;
                 }
@@ -968,29 +1001,31 @@ class Applicant extends \yii\db\ActiveRecord
             }
             
             /* If applicant has 2 applications; they are considered Rejected-conditional-offer if; 
-             * Application 1 -> RejectedConditionalOffer | Rejected
-             * Application 2 -> Rejected                           | RejectedConditionalOffer
+             * Application 1 -> RejectedConditionalOffer | Rejected                             |  RejectedConditionalOffer
+             * Application 2 -> Rejected                           | RejectedConditionalOffer   |  RejectedConditionalOffer
              */
             elseif($count == 2)
             {
                 if(
                         ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10)
                   )
                     return true;
             }
             
             /* If applicant has 3 applications; they are considered Rejected-conditional-offer if; 
-             * Application 1 -> RejectedConditionalOffer | Rejected                | Rejected
-             * Application 2 -> Rejected                 | RejectedConditionalOffer| Rejected
-             * Application 3 -> Rejected                 | Rejected                | RejectedConditionalOffer
+             * Application 1 -> RejectedConditionalOffer | Rejected                                 | Rejected                              | RejectedConditionalOffer
+             * Application 2 -> Pending                            | RejectedConditionalOffer       | Rejected                              | RejectedConditionalOffer
+             * Application 3 -> Pending                            | Pending                                  | RejectedConditionalOffer    | RejectedConditionalOffer
              */
             elseif($count == 3)
             {
                 if(
-                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 10)
                   )
                     return true;
             }
@@ -1999,11 +2034,11 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->where(['csec_qualification.personid' => $personid, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application.isactive' => 1, 'application.isdeleted' => 0,
-                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
-                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2
-                            ])
+                                    'application.isactive' => 1, 'application.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 
+                                    'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2
+                                    ])
                     ->all();
         $all_verified = true;
         foreach($qualifications as $qualification)
@@ -2584,11 +2619,6 @@ class Applicant extends \yii\db\ActiveRecord
                         ->groupBy('application.personid')
                         ->one();
             
-            if($divisionid == 7)    //DNE applicant start the year following their application
-                $year = intval($academic_year->title) + 1;
-            else 
-                $year = $academic_year->title;
-                    
             $startyear =  substr($academic_year->title, 2, 2);        
             $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
             $num = str_pad(strval($applicantid), 4, '0', STR_PAD_LEFT);
@@ -2601,7 +2631,8 @@ class Applicant extends \yii\db\ActiveRecord
         }
         elseif($action = "revoke")
         {
-            $potentialstudentid = NULL;
+//            $potentialstudentid = NULL;
+            $potentialstudentid = 0;
         }
         return $potentialstudentid;         
     }

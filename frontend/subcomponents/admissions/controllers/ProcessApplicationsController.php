@@ -739,7 +739,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -774,13 +774,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ($applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -832,7 +835,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -869,13 +872,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ($applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -932,13 +938,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ($applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -1044,7 +1053,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1134,19 +1143,41 @@
                             }
                             else
                             {
-                                // create offer
-                                $offer = new Offer();
-                                $offer->applicationid = $applicationid;
-                                $offer->offertypeid = 1;
-                                $offer->issuedby = Yii::$app->user->getId();
-                                $offer->issuedate = date("Y-m-d");
-                                $offer_save_flag = $offer->save();
-                                if($offer_save_flag == false)
-                                {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                                }
+                                 /**
+                                * this should prevent the creation of multiple offers,
+                                * which is suspected to occur when internet timeout 
+                                * during request submission
+                                */
+                               $existing_current_offer = Offer::find()
+                                               ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                               ->all();
+                               
+                               if ($existing_current_offer == false)
+                               {
+                                    // create offer
+                                    $offer = new Offer();
+                                    $offer->applicationid = $applicationid;
+                                    $offer->offertypeid = 1;
+                                    $offer->issuedby = Yii::$app->user->getId();
+                                    $offer->issuedate = date("Y-m-d");
+                                    $offer_save_flag = $offer->save();
+                                    if($offer_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+                                    // Generate potentialstudentid
+                                    else
+                                    {
+                                        $applicant = Applicant::find()
+                                                    ->where(['personid' => $update_candidate->personid])
+                                                    ->one();
+                                        $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                        $applicant->potentialstudentid = $generated_id;
+                                        $applicant->save();
+                                    }
+                               }
                             }
                        }
                     }
@@ -1175,41 +1206,11 @@
                             }
                         }
 
-                        //updates preceeding applications
-                        if($position > 0)
-                        {
-                            for ($i = $position-1 ; $i >= 0 ; $i--)
-                            {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
-                                {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                                }
-                            }
-                        }
-
-                        /*
-                         * If previous status was"conditional offer",
-                         * then that offer is revoked
-                         */
-                        if($old_status == 8)
-                        {
-                            $result = Offer::rescindOffer($update_candidate->applicationid, 2);
-                            if ($result == false)
-                            {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                            }
-                        }
                         /*
                          * If previous status was "offer",
                          * then that offer is revoked
                          */
-                        elseif($old_status == 9)
+                        if($old_status == 9)
                         {
                             $result = Offer::rescindOffer($update_candidate->applicationid, 1);
                             if ($result == false)
@@ -1223,7 +1224,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1246,32 +1247,36 @@
                                 ->one();
                         if($rejection == false)
                         {
-                            //create Rejection record
-                            $rejection = new Rejection();
-                            $rejection->personid = $update_candidate->personid;
-                            $rejection->rejectiontypeid = 2;
-                            $rejection->issuedby = Yii::$app->user->getID();
-                            $rejection->issuedate = date('Y-m-d');
-                            $rejection_save_flag = $rejection->save();
-                            if ($rejection_save_flag == false)
+                            //Rejection should only be created if this is the last progrmme choice
+                            if (Application::istLastChosenApplication($update_candidate) == true)
                             {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                            }
-
-                            //create associate RejectionApplications records
-                            foreach($applications as $application)
-                            {
-                                $temp = new RejectionApplications();
-                                $temp->rejectionid = $rejection->rejectionid;
-                                $temp->applicationid = $application->applicationid;
-                                $miscellaneous_save_flag = $temp->save();
-                                if ($miscellaneous_save_flag == false)
+                                //create Rejection record
+                                $rejection = new Rejection();
+                                $rejection->personid = $update_candidate->personid;
+                                $rejection->rejectiontypeid = 2;
+                                $rejection->issuedby = Yii::$app->user->getID();
+                                $rejection->issuedate = date('Y-m-d');
+                                $rejection_save_flag = $rejection->save();
+                                if ($rejection_save_flag == false)
                                 {
                                     $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
+
+                                //create associate RejectionApplications records
+                                foreach($applications as $application)
+                                {
+                                    $temp = new RejectionApplications();
+                                    $temp->rejectionid = $rejection->rejectionid;
+                                    $temp->applicationid = $application->applicationid;
+                                    $miscellaneous_save_flag = $temp->save();
+                                    if ($miscellaneous_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -1367,7 +1372,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1402,14 +1407,17 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
-                                {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                                }
+                                 if ($applications[$i]->applicationstatusid != 10)
+                                 {
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+                                 }
                             }
                         }
                         
@@ -1460,7 +1468,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1497,13 +1505,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ($applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -1560,13 +1571,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ($applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -1672,7 +1686,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1707,13 +1721,16 @@
                         {
                             for ($i = $position-1 ; $i >= 0 ; $i--)
                             {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
+                                if ( $applications[$i]->applicationstatusid != 10)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    $applications[$i]->applicationstatusid = 6;
+                                    $applications_save_flag = $applications[$i]->save();
+                                    if ($applications_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
@@ -1794,18 +1811,40 @@
                             }
                             else
                             {
-                                // create offer
-                                $offer = new Offer();
-                                $offer->applicationid = $applicationid;
-                                $offer->offertypeid = 1;
-                                $offer->issuedby = Yii::$app->user->getId();
-                                $offer->issuedate = date("Y-m-d");
-                                $offer_save_flag = $offer->save();
-                                if($offer_save_flag == false)
+                                /**
+                                * this should prevent the creation of multiple offers,
+                                * which is suspected to occur when internet timeout 
+                                * during request submission
+                                */
+                               $existing_current_offer = Offer::find()
+                                               ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                               ->all();
+                              
+                                if($existing_current_offer == false)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    // create offer
+                                    $offer = new Offer();
+                                    $offer->applicationid = $applicationid;
+                                    $offer->offertypeid = 1;
+                                    $offer->issuedby = Yii::$app->user->getId();
+                                    $offer->issuedate = date("Y-m-d");
+                                    $offer_save_flag = $offer->save();
+                                    if($offer_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+                                    // Generate potentialstudentid
+                                    else
+                                    {
+                                        $applicant = Applicant::find()
+                                                    ->where(['personid' => $update_candidate->personid])
+                                                    ->one();
+                                        $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                        $applicant->potentialstudentid = $generated_id;
+                                        $applicant->save();
+                                    }
                                 }
                             }
                        }
@@ -1872,43 +1911,12 @@
                                 }
                             }
                         }
-
-                        //updates preceeding applications
-                        if($position > 0)
-                        {
-                            for ($i = $position-1 ; $i >= 0 ; $i--)
-                            {
-                                $applications[$i]->applicationstatusid = 6;
-                                $applications_save_flag = $applications[$i]->save();
-                                if ($applications_save_flag == false)
-                                {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                                }
-                            }
-                        }
-                        
-                        /*
-                         * If previous status was"conditional offer",
-                         * then that offer is revoked
-                         */
-//                        if($old_status == 8)
-//                        {
-//                            $result = Offer::rescindOffer($update_candidate->applicationid, 2);
-//                            if ($result == false)
-//                            {
-//                                $transaction->rollBack();
-//                                Yii::$app->session->setFlash('error', 'Error occured when revoke offer');
-//                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-//                            }
-//                        }
                         
                         /*
                          * If previous status was "offer",
                          * then that offer is revoked
                          */
-                        elseif($old_status == 9)
+                        if($old_status == 9)
                         {
                             $result = Offer::rescindOffer($update_candidate->applicationid, 1);
                             if ($result == false)
@@ -1922,7 +1930,7 @@
                                 $applicant = Applicant::find()
                                             ->where(['personid' => $update_candidate->personid])
                                             ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "revoke");
                                 $applicant->potentialstudentid = $generated_id;
                                 $applicant->save();
                             }
@@ -1945,32 +1953,36 @@
                                 ->one();
                         if($rejection == false)
                         {
-                            //create Rejection record
-                            $rejection = new Rejection();
-                            $rejection->personid = $update_candidate->personid;
-                            $rejection->rejectiontypeid = 2;
-                            $rejection->issuedby = Yii::$app->user->getID();
-                            $rejection->issuedate = date('Y-m-d');
-                            $rejection_save_flag = $rejection->save();
-                            if ($rejection_save_flag == false)
+                            //Rejection should only be created if this is the last progrmme choice
+                            if (Application::istLastChosenApplication($update_candidate) == true)
                             {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                            }
-
-                            //create associate RejectionApplications records
-                            foreach($applications as $application)
-                            {
-                                $temp = new RejectionApplications();
-                                $temp->rejectionid = $rejection->rejectionid;
-                                $temp->applicationid = $application->applicationid;
-                                $miscellaneous_save_flag = $temp->save();
-                                if ($miscellaneous_save_flag == false)
+                                //create Rejection record
+                                $rejection = new Rejection();
+                                $rejection->personid = $update_candidate->personid;
+                                $rejection->rejectiontypeid = 2;
+                                $rejection->issuedby = Yii::$app->user->getID();
+                                $rejection->issuedate = date('Y-m-d');
+                                $rejection_save_flag = $rejection->save();
+                                if ($rejection_save_flag == false)
                                 {
                                     $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
+
+                                //create associate RejectionApplications records
+                                foreach($applications as $application)
+                                {
+                                    $temp = new RejectionApplications();
+                                    $temp->rejectionid = $rejection->rejectionid;
+                                    $temp->applicationid = $application->applicationid;
+                                    $miscellaneous_save_flag = $temp->save();
+                                    if ($miscellaneous_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
                                 }
                             }
                         }
