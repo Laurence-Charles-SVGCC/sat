@@ -167,7 +167,7 @@ class RejectionController extends Controller
                 foreach ($cape_subjects as $i=>$cs)
                 { 
                     $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-                    if ($i != count($cape_subjects-1))
+                    if ($i != count($cape_subjects) - 1)
                         $cape_subjects_row.= ", ";
                     else
                         $cape_subjects_row.= ".";
