@@ -2637,6 +2637,45 @@ class Applicant extends \yii\db\ActiveRecord
         return $potentialstudentid;         
     }
     
+    
+    /**
+     * Returns true is applicant has received an offer
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/08/2016
+     * Date Last Modified: 30/08/2016
+     */
+    public static function hasBeenIssuedOffer($personid)
+    {
+        $applications =Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $application->personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                            ])
+                ->andWhere(['>', 'application.applicationstatusid', 2])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        
+        $ids = array();
+        foreach($applications as $application)
+        {
+            $ids[] = $application->applicationid;
+        }
+        
+        $offers = Offer::find()
+                ->where(['applicationid' => $ids,  'ispublished' => 1, 'offer.isdeleted' => 0, 'offertypeid' => 1])
+                ->all();
+        if ($offers == true)
+            return true;
+        
+        return false;
+    }
+    
   
     
 }

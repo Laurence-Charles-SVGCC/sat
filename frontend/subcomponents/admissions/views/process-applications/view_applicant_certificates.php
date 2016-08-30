@@ -181,7 +181,7 @@
                 ]); ?>
             </div><br/>
             
-            <?php if ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)):?>
+            <?php if ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)  || Applicant::hasBeenIssuedOffer($applicant->personid)):?>
             <div>
             <?php else:?>
             <div style="opacity:0.6;">
@@ -216,7 +216,7 @@
                         <th>Division</th>
                         <th>Programme</th>
                         <th>Status</th>
-                        <?php if ((Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean')) && $application_status > 2  /*&& $deprecated_application == false*/): ?>
+                        <?php if ((Yii::$app->user->can('Dean')  || Yii::$app->user->can('Deputy Dean')) && $application_status > 2 ): ?>
                             <th>Action</th>
                         <?php endif;?>
                     </tr>
@@ -242,7 +242,7 @@
                                     /*Application cchoice must not be one suggested by Dean/DEputy Dean and;
                                      * User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
                                      */
-                                    if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') /*&& $deprecated_application == false*/))
+                                    if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') ))
                                     {
                                         /*
                                          * All users that are not 'System Admin' are only allowed to edit applicatio nchoices that belong to their division 
