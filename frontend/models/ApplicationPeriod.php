@@ -385,7 +385,7 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
     public static function getOpenPeriodIDs()
     {
         $periods = ApplicationPeriod::find()
-                ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0 /*'applicationperiodstatusid' => 5*/])
+                ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0 ])
                 ->all();
         if (count($periods) > 0)
         {

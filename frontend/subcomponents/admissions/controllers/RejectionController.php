@@ -671,7 +671,7 @@ class RejectionController extends Controller
      * 
      * Author: Gamal Cricheton
      * Date Created: ??
-     * Date Last Modified: 31/03/2016 (L. Charles)
+     * Date Last Modified: 31/03/2016 (L. Charles) | 30/08/2016
      */
     public function actionRejectionDetailsHome($rejectiontype, $criteria = NULL)
     {
@@ -713,6 +713,7 @@ class RejectionController extends Controller
                 ->groupby('rejection.rejectionid')
                 ->all();
         
+        $subjects_and_english_req = Applicant::getRejectedWithFivePassesAndEnglishPass($rejections);
         $subjects_req = Applicant::getRejectedWithFivePasses($rejections);
         $english_req = Applicant::getRejectedWithEnglish($rejections);
         $math_req = Applicant::getRejectedWithMath($rejections);
@@ -744,6 +745,11 @@ class RejectionController extends Controller
         elseif ($criteria == "five_passes")
         {
             $subs = Applicant::getRejectedWithFivePasses($rejections, true);
+            $subjects_and_english_req1 = $subs ? $subs : array();
+        }
+        elseif ($criteria == "five_passes_and_english")
+        {
+            $subs = Applicant::getRejectedWithFivePassesAndEnglishPass($rejections, true);
             $subjects_req1 = $subs ? $subs : array();
         }
         elseif ($criteria == "dte")
@@ -795,6 +801,11 @@ class RejectionController extends Controller
                 elseif ($criteria == "five_passes")
                 {
                     if (!in_array($rejection, $subjects_req1))
+                       continue;
+                }
+                elseif ($criteria == "five_passes_and_english")
+                {
+                    if (!in_array($rejection,  $subjects_and_english_req1))
                        continue;
                 }
                 elseif ($criteria == "dte")
@@ -894,6 +905,13 @@ class RejectionController extends Controller
                     {
                          $subjects_req_data[] = $rejection_data;
                     }
+                } 
+                elseif ($criteria == "five_passes_and_english")
+                {
+                    if (in_array($rejection, $subjects_and_english_req1))
+                    {
+                         $subjects_req_and_english_data[] = $rejection_data;
+                    }
                 }
                 elseif ($criteria == "dte")
                 {
@@ -954,6 +972,20 @@ class RejectionController extends Controller
                     'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
                 ],
             ]);
+        } 
+        elseif ($criteria == "five_passes_and_english")
+        {
+            $rejection_type = "Minimum Subject Total Entry Requirements With CSEC English Violation";
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $subjects_req_and_english_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                    ],
+                'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname', 'programme', 'issuedby'],
+                ],
+            ]);
         }
         elseif ($criteria == "dte")
         {
@@ -989,6 +1021,7 @@ class RejectionController extends Controller
             'english_req' => $english_req,
             'math_req' => $math_req,
             'subjects_req' => $subjects_req,
+            'subjects_req_and_english' => $subjects_req_and_english,
             'dte_science_req' => $dte_science_req,
             'dne_science_req' => $dne_science_req,
             

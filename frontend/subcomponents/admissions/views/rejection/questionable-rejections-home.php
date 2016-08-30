@@ -31,7 +31,7 @@
                     <?php if($math_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'maths']);?>" 
-                                title="Lack CSEC Mathematics Pass"
+                                title="Has CSEC Mathematics Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view unsuccessful applicants who have CSEC/GCE Mathematics pass
                              </a>
@@ -41,7 +41,7 @@
                     <?php if($english_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'english']);?>" 
-                                title="Lack CSEC English Pass"
+                                title="Has CSEC English Pass"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view unsuccessful applicants who have CSEC/GCE English Language pass
                              </a>
@@ -51,9 +51,19 @@
                     <?php if($subjects_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'five_passes']);?>" 
-                                title="Lack 5 CSEC Passes"
+                                title="Has 5 CSEC Passes"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view unsuccessful applicants possessing five(5) CSEC/GCE passes
+                             </a>
+                        </li><br/>
+                    <?php endif;?>
+                        
+                    <?php if($subjects_req_and_english):?>
+                        <li>
+                            <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'five_passes_and_english']);?>" 
+                                title="Has 5 CSEC Passes with English"
+                                style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
+                                Click here to view unsuccessful applicants possessing five(5) CSEC/GCE passes including CSEC/GCE English Language pas
                              </a>
                         </li><br/>
                     <?php endif;?>
@@ -61,7 +71,7 @@
                     <?php if($dte_science_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'dte']);?>" 
-                                title="Lack DTE Required Reelvant Science"
+                                title="Has DTE Required Reelvant Science"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view unsuccessful applicants who satisfy DTE's the required relevant science
                              </a>
@@ -71,7 +81,7 @@
                     <?php if($dne_science_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home',  'rejectiontype' => $rejectiontype, 'criteria' => 'dne']);?>" 
-                                title="Lack DNE Required Relvant Science"
+                                title="Has DNE Required Relvant Science"
                                 style="font-size:16px; width: 65%; margin: 0 auto; color:white" class ='btn btn-danger'> 
                                 Click here to view unsuccessful applicants who satisfy DNE's required relevant science
                              </a>

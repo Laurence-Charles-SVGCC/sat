@@ -2593,6 +2593,46 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+       /**
+     * Returns an array of all applicants that were given rejections but have 
+     * 5 CSEC Passes
+     * 
+     * @param type $rejections
+     * @param type $details
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 30/03/2016
+     * Date Last Modified: 30/03/2016
+     */
+    public static function getRejectedWithFivePassesAndEnglishPass($rejections, $details = false)
+    {
+        if (empty($rejections))
+            return false;
+        
+        $rejectionids = array();
+        foreach($rejections as $rejection)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
+                    ->innerJoin('`rejection_applications`', '`rejection_applications`.`applicationid` = `application`.`applicationid`')
+                    ->innerJoin('rejection', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                    ->where(['application.isdeleted' => 0, 'rejection.isdeleted' => 0, 'rejection.rejectionid' => $rejection->rejectionid])
+                    ->one();
+            $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
+            $has_english = CsecQualification::hasCsecEnglish($applicant->personid);
+            if ($minimum_subjects_passed == true  || $has_english == true)
+            {
+                if ($details)
+                    $rejectionids[] = $rejection;
+                else
+                    return true;
+            }        
+        }
+        return count($rejectionids) > 0 ? $rejectionids : false;
+    }
+    
+    
     /*
      * Generates/revokes a potentialstudentid
      * 
