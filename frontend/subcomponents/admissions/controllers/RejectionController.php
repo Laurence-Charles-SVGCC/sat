@@ -910,7 +910,7 @@ class RejectionController extends Controller
                 {
                     if (in_array($rejection, $subjects_and_english_req1))
                     {
-                         $subjects_req_and_english_data[] = $rejection_data;
+                         $subjects_and_english_req_data[] = $rejection_data;
                     }
                 }
                 elseif ($criteria == "dte")
@@ -977,7 +977,7 @@ class RejectionController extends Controller
         {
             $rejection_type = "Minimum Subject Total Entry Requirements With CSEC English Violation";
             $dataProvider = new ArrayDataProvider([
-                'allModels' => $subjects_req_and_english_data,
+                'allModels' => $subjects_and_english_req_data,
                 'pagination' => [
                     'pageSize' => 25,
                     ],
@@ -1021,7 +1021,7 @@ class RejectionController extends Controller
             'english_req' => $english_req,
             'math_req' => $math_req,
             'subjects_req' => $subjects_req,
-            'subjects_req_and_english' => $subjects_req_and_english,
+            'subjects_and_english_req' => $subjects_and_english_req,
             'dte_science_req' => $dte_science_req,
             'dne_science_req' => $dne_science_req,
             
