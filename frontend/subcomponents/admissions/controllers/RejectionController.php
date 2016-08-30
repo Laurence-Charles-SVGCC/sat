@@ -145,10 +145,25 @@ class RejectionController extends Controller
             $programme_listing = array();
             foreach($applications as $application)
             {
-                $temp = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                array_push($programme_listing, $temp->getFullName());
+                $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                
+                $cape_subjects = array();
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::find()
+                            ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                            ->where(['application.applicationid' => $application->applicationid,
+                                    'application.isactive' => 1,
+                                    'application.isdeleted' => 0]
+                                    )
+                            ->all();
+                foreach ($cape_subjects as $cs) 
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                array_push($programme_listing, $programme_name);
             }
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
@@ -206,7 +221,7 @@ class RejectionController extends Controller
                         $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ":" . $cape_subjects_names[$key] . ",";
                     }
                 }
-                /* If current programme is CAPE,
+                /* If current programme is not CAPE,
                  * name format = "Programme Name"
                  */
                 else
