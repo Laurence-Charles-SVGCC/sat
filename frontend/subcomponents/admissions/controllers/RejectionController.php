@@ -163,32 +163,11 @@ class RejectionController extends Controller
                 $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                 array_push($programme_listing, $programme_name);
             }
-//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
             $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
             $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
-            
-//            $has_cape = false;
-//            foreach($applications as $application)
-//            {
-//                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-//                if($cape_subjects == true)
-//                    $has_cape = true;
-//                
-////                $cape_subjects_row = "CAPE: ";
-//                $cape_subjects_row = "";
-//                foreach ($cape_subjects as $i=>$cs)
-//                { 
-//                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-//                    if ($i != count($cape_subjects) - 1)
-//                        $cape_subjects_row.= ", ";
-//                    else
-//                        $cape_subjects_row.= ".";
-//                }
-//                $cape_subjects_names[] = $cape_subjects_row;
-//            }
             
             $info = Applicant::getApplicantInformation($applicant->personid);
             $prog = $info["prog"];
@@ -204,7 +183,6 @@ class RejectionController extends Controller
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;
             
-            
             $rejected_programme_listing = " ";
             foreach ($programme_listing as $key=>$entry)
             {
@@ -218,45 +196,7 @@ class RejectionController extends Controller
                 }
             }
             $rejection_data['programme'] = $rejected_programme_listing;
-            
-            
-            
-            
-//            $rejected_programme_listing = " ";
-//            foreach ($programme_listing as $key=>$entry)
-//            {
-//                /* If current programme is CAPE,
-//                 * name format = "Programme Name: capesubject, capesubject"
-//                 */
-//                if ($entry == "CAPE")       
-//                {
-//                    if((count($programme_listing)-1) == $key)
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " .  $entry . ":" . $cape_subjects_names[$key];
-//                    }
-//                    else
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ":" . $cape_subjects_names[$key] . ",";
-//                    }
-//                }
-//                /* If current programme is not CAPE,
-//                 * name format = "Programme Name"
-//                 */
-//                else
-//                {
-//                    if((count($programme_listing)-1) == $key)
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
-//                    }
-//                    else
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
-//                    }
-//                }
-//            }
-//            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
-//            $rejection_data['programme'] = $rejected_programme_listing;
-            
+             
             $rejection_data['issuedby'] = $issuername;
             $rejection_data['issuedate'] = $rejection->issuedate;
             $rejection_data['revokedby'] = $revokername;
@@ -584,9 +524,6 @@ class RejectionController extends Controller
         $data = array();
         foreach ($rejections as $rejection)
         {
-//            $cape_subjects_names = array();
-//            $cape_subjects = array();
-            
             $applications = $rejection->getApplications()->all();
             $applicant = Applicant::findOne(['personid' => $rejection->personid]);
             $username = $applicant->getPerson()->one()->username;
@@ -610,36 +547,11 @@ class RejectionController extends Controller
                 $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                 array_push($programme_listing, $programme_name);
             }
-//            foreach($applications as $application)
-//            {
-//                $temp = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-//                array_push($programme_listing, $temp->getFullName());
-//            }
-//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-          
+            
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
             $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
             $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
-            
-//            $has_cape = false;
-//            foreach($applications as $application)
-//            {
-//                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-//                if($cape_subjects == true)
-//                    $has_cape = true;
-//                
-//                $cape_subjects_row = "CAPE: ";
-//                foreach ($cape_subjects as $i=>$cs)
-//                { 
-//                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-//                    if ($i != count($cape_subjects)-1)
-//                        $cape_subjects_row.= ", ";
-//                    else
-//                        $cape_subjects_row.= ".";
-//                }
-//                $cape_subjects_names[] = $cape_subjects_row;
-//            }
             
             $info = Applicant::getApplicantInformation($applicant->personid);
             $prog = $info["prog"];
@@ -668,43 +580,7 @@ class RejectionController extends Controller
                 }
             }
             $rejection_data['programme'] = $rejected_programme_listing;
-            
-//            $rejected_programme_listing = " ";
-//            foreach ($programme_listing as $key=>$entry)
-//            {
-//                /* If current programme is CAPE,
-//                 * name format = "Programme Name: capesubject, capesubject"
-//                 */
-//                if ($entry == "CAPE")       
-//                {
-//                    if((count($programme_listing)-1) == $key)
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " .  $entry . ":" . $cape_subjects_names[$key];
-//                    }
-//                    else
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ":" . $cape_subjects_names[$key] . ",";
-//                    }
-//                }
-//                /* If current programme is CAPE,
-//                 * name format = "Programme Name"
-//                 */
-//                else
-//                {
-//                    if((count($programme_listing)-1) == $key)
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
-//                    }
-//                    else
-//                    {
-//                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
-//                    }
-//                }
-//            }
-//            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
-//            $rejection_data['programme'] = $rejected_programme_listing;
-            
-            
+              
             $rejection_data['issuedby'] = $issuername;
             $rejection_data['issuedate'] = $rejection->issuedate;
             $rejection_data['revokedby'] = $revokername;
@@ -942,35 +818,26 @@ class RejectionController extends Controller
                 $programme_listing = array();
                 foreach($applications as $application)
                 {
-                    $temp = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                    array_push($programme_listing, $temp->getFullName());
+                    $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+
+                    $cape_subjects = array();
+                    $cape_subjects_names = array();
+                    $cape_subjects = ApplicationCapesubject::find()
+                                ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                                ->where(['application.applicationid' => $application->applicationid, 'application.isactive' => 1,  'application.isdeleted' => 0])
+                                ->all();
+                    foreach ($cape_subjects as $cs) 
+                    { 
+                        $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                    }
+                    $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                    array_push($programme_listing, $programme_name);
                 }
-                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-//                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                
+               
                 $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
                 $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
                 $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
                 $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
-
-                $has_cape = false;
-                foreach($applications as $application)
-                {
-                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-                    if($cape_subjects == true)
-                        $has_cape = true;
-
-                    $cape_subjects_row = "CAPE: ";
-                    foreach ($cape_subjects as $i=>$cs)
-                    { 
-                        $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-                        if ($i != count($cape_subjects)-1)
-                            $cape_subjects_row.= ", ";
-                        else
-                            $cape_subjects_row.= ".";
-                    }
-                    $cape_subjects_names[] = $cape_subjects_row;
-                }
 
                 $info = Applicant::getApplicantInformation($applicant->personid);
                 $prog = $info["prog"];
@@ -985,42 +852,21 @@ class RejectionController extends Controller
                 $rejection_data['username'] = $username;
                 $rejection_data['firstname'] = $applicant->firstname;
                 $rejection_data['lastname'] = $applicant->lastname;
-//               
+                
                 $rejected_programme_listing = " ";
                 foreach ($programme_listing as $key=>$entry)
                 {
-                    /* If current programme is CAPE,
-                     * name format = "Programme Name: capesubject, capesubject"
-                     */
-                    if ($entry == "CAPE")       
+                    if((count($programme_listing)-1) == $key)
                     {
-                        if((count($programme_listing)-1) == $key)
-                        {
-                            $rejected_programme_listing.= " " . "(" . ($key+1) . ") " .  $entry . ":" . $cape_subjects_names[$key];
-                        }
-                        else
-                        {
-                            $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ":" . $cape_subjects_names[$key] . ",";
-                        }
+                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
                     }
-                    /* If current programme is CAPE,
-                     * name format = "Programme Name"
-                     */
                     else
                     {
-                        if((count($programme_listing)-1) == $key)
-                        {
-                            $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
-                        }
-                        else
-                        {
-                            $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
-                        }
+                        $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
                     }
                 }
                 $rejection_data['programme'] = $rejected_programme_listing;
-                
-                
+      
                 $rejection_data['issuedby'] = $issuername;
                 $rejection_data['issuedate'] = $rejection->issuedate;
                 $rejection_data['revokedby'] = $revokername;
@@ -1193,30 +1039,34 @@ class RejectionController extends Controller
             $applications = $rejection->getApplications()->all();
             $applicant = Applicant::findOne(['personid' => $rejection->personid]);
             $username = $applicant->getPerson()->one()->username;
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            
+            //generate array of all programmes applicant applied for
+            $programme_listing = array();
+            foreach($applications as $application)
+            {
+                $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                
+                $cape_subjects = array();
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::find()
+                            ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                            ->where(['application.applicationid' => $application->applicationid,
+                                    'application.isactive' => 1,
+                                    'application.isdeleted' => 0]
+                                    )
+                            ->all();
+                foreach ($cape_subjects as $cs) 
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                array_push($programme_listing, $programme_name);
+            }
+            
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
             $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
             $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
-            
-            $has_cape = false;
-            foreach($applications as $application)
-            {
-                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-                if($cape_subjects == true)
-                    $has_cape = true;
-                
-                $cape_subjects_row = "CAPE: ";
-                foreach ($cape_subjects as $i=>$cs)
-                { 
-                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-                    if ($i != count($cape_subjects-1))
-                        $cape_subjects_row.= ", ";
-                    else
-                        $cape_subjects_row.= ".";
-                }
-                $cape_subjects_names[] = $cape_subjects_row;
-            }
             
             $info = Applicant::getApplicantInformation($applicant->personid);
             $prog = $info["prog"];
@@ -1227,10 +1077,25 @@ class RejectionController extends Controller
             $rejection_data['status'] = $application_status;
             $rejection_data['personid'] = $applicant->personid;
             $rejection_data['rejectionid'] = $rejection->rejectionid;
+            $rejection_data['rejectiontype'] = $rejection->rejectiontypeid;
             $rejection_data['username'] = $username;
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;
-            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+            
+            $rejected_programme_listing = " ";
+            foreach ($programme_listing as $key=>$entry)
+            {
+                if((count($programme_listing)-1) == $key)
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
+                }
+                else
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
+                }
+            }
+            $rejection_data['programme'] = $rejected_programme_listing;
+             
             $rejection_data['issuedby'] = $issuername;
             $rejection_data['issuedate'] = $rejection->issuedate;
             $rejection_data['revokedby'] = $revokername;
@@ -1239,6 +1104,58 @@ class RejectionController extends Controller
             
             $data[] = $rejection_data;
         }
+//        foreach ($rejections as $rejection)
+//        {
+//            $cape_subjects_names = array();
+//            $applications = $rejection->getApplications()->all();
+//            $applicant = Applicant::findOne(['personid' => $rejection->personid]);
+//            $username = $applicant->getPerson()->one()->username;
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
+//            $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
+//            $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
+//            $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
+//            
+//            $has_cape = false;
+//            foreach($applications as $application)
+//            {
+//                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+//                if($cape_subjects == true)
+//                    $has_cape = true;
+//                
+//                $cape_subjects_row = "CAPE: ";
+//                foreach ($cape_subjects as $i=>$cs)
+//                { 
+//                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
+//                    if ($i != count($cape_subjects-1))
+//                        $cape_subjects_row.= ", ";
+//                    else
+//                        $cape_subjects_row.= ".";
+//                }
+//                $cape_subjects_names[] = $cape_subjects_row;
+//            }
+//            
+//            $info = Applicant::getApplicantInformation($applicant->personid);
+//            $prog = $info["prog"];
+//            $application_status = $info["status"];
+//            
+//            $rejection_data = array();
+//            $rejection_data['prog'] = $prog;
+//            $rejection_data['status'] = $application_status;
+//            $rejection_data['personid'] = $applicant->personid;
+//            $rejection_data['rejectionid'] = $rejection->rejectionid;
+//            $rejection_data['username'] = $username;
+//            $rejection_data['firstname'] = $applicant->firstname;
+//            $rejection_data['lastname'] = $applicant->lastname;
+//            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+//            $rejection_data['issuedby'] = $issuername;
+//            $rejection_data['issuedate'] = $rejection->issuedate;
+//            $rejection_data['revokedby'] = $revokername;
+//            $rejection_data['revokedate'] = $rejection->revokedate ? $rejection->revokedate : 'N/A' ;
+//            $rejection_data['ispublished'] = $rejection->ispublished;
+//            
+//            $data[] = $rejection_data;
+//        }
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
@@ -1307,37 +1224,63 @@ class RejectionController extends Controller
             $applications = $rejection->getApplications()->all();
             $applicant = Applicant::findOne(['personid' => $rejection->personid]);
             $username = $applicant->getPerson()->one()->username;
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            
+            //generate array of all programmes applicant applied for
+            $programme_listing = array();
+            foreach($applications as $application)
+            {
+                $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                
+                $cape_subjects = array();
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::find()
+                            ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                            ->where(['application.applicationid' => $application->applicationid,
+                                    'application.isactive' => 1,
+                                    'application.isdeleted' => 0]
+                                    )
+                            ->all();
+                foreach ($cape_subjects as $cs) 
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                array_push($programme_listing, $programme_name);
+            }
+            
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
             $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
             $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
             
-            $has_cape = false;
-            foreach($applications as $application)
-            {
-                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-                if($cape_subjects == true)
-                    $has_cape = true;
-                
-                $cape_subjects_row = "CAPE: ";
-                foreach ($cape_subjects as $i=>$cs)
-                { 
-                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-                    if ($i != count($cape_subjects-1))
-                        $cape_subjects_row.= ", ";
-                    else
-                        $cape_subjects_row.= ".";
-                }
-                $cape_subjects_names[] = $cape_subjects_row;
-            }
+            $info = Applicant::getApplicantInformation($applicant->personid);
+            $prog = $info["prog"];
+            $application_status = $info["status"];
             
             $rejection_data = array();
+            $rejection_data['prog'] = $prog;
+            $rejection_data['status'] = $application_status;
+            $rejection_data['personid'] = $applicant->personid;
             $rejection_data['rejectionid'] = $rejection->rejectionid;
+            $rejection_data['rejectiontype'] = $rejection->rejectiontypeid;
             $rejection_data['username'] = $username;
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;
-            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+            
+            $rejected_programme_listing = " ";
+            foreach ($programme_listing as $key=>$entry)
+            {
+                if((count($programme_listing)-1) == $key)
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
+                }
+                else
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
+                }
+            }
+            $rejection_data['programme'] = $rejected_programme_listing;
+             
             $rejection_data['issuedby'] = $issuername;
             $rejection_data['issuedate'] = $rejection->issuedate;
             $rejection_data['revokedby'] = $revokername;
@@ -1346,6 +1289,51 @@ class RejectionController extends Controller
             
             $data[] = $rejection_data;
         }
+//        foreach ($rejections as $rejection)
+//        {
+//            $cape_subjects_names = array();
+//            $applications = $rejection->getApplications()->all();
+//            $applicant = Applicant::findOne(['personid' => $rejection->personid]);
+//            $username = $applicant->getPerson()->one()->username;
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
+//            $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
+//            $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
+//            $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
+//            
+//            $has_cape = false;
+//            foreach($applications as $application)
+//            {
+//                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+//                if($cape_subjects == true)
+//                    $has_cape = true;
+//                
+//                $cape_subjects_row = "CAPE: ";
+//                foreach ($cape_subjects as $i=>$cs)
+//                { 
+//                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
+//                    if ($i != count($cape_subjects-1))
+//                        $cape_subjects_row.= ", ";
+//                    else
+//                        $cape_subjects_row.= ".";
+//                }
+//                $cape_subjects_names[] = $cape_subjects_row;
+//            }
+//            
+//            $rejection_data = array();
+//            $rejection_data['rejectionid'] = $rejection->rejectionid;
+//            $rejection_data['username'] = $username;
+//            $rejection_data['firstname'] = $applicant->firstname;
+//            $rejection_data['lastname'] = $applicant->lastname;
+//            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+//            $rejection_data['issuedby'] = $issuername;
+//            $rejection_data['issuedate'] = $rejection->issuedate;
+//            $rejection_data['revokedby'] = $revokername;
+//            $rejection_data['revokedate'] = $rejection->revokedate ? $rejection->revokedate : 'N/A' ;
+//            $rejection_data['ispublished'] = $rejection->ispublished;
+//            
+//            $data[] = $rejection_data;
+//        }
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
@@ -1414,37 +1402,63 @@ class RejectionController extends Controller
             $applications = $rejection->getApplications()->all();
             $applicant = Applicant::findOne(['personid' => $rejection->personid]);
             $username = $applicant->getPerson()->one()->username;
-            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+            
+            //generate array of all programmes applicant applied for
+            $programme_listing = array();
+            foreach($applications as $application)
+            {
+                $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                
+                $cape_subjects = array();
+                $cape_subjects_names = array();
+                $cape_subjects = ApplicationCapesubject::find()
+                            ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
+                            ->where(['application.applicationid' => $application->applicationid,
+                                    'application.isactive' => 1,
+                                    'application.isdeleted' => 0]
+                                    )
+                            ->all();
+                foreach ($cape_subjects as $cs) 
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                array_push($programme_listing, $programme_name);
+            }
+            
             $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
             $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
             $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
             $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
             
-            $has_cape = false;
-            foreach($applications as $application)
-            {
-                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
-                if($cape_subjects == true)
-                    $has_cape = true;
-                
-                $cape_subjects_row = "CAPE: ";
-                foreach ($cape_subjects as $i=>$cs)
-                { 
-                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
-                    if ($i != count($cape_subjects-1))
-                        $cape_subjects_row.= ", ";
-                    else
-                        $cape_subjects_row.= ".";
-                }
-                $cape_subjects_names[] = $cape_subjects_row;
-            }
+            $info = Applicant::getApplicantInformation($applicant->personid);
+            $prog = $info["prog"];
+            $application_status = $info["status"];
             
             $rejection_data = array();
+            $rejection_data['prog'] = $prog;
+            $rejection_data['status'] = $application_status;
+            $rejection_data['personid'] = $applicant->personid;
             $rejection_data['rejectionid'] = $rejection->rejectionid;
+            $rejection_data['rejectiontype'] = $rejection->rejectiontypeid;
             $rejection_data['username'] = $username;
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;
-            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+            
+            $rejected_programme_listing = " ";
+            foreach ($programme_listing as $key=>$entry)
+            {
+                if((count($programme_listing)-1) == $key)
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry;
+                }
+                else
+                {
+                    $rejected_programme_listing.= " " . "(" . ($key+1) . ") " . $entry . ",";
+                }
+            }
+            $rejection_data['programme'] = $rejected_programme_listing;
+             
             $rejection_data['issuedby'] = $issuername;
             $rejection_data['issuedate'] = $rejection->issuedate;
             $rejection_data['revokedby'] = $revokername;
@@ -1453,6 +1467,51 @@ class RejectionController extends Controller
             
             $data[] = $rejection_data;
         }
+//        foreach ($rejections as $rejection)
+//        {
+//            $cape_subjects_names = array();
+//            $applications = $rejection->getApplications()->all();
+//            $applicant = Applicant::findOne(['personid' => $rejection->personid]);
+//            $username = $applicant->getPerson()->one()->username;
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $issuer = Employee::findOne(['personid' => $rejection->issuedby]);
+//            $issuername = $issuer ? $issuer->title . '. ' . $issuer->lastname : 'Undefined Issuer';
+//            $revoker = Employee::findOne(['personid' => $rejection->revokedby]);
+//            $revokername = $revoker ? $revoker->title . '. ' . $revoker->lastname : 'N/A';
+//            
+//            $has_cape = false;
+//            foreach($applications as $application)
+//            {
+//                $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+//                if($cape_subjects == true)
+//                    $has_cape = true;
+//                
+//                $cape_subjects_row = "CAPE: ";
+//                foreach ($cape_subjects as $i=>$cs)
+//                { 
+//                    $cape_subjects_row.= $cs->getCapesubject()->one()->subjectname;
+//                    if ($i != count($cape_subjects-1))
+//                        $cape_subjects_row.= ", ";
+//                    else
+//                        $cape_subjects_row.= ".";
+//                }
+//                $cape_subjects_names[] = $cape_subjects_row;
+//            }
+//            
+//            $rejection_data = array();
+//            $rejection_data['rejectionid'] = $rejection->rejectionid;
+//            $rejection_data['username'] = $username;
+//            $rejection_data['firstname'] = $applicant->firstname;
+//            $rejection_data['lastname'] = $applicant->lastname;
+//            $rejection_data['programme'] = ($has_cape == false) ? $programme->getFullName() : implode(' && ', $cape_subjects_names);
+//            $rejection_data['issuedby'] = $issuername;
+//            $rejection_data['issuedate'] = $rejection->issuedate;
+//            $rejection_data['revokedby'] = $revokername;
+//            $rejection_data['revokedate'] = $rejection->revokedate ? $rejection->revokedate : 'N/A' ;
+//            $rejection_data['ispublished'] = $rejection->ispublished;
+//            
+//            $data[] = $rejection_data;
+//        }
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
