@@ -181,14 +181,21 @@
                 ]); ?>
             </div><br/>
             
-            <?php if (Applicant::hasBeenIssuedOffer($applicant->personid) == false  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)) ):?>
+            <?php if ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)):?>
             <div>
             <?php else:?>
             <div style="opacity:0.6;">
-                 <br/><p id="offer-message" class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; opacity:1">
-                    You currently have 'View-Only' access to this applicant because the current programme choice under selection
-                    is being offered by another division
-                </p>
+                <?php if (Applicant::hasBeenIssuedOffer($applicant->personid) == true):?>
+                    <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; opacity:1">
+                        This applicant would have already been sent an Acceptance Package; therefore no further action can be taken on this application.
+                        If you do wish to change programme choice, please submit transfer request to Registrar.
+                    </p>
+                <?php else:?>
+                    <br/><p  class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; opacity:1">
+                       You currently have 'View-Only' access to this applicant because the current programme choice under selection
+                       is being offered by another division
+                   </p>
+                <?php endif;?>
             <?php endif;?>
                 <h2 class="custom_h2">
                     Applications
