@@ -181,7 +181,7 @@
                 ]); ?>
             </div><br/>
             
-            <?php if ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)  && Applicant::hasBeenIssuedOffer($applicant->personid) == false):?>
+            <?php if (Applicant::hasBeenIssuedOffer($applicant->personid) == false  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id)) ):?>
             <div>
             <?php else:?>
             <div style="opacity:0.6;">
