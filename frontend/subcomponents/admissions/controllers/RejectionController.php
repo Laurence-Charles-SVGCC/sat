@@ -883,6 +883,10 @@ class RejectionController extends Controller
                 $rejection_data['revokedby'] = $revokername;
                 $rejection_data['revokedate'] = $rejection->revokedate ? $rejection->revokedate : 'N/A' ;
                 $rejection_data['ispublished'] = $rejection->ispublished;
+                $rejection_data['subjects_no'] = CsecQualification::getSubjectsPassedCount($applicant->personid);
+                $rejection_data['ones_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 1);
+                $rejection_data['twos_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 2);
+                $rejection_data['threes_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 3);
             
                 
                 if ($criteria == "maths")

@@ -97,23 +97,30 @@
                     <?= ExportMenu::widget([
                             'dataProvider' => $dataProvider,
                             'columns' => [
-//                                    [
-//                                        'attribute' => 'username',
-//                                        'format' => 'html',
-//                                        'value' => function($row)
-//                                         {
-//                                            return Html::a($row['username'], 
-//                                                            Url::to(['process-applications/view-applicant-certificates',
-//                                                                     'personid' => $row['personid'],
-//                                                                     'programme' => $row['prog'], 
-//                                                                     'application_status' => $row['status'],
-//                                                                    ]));  
-//                                          }
-//                                    ],
                                     'username',
                                     'firstname',
                                     'lastname',
                                     'programme',
+                                    [
+                                        'attribute' => 'subjects_no',
+                                        'format' => 'text',
+                                        'label' => 'No. of Subjects'
+                                    ],
+                                    [
+                                        'attribute' => 'ones_no',
+                                        'format' => 'text',
+                                        'label' => 'No. of Ones'
+                                    ],
+                                    [
+                                        'attribute' => 'twos_no',
+                                        'format' => 'text',
+                                        'label' => 'No. of Twos'
+                                    ],
+                                    [
+                                        'attribute' => 'threes_no',
+                                        'format' => 'text',
+                                        'label' => 'No. of Threes'
+                                    ],
                                     'issuedby',
                                     'issuedate',
                                     'revokedby',
