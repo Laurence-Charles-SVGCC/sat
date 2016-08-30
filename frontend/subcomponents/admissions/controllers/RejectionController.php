@@ -750,7 +750,7 @@ class RejectionController extends Controller
         elseif ($criteria == "five_passes_and_english")
         {
             $subs = Applicant::getRejectedWithFivePassesAndEnglishPass($rejections, true);
-            $subjects_snd_english_req1 = $subs ? $subs : array();
+            $subjects_and_english_req1 = $subs ? $subs : array();
         }
         elseif ($criteria == "dte")
         {
