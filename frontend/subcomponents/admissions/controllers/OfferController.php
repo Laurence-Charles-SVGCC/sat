@@ -1282,7 +1282,8 @@ class OfferController extends Controller
         $math_req = Applicant::getAcceptedWithoutMath($offers);
         $subjects_req = Applicant::getAcceptedWithoutFivePasses($offers);
         
-        
+        $dte_science_req = false;
+        $dne_science_req = false;
         $open_periods = ApplicationPeriod::getOpenPeriodIDs();
         if($open_periods == true)
         {
