@@ -58,7 +58,7 @@
                         </li><br/>
                     <?php endif;?>
                         
-                    <?php if($subjects_req_and_english):?>
+                    <?php if($subjects_and_english_req):?>
                         <li>
                             <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection/rejection-details-home', 'rejectiontype' => $rejectiontype, 'criteria' => 'five_passes_and_english']);?>" 
                                 title="Has 5 CSEC Passes with English"
