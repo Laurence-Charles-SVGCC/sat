@@ -1128,11 +1128,11 @@
                             }
                         }
                         /*
-                        * If previous status was "post interview rejection",
+                        * If previous status was "post interview rejection" or "{pre-interview rejection",
                         * -> that rejection is rescinded
                         * -> new offer is created
                         */
-                        elseif($old_status == 10)
+                        elseif($old_status == 10 || $old_status == 6)
                         {
                             $result = Rejection::rescindRejection($update_candidate->personid);
                             if ($result == false)
@@ -1795,12 +1795,13 @@
                                 }
                             }
                         }
+                        
                         /*
-                        * If previous status was "post interview rejection",
+                        * If previous status was "post interview rejection" or "pre-interview-rejection"
                         * -> that rejection is rescinded
                         * -> new offer is created
                         */
-                        elseif($old_status == 10)
+                        elseif($old_status == 10  || $old_status == 6)
                         {
                             $result = Rejection::rescindRejection($update_candidate->personid);
                             if ($result == false)
@@ -2548,12 +2549,15 @@
                             $save_flag = true;
                             foreach($current_applications as $app)
                             {
-                                $app->applicationstatusid = 6;
-                                $temp_save_flag = $app->save();
-                                if($temp_save_flag == false)
+                                if ($app->applicationstatusid != 10)
                                 {
-                                    $save_flag = false;
-                                    break;
+                                    $app->applicationstatusid = 6;
+                                    $temp_save_flag = $app->save();
+                                    if($temp_save_flag == false)
+                                    {
+                                        $save_flag = false;
+                                        break;
+                                    }
                                 }
                             }
                             
@@ -2611,6 +2615,7 @@
                                     }
                                 }
                                         
+                                
                                 $isCape = Application::isCAPEApplication($application->academicofferingid);
                                 if ($isCape == true)       //if application is for CAPE programme
                                 {       
@@ -3073,6 +3078,10 @@
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
         }
+        
+        
+        
+        
         
         
         
