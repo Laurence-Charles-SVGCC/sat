@@ -201,10 +201,29 @@
                 <h2 class="custom_h2">
                     Applications
                     <?php if(Applicant::hasBeenIssuedOffer($applicant->personid) == false  && Applicant::isVerified($applicant->personid) == true  && Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
-                        <div class="pull-right" style="margin-right:2.5%">
+                        <?php if ( 
+                                        (count($applications) == 2  && $target_application->ordering == 1  && $target_application->divisionid == $applications[1]->divisionid )
+                                        ||  
+                                        (count($applications) == 3  && ($target_application->ordering == 1  && $target_application->divisionid == $applications[1]->divisionid) )
+                                        ||  
+                                        (count($applications) == 3  && ($target_application->ordering == 2  && $target_application->divisionid == $applications[2]->divisionid) )
+                                    ):?>
+                            <div class="pull-right" style="margin-right:2.5%">
+                                <?=Html::a(' Reject All', 
+                                            ['process-applications/power-rejection',  'personid' => $applicant->personid,  'programme' => $programme, 'application_status' => $application_status, 'programme_id' => $programme_id], 
+                                            ['class' => 'btn btn-danger',
+                                                'style' => '',
+                                                'data' => [
+                                                    'confirm' => 'Are you sure you want to reject all contiguous applications for your division?',
+                                                ],
+                                            ]);?>
+                            </div>
+                        <?php endif;?>
+                    
+                        <div class="pull-right" style="margin-right:5%">
                             <?=Html::a(' Create Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
-                                        ['class' => 'btn btn-danger',
+                                        ['class' => 'btn btn-warning',
                                             'style' => '',
                                             'data' => [
                                                 'confirm' => 'Are you sure you want to create a customized offer for student?',

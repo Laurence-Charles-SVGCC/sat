@@ -172,11 +172,9 @@ class Rejection extends \yii\db\ActiveRecord
             $save_flag_2 = $rejection->save();
             if ( $save_flag_2 == true)
                 return true;
-            else
-                return false;
-        }
-        else
             return false;
+        }
+        return false;
     }
     
     

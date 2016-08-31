@@ -403,49 +403,44 @@ class Applicant extends \yii\db\ActiveRecord
                         $application_status = 2;
 
                     //if rejected
-                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                    elseif(($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6)
+                          || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6))
                         $application_status = 6;
 
                     //if pending
-                    elseif(
-                                ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
-                          )
+                     elseif(($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3))
                         $application_status = 3;
 
                     //if shortlisted
-                    elseif(
-                                ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
-                          )
+                    elseif(($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 4) )
                             $application_status = 4;
 
                     //if borderlined
-                    elseif(
-                                ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
-                          )
+                    if(($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 7))
                             $application_status = 7;
 
                     //if interview-offer
-                    elseif(
-                                ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
+                    elseif(($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
-                          )
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8) )
                             $application_status = 8;
 
                     //if offer
-                    elseif(
-                                ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                    if(($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
-                          )
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9) )
                             $application_status = 9;
 
                     //is reject of conditional offer
-                    elseif(
-                                ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
-                          )
+                    if(($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8))
                             $application_status =10;
 
                     //is abandoned
@@ -460,55 +455,70 @@ class Applicant extends \yii\db\ActiveRecord
                         $application_status = 2;
 
                     //if rejected
-                    if($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    elseif(($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                                || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                                || ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+                                || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6))
                         $application_status = 6;
 
                     //if pending
-                    elseif(
-                                ($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
-                          )
+                    elseif(($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3) )
                             $application_status = 3;
 
                     //if shortlisted
-                    elseif(
-                                ($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
-                          )
+                    elseif(($applications[0]->applicationstatusid == 4  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 4 && $applications[2]->applicationstatusid == 3)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                                ||  ($applications[0]->applicationstatusid == 10 && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 4)
+                                ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 4)
+                                ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 4))
                             $application_status = 4;
 
                     //if borderlined
-                    elseif(
-                                ($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                    elseif(($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 7 && $applications[2]->applicationstatusid == 3)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
-                          )
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 7)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 7)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 7))
                             $application_status = 7;
 
                     //if interview-offer
-                    if(
-                                ($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                    elseif(($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8 && $applications[2]->applicationstatusid == 6)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
-                          )
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 8)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 8)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 8))
                             $application_status = 8;
 
                     //if offer
-                    elseif(
-                                ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
-                          )
+                    elseif( ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
+                        ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 9))
                     $application_status = 9;
 
                     //is reject of conditional offer
-                    if(
-                                ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
-                          )
+                    elseif(($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3) )
                     $application_status =10;
 
                     //is abandoned
@@ -2621,7 +2631,7 @@ class Applicant extends \yii\db\ActiveRecord
                     ->one();
             $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
             $has_english = CsecQualification::hasCsecEnglish($applicant->personid);
-            if ($minimum_subjects_passed == true  || $has_english == true)
+            if ($minimum_subjects_passed == true  && $has_english == true)
             {
                 if ($details)
                     $rejectionids[] = $rejection;

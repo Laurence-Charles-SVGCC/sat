@@ -2472,6 +2472,11 @@
         { 
             date_default_timezone_set('America/St_Vincent');
             
+            $application_save_flag = false;
+            $applicationcapesubject_save_flag = false;
+            $rejectionapplications_save_flag = false;
+            $rejection_save_flag = false;
+            
             $id = $personid;
             $capegroups = CapeGroup::getGroups();
             $applicationcapesubject = array();
@@ -2506,7 +2511,6 @@
                     $application->applicationtimestamp = date('Y-m-d H:i:s' );
                     $application->submissiontimestamp = date('Y-m-d H:i:s' );
             
-                    
                     $current_applications = Application::getVerifiedApplications($personid);
                     
                     /* if applicant has less than three applications; 
@@ -2560,14 +2564,13 @@
                             }
                             else
                             {
-                                /*
-                                 * if offer has been issued it must be rescinded
-                                 */
                                 $application_ids = array();
                                 foreach($current_applications as $record)
                                 {
                                     $application_ids[] = $record->applicationid;
                                 }
+                                
+                                 /* If offer has been issued it must be rescinded */
                                 $offers = Offer::find()
                                         ->where(['applicationid' => $application_ids, 'isactive' => 1, 'isdeleted' => 0])
                                         ->all();
@@ -2588,8 +2591,24 @@
                                     {
                                         $transaction->rollBack();
                                         Yii::$app->getSession()->setFlash('error', 'Error occurred when rescinding offer.');
+                                        return self::actionCustomOffer($personid, $programme, $application_status);
                                     }
-                                    
+                                }
+                                
+                                /*If rejections exist they must also be rescinded*/
+                                $rejection = Rejection::find()
+                                            ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                                $rescind_rejection_flag = false;
+                                if ($rejection)
+                                {
+                                    $rescind_rejection_flag = Rejection::rescindRejection($id);
+                                    if ($rescind_rejection_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occurred when rescinding rejection(s).');
+                                        return self::actionCustomOffer($personid, $programme, $application_status);
+                                    }
                                 }
                                         
                                 $isCape = Application::isCAPEApplication($application->academicofferingid);
@@ -2712,6 +2731,16 @@
         
         
         
+        /**
+         * Resets all programme choices to Pending
+         * 
+         * @param type $personid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 31/08/2016
+         * Date Last Modified: 31/08/2016
+         */
         public function actionResetApplications($personid)
         {
             $applications = Application::getVerifiedApplications($personid);
@@ -2739,6 +2768,309 @@
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+            }
+        }
+        
+        
+        
+        /**
+         * Rejects target application and other consecutive applications belonging to the same division
+         * 
+         * @param type $target_application
+         * @param type $personid
+         * @param type $programme
+         * @param type $application_status
+         * @param type $programme_id
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 31/08/2016
+         * Date Last Modified: 31/08/2016
+         */
+        public function actionPowerRejection($personid, $programme, $application_status, $programme_id)
+        { 
+            $current_applications = Application::getVerifiedApplications($personid);
+            if ($current_applications == false)
+            {
+                Yii::$app->session->setFlash('error', 'Error occured retreiving active applications.');
+                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+            }
+                
+            
+            $target_application = false;
+            foreach($current_applications as $app)
+            {
+                $istarget = Application::isTarget($current_applications, $application_status, $app);
+                if ($istarget == true)
+                    $target_application = $app;
+            }
+            if ($target_application == false)
+            {
+                Yii::$app->session->setFlash('error', 'Error occured retreiving target application.');
+                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+            }
+              
+            
+            $application_count = count($current_applications);
+            $position = Application::getPosition($current_applications, $target_application);
+            
+            //if only one programme choice exists or there are no subsequent application, exit funciton
+            if ($application_count == 1  || $application_count-$position <=1)
+            {
+                Yii::$app->session->setFlash('error', 'No subsequent application are present for rejection');
+                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+             }
+            
+             
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $application_save_flag = false;
+                
+                if ($application_count == 2)
+                {
+                    $last_application = $current_applications[$position+1];
+                    if ($target_application->divisionid == $last_application->divisionid)
+                    {
+                        $target_application->applicationstatusid = 6;
+                        $application_save_flag = $target_application->save();
+                        if ($application_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured saving target application');
+                            return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                        }
+                        
+                        $last_application->applicationstatusid = 6;
+                        $application_save_flag = $last_application->save();
+                        if ($application_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured saving last application');
+                            return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                        }
+                        
+                        /**
+                        * this should prevent the creation of multiple rejections,
+                        * which is suspected to occur when internet timeout 
+                        * during request submission
+                        */
+                        $rejection = Rejection::find()
+                                ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                        'application.isdeleted' => 0, 'application.personid' => $personid,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                        ])
+                                ->one();
+                        if($rejection == false)
+                        {
+                            //create Rejection record
+                            $rejection = new Rejection();
+                            $rejection->personid = $personid;
+                            $rejection->rejectiontypeid = 1;
+                            $rejection->issuedby = Yii::$app->user->getID();
+                            $rejection->issuedate = date('Y-m-d');
+                            $rejection_save_flag = $rejection->save();
+                            if($rejection_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+
+                            //crete associate RejectionApplications records
+                            foreach($current_applications as $appl)
+                            {
+                                $temp = new RejectionApplications();
+                                $temp->rejectionid = $rejection->rejectionid;
+                                $temp->applicationid = $appl->applicationid;
+                                $miscellaneous_save_flag = $temp->save();
+                                if ($miscellaneous_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving rejection-applications record.');
+                                    return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                
+                elseif ($application_count == 3)
+                {
+                    if ($position == 0)
+                    {
+                        $second_application =  $current_applications[$position+1];
+                        $last_application =  $current_applications[$position+2];
+                        
+                        //if all three application belong to the same division all are rejected
+                        if ($target_application->divisionid == $second_application->divisionid)  
+                        {
+                            $target_application->applicationstatusid = 6;
+                            $application_save_flag = $target_application->save();
+                            if ($application_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured saving application');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+                            
+                            $second_application->applicationstatusid = 6;
+                            $application_save_flag = $second_application->save();
+                            if ($application_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured saving application');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+                        }
+                          
+                        if ($second_application->divisionid == $last_application->divisionid)
+                        {
+                            $last_application->applicationstatusid = 6;
+                            $application_save_flag = $last_application->save();
+                            if ($application_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured saving application');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+
+                            /**
+                            * this should prevent the creation of multiple rejections,
+                            * which is suspected to occur when internet timeout 
+                            * during request submission
+                            */
+                            $rejection = Rejection::find()
+                                    ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                    ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                            'application.isdeleted' => 0, 'application.personid' => $personid,
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                            ])
+                                    ->one();
+                            if($rejection == false)
+                            {
+                                //create Rejection record
+                                $rejection = new Rejection();
+                                $rejection->personid = $personid;
+                                $rejection->rejectiontypeid = 1;
+                                $rejection->issuedby = Yii::$app->user->getID();
+                                $rejection->issuedate = date('Y-m-d');
+                                $rejection_save_flag = $rejection->save();
+                                if($rejection_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
+                                    return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                                }
+
+                                //crete associate RejectionApplications records
+                                foreach($current_applications as $appl)
+                                {
+                                    $temp = new RejectionApplications();
+                                    $temp->rejectionid = $rejection->rejectionid;
+                                    $temp->applicationid = $appl->applicationid;
+                                    $miscellaneous_save_flag = $temp->save();
+                                    if ($miscellaneous_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when savingrejection-applications record.');
+                                        return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    elseif($position == 1)
+                    {
+                        $last_application = $current_applications[$position+1];
+                        if ($target_application->divisionid == $last_application->divisionid)
+                        {
+                            $target_application->applicationstatusid = 6;
+                            $application_save_flag = $target_application->save();
+                            if ($application_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured saving target application');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+
+                            $last_application->applicationstatusid = 6;
+                            $application_save_flag = $last_application->save();
+                            if ($application_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured saving last application');
+                                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                            }
+
+                            /**
+                            * this should prevent the creation of multiple rejections,
+                            * which is suspected to occur when internet timeout 
+                            * during request submission
+                            */
+                            $rejection = Rejection::find()
+                                    ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                    ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                            'application.isdeleted' => 0, 'application.personid' => $personid,
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                            ])
+                                    ->one();
+                            if($rejection == false)
+                            {
+                                //create Rejection record
+                                $rejection = new Rejection();
+                                $rejection->personid = $personid;
+                                $rejection->rejectiontypeid = 1;
+                                $rejection->issuedby = Yii::$app->user->getID();
+                                $rejection->issuedate = date('Y-m-d');
+                                $rejection_save_flag = $rejection->save();
+                                if($rejection_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
+                                    return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                                }
+
+                                //crete associate RejectionApplications records
+                                foreach($current_applications as $appl)
+                                {
+                                    $temp = new RejectionApplications();
+                                    $temp->rejectionid = $rejection->rejectionid;
+                                    $temp->applicationid = $appl->applicationid;
+                                    $miscellaneous_save_flag = $temp->save();
+                                    if ($miscellaneous_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when saving rejection-applications record.');
+                                        return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                $transaction->commit();
+                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+                
+            }catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing your request');
+                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
         }
         
