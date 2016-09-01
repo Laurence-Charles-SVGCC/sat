@@ -1481,9 +1481,14 @@ class ReportsController extends Controller {
                 $accepted_header = "Accepted - " . $accepted_criteria;
         else
                 $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
+        
         $accepted_title = "Title: " . $periodname .  $accepted_header;
         
-        $enrolled_header = "Enrolled Students Report - " . $enrolled_criteria;
+        if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one()->programmecatalogid == 4)
+            $enrolled_header = "Enrolled - " . $enrolled_criteria;
+        else
+            $enrolled_header = "Enrolled Students Report - " . $enrolled_criteria;
+        
         $enrolled_title = "Title: " . $periodname .  $enrolled_header;
         
         
@@ -1494,10 +1499,14 @@ class ReportsController extends Controller {
         $summary_filename = $summary_title . $date . $generating_officer;
         
         if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one()->programmecatalogid == 4)
-            $accepted_filename = $accepted_title;
+            $accepted_filename = $accepted_header;
         else
             $accepted_filename = $accepted_title . $date . $generating_officer;
-        $enrolled_filename = $enrolled_title . $date . $generating_officer;
+        
+        if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one()->programmecatalogid == 4)
+            $enrolled_filename = $enrolled_header;
+        else
+            $enrolled_filename = $enrolled_title . $date . $generating_officer;
         
         $page_title = $periodname . " Intake Report";
         
