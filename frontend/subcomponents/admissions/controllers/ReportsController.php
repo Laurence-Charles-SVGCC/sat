@@ -1477,7 +1477,7 @@ class ReportsController extends Controller {
         $summary_header = "Intake Overview";
         $summary_title = "Title: " . $periodname . $summary_header;
         
-        if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one->programmecatalogid == 4)
+        if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one()->programmecatalogid == 4)
                 $accepted_header = "Accepted - " . $accepted_criteria;
         else
                 $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
@@ -1485,7 +1485,7 @@ class ReportsController extends Controller {
         
         $enrolled_header = "Enrolled Students Report - " . $enrolled_criteria;
         $enrolled_title = "Title: " . $periodname .  $enrolled_header;
-        ;
+        
         
         $date = "Date Generated: " . date('Y-m-d') . "   ";
         $employeeid = Yii::$app->user->identity->personid;
