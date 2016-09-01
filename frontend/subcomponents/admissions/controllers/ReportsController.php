@@ -1170,8 +1170,16 @@ class ReportsController extends Controller {
             
             if($criteria == "programme")
             {
-                $accepted_criteria = $programme;
-                $enrolled_criteria = $programme;
+                if(AcademicOffering::isCape($programmeid) == true)
+                {
+                    $accepted_criteria = $programme_record->name;
+                    $enrolled_criteria = $programme_record->name;
+                }
+                else
+                {
+                    $accepted_criteria = $programme;
+                    $enrolled_criteria = $programme;
+                }
             }
             elseif ($criteria == "subject")
             {
