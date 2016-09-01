@@ -15,7 +15,7 @@ $this->title = 'SVGCC Administrative Terminal';
                 Please contact the the E-College Unit for assistance.
             </span><hr/>
             
-            <img src="css/dist/img/college_home.jpg" alt="octagon" style="width:85%; margin-left:5%">
+            <img src="css/dist/img/college_home.png" alt="octagon" style="width:85%; margin-left:5%">
         </h2><br/>
     </div>
 </div>
