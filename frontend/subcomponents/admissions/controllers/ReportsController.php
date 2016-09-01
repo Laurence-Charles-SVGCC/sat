@@ -1455,6 +1455,13 @@ class ReportsController extends Controller {
             ],
         ]);
         
+        $accepted_dataProvider = new ArrayDataProvider([
+            'allModels' => $accepted_data,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        
         $enrolled_dataProvider = new ArrayDataProvider([
             'allModels' => $enrolled_data,
             'pagination' => [
@@ -1470,8 +1477,10 @@ class ReportsController extends Controller {
         $summary_header = "Intake Overview";
         $summary_title = "Title: " . $periodname . $summary_header;
         
-        
-        $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
+        if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one->programmecatalogid == 4)
+                $accepted_header = "Accepted - " . $accepted_criteria;
+        else
+                $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
         $accepted_title = "Title: " . $periodname .  $accepted_header;
         
         $enrolled_header = "Enrolled Students Report - " . $enrolled_criteria;
