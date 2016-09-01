@@ -1495,7 +1495,7 @@ class ReportsController extends Controller {
         
         if (AcademicOffering::find()->where(['academicofferingid' => $programmeid, 'isactive' => 1, 'isdeleted' => 0])->one()->programmecatalogid == 4)
             $accepted_filename = $accepted_title;
-        elsee
+        else
             $accepted_filename = $accepted_title . $date . $generating_officer;
         $enrolled_filename = $enrolled_title . $date . $generating_officer;
         
