@@ -11,8 +11,7 @@ $this->title = 'SVGCC Administrative Terminal';
     <div class="body-content">
         <h2>
             <span>
-                Please refer to sidebar for user controls. If there are no tasks there, you may not have the proper permissions set. 
-                Please contact the the E-College Unit for assistance.
+                Please refer to sidebar for user controls. If the controls you require are absent; please contact the the E-College Unit for assistance.
             </span><hr/>
             
             <img src="css/dist/img/college_home.png" alt="octagon" style="width:85%; margin-left:5%">
