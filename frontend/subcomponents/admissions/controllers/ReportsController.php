@@ -1511,7 +1511,7 @@ class ReportsController extends Controller {
         else
             $enrolled_filename = $enrolled_title . $date . $generating_officer;
         
-        $page_title = $periodname . " Intake Report";
+        $page_title = $periodname . " Intake Reports";
         
         return $this->render('display_programme_intake', [
                     'summary_dataProvider' => $summary_dataProvider,
