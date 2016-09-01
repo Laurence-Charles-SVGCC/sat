@@ -4,11 +4,11 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     use yii\helpers\ArrayHelper;
-//    use yii\grid\GridView;
     use kartik\grid\GridView;
     use kartik\export\ExportMenu;
+    
+    use frontend\models\EmployeeDepartment;
 
-    //$type = ucfirst($type);
     $this->title = $status_name;
 //    $this->params['breadcrumbs'][] = ['label' => 'Review Applicants', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;
@@ -25,7 +25,16 @@
         </div>
         
         <div class="custom_body">
-            <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
+            <h1 class="custom_h1"><?= Html::encode($this->title) ?>
+                <?php if ($status_name == "Pending" &&  EmployeeDepartment::getUserDivision() == 1):?>
+                    <div class="pull-right" style="margin-right:2.5%">
+                        <?=Html::a(' Generate  Eligible Listing', 
+                                    ['process-applications/generate-eligible-listing',  'status' => $status_name], 
+                                    ['class' => 'btn btn-info']);
+                        ?>
+                    </div>
+                <?php endif;?>
+            </h1>
            
             <?php 
                 $gridColumns = [
