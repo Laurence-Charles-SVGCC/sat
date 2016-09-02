@@ -819,8 +819,6 @@
                         return $this->redirect(\Yii::$app->request->getReferrer());
                     }
                     
-                   $applicationperiodids = $applicationperiod->applicationperiodid ; 
-
                    /*
                     * If $sub_category/offertypeid = conditional;
                     * -> use conditional offer package
@@ -832,7 +830,7 @@
                         $packagetypeid = 3;
 
                     $package = Package::find()
-                       ->where(['applicationperiodid' => $applicationperiodids, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                       ->where(['applicationperiodid' => $applicationperiod->applicationperiodid, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
                        ->one();
                     if($package == false)
                     {
@@ -911,7 +909,6 @@
                     
                     $package->publishcount +=1;
                     $package->save();
-                    
                 }
                 return $this->redirect(\Yii::$app->request->getReferrer());
             }
@@ -920,14 +917,19 @@
             //if publishing rejection
             elseif ($category == 2)
             {
-                $rejection_cond['application_period.isactive'] = 1;
-                $rejection_cond['application_period.iscomplete'] = 0;
-                $rejection_cond['application_period.divisionid'] = $divisionid;
                 $rejection_cond['rejection.rejectiontypeid'] = $sub_category;
                 $rejection_cond['rejection.isdeleted'] = 0;
                 $rejection_cond['rejection.ispublished'] = 0;
                 $rejection_cond['rejection_applications.isactive'] = 1;
                 $rejection_cond['rejection_applications.isdeleted'] = 0;
+                $rejection_cond['application.isactive'] = 1;
+                $rejection_cond['application.isdeleted'] = 0;
+                $rejection_cond['academic_offering.isactive'] = 1;
+                $rejection_cond['academic_offering.isdeleted'] = 0;
+                $rejection_cond['application_period.isactive'] = 1;
+                $rejection_cond['application_period.iscomplete'] = 0;
+                $rejection_cond['application_period.divisionid'] = $divisionid;
+                
                 
                 $rejections = Rejection::find()
                     ->innerJoin('`rejection_applications`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
@@ -943,8 +945,12 @@
                    $applicationperiod = ApplicationPeriod::find()
                                    ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
                                    ->one();
-                   $applicationperiodids = $applicationperiod->applicationperiodid ; 
-
+                   if($applicationperiod == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicationperiod');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
                    /*
                     * If $sub_category/rejectiontypeid = pre_interview;
                     * -> use pre_interview rejection package
@@ -956,7 +962,7 @@
                         $packagetypeid = 2;
 
                     $package = Package::find()
-                       ->where(['applicationperiodid' => $applicationperiodids, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                       ->where(['applicationperiodid' => $applicationperiod->applicationperiodid, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
                        ->one();
 
                     $applicant = Applicant::find()
@@ -988,9 +994,32 @@
                         $div = Division::getDivisionName($applications[0]->divisionid);
                         $divisioname .= $div;
                         
-                        $prog = ProgrammeCatalog::getApplicantProgramme($applications[0]->applicationid);
-                        $name = ($prog->specialisation)? $prog->name . "(" . $prog->specialisation . ")" : $prog->name;
-                        $programme .= $name; 
+                        foreach ($applications as $key=>$record)
+                        {
+                            if ($record->divisionid == 4)
+                                $has_dasgs = true;
+                            elseif ($record->divisionid == 5)
+                                $has_dtve = true;
+                            
+                            $cape_subjects_names = array();
+                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $record->applicationid]);
+                            
+                            if ($cape_subjects)
+                            {
+                                foreach ($cape_subjects as $cs) 
+                                {
+                                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                }
+                            }
+                            
+                            $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
+                            $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                            
+                            if($application_count - $key > 1)
+                                $programme .= " and " . $name; 
+                            else
+                                $programme .= " " . $name; 
+                        }
                     }
                     else
                     {
@@ -999,17 +1028,29 @@
                         $application_count = count($applications);
                         foreach ($applications as $key=>$record)
                         {
-                            if ($record->applicationid == 4)
+                            if ($record->divisionid == 4)
                                 $has_dasgs = true;
-                            elseif ($record->applicationid == 5)
+                            elseif ($record->divisionid == 5)
                                 $has_dtve = true;
                             
+                            $cape_subjects_names = array();
+                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $record->applicationid]);
+                            
+                            if ($cape_subjects)
+                            {
+                                foreach ($cape_subjects as $cs) 
+                                {
+                                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                }
+                            }
+                            
                             $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
-                            $name = ($prog->specialisation)? $prog->name . "(" . $prog->specialisation . ")" : $prog->name;
-                            if($applicantcount - $key > 0)
-                                $programme .= " " . $name; 
-                            else
+                            $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                            
+                            if($application_count - $key > 1)
                                 $programme .= " and " . $name; 
+                            else
+                                $programme .= " " . $name; 
                         }
                         
                         if ($has_dasgs == true  && $has_dtve == true)
@@ -1020,7 +1061,8 @@
                             $divisioname .= Division::getDivisionName(5);
                     }
                     
-                    $studentno = $applicant->potentialstudentid;
+//                    $studentno = $applicant->potentialstudentid;
+                    $studentno = 0;
                     $attachments = Package::getDocuments($package->packageid);
                     
                     self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);

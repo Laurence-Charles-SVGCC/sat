@@ -9,7 +9,7 @@ $this->title = 'SVGCC Administrative Terminal';
     </div>
 
     <div class="body-content">
-        <h2>
+        <h2 class="custom_h2">
             <span>
                 Please refer to sidebar for user controls. If the controls you require are absent; please contact the the E-College Unit for assistance.
             </span><hr/>
