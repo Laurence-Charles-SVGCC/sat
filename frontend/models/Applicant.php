@@ -5,6 +5,7 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 use frontend\models\Application;
+use frontend\models\Applicant;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\CsecQualification;
@@ -2657,7 +2658,7 @@ class Applicant extends \yii\db\ActiveRecord
     */
     public static function preparePotentialStudentID($divisionid, $applicantid, $action)
     {
-        if ($action = "generate")
+        if ($action == "generate")
         {
             $academic_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
@@ -2679,10 +2680,20 @@ class Applicant extends \yii\db\ActiveRecord
                 $potentialstudentid = NULL;
             }
         }
-        elseif($action = "revoke")
+        elseif($action == "revoke")
         {
-//            $potentialstudentid = NULL;
             $potentialstudentid = 0;
+        }
+        elseif($action == "transfer")
+        {
+            $applicant = Applicant::find()
+                    ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $old_id = $applicant->potentialstudentid;
+            $year =  substr($old_id, 0, 2);        
+            $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);    
+            $num = substr($old_id, 4, 4);     
+            $potentialstudentid = intval($year . $div . $num);
         }
         return $potentialstudentid;         
     }

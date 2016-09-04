@@ -551,6 +551,43 @@ class Division extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns asociative array of all division related to incomplete application periods.
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/09/2016
+     * Date Last Modified: 03/09/2016
+     */
+    public static function getDivsionWithIncompletePeriods()
+    {
+        $divisions = Division::find()
+                ->innerJoin('application_period' , '`division`.`divisionid` = `application_period`.`divisionid`')
+                ->where(['division.isactive' => 1, 'division.isdeleted' => 0,
+                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                            ])
+                ->all();
+        
+        $keys = array();
+        array_push($keys, '0');
+        $values = array();
+        array_push($values, 'Select...');
+        $combined = array();
+
+        foreach($divisions as $division)
+        {
+            $k = $division->divisionid;
+            array_push($keys, $k);
+            $v = $division->name;
+            array_push($values, $v);
+        }
+        
+        $combined = array_combine($keys, $values);
+        return $combined;
+    }
+    
+    
    
     
     

@@ -66,7 +66,7 @@
 
                     <!--Parent--> 
                     <div id="cape-first-choice-division" style="font-size:17px;">              
-                        <p><?= $form->field($application, 'divisionid')->label("Select your division of first choice")->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division-id', 'onchange' => 'showCape();']);?></p>   
+                        <p><?= $form->field($application, 'divisionid')->label("Select division")->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division-id', 'onchange' => 'showCape();']);?></p>   
                     </div>
                     </br>
 
@@ -103,7 +103,7 @@
                                 echo "</br>";
                             }
                         ?>
-                    </div></br></br>
+                    </div><br/><br/>
 
                    <div class="form-group">
                        <?= Html::submitButton('Save', ['class' => 'btn btn-success']);?>

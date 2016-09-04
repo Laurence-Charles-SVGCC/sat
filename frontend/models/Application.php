@@ -5,6 +5,7 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 use frontend\models\Applicant;
+use frontend\models\Application;
 use frontend\models\AcademicYear;
 use frontend\models\CsecQualification;
 use frontend\models\PostSecondaryQualification;
@@ -273,20 +274,23 @@ class Application extends \yii\db\ActiveRecord
     public static function getNextApplicationID($personid)
     {
         $custom_applications = Application::find()
-                    ->where(['personid' => $personid])
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->andWhere(['>', 'ordering', 3])
+                    ->orderBy('ordering ASC')
                     ->all();
         $count = count($custom_applications);
         if($count > 0)
         {
             $last_id = $applications[($count-1)];
-            $new_id = $last_id + 1;
+            $new_id = $last_id->ordering + 1;
         }
         else
         {
             $student_applications = Application::find()
-                    ->where(['personid' => $personid])
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->andWhere(['<', 'ordering', 4])
+                    ->andWhere(['>', 'applicationstatusid', 2])
+                    ->orderBy('ordering ASC')
                     ->all();
             $count2 = count($student_applications);
             if ($count2 == 1)
@@ -1431,7 +1435,7 @@ class Application extends \yii\db\ActiveRecord
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $personid,
+                                 'application.isdeleted' => 0, 'application.personid' => $personid,
                                 'academic_offering.isdeleted' => 0
                                 ])
                         ->andWhere(['>', 'application.applicationstatusid', 2])

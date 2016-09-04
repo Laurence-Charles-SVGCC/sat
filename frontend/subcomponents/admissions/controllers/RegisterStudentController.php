@@ -23,6 +23,7 @@ use frontend\models\Division;
 use frontend\models\ApplicationPeriod;
 use frontend\models\EmployeeDepartment;
 use frontend\models\Employee;
+use frontend\models\Email;
 
 
 
@@ -166,6 +167,7 @@ class RegisterStudentController extends \yii\web\Controller
         $user_save_flag = false;
         $registration_save_flag = false;
         $document_save_flag = false;
+        $email_save_flag = false;
     
         if (Yii::$app->request->post())
         {
@@ -199,6 +201,16 @@ class RegisterStudentController extends \yii\web\Controller
                 }
                 else
                 {
+                    $email = Email::find()
+                            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($email == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error saving student record.');
+                         return self::actionViewProspectiveStudent($personid, $programme);
+                    }
+                    
                     //Update username
                     if ($applicant->potentialstudentid)
                        $user->username = $applicant->potentialstudentid;
@@ -208,6 +220,7 @@ class RegisterStudentController extends \yii\web\Controller
                        $user->username = $student_number;
                     }
                     
+                    $user->email = $email->email;
                     $user->persontypeid = 2;
                     
                     $user_save_flag = $user->save();
