@@ -178,8 +178,8 @@
                                                 echo "</li>";
     //                                                echo "<br/><br/>";
 
-                                                echo "<li style='margin-bottom=2.5%'>Publish by programme";
-                                                    echo "<div style='margin-left:25%;font-weight:4 em' class='dropdown'>";
+                                                echo "<li style='margin-bottom:2.5%'>Publish by programme";
+                                                    echo "<div style='margin-left:22.5%;font-weight:4 em' class='dropdown'>";
                                                         echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
                                                             echo "Select programme ";
                                                             echo " <span class='caret'></span>";
