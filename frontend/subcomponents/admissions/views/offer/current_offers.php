@@ -168,48 +168,54 @@
                                         
                                         if ($periods == true)
                                         {
-                                            foreach ($periods as $period) 
-                                            {
-                                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
-                                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:2.5%']);
-                                            }
-                                            echo "<br/>";
+                                            echo "<ul>";
+                                            echo "<li>Publish by division";
+                                                foreach ($periods as $period) 
+                                                {
+                                                    if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
+                                                        echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:2.5%']);
+                                                }
+                                            echo "</li>";
+//                                                echo "<br/><br/>";
                                             
-                                            echo "<div style='margin-left:2.5%;font-weight:4 em' class='dropdown'>";
-                                                echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                    echo "You may also publish offers by programme by selecting on of the following ";
-                                                    echo " <span class='caret'></span>";
-                                                echo "</button>";
-                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
-                                                    $keys = array_keys($progs_with_pending_offers);
-                                                    $values = array_values($progs_with_pending_offers);
-                                                   
-                                                    if ($progs_with_pending_offers == true && count($keys) == count($values))
-                                                    {
-                                                        for ($i = 0 ; $i < count($keys) ; $i++)
+                                            echo "<li>Publish by programme";
+                                                echo "<div style='margin-left:2.5%;font-weight:4 em' class='dropdown'>";
+                                                    echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                        echo "You may also publish offers by programme by selecting on of the following ";
+                                                        echo " <span class='caret'></span>";
+                                                    echo "</button>";
+                                                    echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                        $keys = array_keys($progs_with_pending_offers);
+                                                        $values = array_values($progs_with_pending_offers);
+
+                                                        if ($progs_with_pending_offers == true && count($keys) == count($values))
                                                         {
-                                                             $divisionid = Application::find()
-                                                                     ->where(['academicofferingid' => $keys[$i], 'isactive' => 1, 'isdeleted' => 0])
-                                                                     ->one()
-                                                                     ->divisionid;
-                                                             if ($divisionid == false)
-                                                                 continue;
-                                                             
-                                                            $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish-by-offering/', 
-                                                                                                    'category' => 1,
-                                                                                                    'sub_category' => $offertype,
-                                                                                                    'divisionid' => $divisionid,
-                                                                                                    'academicofferingid' => $keys[$i],
-                                                                                                 ]);
-                                                             echo "<li><a href='$hyperlink'>$values[$i]</a></li>";  
+                                                            for ($i = 0 ; $i < count($keys) ; $i++)
+                                                            {
+                                                                 $divisionid = Application::find()
+                                                                         ->where(['academicofferingid' => $keys[$i], 'isactive' => 1, 'isdeleted' => 0])
+                                                                         ->one()
+                                                                         ->divisionid;
+                                                                 if ($divisionid == false)
+                                                                     continue;
+
+                                                                $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish-by-offering/', 
+                                                                                                        'category' => 1,
+                                                                                                        'sub_category' => $offertype,
+                                                                                                        'divisionid' => $divisionid,
+                                                                                                        'academicofferingid' => $keys[$i],
+                                                                                                     ]);
+                                                                 echo "<li><a href='$hyperlink'>$values[$i]</a></li>";  
+                                                            }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        echo "<li>No offers have been found</li>";  
-                                                    }
-                                                echo "</ul>";
-                                            echo "</div>";
+                                                        else
+                                                        {
+                                                            echo "<li>No offers have been found</li>";  
+                                                        }
+                                                    echo "</ul>";
+                                                echo "</div>";
+                                            echo "</li>";
+                                            echo "</ul>";    
                                         }
                                    ?>
                                 </div>
