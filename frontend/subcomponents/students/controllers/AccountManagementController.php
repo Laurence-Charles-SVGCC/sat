@@ -649,7 +649,7 @@
                                             }
                                         }
 
-                                        if($selected == 3 || $selected == 4)            //if valid number of CAPE subjects have been selected
+                                        if($selected >= 2 || $selected <= 4)            //if valid number of CAPE subjects have been selected
                                         {       
                                             $temp_status = true;
                                             foreach ($applicationcapesubject as $subject) 
