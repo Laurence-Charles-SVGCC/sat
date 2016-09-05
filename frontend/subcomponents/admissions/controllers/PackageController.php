@@ -778,18 +778,26 @@
          * Date Created: 16/04/2016
          * Date Last Modified: 16/04/2016
          */
-        public function actionBulkPublish($category, $sub_category, $divisionid)
+        public function actionBulkPublish($category, $sub_category, $divisionid, $academicofferingid = NULL)
         {
             //if publishing offer
             if ($category == 1)
             {
-                $offer_cond['application_period.isactive'] = 1;
-                $offer_cond['application_period.iscomplete'] = 0;
-                $offer_cond['application_period.divisionid'] = $divisionid;
                 $offer_cond['offer.offertypeid'] = $sub_category;
                 $offer_cond['offer.isdeleted'] = 0;
                 $offer_cond['offer.ispublished'] = 0;
                 $offer_cond['offer.isactive'] = 1;
+                $offer_cond['application.isactive'] = 1;
+                $offer_cond['application.isdeleted'] = 0;
+                $offer_cond['application_period.isactive'] = 1;
+                $offer_cond['application_period.iscomplete'] = 0;
+                $offer_cond['application_period.divisionid'] = $divisionid;
+                
+                
+                if ($academicofferingid != NULL)
+                {
+                     $offer_cond['application.academicofferingid'] = $academicofferingid;
+                }
                 
                 $offers = Offer::find()
                     ->joinWith('application')
@@ -797,7 +805,7 @@
                     ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where($offer_cond)
                     ->all();
-                
+                     
                 foreach ($offers as $offer) 
                 {
                     $cape_subjects_names = array();

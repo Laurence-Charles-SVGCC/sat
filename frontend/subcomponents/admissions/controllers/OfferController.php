@@ -234,6 +234,44 @@ class OfferController extends Controller
         {
             $capes[$c->capesubjectid] = $c->subjectname;
         }
+        
+        
+        //prepares listing for programmes with pending offers
+        $prog_with_pending_offers_cond = array();
+        $prog_with_pending_offers_cond['programme_catalog.isactive'] = 1;
+        $prog_with_pending_offers_cond['programme_catalog.isdeleted'] = 0;
+        $prog_with_pending_offers_cond['academic_offering.isactive'] = 1;
+        $prog_with_pending_offers_cond['academic_offering.isdeleted'] = 0;
+        $prog_with_pending_offers_cond['application.isactive'] = 1;
+        $prog_with_pending_offers_cond['application.isdeleted'] = 0;
+        $prog_with_pending_offers_cond['offer.isactive'] = 1;
+        $prog_with_pending_offers_cond['offer.isdeleted'] = 0;
+        $prog_with_pending_offers_cond['offer.ispublished'] = 0;
+        $prog_with_pending_offers_cond['application_period.iscomplete'] = 0;
+        $prog_with_pending_offers_cond['application_period.isactive'] = 1;
+        $prog_with_pending_offers_cond['application_period.isdeleted'] = 0;
+        
+        $programmes_with_pending_offers = ProgrammeCatalog::find()
+                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where($prog_with_pending_offers_cond)
+                ->all();
+        
+        foreach ($programmes_with_pending_offers as $program)
+        {
+            $current_offering = AcademicOffering::find()
+                     ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                     ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                     ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'programme_catalog.programmecatalogid' => $program->programmecatalogid, 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0,
+                                    'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+                                    ])
+                     ->one();
+            if ($current_offering)
+                $progs_with_pending_offers[$current_offering->academicofferingid] = $program->getFullName();
+        }
 
         
         return $this->render('current_offers', [
@@ -241,6 +279,7 @@ class OfferController extends Controller
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
             'divisions' => $divisions,
+            'progs_with_pending_offers' => $progs_with_pending_offers,
             'programmes' => $progs,
             'cape_subjects' => $capes,
             'offer_issues' => $offer_issues,

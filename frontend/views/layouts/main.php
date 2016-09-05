@@ -330,7 +330,7 @@ else
                     
 
                 
-                <?php if (Yii::$app->user->can('payments')): ?>
+                <?php if (Yii::$app->user->can('System Administrator')/*Yii::$app->user->can('payments')*/): ?>
                 <li class="active treeview">
                   <a href="">
                     <i class="fa fa-money"></i> <span>Payments</span> <i class="fa fa-angle-left pull-right"></i>
