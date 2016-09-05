@@ -258,7 +258,6 @@ class OfferController extends Controller
                 ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                 ->where($prog_with_pending_offers_cond)
-                ->orderBy()
                 ->all();
         
         foreach ($programmes_with_pending_offers as $program)
