@@ -169,7 +169,7 @@
                                         if ($periods == true)
                                         {
                                             echo "<ol>";
-                                                echo "<li style='margin-bottom:5%'>Publish by division";
+                                                echo "<li style='margin-bottom:2.5%'>Publish by division";
                                                     foreach ($periods as $period) 
                                                     {
                                                         if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
