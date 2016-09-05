@@ -173,9 +173,9 @@
                                                 if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
                                                     echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:2.5%']);
                                             }
-//                                            echo "<hr>";
+                                            echo "<br/>";
                                             
-                                            echo "<div style='margin-left:2.5%;font-weight:2 em' class='dropdown'>";
+                                            echo "<div style='margin-left:2.5%;font-weight:4 em' class='dropdown'>";
                                                 echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
                                                     echo "You may also publish offers by programme by selecting on of the following ";
                                                     echo " <span class='caret'></span>";
