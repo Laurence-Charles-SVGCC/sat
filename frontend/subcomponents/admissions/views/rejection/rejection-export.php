@@ -22,6 +22,7 @@
                 'firstname',
                 'lastname',
                 'programme',
+                'email',
                 'issuedby',
                 'issuedate',
                 'revokedby',
