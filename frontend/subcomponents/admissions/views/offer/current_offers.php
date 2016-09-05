@@ -188,7 +188,7 @@
                                                     {
                                                         for ($i = 0 ; $i < count($keys) ; $i++)
                                                         {
-                                                             $divsionid = Application::find()
+                                                             $divisionid = Application::find()
                                                                      ->where(['academicofferingid' => $keys[$i], 'isactive' => 1, 'isdeleted' => 0])
                                                                      ->one()
                                                                      ->divisionid;
