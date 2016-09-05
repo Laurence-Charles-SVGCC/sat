@@ -174,10 +174,11 @@
                                                     echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             }
                                             echo "<br/><br/>";
-                                                                           
+                                            
+                                            echo "<span>You may also publish offers by programme:</span>";
                                             echo "<div class='dropdown'>
                                                 <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                echo "Publish pending offers for the select programme...";
+                                                echo "Select programme...";
                                                 echo "<span class='caret'></span>";
                                                 echo "</button>";
                                                 echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
