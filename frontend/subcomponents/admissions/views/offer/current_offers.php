@@ -175,9 +175,10 @@
                                             }
                                             echo "<br/><br/>";
                                             
-                                            echo "<span>You may also publish offers by programme:</span>";
-                                            echo "<div class='dropdown'>
-                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                            
+                                            echo "<div class='dropdown'>";
+                                                echo "<span style='margin-right:2.5%'>You may also publish offers by programme: </span>";
+                                                echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
                                                 echo "Select programme...";
                                                 echo "<span class='caret'></span>";
                                                 echo "</button>";
