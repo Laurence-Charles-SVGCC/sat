@@ -244,6 +244,7 @@ class OfferController extends Controller
         $prog_with_pending_offers_cond['academic_offering.isdeleted'] = 0;
         $prog_with_pending_offers_cond['application.isactive'] = 1;
         $prog_with_pending_offers_cond['application.isdeleted'] = 0;
+        $prog_with_pending_offers_cond['offer.offertypeid'] = $offertype;
         $prog_with_pending_offers_cond['offer.isactive'] = 1;
         $prog_with_pending_offers_cond['offer.isdeleted'] = 0;
         $prog_with_pending_offers_cond['offer.ispublished'] = 0;
@@ -257,6 +258,7 @@ class OfferController extends Controller
                 ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                 ->where($prog_with_pending_offers_cond)
+                ->orderBy()
                 ->all();
         
         foreach ($programmes_with_pending_offers as $program)
