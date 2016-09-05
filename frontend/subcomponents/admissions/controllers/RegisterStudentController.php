@@ -178,6 +178,31 @@ class RegisterStudentController extends \yii\web\Controller
             $applicant = Applicant::findOne(['applicantid' => $request->post('applicantid')]);
             $application = Application::findOne(['applicationid' => $request->post('applicationid')]);
             $user = User::findOne(['personid' => $applicant->personid]);
+            
+            /* Prevents the creation of multiple records during Student enrollment.
+             * Possible source of problem;
+             * 1. Unstable internet connection (most likely)
+             * 2. User clicking "Submit" button multiple times.
+             */
+            $username = $user->username;
+            if (substr($username, 0, 1) == "1")
+            {
+                $old_registration = StudentRegistration::find()
+                        ->where(['perosnid' => $personid, 'offerid' => $offerid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                
+                Yii::$app->getSession()->setFlash('error', 'Student has already been registered.');
+                
+                if($old_registration)
+                {
+                    return $this->redirect( Url::toRoute(['/subcomponents/students/profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $old_registration->studentregistrationid]));
+                }
+                else
+                {
+                    return self::actionViewProspectiveStudent($personid, $programme);
+                }
+            }
+            
            
             $transaction = \Yii::$app->db->beginTransaction();
             try 
