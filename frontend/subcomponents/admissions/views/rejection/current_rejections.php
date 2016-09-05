@@ -195,9 +195,9 @@
                     'firstname',
                     'lastname',
                     'programme',
-                    'email',
+                    //'email',
                     'issuedby',
-                    //'issuedate',
+                    'issuedate',
                     'revokedby',
                     'revokedate',
                     [
