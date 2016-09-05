@@ -169,7 +169,7 @@
                                         if ($periods == true)
                                         {
                                             echo "<ol>";
-                                                echo "<li>Publish by division";
+                                                echo "<li style='margin-bottom:5%'>Publish by division";
                                                     foreach ($periods as $period) 
                                                     {
                                                         if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
@@ -178,7 +178,7 @@
                                                 echo "</li>";
     //                                                echo "<br/><br/>";
 
-                                                echo "<li style='margin-bottom:2.5%'>Publish by programme";
+                                                echo "<li>Publish by programme";
                                                     echo "<div style='margin-left:22.5%;font-weight:4 em' class='dropdown'>";
                                                         echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
                                                             echo "Select programme ";
