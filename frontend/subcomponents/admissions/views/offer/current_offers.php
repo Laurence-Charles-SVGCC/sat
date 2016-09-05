@@ -198,7 +198,7 @@
                                                                      if ($divisionid == false)
                                                                          continue;
 
-                                                                    $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish-by-offering/', 
+                                                                    $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish/', 
                                                                                                             'category' => 1,
                                                                                                             'sub_category' => $offertype,
                                                                                                             'divisionid' => $divisionid,
