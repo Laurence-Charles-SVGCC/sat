@@ -178,10 +178,10 @@
                                                 echo "</li>";
     //                                                echo "<br/><br/>";
 
-                                                echo "<li>Publish by programme";
-                                                    echo "<div style='margin-left:15%;font-weight:4 em' class='dropdown'>";
+                                                echo "<li style='margin-bottom=2.5%'>Publish by programme";
+                                                    echo "<div style='margin-left:25%;font-weight:4 em' class='dropdown'>";
                                                         echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                            echo "You may also publish offers by programme by selecting on of the following ";
+                                                            echo "Select programme ";
                                                             echo " <span class='caret'></span>";
                                                         echo "</button>";
                                                         echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
