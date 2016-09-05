@@ -171,15 +171,14 @@
                                             foreach ($periods as $period) 
                                             {
                                                 if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
-                                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:2.5%']);
                                             }
-                                            echo "<hr>";
+//                                            echo "<hr>";
                                             
-//                                            echo "<span>You may also publish offers by programme by selecting on of the following:</span>";
-                                            echo "<div class='dropdown'>";
+                                            echo "<div style='margin-left:2.5%;font-weight:2 em' class='dropdown'>";
                                                 echo "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                    echo "You may also publish offers by programme by selecting on of the following";
-                                                    echo "<span class='caret'></span>";
+                                                    echo "You may also publish offers by programme by selecting on of the following ";
+                                                    echo " <span class='caret'></span>";
                                                 echo "</button>";
                                                 echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
                                                     $keys = array_keys($progs_with_pending_offers);
