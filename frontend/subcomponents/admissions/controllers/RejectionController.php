@@ -183,6 +183,11 @@ class RejectionController extends Controller
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;
             
+            $email = Email::find()
+                    ->where(['personid' => $rejection->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $rejection_data['email'] = $email->email;
+            
             $rejected_programme_listing = " ";
             foreach ($programme_listing as $key=>$entry)
             {
