@@ -252,6 +252,8 @@ class OfferController extends Controller
         $prog_with_pending_offers_cond['application_period.isactive'] = 1;
         $prog_with_pending_offers_cond['application_period.isdeleted'] = 0;
         
+        $progs_with_pending_offers = array();
+        
         $programmes_with_pending_offers = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                 ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
