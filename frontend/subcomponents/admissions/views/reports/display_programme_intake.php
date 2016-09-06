@@ -98,7 +98,7 @@
                         <div id="summary-details">
                             <?= GridView::widget([
                                     'dataProvider' => $summary_dataProvider,
-                                    'options' => ['style' => 'width: 100%; margin: 0 auto;'],
+                                    'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                                     'columns' => [
                                         [
                                             'attribute' => 'name',
