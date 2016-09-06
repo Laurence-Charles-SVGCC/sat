@@ -79,7 +79,8 @@ class RegisterStudentController extends \yii\web\Controller
 
             array_push($values, $application);
             
-            $offer = Offer::getActiveOffer($applicant->personid);
+//            $offer = Offer::getActiveOffer($applicant->personid);
+            $offer = Offer::getActiveFullOffer($applicant->personid);
             
             //if this application is the same as the one that is associated with current offer
             if ($application->applicationid == $offer->applicationid)

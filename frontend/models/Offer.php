@@ -223,7 +223,7 @@ class Offer extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns the current of an successful applicant
+     * Returns the current active offer
      * 
      * @param type $personid
      * @return boolean
@@ -237,6 +237,30 @@ class Offer extends \yii\db\ActiveRecord
         $offer = Offer::find()
                 ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
                 ->where(['offer.isdeleted' => 0, 'offer.ispublished' => 1,
+                        'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9, 'application.personid' => $personid
+                        ])
+                ->one();
+        if ($offer)
+            return $offer;
+        return false;
+    }
+    
+    
+    /**
+     * Returns the current fulltime offer
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 28/02/2016
+     * Date Last Modified: 28/02/2016
+     */
+    public static function getActiveFullOffer($personid)
+    {
+        $offer = Offer::find()
+                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                ->where(['offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
                         'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9, 'application.personid' => $personid
                         ])
                 ->one();
