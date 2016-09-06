@@ -1153,6 +1153,7 @@ class ReportsController extends Controller {
                             $enrolled_info['firstname'] = $accepted_applicant->firstname;
                             $enrolled_info['middlename'] = $accepted_applicant->middlename;
                             $enrolled_info['lastname'] = $accepted_applicant->lastname;
+                            $enrolled_info['registrationdate'] = $has_enrolled->registrationdate;
                             $enrolled_info['offerid'] = $offer->offerid;
                             $enrolled_info['applicationid'] = $offer->applicationid;
                             if($criteria == "programme")
@@ -1203,6 +1204,9 @@ class ReportsController extends Controller {
                     ->all();
             
             $summary_info = array();
+            
+            $total_accepted = 0;
+            $total_enrolled = 0;
             
             foreach($academic_offerings as $offering)
             {
@@ -1255,6 +1259,8 @@ class ReportsController extends Controller {
                         ->groupby('applicant.personid')
                         ->count();
                 
+                $total_accepted += $accepted_count;
+                
                 $enrolled_male_count = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -1301,6 +1307,7 @@ class ReportsController extends Controller {
                                         ])
                         ->groupby('applicant.personid')
                         ->count();
+                $total_enrolled += $enrolled_count;
                 
                 $summary_info['name'] = $name;
                 $summary_info['accepted_males'] = $accepted_male_count;
@@ -1514,7 +1521,10 @@ class ReportsController extends Controller {
                     'application_periodid' => $application_periodid,
                     'page_title' => $page_title,
                     'programmeid' => $programmeid,
-                    'criteria' => $criteria
+                    'criteria' => $criteria,
+            
+                    'total_accepted' => $total_accepted,
+                    'total_enrolled' => $total_enrolled
         ]);
     }
     

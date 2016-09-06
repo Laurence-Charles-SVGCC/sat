@@ -26,6 +26,13 @@
             <?= Html::hiddenInput('programmeid', $programmeid); ?>
             <?= Html::hiddenInput('criteria', $criteria); ?>
             
+            <br/>
+            <p id="accepted-enrolled-totals" class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px; padding-top:15px; padding-bottom:30px;"> 
+                <span class="pull-left"><strong >Total Accepted: <?= $total_accepted;?></strong></span>
+                <span class="pull-right"><strong>Total Enrolled: <?= $total_enrolled;?></strong></span>
+            </p>
+            <br/>
+            
             <div style = 'margin-left: 2.5%;'>
                 <?php if($summary_dataProvider):?>
                     <div id="summary-listing">
@@ -195,7 +202,7 @@
                         <div id="accepted-details">
                             <?= GridView::widget([
                                     'dataProvider' => $accepted_dataProvider,
-                                    'options' => ['style' => 'width: 100%; margin: 0 auto;'],
+                                    'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                                     'columns' => [
                                         [
                                             'attribute' => 'username',
@@ -263,6 +270,11 @@
                                                 'format' => 'text',
                                                 'label' => 'Programme'
                                             ],
+                                            [
+                                                'attribute' => 'registrationdate',
+                                                'format' => 'text',
+                                                'label' => 'Date of Registration'
+                                            ],
                                         ],
                                     'fontAwesome' => true,
                                     'dropdownOptions' => [
@@ -285,7 +297,7 @@
                         <div id="enrolled-details">
                             <?= GridView::widget([
                                     'dataProvider' => $enrolled_dataProvider,
-                                    'options' => ['style' => 'width: 100%; margin: 0 auto;'],
+                                    'options' => ['style' => 'width: 95%; margin: 0 auto;'],
                                     'columns' => [
                                         [
                                             'attribute' => 'username',
@@ -306,6 +318,11 @@
                                             'attribute' => 'programme',
                                             'format' => 'text',
                                             'label' => 'Programme'
+                                        ],
+                                        [
+                                            'attribute' => 'registrationdate',
+                                            'format' => 'text',
+                                            'label' => 'Date of Registration'
                                         ],
                                     ],
                                 ]); 
