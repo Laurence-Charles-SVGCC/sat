@@ -2712,6 +2712,14 @@
                                                                             Yii::$app->getSession()->setFlash('error', 'Error loading applicant record... Please try again.');
                                                                         }
                                                                    }
+                                                                   else         //for transfers within the same division
+                                                                   {
+                                                                       $transaction->commit();
+                                                                        return $this->redirect(['student-profile',
+                                                                            'personid' => $personid, 
+                                                                            'studentregistrationid' => $studentregistrationid,                     
+                                                                        ]);
+                                                                   }
                                                                 }
                                                                 else
                                                                 {
