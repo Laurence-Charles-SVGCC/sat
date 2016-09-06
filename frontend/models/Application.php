@@ -281,7 +281,7 @@ class Application extends \yii\db\ActiveRecord
         $count = count($custom_applications);
         if($count > 0)
         {
-            $last_id = $applications[($count-1)];
+            $last_id = $custom_applications[($count-1)];
             $new_id = $last_id->ordering + 1;
         }
         else
