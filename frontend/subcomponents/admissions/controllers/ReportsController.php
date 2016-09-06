@@ -1140,7 +1140,7 @@ class ReportsController extends Controller {
                         $accepted_data[] = $accepted_info;
                         
                         $has_enrolled = StudentRegistration::find()
-                                ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->where(['offerid' => $offer->offerid, 'offertypeid' => 1,  'isactive' => 1, 'isdeleted' => 0])
                                 ->one();
                         
                         if($has_enrolled == true)
