@@ -10,11 +10,13 @@ use common\models\User;
 use frontend\models\Division;
 use frontend\models\StudentRegistration;
 use frontend\models\ApplicationPeriod;
+use frontend\models\Email;
 use frontend\models\Offer;
 use frontend\models\Applicant;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\EmployeeDepartment;
+use frontend\models\Employee;
 
 
 class CardController extends \yii\web\Controller
@@ -32,8 +34,9 @@ class CardController extends \yii\web\Controller
      */
     public function actionIndex($criteria = NULL, $periodid = NULL)
     {
-        $dataProvider = null;
-        $info_string = null;
+        $dataProvider = NULL;
+        $info_string = NULL;
+        $enrolled_filename = NULL;
         
         $division_id = EmployeeDepartment::getUserDivision();
         
@@ -49,6 +52,10 @@ class CardController extends \yii\web\Controller
                 $info_string = " Application Period [ " . $period->name . " ]";
 
                 $offer_cond = array();
+                $offer_cond['application.isactive'] = 1;
+                $offer_cond['application.isdeleted'] = 0;
+                $offer_cond['academic_offering.isactive'] = 1;
+                $offer_cond['academic_offering.isdeleted'] = 0;
                 $offer_cond['application_period.applicationperiodid'] = $periodid;
                 $offer_cond['application_period.isactive'] = 1;
                 $offer_cond['application_period.isdeleted'] = 0;
@@ -71,14 +78,17 @@ class CardController extends \yii\web\Controller
                 {
                     $cape_subjects_names = array();
                     $application = $offer->getApplication()->one();
-                    $applicant = Applicant::findOne(['personid' => $application->personid]);
-                    $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                    $applicant = Applicant::findOne(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                    $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
+                    $email = Email::findOne(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])->email;
+                    $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0]);
+                    $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid, 'isactive' => 1, 'isdeleted' => 0]);
+                    
                     foreach ($cape_subjects as $cs) 
                     { 
                         $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                     }
-                    $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1]);
+                    $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0]);
 
                     $offer_data = array();
                     $offer_data['offerid'] = $offer->offerid;
@@ -88,7 +98,10 @@ class CardController extends \yii\web\Controller
                     $offer_data['middlename'] = $applicant->middlename;
                     $offer_data['lastname'] = $applicant->lastname;
                     $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-                    $offer_data['studentno'] = $applicant->potentialstudentid;
+                    $offer_data['registrationdate'] = $student_reg->registrationdate;
+                    $offer_data['division'] = Division::getDivisionAbbreviation($application->divisionid);
+                    $offer_data['email'] = $email;
+                    $offer_data['username'] = $username;
                     $offer_data['published'] = $offer->ispublished;
                     $offer_data['registered'] = $student_reg ? True : False;
                     $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
@@ -96,8 +109,19 @@ class CardController extends \yii\web\Controller
                     $offer_data['cardcollected'] = $student_reg ? $student_reg->cardcollected : False;
                     $data[] = $offer_data;
                 }
+                
+                
+                $enrolled_header = "Enrolled Applicants Report - ";
+                $enrolled_title = "Title: " . $period->name . " " .  $enrolled_header;
+
+                $date = " Date: " . date('Y-m-d') . "   ";
+                $employeeid = Yii::$app->user->identity->personid;
+                $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
+
+                $enrolled_filename = $enrolled_title . $date . $generating_officer;
             }
 
+            
             elseif($criteria == "student-id"  ||  $criteria == "student-name")
             {
                 if($criteria == "student-id")
@@ -192,13 +216,15 @@ class CardController extends \yii\web\Controller
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                     'attributes' => ['firstname', 'lastname', 'studentno'],
                   ]
-            ]);
+            ]);          
         }
         
         return $this->render('index',
                 [
                     'dataProvider' => $dataProvider,
                     'info_string' => $info_string,
+                    
+                    'enrolled_filename' => $enrolled_filename,
                 ]);
     }
 

@@ -4,7 +4,8 @@
     use yii\grid\GridView;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
-
+    use kartik\export\ExportMenu;
+    
     use frontend\models\ApplicationPeriod;
 
     /* @var $this yii\web\View */
@@ -114,8 +115,81 @@
                 </div>
             </fieldset>
             
+            
             <?php if ($dataProvider == true) : ?>
                 <h3><?= "Search Results By: " . $info_string ?></h3>
+                
+                <div style = "margin-left: 2.5%">
+                    <p>Click the following link to download a student listing for the displayed application period.</p>
+                    <?= ExportMenu::widget([
+                            'dataProvider' => $dataProvider,
+
+                            'columns' => [
+                                    [
+                                        'attribute' => 'username',
+                                        'format' => 'text',
+                                        'label' => 'Student No.'
+                                    ],
+                                    [
+                                        'attribute' => 'title',
+                                        'format' => 'text',
+                                        'label' => 'Title'
+                                    ],
+                                    [
+                                        'attribute' => 'firstname',
+                                        'format' => 'text',
+                                        'label' => 'First Name'
+                                    ],
+                                    [
+                                        'attribute' => 'middlename',
+                                        'format' => 'text',
+                                        'label' => 'Middle Name'
+                                    ],
+                                    [
+                                        'attribute' => 'lastname',
+                                        'format' => 'text',
+                                        'label' => 'Last Name'
+                                    ],
+                                    [
+                                        'attribute' => 'email',
+                                        'format' => 'text',
+                                        'label' => 'Email'
+                                    ],
+                                    [
+                                        'attribute' => 'programme',
+                                        'format' => 'text',
+                                        'label' => 'Programme'
+                                    ],
+                                    [
+                                        'attribute' => 'division',
+                                        'format' => 'text',
+                                        'label' => 'Division'
+                                    ],
+                                    [
+                                        'attribute' => 'registrationdate',
+                                        'format' => 'text',
+                                        'label' => 'Date Registered'
+                                    ],
+                                ],
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+                            'filename' => $enrolled_filename,
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false,
+                                ExportMenu::FORMAT_PDF => false
+                            ],
+                        ]);
+                    ?><br/>
+                </div>
+                
                 <?= $this->render('search_results', 
                                 [
                                     'dataProvider' => $dataProvider,

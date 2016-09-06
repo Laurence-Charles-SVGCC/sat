@@ -227,7 +227,7 @@
                 
                 
                 <?php if($enrolled_dataProvider):?>
-                    <div id="accepted-listing">
+                    <div id="enrolled-listing">
                         <h2 class="custom_h2" style="margin-left:2.5%"><?= $enrolled_header?></h2>
                         <div id="accepted-export">
                             <?= ExportMenu::widget([

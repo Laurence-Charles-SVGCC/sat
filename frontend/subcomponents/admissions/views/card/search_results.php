@@ -19,7 +19,7 @@
                 'options' => ['style' => 'width:98%; margin: 0 auto;'],
                 'columns' => [
                     [
-                       'attribute' => 'studentno',
+                       'attribute' => 'username',
                         'label' => 'Student No.',
                     ],
                     'firstname',
