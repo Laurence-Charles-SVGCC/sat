@@ -421,7 +421,7 @@ class Applicant extends \yii\db\ActiveRecord
                             $application_status = 4;
 
                     //if borderlined
-                    if(($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
+                    elseif(($applications[0]->applicationstatusid == 7  && $applications[1]->applicationstatusid == 3)
                                 ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 7)
                                 ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 7))
                             $application_status = 7;
@@ -433,15 +433,15 @@ class Applicant extends \yii\db\ActiveRecord
                             $application_status = 8;
 
                     //if offer
-                    if(($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                    elseif(($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
                             ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9) )
                             $application_status = 9;
 
                     //is reject of conditional offer
-                    if(($applications[0]->applicationstatusid == 8  && $applications[1]->applicationstatusid == 6)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 8)
-                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 8))
+                    elseif(($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10))
                             $application_status =10;
 
                     //is abandoned
