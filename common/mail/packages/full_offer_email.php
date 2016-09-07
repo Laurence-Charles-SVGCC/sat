@@ -15,7 +15,7 @@
                 <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
             </div>
 
-            <div id="body" style="white-space: pre-wrap;">
+            <div id="body" style="white-space: pre;">
                 <?= $package->emailcontent?>
             </div>
 
