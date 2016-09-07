@@ -166,7 +166,7 @@
                                         if (Offer::anyOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1,1) == false)
                                             echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
-                                        if ($periods == true)
+                                        elseif (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1,1) == true && $periods == true)
                                         {
                                             echo "<ol>";
                                                 echo "<li style='margin-bottom:2.5%'>Publish by division:";
