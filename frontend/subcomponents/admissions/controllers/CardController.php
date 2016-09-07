@@ -181,6 +181,7 @@ class CardController extends \yii\web\Controller
                         $cape_subjects_names = array();
                         $application = $offer->getApplication()->one();
                         $applicant = Applicant::findOne(['personid' => $application->personid]);
+                        $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
                         $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
                         $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
                         foreach ($cape_subjects as $cs) 
@@ -196,7 +197,7 @@ class CardController extends \yii\web\Controller
                         $offer_data['middlename'] = $applicant->middlename;
                         $offer_data['lastname'] = $applicant->lastname;
                         $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-                        $offer_data['studentno'] = $applicant->potentialstudentid;
+                        $offer_data['username'] = $username;
                         $offer_data['published'] = $offer->ispublished;
                         $offer_data['registered'] = $student_reg ? True : False;
                         $offer_data['picturetaken'] = $student_reg ? $student_reg->receivedpicture : False;
