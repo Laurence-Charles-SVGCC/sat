@@ -962,7 +962,44 @@ class AdmissionsController extends Controller
                             $app['lastname'] = $applicant->lastname;
                             $app['gender'] = $applicant->gender;
                             $app['dateofbirth'] = $applicant->dateofbirth;
-
+                            
+                            $applications = Application::getApplications($applicant->personid);
+                            $divisionid = $applications[0]->divisionid;
+                            
+                            /*
+                             * If division is DTE or DNE then all applications refer to one division
+                             */
+                            if ($divisionid == 6  || $divisionid == 7)
+                            {
+                                $division = Division::getDivisionAbbreviation($divisionid);
+                                $app["division"] = $division;
+                            }
+                            /*
+                             * If division is DASGS or DTVE then applications may refer to multiple divisions
+                             */
+                            elseif ($divisionid == 4  || $divisionid == 5)
+                            {
+                                $dasgs = 0;
+                                $dtve = 0;
+                                foreach($applications as $application)
+                                {
+                                    if ($application->divisionid == 4)
+                                        $dasgs++;
+                                    elseif ($application->divisionid == 5)
+                                        $dtve++;
+                                }
+                                if ($dasgs>=1  && $dtve>=1)
+                                    $divisions = "DASGS & DTVE";
+                                elseif ($dasgs>=1  && $dtve==0)
+                                    $divisions = "DASGS";
+                                elseif ($dasgs==0  && $dtve>=1)
+                                    $divisions = "DTVE";
+                                else
+                                     $divisions = "Unknown";
+                                $app["division"] = $divisions;
+                            }
+                            
+                            
                             if($status == "pending-unlimited")
                                 $info = Applicant::getApplicantInformation($applicant->personid, true);
                             else

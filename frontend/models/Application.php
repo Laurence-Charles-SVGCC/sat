@@ -157,7 +157,6 @@ class Application extends \yii\db\ActiveRecord
     public static function getApplications($id)
     {
         $applications = Application::find()
-//                ->where(['personid' => $id, 'isactive' => 1, 'isdeleted'=> 0])
                 ->where(['personid' => $id, 'isdeleted'=> 0])
                 ->all();
         if (count($applications) > 0)

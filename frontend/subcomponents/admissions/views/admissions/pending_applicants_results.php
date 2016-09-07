@@ -75,6 +75,11 @@
                 'format' => 'text',
                 'label' => 'Date of Birth'
             ],
+            [
+                'attribute' => 'division',
+                'format' => 'text',
+                'label' => 'Division'
+            ],
         ],
     ]); ?>
     
