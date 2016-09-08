@@ -164,6 +164,7 @@ class OfferController extends Controller
             $offer_data['offerid'] = $offer->offerid;
             $offer_data['offertype'] = $offer->offertypeid;
             $offer_data['applicationid'] = $offer->applicationid;
+            $offer_data['divisionid'] = $application->divisionid;
             $offer_data['username'] = $username;
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;

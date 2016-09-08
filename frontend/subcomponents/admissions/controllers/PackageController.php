@@ -765,6 +765,290 @@
                             ]);
         }
         
+        /**
+         * Publishs a single offer or rejection
+         * 
+         * @param type $category
+         * @param type $offerid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 08/09/2016
+         * Date Last Modified: 08/09/2016
+         */
+        public function actionPublishSingle($category, $itemid, $divisionid)
+        {
+             //if publishing offer
+            if ($category == 1)
+            {
+                $offer = Offer::find()
+                        ->where(['offerid' => $itemid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($offer)
+                {
+                    $cape_subjects_names = array();
+                    $application = Application::find()
+                            ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if($application == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving application');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                   $applicationperiod = ApplicationPeriod::find()
+                                   ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                   ->one();
+                   if($applicationperiod == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicationperiod');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                   /*
+                    * If $sub_category/offertypeid = conditional;
+                    * -> use conditional offer package
+                    * ->else use full offer rejection package
+                    */
+                    if ($offer->offertypeid == 1)
+                        $packagetypeid = 4;
+                    else
+                        $packagetypeid = 3;
+
+                    $package = Package::find()
+                       ->where(['applicationperiodid' => $applicationperiod->applicationperiodid, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                       ->one();
+                    if($package == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving package');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $applicant = Applicant::find()
+                           ->where(['personid' => $application->personid,  'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+                    if($applicant == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicant');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                     
+                    $email = Email::find()
+                            ->where(['personid' => $application->personid,  'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+                    if($email == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving email address');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $divisioname = Division::getDivisionName($application->divisionid);
+                    if($divisioname == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving divisionname');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $prog = ProgrammeCatalog::getApplicantProgramme($application->applicationid);
+                    if($prog == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving programme');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    if($prog->name == "CAPE")
+                    {
+                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                        if ( $cape_subjects == true)
+                        {
+                            foreach ($cape_subjects as $cs)
+                            { 
+                                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                            }
+                        }
+                        $programme = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                    }
+                    else
+                    {
+                        $programme =  $prog->getFullName();
+                    }
+                    
+                    $studentno = $applicant->potentialstudentid;
+                    $attachments = Package::getDocuments($package->packageid);
+                    
+                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    
+                    if($offer->ispublished == 0)
+                    {
+                        $offer->ispublished = 1;
+                    }
+                    $offer->packageid = $package->packageid;
+                    $offer->save();
+                    
+                    //ensure package is recorded as being published
+                    if($package->waspublished == 0)
+                    {
+                        $package->waspublished = 1;
+                    }
+                    
+                    $package->publishcount +=1;
+                    $package->save();
+                }  
+            }
+            
+            //if publishing rejection
+            elseif ($category == 2)
+            {
+                $rejection = Rejection::find()
+                        ->where(['rejectionid' => $itemid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                
+                if ($rejection)
+                {
+                    $applicationperiod = ApplicationPeriod::find()
+                                   ->where(['divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                   ->one();
+                   if($applicationperiod == false)
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured retreiving applicationperiod');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                   /*
+                    * If $sub_category/rejectiontypeid = pre_interview;
+                    * -> use pre_interview rejection package
+                    * ->else use post_interview rejection package
+                    */
+                    if ($rejection->rejectiontypeid == 1)
+                       $packagetypeid = 1;
+                    else
+                        $packagetypeid = 2;
+
+                    $package = Package::find()
+                       ->where(['applicationperiodid' => $applicationperiod->applicationperiodid, 'packagetypeid' => $packagetypeid, 'isactive' => 1, 'isdeleted' => 0])
+                       ->one();
+
+                    $applicant = Applicant::find()
+                           ->where(['personid' => $rejection->personid,  'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+                     
+                    $email = Email::find()
+                            ->where(['personid' => $rejection->personid,  'isactive' => 1, 'isdeleted' => 0])
+                           ->one();
+                    
+                    $application_rejections = RejectionApplications::find()
+                            ->where(['rejectionid' => $rejection->rejectionid,  'isactive' => 1, 'isdeleted' => 0])
+                            ->all();
+                    $application_ids = array();
+                    foreach ($application_rejections as $value) 
+                    {
+                        $application_ids[] = $value->applicationid;
+                    }
+                    
+                    $divisioname = "";
+                    $programme = "";
+                    $applications = Application::find()
+                                ->where(['applicationid' => $application_ids, 'isactive' => 1, 'isdeleted' => 0])
+                                ->all();
+                    
+                    //if division is for DTE or DNE then applications are constrained to one division
+                    if ($applications[0]->divisionid == 6 || $applications[0]->divisionid == 7)
+                    {
+                        $div = Division::getDivisionName($applications[0]->divisionid);
+                        $divisioname .= $div;
+                        
+                        foreach ($applications as $key=>$record)
+                        {
+                            if ($record->divisionid == 4)
+                                $has_dasgs = true;
+                            elseif ($record->divisionid == 5)
+                                $has_dtve = true;
+                            
+                            $cape_subjects_names = array();
+                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $record->applicationid]);
+                            
+                            if ($cape_subjects)
+                            {
+                                foreach ($cape_subjects as $cs) 
+                                {
+                                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                }
+                            }
+                            
+                            $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
+                            $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                            
+                            if($application_count - $key > 1)
+                                $programme .= " and " . $name; 
+                            else
+                                $programme .= " " . $name; 
+                        }
+                    }
+                    else
+                    {
+                        $has_dasgs = false;
+                        $has_dtve = false;
+                        $application_count = count($applications);
+                        foreach ($applications as $key=>$record)
+                        {
+                            if ($record->divisionid == 4)
+                                $has_dasgs = true;
+                            elseif ($record->divisionid == 5)
+                                $has_dtve = true;
+                            
+                            $cape_subjects_names = array();
+                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $record->applicationid]);
+                            
+                            if ($cape_subjects)
+                            {
+                                foreach ($cape_subjects as $cs) 
+                                {
+                                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                }
+                            }
+                            
+                            $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
+                            $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
+                            
+                            if($application_count - $key > 1)
+                                $programme .= " and " . $name; 
+                            else
+                                $programme .= " " . $name; 
+                        }
+                        
+                        if ($has_dasgs == true  && $has_dtve == true)
+                            $divisioname .= Division::getDivisionName(4) . " and "  . Division::getDivisionName(5);
+                        elseif ($has_dasgs == true  && $has_dtve == false)
+                            $divisioname .= Division::getDivisionName(4);
+                        elseif ($has_dasgs == false  && $has_dtve == true)
+                            $divisioname .= Division::getDivisionName(5);
+                    }
+                    
+                    $studentno = 0;
+                    $attachments = Package::getDocuments($package->packageid);
+                    
+                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                
+                    if ($rejection->ispublished == 0)
+                    {
+                        $rejection->ispublished = 1;
+                    }
+                    $rejection->packageid = $package->packageid;
+                    $rejection->save();
+                    
+                    //ensure package is recorded as being published
+                    if($package->waspublished == 0)
+                    {
+                        $package->waspublished = 1;
+                    }
+                    
+                    $package->publishcount +=1;
+                    $package->save();
+                }
+            }
+            return $this->redirect(\Yii::$app->request->getReferrer());
+        }
+        
         
         /**
          * Publishes an offer/rejection

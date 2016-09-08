@@ -11,10 +11,6 @@
     use frontend\models\Offer;
     use frontend\models\Package;
 
-    /* @var $this yii\web\View */
-    /* @var $dataProvider yii\data\ActiveDataProvider */
-
-
     $active_periods = ApplicationPeriod::getOpenPeriodIDs();
     if (in_array(4, $active_periods) == true)
     {
@@ -163,10 +159,10 @@
                                 <div id="publish-button" style="display:none">
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
-                                        if (Offer::anyOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1,1) == false)
+                                        if (Offer::anyPendingOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1,1) == false)
                                             echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
                                         
-                                        elseif (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1,1) == true && $periods == true)
+                                        elseif (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1,1) == true && $periods == true)
                                         {
                                             echo "<ol>";
                                                 echo "<li style='margin-bottom:2.5%'>Publish by division:";
@@ -283,6 +279,42 @@
                                     }
                                     else
                                         return "N/A";
+                                }
+                            }
+                            else
+                            {
+                                return "N/A";
+                            }
+                          }
+                    ],
+                    [
+                        'label' => 'Email',
+                        'format' => 'html',
+                        'value' => function($row)
+                         {
+                            if (Yii::$app->user->can('publishOffer'))
+                            {
+                                if ($row['ispublished'] == 1)
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
+                                                ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                    'data' => [
+                                                        'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                }
+                                else
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
+                                                ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                    'data' => [
+                                                        'confirm' => 'Are you sure you want to publish this offer?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
                                 }
                             }
                             else
