@@ -195,11 +195,10 @@
                     'firstname',
                     'lastname',
                     'programme',
-                    //'email',
                     'issuedby',
                     'issuedate',
                     'revokedby',
-                    'revokedate',
+//                    'revokedate',
                     [
                         'attribute' => 'ispublished',
                         'format' => 'boolean',
