@@ -252,7 +252,7 @@
                     [
                         'attribute' => 'ispublished',
                         'format' => 'boolean',
-                        'label' => 'Published'
+                        'label' => 'Sent'
                     ],
                     [
                         'attribute' => 'offerid',
