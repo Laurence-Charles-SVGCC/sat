@@ -288,7 +288,7 @@
                           }
                     ],
                     [
-                        'label' => 'Email',
+                        'label' => 'Publish',
                         'format' => 'html',
                         'value' => function($row)
                          {
@@ -321,7 +321,7 @@
                             {
                                 return "N/A";
                             }
-                          }
+                        }
                     ],
                 ],
             ]); ?>

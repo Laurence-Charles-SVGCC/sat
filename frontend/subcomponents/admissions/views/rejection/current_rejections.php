@@ -233,6 +233,42 @@
                             }
                           }
                     ],
+                    [
+                        'label' => 'Publish',
+                        'format' => 'html',
+                        'value' => function($row)
+                         {
+                            if (Yii::$app->user->can('publishOffer'))
+                            {
+                                if ($row['ispublished'] == 1)
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 2, 'itemid' => $row['rejectionid'], 'divisionid' => $row['divisionid']], 
+                                                ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                    'data' => [
+                                                        'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this rejection?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                }
+                                else
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 2,  'itemid' => $row['rejectionid'], 'divisionid' =>$row['divisionid']], 
+                                                ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                    'data' => [
+                                                        'confirm' => 'Are you sure you want to publish this rejection?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                }
+                            }
+                            else
+                            {
+                                return "N/A";
+                            }
+                        }
+                    ],
                 ],
             ]); ?>
         </div>
