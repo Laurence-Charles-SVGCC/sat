@@ -65,8 +65,8 @@
                         <td><?=$student->gender ?>
                     </tr>
                     <tr>
-                        <th>Academic Status</th>
-                        <td><?= $academic_status; ?>
+                        <th>Level / Academic Status</th>
+                        <td><?= $studentregistration->currentlevel?> / <?= $academic_status; ?>
                         <th>Cumlative GPA</th>
                         <td><?=$cumulative_gpa?></td>
                     </tr>

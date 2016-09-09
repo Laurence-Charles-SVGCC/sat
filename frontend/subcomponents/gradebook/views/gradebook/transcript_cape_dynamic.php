@@ -64,8 +64,8 @@
                         <td><?=$student->gender ?>
                     </tr>
                     <tr>
-                        <th>Academic Status</th>
-                        <td><?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
+                        <th>Level / Academic Status</th>
+                        <td><?= $studentregistration->currentlevel?> / <?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
                         <th>Programme Details</th>
                         <td><?=$programme_description?></td>
                     </tr>                      

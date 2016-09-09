@@ -64,8 +64,8 @@
                         <td><?=$student->gender ?>
                     </tr>
                     <tr>
-                        <th>Academic Status</th>
-                        <td><?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
+                        <th>Level / Academic Status</th>
+                        <td><?= $studentregistration->currentlevel?> / <?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
                         <th>Cumlative GPA</th>
                         <td><?=$cumulative_gpa?></td>
                     </tr>
