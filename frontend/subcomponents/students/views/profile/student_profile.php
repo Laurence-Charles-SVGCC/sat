@@ -246,8 +246,8 @@
                                             <th>Student Status</th>
                                             <td><?=$student_status;?></td> 
                                              <?php if(StudentRegistration::isCape($studentregistrationid) == false):?>
-                                                <th>Academic Status</th>
-                                                <td><?=$academic_status;?></td>
+                                                <th>Level / Academic Status</th>
+                                                <td><?= $studentregistration->currentlevel?> / <?=$academic_status;?></td>
                                             <?php endif;?>
                                         </tr>
                                     </table>
@@ -2541,8 +2541,8 @@
                                                     <td><?=$student->gender ?>
                                                 </tr>
                                                 <tr>
-                                                    <th>Academic Status</th>
-                                                    <td><?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
+                                                    <th>Level / Academic Status</th>
+                                                    <td><?= $studentregistration->currentlevel?> / <?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
                                                     <th>CAPE Subjects</th>
                                                     <td><?=$cape_subjects?></td>
                                                 </tr>               
@@ -2626,8 +2626,8 @@
                                                     <td><?=$student->gender ?>
                                                 </tr>
                                                 <tr>
-                                                    <th>Academic Status</th>
-                                                    <td><?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
+                                                    <th>Level / Academic Status</th>
+                                                    <td><?= $studentregistration->currentlevel?> / <?=AcademicStatus::getStatus($studentregistration->academicstatusid)?></td>
                                                     <th>Cumlative GPA</th>
                                                     <td><?=$cumulative_gpa?></td>
                                                 </tr>        
