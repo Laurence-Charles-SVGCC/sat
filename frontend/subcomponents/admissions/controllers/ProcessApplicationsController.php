@@ -2913,6 +2913,12 @@
          */
         public function actionPowerRejection($personid, $programme, $application_status, $programme_id)
         { 
+            if (EmployeeDepartment::getUserDivision() == 1)
+            {
+                Yii::$app->session->setFlash('error', 'Error occured retreiving active applications.');
+                return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
+            }
+                
             $current_applications = Application::getVerifiedApplications($personid);
             if ($current_applications == false)
             {
