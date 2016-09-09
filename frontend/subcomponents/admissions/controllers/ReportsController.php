@@ -1137,6 +1137,38 @@ class ReportsController extends Controller {
                             $accepted_info['programme'] = $programme;
                         elseif($criteria == "subject")
                             $accepted_info['programme'] = $subject;
+                        
+                        $schools = "";
+                        $unique_school_ids = array();
+                        $qualifications = CsecQualification::find()
+                                ->where(['personid' => $accepted_applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->all();
+                        if ($qualifications)
+                        {
+                            foreach ($qualifications as $qualification)
+                            {
+                                if (in_array($qualification->cseccentreid, $unique_school_ids) == false)
+                                {
+                                    $unique_school_ids[] = $qualification->cseccentreid;
+                                    $centre = CsecCentre::find()
+                                            ->where(['cseccentreid' => $qualification->cseccentreid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                                    if ($centre == false)
+                                        continue;
+                                    $name = str_replace("'", "", $centre->name);
+                                    $schools .= " " . $name . ",";
+                                }  
+                                
+                            }
+                            $schools = rtrim($schools, ",");
+                        }
+                        else
+                        {
+                            $schools = "Unknown";
+                        }
+                        
+                        
+                        $accepted_info['secondary_school'] = $schools;
                         $accepted_data[] = $accepted_info;
                         
                         $has_enrolled = StudentRegistration::find()

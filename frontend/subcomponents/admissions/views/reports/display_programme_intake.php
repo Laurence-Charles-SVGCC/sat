@@ -176,6 +176,11 @@
                                                 'label' => 'Last Name'
                                             ],
                                             [
+                                                'attribute' => 'secondary_school',
+                                                'format' => 'text',
+                                                'label' => 'Secondary School'
+                                            ],
+                                            [
                                                 'attribute' => 'programme',
                                                 'format' => 'text',
                                                 'label' => 'Programme'
@@ -218,6 +223,11 @@
                                             'attribute' => 'lastname',
                                             'format' => 'text',
                                             'label' => 'Last Name'
+                                        ],
+                                        [
+                                            'attribute' => 'secondary_school',
+                                            'format' => 'text',
+                                            'label' => 'Secondary School'
                                         ],
                                         [
                                             'attribute' => 'programme',
