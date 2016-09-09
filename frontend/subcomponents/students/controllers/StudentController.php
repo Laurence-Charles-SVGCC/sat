@@ -39,6 +39,7 @@ use frontend\models\AssessmentStudentCape;
 use frontend\models\BatchStudent;
 use frontend\models\BatchStudentCape;
 use frontend\models\Hold;
+use frontend\models\StudentTransfer;
 
 
 class StudentController extends Controller
@@ -1556,6 +1557,132 @@ class StudentController extends Controller
             'dtve_provider' => $dtve_provider,
             'dte_provider' => $dte_provider,
             'dne_provider' => $dne_provider,
+        ]);
+    }
+    
+    
+    /**
+     * Returns listing of transfers and deferrals
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 09/09/2016
+     * Date LAst Modified: 09/09/2016
+     */
+    public function actionViewTransfersAndDeferrals()
+    {
+        $transfers_data = NULL;
+        $deferrals_data = NULL;
+        
+        $transfers_provider = array();
+        $deferrals_provider = array();
+        
+        $transfer_info = array();
+        $deferral_info = array();
+        
+        $transfers = StudentTransfer::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        
+        if($transfers)
+        {
+            foreach ($transfers as $transfer)
+            {
+                
+                $transfer_info["studentregistrationid"] = $transfer->studentregistrationid;
+                $transfer_info["personid"] = $transfer->personid;
+                
+                $user = User::find()
+                        ->where(['personid' => $transfer->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $transfer_info["username"] = $user->username;
+                
+                $student = Student::find()
+                        ->where(['personid' => $transfer->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($student == false)
+                    continue;
+                $transfer_info["title"] = $student->title;
+                $transfer_info["firstname"] = $student->firstname;
+                $transfer_info["lastname"] = $student->lastname;
+                
+                $transfer_info["date"] = $transfer->transferdate;
+                
+                $offer_from = Offer::find()
+                        ->where(['offerid' => $transfer->offerfrom, 'isdeleted' => 0])
+                        ->one();
+                if($offer_from == false)
+                    continue;
+                $transfer_info["offer_from_id"] = $offer_from->offerid;
+                
+                $previous_cape_subjects_names = array();
+                $previous_cape_subjects = array();
+                $application = $offer_from->getApplication()->one();
+                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                foreach ($previous_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+           
+                 $offer_to = Offer::find()
+                        ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
+                        ->one();
+                if($offer_to == false)
+                    continue;
+                $transfer_info["offer_to_id"] = $offer_to->offerid;
+                $current_cape_subjects_names = array();                
+                $current_cape_subjects = array();
+                $application = $offer_from->getApplication()->one();
+                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $transfer_info['current_programme'] = empty($current_cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                
+                $transfer_info["transfer_officerid"] = $transfer->transferofficer;
+                
+                $employee_name = Employee::getEmployeeName($transfer->transferofficer);
+                $transfer_info["transfer_officer_name"] = $employee_name;
+                
+                $transfers_data[] =  $transfer_info;
+            }
+            
+            $transfers_provider = new ArrayDataProvider([
+                    'allModels' => $transfers_data,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+            ]); 
+        }
+        
+        
+        
+//        $deferrals_provider = new ArrayDataProvider([
+//                    'allModels' => $deferrals_data,
+//                    'pagination' => [
+//                        'pageSize' => 25,
+//                    ],
+//                    'sort' => [
+//                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+//                        'attributes' => ['username', 'firstname', 'lastname'],
+//                        ]
+//            ]); 
+        
+        
+        return $this->render('transfers_and_deferrals', [
+            'transfers_provider' => $transfers_provider,
+            'deferrals_provider' => $deferrals_provider
         ]);
     }
     

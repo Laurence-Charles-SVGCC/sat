@@ -196,6 +196,10 @@ else
                             <?php if (Yii::$app->user->can('students')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-programme-intake'])?>"><i class="fa fa-circle-o"></i>Generate Intake Reports</a></li>
                             <?php endif; ?>
+                            
+                            <?php if(Yii::$app->user->can('viewTransferData')):?>
+                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-transfers-and-deferrals'])?>"><i class="fa fa-circle-o"></i>View Transfers/Deferrals</a></li>
+                            <?php endif; ?>
                                 
                             <?php if (Yii::$app->user->can('students')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants'])?>"><i class="fa fa-circle-o"></i>View Unregistered Applicants</a></li>

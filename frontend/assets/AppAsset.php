@@ -52,6 +52,7 @@ class AppAsset extends AssetBundle
         'js/gradebook/edit_assessment.js',
         'js/students/students.js',
         'js/students/ajax_functions.js',
+        'js/students/transfers_and_deferrals.js',
         'js/admissions/admissions.js',
         'js/admissions/reports.js',
         'js/admissions/register_student.js',
