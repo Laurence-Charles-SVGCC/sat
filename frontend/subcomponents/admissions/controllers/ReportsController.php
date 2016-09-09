@@ -30,6 +30,7 @@ use frontend\models\StudentRegistration;
 use frontend\models\Division;
 use frontend\models\CsecCentre;
 use frontend\models\Phone;
+use frontend\models\StudentStatus;
 
 class ReportsController extends Controller {
 
@@ -1188,6 +1189,16 @@ class ReportsController extends Controller {
                             $enrolled_info['registrationdate'] = $has_enrolled->registrationdate;
                             $enrolled_info['offerid'] = $offer->offerid;
                             $enrolled_info['applicationid'] = $offer->applicationid;
+                            $enrolled_info['current_level'] = $has_enrolled->currentlevel;
+                            
+                            $student_status = StudentStatus::find()
+                                    ->where(['studentstatusid' => $has_enrolled->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->one();
+                            if ($student_status == false)
+                                $enrolled_info['student_status'] = "Unknown";
+                            else
+                               $enrolled_info['student_status'] = $student_status->name;
+                              
                             if($criteria == "programme")
                                 $enrolled_info['programme'] = $programme;
                             elseif($criteria == "subject")

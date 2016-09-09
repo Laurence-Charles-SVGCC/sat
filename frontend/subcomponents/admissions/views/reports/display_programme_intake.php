@@ -281,6 +281,16 @@
                                                 'label' => 'Programme'
                                             ],
                                             [
+                                                'attribute' => 'current_level',
+                                                'format' => 'text',
+                                                'label' => 'Level'
+                                            ],
+                                            [
+                                                'attribute' => 'student_status',
+                                                'format' => 'text',
+                                                'label' => 'Status'
+                                            ],
+                                            [
                                                 'attribute' => 'registrationdate',
                                                 'format' => 'text',
                                                 'label' => 'Date of Registration'
@@ -328,6 +338,16 @@
                                             'attribute' => 'programme',
                                             'format' => 'text',
                                             'label' => 'Programme'
+                                        ],
+                                        [
+                                            'attribute' => 'current_level',
+                                            'format' => 'text',
+                                            'label' => 'Level'
+                                        ],
+                                        [
+                                            'attribute' => 'student_status',
+                                            'format' => 'text',
+                                            'label' => 'Status'
                                         ],
                                         [
                                             'attribute' => 'registrationdate',
