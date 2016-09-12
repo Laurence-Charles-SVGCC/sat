@@ -51,7 +51,7 @@
                     
                     <?php if ($dataProvider) : ?>
                         <hr>
-                        <h2 class="custom_h2" style="margin-left:0px"><?= "Search results for: " . $title ?></h2>
+                        <h2 class="custom_h2" style="margin-left:0px"><?= $title ?></h2>
                         
                         <?= $this->render('withdrawal_candidate_result', [
                                 'dataProvider' => $dataProvider,
