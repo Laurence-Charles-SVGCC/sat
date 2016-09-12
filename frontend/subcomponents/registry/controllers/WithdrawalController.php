@@ -120,7 +120,7 @@
                     {
                         foreach ($courses as $course)
                         {
-                            if ($course->final != NULL && $course->final < 50)
+                            if ($course->final != NULL && $course->final < 40)
                             {
                                 $fails++;
                             }
