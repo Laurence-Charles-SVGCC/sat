@@ -60,6 +60,7 @@ class AppAsset extends AssetBundle
         'js/admissions/period_setup_one.js',
         'js/admissions/verify-applicants/view-applicant-qualifications.js',
         'js/registry/registry.js',
+        'js/registry/withdrawal/select_candidate_criteria.js',
         'js/programmes/programmes.js',
         'js/programmes/cordinator.js',
         'js/legacy/students.js',

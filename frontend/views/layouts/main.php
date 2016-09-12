@@ -131,7 +131,7 @@ else
                     <?php endif; ?>
                    
                     <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Interviewees</a></li>
+                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Interviews</a></li>
                     <?php endif; ?>
                     
                     <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
@@ -207,6 +207,10 @@ else
                             
                             <?php if (Yii::$app->user->can('viewAllStudentOptions') || Yii::$app->user->can('viewAcademicHolds')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds'])?>"><i class="fa fa-circle-o"></i>View Active Academic Holds</a></li>
+                            <?php endif; ?>
+                           
+                           <?php if (Yii::$app->user->can('students')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index', 'new' => 1])?>"><i class="fa fa-circle-o"></i>Withdrawals</a></li>
                             <?php endif; ?>
                                 
                             <!--<?php if (Yii::$app->user->can('manageTranscripts')): ?>
