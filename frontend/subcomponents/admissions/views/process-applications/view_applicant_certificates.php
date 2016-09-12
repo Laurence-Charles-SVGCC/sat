@@ -181,7 +181,13 @@
                 ]); ?>
             </div><br/>
             
-            <?php if (Applicant::hasBeenIssuedOffer($applicant->personid) == false && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
+            <?php if (Applicant::isRejected($applicant->personid) == true):?>
+            <div>
+                <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
+                    This applicant has been rejected from all of their programme choices.  Divisional processing restrictions have therefore 
+                    been removed from this application.  Any Dean/Deputy Dean is now permitted to issue a Custom Offer to this applicant.
+                </p>
+            <?php elseif (Applicant::hasBeenIssuedOffer($applicant->personid) == false && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
             <div>
             <?php else:?>
             <div style="opacity:0.6;">
@@ -200,7 +206,20 @@
                 
                 <h2 class="custom_h2">
                     Applications
-                    <?php if(Applicant::hasBeenIssuedOffer($applicant->personid) == false  && Applicant::isVerified($applicant->personid) == true  && Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
+                    <?php if (Applicant::isRejected($applicant->personid) == true):?>
+                        <div class="pull-right" style="margin-right:5%">
+                            <?=Html::a(' Create Custom Offer', 
+                                        ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
+                                        ['class' => 'btn btn-warning',
+                                            'style' => '',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to create a customized offer for student?',
+//                                                'method' => 'post',
+                                            ],
+                                        ]);?>
+                        </div>
+                    
+                    <?php elseif(Applicant::hasBeenIssuedOffer($applicant->personid) == false  && Applicant::isVerified($applicant->personid) == true  && Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
                         <?php if ( 
                                         (count($applications) == 2  && $target_application->ordering == 1  && $target_application->divisionid == $applications[1]->divisionid )
                                         ||  
