@@ -89,7 +89,7 @@
                 {
                     $info = array();
                     $offer = Offer::find()
-                             ->where(['applicationid' => $registration->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                             ->where(['offerid' => $registration->offerid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     if ($offer == false)
                         continue;
@@ -128,7 +128,7 @@
                     }
                     
                     if ($fails < 4)
-                            continue;
+                        continue;
                     /*************************************************************************/
                     $info['student_registrationid'] = $registration->studentregistrationid;
                     $info['offerid'] = $registration->offerid;
