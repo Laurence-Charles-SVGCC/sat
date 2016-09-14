@@ -629,23 +629,25 @@ function IntakePrepareListing(e)
     else if(document.getElementById('non-dasgs-intake-programme-options').style.display == "block")
         listing_type = 1;
     
-    
-    var baseUrl = document.getElementsByName('intake_listing_baseUrl')[0].value;
-    if (baseUrl.search("localhost")!=-1)
-        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    else
-//        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-        
- 
-    url+= "applicationperiodid=" + applicationperiodid;
-    
-    url+= "&listing_type="+listing_type;
-    
-    httpxml.onreadystatechange=stateck;
-   
-    httpxml.open("GET", url, true);
-    httpxml.send(null);
+    if (listing_type != null)
+    {
+        var baseUrl = document.getElementsByName('intake_listing_baseUrl')[0].value;
+        if (baseUrl.search("localhost")!=-1)
+            url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+        else
+    //        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+            url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+
+
+        url+= "applicationperiodid=" + applicationperiodid;
+
+        url+= "&listing_type="+listing_type;
+
+        httpxml.onreadystatechange=stateck;
+
+        httpxml.open("GET", url, true);
+        httpxml.send(null);
+    }
 }
 
 
