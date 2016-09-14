@@ -482,6 +482,7 @@ function toggleDASGSIntakeSearchCriteria()
     {
         document.getElementById('intake-all-programmes').style.display = "none"; 
         document.getElementById('intake-cape-listing').style.display = "none"; 
+        document.getElementById('intake-submit-button').style.display = "none"; 
     }
 }
 
@@ -507,11 +508,19 @@ function toggleIntakeSearchCriteria()
     {
         document.getElementById('intake-all-programmes').style.display = "block"; 
         document.getElementById('intake-cape-listing').style.display = "none"; 
+        document.getElementById('intake-submit-button').style.display = "none"; 
+    }
+    else if (programme_search_criteria[1].checked == true)           //if all programmes selected
+    {
+        document.getElementById('intake-all-programmes').style.display = "none"; 
+        document.getElementById('intake-cape-listing').style.display = "none"; 
+        document.getElementById('intake-submit-button').style.display = "block"; 
     }
     else
     {
         document.getElementById('intake-all-programmes').style.display = "none"; 
         document.getElementById('intake-cape-listing').style.display = "none"; 
+        document.getElementById('intake-submit-button').style.display = "none"; 
     }
 }
 
