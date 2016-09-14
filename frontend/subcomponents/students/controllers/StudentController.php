@@ -1583,7 +1583,6 @@ class StudentController extends Controller
         
         $transfers = StudentTransfer::find()
                 ->where(['isactive' => 1, 'isdeleted' => 0])
-                ->orderBy('transferdate DESC')
                 ->all();
         
         if($transfers)
@@ -1661,8 +1660,8 @@ class StudentController extends Controller
                         'pageSize' => 25,
                     ],
                     'sort' => [
-                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
+                        'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname', 'date'],
                         ]
             ]); 
         }
