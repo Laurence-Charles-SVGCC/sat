@@ -3,7 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+
 use frontend\models\Division;
+use frontend\models\AcademicYear;
 
 /**
  * This is the model class for table "application_period".
@@ -468,17 +470,79 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 11/05/2016
-     * Date Last Modified: 11/05/2016
+     * Date Last Modified: 11/05/2016 | 12/09/2016
      */
     public static function preparePeriods()
     {
+        $divisionid = EmployeeDepartment::getUserDivision();
+        
+        if ($divisionid == 1)
+        {
+            $records = ApplicationPeriod::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                'application.isactive' => 1, 'application.isdeleted' => 0
+                                ])
+                        ->andWhere(['>=', 'applicationperiodstatusid', 5])
+                        ->all();
+        }
+        else
+        {
+            $records = ApplicationPeriod::find()
+                        ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where(['application_period.divisionid' => $divisionid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0
+                                ])
+                        ->andWhere(['>=', 'applicationperiodstatusid', 5])
+                        ->all();
+        }
+        
+        if (count($records) > 0)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select...');
+
+            foreach($records as $record)
+            {
+                $key = strval($record->applicationperiodid);
+                array_push($keys, $key);
+                $value = strval($record->name);
+                array_push($values, $value);
+            }
+
+            $combined = array_combine($keys, $values);
+            return $combined;
+        }
+        return false;
+    }
+    
+    /**
+     * Returns an array of application periods for display in dropdownlist
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/09/2016
+     * Date Last Modified: 12/09/2016
+     */
+    public static function preparePastPeriods()
+    {
         $records = ApplicationPeriod::find()
+                    ->innerJoin('academic_year' , '`application_period`.`academicyearid` = `academic_year`.`academicyearid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                     ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                            'application.isactive' => 1, 'application.isdeleted' => 0
-                            ])
+                                   'academic_year.iscurrent' => 0, 'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
+                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                    'application.isactive' => 1, 'application.isdeleted' => 0
+                                ])
                     ->andWhere(['>=', 'applicationperiodstatusid', 5])
                     ->all();
         if (count($records) > 0)
@@ -500,6 +564,35 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
             $combined = array_combine($keys, $values);
             return $combined;
         }
+        return false;
+    }
+    
+    
+    /**
+     * Return true if application period is associated with current academic year
+     * 
+     * @param type $periodid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 12/09/2016
+     * Date Last Modified: 12/09/2016
+     */
+    public static function isCurrent($periodid)
+    {
+        $period = ApplicationPeriod::find()
+                ->where(['applicationperiodid' => $periodid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        if ($period)
+        {
+            $year = AcademicYear::find()
+                ->where(['academicyearid' => $period->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+            if ($year == true  && $year->iscurrent == 0)
+                return true;
+        }
+        
         return false;
     }
         

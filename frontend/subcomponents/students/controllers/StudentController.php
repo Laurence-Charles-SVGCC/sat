@@ -1637,7 +1637,7 @@ class StudentController extends Controller
                 $transfer_info["offer_to_id"] = $offer_to->offerid;
                 $current_cape_subjects_names = array();                
                 $current_cape_subjects = array();
-                $application = $offer_from->getApplication()->one();
+                $application = $offer_to->getApplication()->one();
                 $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
                 foreach ($current_cape_subjects as $cs)

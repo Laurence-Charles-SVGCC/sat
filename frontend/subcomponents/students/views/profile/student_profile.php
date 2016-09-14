@@ -248,6 +248,9 @@
                                              <?php if(StudentRegistration::isCape($studentregistrationid) == false):?>
                                                 <th>Level / Academic Status</th>
                                                 <td><?= $studentregistration->currentlevel?> / <?=$academic_status;?></td>
+                                            <?php else:?>
+                                                <th>Level</th>
+                                                <td><?= $studentregistration->currentlevel?></td>
                                             <?php endif;?>
                                         </tr>
                                     </table>

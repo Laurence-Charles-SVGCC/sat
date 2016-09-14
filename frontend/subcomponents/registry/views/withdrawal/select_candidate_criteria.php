@@ -50,8 +50,7 @@
                     </div>
                     
                     <?php if ($dataProvider) : ?>
-                        <hr>
-                        <h2 class="custom_h2" style="margin-left:0px"><?= $title ?></h2>
+                        <hr><h2 class="custom_h2" style="margin-left:0px"><?= $title ?></h2>
                         
                         <?= $this->render('withdrawal_candidate_result', [
                                 'dataProvider' => $dataProvider,
@@ -59,6 +58,29 @@
                                 'filename' => $filename,
                             ])
                         ?>
+                    <?php endif; ?>
+                        
+                    <?php if ($dataProvider && (Yii::$app->user->can('System Administrator')  || Yii::$app->user->can('Registrar'))) : ?> 
+                        <hr><h2 class="custom_h2" style="margin-left:0px">Student Promotion</h2>
+                        
+                        <ul>
+                            <li>
+                                Click the button below to perform the promotion of students from Level 1 to Level 2.
+                            </li>
+                            <li>
+                                Please ensure you would have updated the statuses of the students appearing
+                                on the above list to <strong>Academic Withdrawal</strong> or <strong>Probationary Retention</strong>.
+                            </li>
+                            <li>
+                                Clicking the button will ensure that all students that have not been withdrawn;
+                                have their 'Current Level' updated to Level 2.
+                            </li>
+                        </ul><br/>
+                        
+                        <div>
+                            <a class="btn btn-success pull-left" style="width: 40%;margin-left:5%;margin-right: 5%;font-size:3 em;" href=<?=Url::toRoute(['/subcomponents/registry/withdrawal/promote-students', 'applicationperiodid' => $application_periodid]);?> role="button">  Promote Students</a>
+                            <a class="btn btn-warning" style="width: 40%;font-size:3 em;" href=<?=Url::toRoute(['/subcomponents/registry/withdrawal/undo-promotions', 'applicationperiodid' => $application_periodid]);?> role="button">  Undo Promotions</a>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>

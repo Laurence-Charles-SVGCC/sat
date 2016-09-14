@@ -42,7 +42,7 @@
             $filename = "";
             $title = "";
             
-            $periods = ApplicationPeriod::preparePeriods();
+            $periods = ApplicationPeriod::preparePastPeriods();
             
             if ($new ==1)
             {
@@ -221,6 +221,130 @@
                     'title' => $title,
                     'application_periodid' => $application_periodid,
                 ]);
+        }
+        
+        
+        /**
+         * Promote students
+         * 
+         * @param type $applicationperiodid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 12/09/2016
+         * Date Last Modified: 12/09/2016
+         */
+        public function actionPromoteStudents($applicationperiodid)
+        {
+            $registrations = StudentRegistration::find()
+                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
+                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('academic_year', '`application_period`.`academicyearid` = `application_period`.`academicyearid`')
+                        ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application_period.applicationperiodid' => $applicationperiodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                         'academic_year.iscurrent' => 0, 'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0
+                                    ])
+                        ->all();
+            
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                foreach ($registrations as $registration)
+                {
+                    $save_flag = false;
+                    if ($registration->currentlevel == 1 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
+                    {
+                        $registration->currentlevel = 2;
+                        $save_flag = $registration->save();
+                        if ($save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
+                            return self::actionIndex(1);
+                        }
+                    }
+                    elseif (StudentRegistration::getStudentDivision($registration->studentregistrationid) == 6 && $registration->currentlevel == 2 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
+                    {
+                        $registration->currentlevel = 3;
+                        $save_flag = $registration->save();
+                        if ($save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
+                            return self::actionIndex(1);
+                        }
+                    }
+                }
+                
+                $transaction->commit();
+                return self::actionIndex(1);
+                
+            } catch (Exception $ex) {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
+                 return self::actionIndex(1);
+            }
+        }
+        
+        
+         /**
+         * Undo student promotion
+         * 
+         * @param type $applicationperiodid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 12/09/2016
+         * Date Last Modified: 12/09/2016
+         */
+        public function actionUndoPromotions($applicationperiodid)
+        {
+            $registrations = StudentRegistration::find()
+                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
+                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('academic_year', '`application_period`.`academicyearid` = `application_period`.`academicyearid`')
+                        ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application_period.applicationperiodid' => $applicationperiodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                        'academic_year.iscurrent' => 0, 'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0
+                                    ])
+                        ->all();
+            
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                foreach ($registrations as $registration)
+                {
+                    $save_flag = false;
+                    if ($registration->currentlevel != 0)
+                    {
+                        $registration->currentlevel = $registration->currentlevel-1;
+                        $save_flag = $registration->save();
+                        if ($save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
+                            return self::actionIndex(1);
+                        }
+                    }
+                }
+                
+                $transaction->commit();
+                return self::actionIndex(1);
+                
+            } catch (Exception $ex) {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
+            }
         }
         
     }

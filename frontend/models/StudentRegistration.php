@@ -468,5 +468,32 @@ class StudentRegistration extends \yii\db\ActiveRecord
         
         return $registrations;
    }
+   
+   
+   /**
+    * Returns the division associated with a 'Student Registration' record
+    * 
+    * @param type $studentregistrationid
+    * @return type
+    * 
+    * Author: Laurence Charles
+    * Date Created: 14/09/2016
+    * Date Last Modifieid: 14/09/2016
+    */
+   public static function getStudentDivision($studentregistrationid)
+   {
+       $application = Application::find()
+               ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+               ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
+               ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
+                                'offer.isactive' => 1, 'offer.isdeleted' => 0,
+                                'student_registration.studentregistrationid' => $studentregistrationid, 'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0])
+               ->one();
+       if ($application)
+       {
+           return $application->divisionid;
+       }
+       return false;
+    }
     
 }
