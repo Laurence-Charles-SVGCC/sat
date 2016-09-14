@@ -460,7 +460,7 @@ function toggleDASGSIntakeSearchCriteria()
     document.getElementById('programme_field').selectedIndex=0;
     document.getElementById('subject_field').selectedIndex=0;
     
-    if (programme_search_criteria[0].checked == true)           //if all programmes selected
+    if (programme_search_criteria[0].checked == true)           //if programmes selected
     {
         document.getElementById('intake-all-programmes').style.display = "block"; 
         document.getElementById('intake-cape-listing').style.display = "none"; 
@@ -613,13 +613,17 @@ function IntakePrepareListing(e)
     if(document.getElementById('dasgs-intake-programme-options').style.display == "block")
     {
         var programme_search_criteria = document.getElementsByName('dasgs_programme_search_criteria');
-        if (programme_search_criteria[0].checked == true)           //if all programmes selected
+        if (programme_search_criteria[0].checked == true)           //if  programmes selected
         {
             listing_type = 1;
         }
-        if (programme_search_criteria[1].checked == true)           //if all programmes selected
+        else if (programme_search_criteria[1].checked == true)           //if all programmes selected
         {
             listing_type = 2;
+        }
+        else if (programme_search_criteria[2].checked == true)           //if  programmes selected
+        {
+            listing_type = 1;
         }
     }
     else if(document.getElementById('non-dasgs-intake-programme-options').style.display == "block")
