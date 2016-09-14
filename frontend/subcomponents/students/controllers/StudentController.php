@@ -1583,7 +1583,7 @@ class StudentController extends Controller
         
         $transfers = StudentTransfer::find()
                 ->where(['isactive' => 1, 'isdeleted' => 0])
-                ->OrderBy('transferdate DESC')
+                ->orderBy('transferdate DESC')
                 ->all();
         
         if($transfers)
