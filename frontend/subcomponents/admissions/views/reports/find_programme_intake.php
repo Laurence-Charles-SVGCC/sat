@@ -13,10 +13,12 @@
     $dasgs_programme_search_criteria = [
         '0' => 'Programmes',
         '1' => 'CAPE Subjects',
+        '2' => 'All Programmes',
     ];
     
     $non_dasgs_programme_search_criteria = [
         '0' => 'Programmes',
+        '1' => 'All Programmes',
     ];
     
 ?>
@@ -59,8 +61,7 @@
                         2. Please select programme search criteria.
                         <?= Html::radioList('non_dasgs_programme_search_criteria', null, $non_dasgs_programme_search_criteria, ['class'=> 'form_field', 'onclick'=> 'toggleIntakeSearchCriteria();IntakePrepareListing(event);']);?>
                     </div>
-                    
-                    <br/>
+                   <br/>
                     
                    
                     <div id="intake-all-programmes" style="display:none">
@@ -72,9 +73,9 @@
                         <?= Html::label('3. Cape Subject Listing: ', 'subject_label'); ?>
                         <?= Html::dropDownList('subj',  "Select...", ['' => 'Select...'], ['id' => 'subject_field', 'onchange' => 'toggleIntakeSearchButton();']) ; ?>
                     </div>
-
+                    
                     <div id="intake-submit-button"  style="display:none">
-                        <br/><?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: left']) ?>
+                        <?= Html::submitButton(' Generate Report', ['class' => 'btn btn-md btn-success', 'style' => 'float: left']) ?>
                     </div>
                     
                 </div>

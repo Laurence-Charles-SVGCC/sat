@@ -995,7 +995,7 @@ class ReportsController extends Controller {
 
             $prog = $request->post('prog') ? $request->post('prog') : 0;
             $subj = $request->post('subj') ? $request->post('subj') : 0;
-
+            
             if ($prog != 0) 
             {
                 $programmeid = $prog;
@@ -1006,6 +1006,11 @@ class ReportsController extends Controller {
                 $programmeid = $subj;
                 $criteria = "subject";
             } 
+            elseif ($prog == 0  && $subj == 0) 
+            {
+                $programmeid = -1;
+                $criteria = "all-programmes";
+            }
             
             if(!$programmeid)
                 $programmeid = Yii::$app->session->get('programmeid');
@@ -1049,7 +1054,20 @@ class ReportsController extends Controller {
             $accepted_cond['offer.offertypeid'] = 1;
             
             
-            if ($criteria == "programme") 
+            if ($criteria == "all-programmes") 
+            {
+                $accepted_applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->where($accepted_cond)
+                        ->groupby('applicant.personid')
+                        ->orderBy('applicant.lastname ASC')
+                        ->all();
+            }
+            
+            elseif ($criteria == "programme") 
             {
                 $accepted_cond['application.academicofferingid'] = $programmeid;
                 
@@ -1095,7 +1113,7 @@ class ReportsController extends Controller {
                     {
                         $username = User::findOne(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->username;
                         
-                        if ($criteria == "programme") 
+                        if ($criteria == "programme"  ||  $criteria == "all-programmes") 
                         {
                             $programme = "N/A";
                             $target_application = Application::find()
@@ -1134,7 +1152,7 @@ class ReportsController extends Controller {
                         $accepted_info['lastname'] = $accepted_applicant->lastname;
                         $accepted_info['offerid'] = $offer->offerid;
                         $accepted_info['applicationid'] = $offer->applicationid;
-                        if($criteria == "programme")
+                        if($criteria == "programme"  ||  $criteria == "all-programmes")
                             $accepted_info['programme'] = $programme;
                         elseif($criteria == "subject")
                             $accepted_info['programme'] = $subject;
@@ -1199,7 +1217,7 @@ class ReportsController extends Controller {
                             else
                                $enrolled_info['student_status'] = $student_status->name;
                               
-                            if($criteria == "programme")
+                            if($criteria == "programme"  ||  $criteria == "all-programmes")
                                 $enrolled_info['programme'] = $programme;
                             elseif($criteria == "subject")
                                 $enrolled_info['programme'] = $subject;
@@ -1212,7 +1230,12 @@ class ReportsController extends Controller {
                 }
             }
             
-            if($criteria == "programme")
+            if($criteria == "all-programmes")
+            {
+                $accepted_criteria = "All Programmes";
+                $enrolled_criteria = "All Programmes";
+            }
+            elseif($criteria == "programme")
             {
                 if(AcademicOffering::isCape($programmeid) == true)
                 {
@@ -1530,13 +1553,13 @@ class ReportsController extends Controller {
                 ->name;
         
         $summary_header = "Intake Overview";
-        $summary_title = "Title: " . $periodname . $summary_header;
+        $summary_title = "Title: " . $periodname . " " . $summary_header;
         
         $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;
-        $accepted_title = "Title: " . $periodname .  $accepted_header;
+        $accepted_title = "Title: " . $periodname . " " .  $accepted_header;
         
         $enrolled_header = "Enrolled Applicants Report - " . $enrolled_criteria;
-        $enrolled_title = "Title: " . $periodname .  $enrolled_header;
+        $enrolled_title = "Title: " . $periodname . " " .  $enrolled_header;
         
         $date = " Date: " . date('Y-m-d') . "   ";
         $employeeid = Yii::$app->user->identity->personid;
@@ -1986,8 +2009,6 @@ class ReportsController extends Controller {
             ]);
         }
     }
-    
-    
     
 
 }
