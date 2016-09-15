@@ -193,6 +193,12 @@
                     This applicant has been rejected from all of their programme choices and has been issued a rejection response.
                     However as Registrar you are still permitted to issue a Custom Offer to this applicant.
                 </p>
+            <?php elseif (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar') == false):?>
+            <div>
+                <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
+                    This applicant has been rejected from all of their programme choices and has been issued a rejection response.
+                    Only the Registrar is authorized to issue a Custom Offer to this applicant at this time.
+                </p>
             <?php elseif (Applicant::hasBeenIssuedOffer($applicant->personid) == false && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
             <div>
             <?php else:?>
