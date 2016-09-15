@@ -287,7 +287,7 @@ class StudentTransfer extends \yii\db\ActiveRecord
                 else 
                 {
                     $offer = Offer::find()
-                                ->where(['offerid' => $tranfer->offerfrom])
+                                ->where(['offerid' => $transfer->offerfrom])
                                 ->one();
                     $application = Application::find()
                                 ->where(['applicationid' => $offer->applicationid])

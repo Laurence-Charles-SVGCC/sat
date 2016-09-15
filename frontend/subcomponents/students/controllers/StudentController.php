@@ -1770,7 +1770,7 @@ class StudentController extends Controller
             $deferrals_provider = new ArrayDataProvider([
                     'allModels' => $deferrals_data,
                     'pagination' => [
-                        'pageSize' => 25,
+                        'pageSize' => 15,
                     ],
                     'sort' => [
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
