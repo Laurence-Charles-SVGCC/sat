@@ -1620,14 +1620,14 @@ class StudentController extends Controller
                 
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
-                $application = $offer_from->getApplication()->one();
-                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                $previous_application = $offer_from->getApplication()->one();
+                $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
                 foreach ($previous_cape_subjects as $cs)
                 { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-                $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $previous_cape_subjects_names);
            
                  $offer_to = Offer::find()
                         ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
@@ -1637,14 +1637,14 @@ class StudentController extends Controller
                 $transfer_info["offer_to_id"] = $offer_to->offerid;
                 $current_cape_subjects_names = array();                
                 $current_cape_subjects = array();
-                $application = $offer_to->getApplication()->one();
-                $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
-                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+                $current_application = $offer_to->getApplication()->one();
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                 foreach ($current_cape_subjects as $cs)
                 { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-                $transfer_info['current_programme'] = empty($current_cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $transfer_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
                 
                 $transfer_info["transfer_officerid"] = $transfer->transferofficer;
                 
