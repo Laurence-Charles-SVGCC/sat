@@ -1716,7 +1716,8 @@ class StudentController extends Controller
                 { 
                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-                $deferral_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $previous_programme_name = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $deferral_info['previous_programme'] = $previous_programme_name;
                 $previous_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
                         ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
@@ -1724,7 +1725,8 @@ class StudentController extends Controller
                         ->one();
                 if ($previous_year == false)
                     continue;
-                $deferral_info["previous_year"] = $previous_year ;
+                $deferral_info["previous_year"] = $previous_year->title;
+                $deferral_info["previous_year_programme"] = "(" . $previous_year>title . ") " .  $previous_programme_name;
                 
                 $registration_to = StudentRegistratoin::find()
                         ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
@@ -1745,7 +1747,8 @@ class StudentController extends Controller
                 { 
                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-                $deferral_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $current_programme_name = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $deferral_info['current_programme'] = $current_programme_name;
                 
                 $deferral_info["deferral_officerid"] = $deferral->deferralofficer;
                 
@@ -1758,7 +1761,8 @@ class StudentController extends Controller
                         ->one();
                 if ($current_year == false)
                     continue;
-                $deferral_info["current_year"] = $current_year ;
+                $deferral_info["current_year"] = $current_year->title;
+                $deferral_info["current_year_programme"] = "(" . $current_year>title . ") " .  $current_programme_name;
                 
                 $deferrals_data[] =  $deferral_info;
             }

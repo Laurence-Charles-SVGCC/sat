@@ -29,6 +29,7 @@
     use frontend\models\RejectionApplications;
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
+    use frontend\models\StudentRegistration;
     
     
     
@@ -786,6 +787,15 @@
                         ->one();
                 if ($offer)
                 {
+                    $has_enrolled = StudentRegistration::find()
+                                ->where(['offerid' => $offer->offerid,  'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                    if ($has_enrolled == true)
+                    {
+                        Yii::$app->session->setFlash('error', 'Offer was not published because applicant has already become a registered student.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
                     $cape_subjects_names = array();
                     $application = Application::find()
                             ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])

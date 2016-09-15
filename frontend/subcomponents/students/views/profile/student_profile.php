@@ -3043,7 +3043,9 @@
                                     <?php if(Yii::$app->user->can('viewTransferData')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Transfer History
                                             <?php if(Yii::$app->user->can('transferStudent')):?>
-                                                <?php if (StudentRegistration::hasGradeRecords($studentregistrationid) == false):?>
+                                                <a class='btn btn-warning glyphicon glyphicon-leaf pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Deferral Resumption</a>
+                                                
+                                                    <?php if (StudentRegistration::hasGradeRecords($studentregistrationid) == false):?>
                                                     <?php if (StudentRegistration::isCape($studentregistrationid) == true):?>
                                                         <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Add/Drop</a>
                                                     <?php else: ?>
