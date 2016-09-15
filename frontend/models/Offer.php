@@ -167,7 +167,7 @@ class Offer extends \yii\db\ActiveRecord
    {
         $db = Yii::$app->db;
         $record = $db->createCommand(
-                    "SELECT qualification_type.name AS 'qualification',"
+                    "SELECT qualification_type.abbreviation AS 'qualification',"
                     . " programme_catalog.name AS 'programmename',"
                     . " programme_catalog.specialisation AS 'specialisation'"
                     . " FROM offer"

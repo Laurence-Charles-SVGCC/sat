@@ -8,6 +8,7 @@ use frontend\models\StudentRegistration;
 use frontend\models\Offer;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\CapeSubject;
+use frontend\models\ProgrammeCatalog;
 
 /**
  * This is the model class for table "student_transfer".
@@ -267,99 +268,49 @@ class StudentTransfer extends \yii\db\ActiveRecord
                 $keys = array();
                 $values = array();
                 $combined = array();
-
+                
                 array_push($keys, 'transferdate');
                 array_push($keys, 'previousprogramme');
-                array_push($keys, 'previoussubjects');
                 array_push($keys, 'newprogramme');
-                array_push($keys, 'newsubjects');
                 array_push($keys, 'transferofficer');
                 array_push($keys, 'details');
 
                 $transferdate = $transfer->transferdate;
-
-                $old_programme = Offer::getProgrammeDetails($transfer->offerfrom);
-                $previousprogramme = $old_programme["qualification"] . " " . $old_programme["programmename"] . " " . $old_programme["specialisation"]; 
-
-                $previoussubjects = "";
-                if (Offer::isCape($transfer->offerfrom) == false)
-                    $previoussubjects = "N/A";
-                else 
-                {
-                    $offer = Offer::find()
-                                ->where(['offerid' => $transfer->offerfrom])
-                                ->one();
-                    $application = Application::find()
-                                ->where(['applicationid' => $offer->applicationid])
-                                ->one();
-                    if($application)
-                    {
-                        $records = ApplicationCapesubject::find()
-                                    ->where(['applicationid' => $application->applicationid, 'isactive'=> 1, 'isdeleted' => 0])
-                                    ->all();
-                        $count = count($records);
-
-                        if ($count > 0)
-                        {
-                            for($i=0 ; $i<$count ; $i++)
-                            {
-                                 $subject = CapeSubject::find()
-                                            ->where(['capesubjectid' => $records[$i]->capesubjectid])
-                                            ->one();
-                                if ($i == $count-1)
-                                    $previoussubjects .= $subject->subjectname;
-                                else
-                                    $previoussubjects .= $subject->subjectname . ",";
-                            }
-                        }
-                        else
-                            $previoussubjects = "Error retrieving subjects";
-                    }
-                    else
-                       $previoussubjects = "Error retrieving subjects";
+                
+                $offer_from = Offer::find()
+                        ->where(['offerid' => $transfer->offerfrom, 'isdeleted' => 0])
+                        ->one();
+                if($offer_from == false)
+                    continue;
+                $previous_cape_subjects_names = array();
+                $previous_cape_subjects = array();
+                $previous_application = $offer_from->getApplication()->one();
+                $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
+                foreach ($previous_cape_subjects as $cs)
+                { 
+                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-
-                $new_programme = Offer::getProgrammeDetails($transfer->offerto);
-                $newprogramme = $new_programme["qualification"] . " " . $new_programme["programmename"] . " " . $new_programme["specialisation"];         
-
-                $newsubjects = "";
-                if (Offer::isCape($transfer->offerto) == false)
-                    $newsubjects = "N/A";
-                else 
-                {
-                    $offer = Offer::find()
-                                ->where(['offerid' => $transfer->offerto])
-                                ->one();
-                    $application = Application::find()
-                                    ->where(['applicationid' => $offer->applicationid])
-                                    ->one();
-                    if($application)
-                    {
-                        $records = ApplicationCapesubject::find()
-                                    ->where(['applicationid' => $application->applicationid, 'isactive'=> 1, 'isdeleted' => 0])
-                                    ->all();
-                        $count = count($records);
-
-                        if ($count > 0)
-                        {
-                            for($i=0 ; $i<$count ; $i++)
-                            {
-                                 $subject = CapeSubject::find()
-                                            ->where(['capesubjectid' => $records[$i]->capesubjectid])
-                                            ->one();
-                                if ($i == $count-1)
-                                    $newsubjects .= $subject->subjectname;
-                                else
-                                    $newsubjects .= $subject->subjectname . ",";
-                            }
-                        }
-                        else
-                            $newsubjects = "Error retrieving subjects";
-                    }
-                    else
-                       $newsubjects = "Error retrieving subjects";
+                $previousprogramme = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $previous_cape_subjects_names);
+                
+                
+                $offer_to = Offer::find()
+                        ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
+                        ->one();
+                if($offer_to == false)
+                    continue;
+                $transfer_info["offer_to_id"] = $offer_to->offerid;
+                $current_cape_subjects_names = array();                
+                $current_cape_subjects = array();
+                $current_application = $offer_to->getApplication()->one();
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
-
+                $newprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                
                 $transferofficer = Employee::getEmployeeName($transfer->transferofficer);
 
                 if ($transfer->details == NULL || strcmp($transfer->details,"") == 0)
@@ -369,9 +320,7 @@ class StudentTransfer extends \yii\db\ActiveRecord
 
                 array_push($values, $transferdate);
                 array_push($values, $previousprogramme);
-                array_push($values, $previoussubjects);
                 array_push($values, $newprogramme);
-                array_push($values, $newsubjects);
                 array_push($values, $transferofficer);
                 array_push($values, $details);
 

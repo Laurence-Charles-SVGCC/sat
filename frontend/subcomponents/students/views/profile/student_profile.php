@@ -3066,9 +3066,7 @@
                                                     echo "<tr>";
                                                         echo "<th>Date</th>";
                                                         echo "<th>Previous Programme</th>";
-                                                        echo "<th>Previous Subjects</th>";
                                                         echo "<th>Current Programme</th>";
-                                                        echo "<th>Current Subjects</th>";
                                                         echo "<th>Transfer Officer</th>";
                                                         echo "<th>Notes</th>";
                                                     echo "</tr>";
@@ -3078,9 +3076,7 @@
                                                         echo "<tr>";
                                                             echo "<td>{$transfer['transferdate']}</td>";
                                                             echo "<td>{$transfer['previousprogramme']}</td>";
-                                                            echo "<td>{$transfer['previoussubjects']}</td>";
                                                             echo "<td>{$transfer['newprogramme']}</td>";
-                                                            echo "<td>{$transfer['newsubjects']}</td>";
                                                             echo "<td>{$transfer['transferofficer']}</td>";
                                                             echo "<td>{$transfer['details']}</td>";
                                                         echo "</tr>";
