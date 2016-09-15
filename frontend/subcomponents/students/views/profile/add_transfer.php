@@ -36,6 +36,8 @@
             <div class="custom_body">
                 <h1 class="custom_h1">Transfer Student</h1>
 
+                <br/>
+                <h2 class="custom_h2" style="margin-left:7.5%">Current Programme: <?= $current_programme;?></h2><br/>
                 <?php
                     $form = ActiveForm::begin([
                                 'id' => 'add-transfer-form',

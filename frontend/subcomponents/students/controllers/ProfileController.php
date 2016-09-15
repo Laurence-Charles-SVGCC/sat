@@ -2446,9 +2446,25 @@
          */
         public function actionAddTransfer($personid, $studentregistrationid)
         {
+            $current_reg = StudentRegistration::find()
+                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $offer = Offer::find()
+                    ->where(['offerid' => $current_reg->offerid, 'isdeleted' => 0])
+                    ->one();
+            $current_cape_subjects_names = array();                
+            $current_cape_subjects = array();
+            $current_application = $offer->getApplication()->one();
+            $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+            $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+            foreach ($current_cape_subjects as $cs)
+            { 
+                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+            }
+            $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
+            
             date_default_timezone_set('America/St_Vincent');
             $selected = NULL;
-            
             $capegroups = CapeGroup::getGroups();
             $groupCount = count($capegroups);
             $application = new Application();
@@ -2798,8 +2814,9 @@
             return $this->render('add_transfer', [
                         'personid' => $personid, 
                         'studentregistrationid' => $studentregistrationid,
+                        'current_programme' => $current_programme,
+                
                         'capegroups' => $capegroups,
-                        
                         'application' => $application,
                         'applicationcapesubject' =>  $applicationcapesubject,
                         'transfer' => $transfer,          
