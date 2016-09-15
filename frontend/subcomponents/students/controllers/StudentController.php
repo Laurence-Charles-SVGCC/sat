@@ -40,7 +40,7 @@ use frontend\models\BatchStudent;
 use frontend\models\BatchStudentCape;
 use frontend\models\Hold;
 use frontend\models\StudentTransfer;
-
+use frontend\models\StudentDeferral;
 
 class StudentController extends Controller
 {
@@ -1666,19 +1666,115 @@ class StudentController extends Controller
             ]); 
         }
         
-        
-        
-//        $deferrals_provider = new ArrayDataProvider([
-//                    'allModels' => $deferrals_data,
-//                    'pagination' => [
-//                        'pageSize' => 25,
-//                    ],
-//                    'sort' => [
-//                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-//                        'attributes' => ['username', 'firstname', 'lastname'],
-//                        ]
-//            ]); 
-        
+        $deferrals = StudentDeferral::find()
+                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if($deferrals)
+        {
+            foreach ($deferrals as $deferral)
+            {
+                
+                $deferral_info["studentdeferralid"] = $deferral->studentdeferralid;
+                $deferral_info["personid"] = $deferral->personid;
+                
+                $user = User::find()
+                        ->where(['personid' => $deferral->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $deferral_info["username"] = $user->username;
+                
+                $student = Student::find()
+                        ->where(['personid' => $deferral->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($student == false)
+                    continue;
+                $deferral_info["title"] = $student->title;
+                $deferral_info["firstname"] = $student->firstname;
+                $deferral_info["lastname"] = $student->lastname;
+                
+                $deferral_info["date"] = $deferral->deferraldate;
+                $deferral_info["iscurrent"] = $deferral->iscurrent;
+                
+                $deferral_info["registration_from_id"] = $deferral->registrationfrom;
+                $registration_from = StudentRegistratoin::find()
+                        ->where(['studentregistrationid' => $deferral->registrationfrom, 'isdeleted' => 0])
+                        ->one();
+                if($registration_from == false)
+                    continue;
+                
+                $previous_cape_subjects_names = array();
+                $previous_cape_subjects = array();
+                $previous_application = Offer::find()
+                        ->where(['offerid' => $registration_from->offerfrom, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->getApplication()
+                        ->one();
+                $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
+                foreach ($previous_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $deferral_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $previous_year = AcademicYear::find()
+                        ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
+                            'academic_offering.academicyearid' => $previous_application->academicofferingid, 'academic_offering.isactive' =>1, 'academic_offering.isdeleted' => 0])
+                        ->one();
+                if ($previous_year == false)
+                    continue;
+                $deferral_info["previous_year"] = $previous_year ;
+                
+                $registration_to = StudentRegistratoin::find()
+                        ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
+                        ->one();
+                if($registration_to == false)
+                    continue;
+                $deferral_info["registration_to_id"] = $deferral->registrationto;
+                $current_cape_subjects_names = array();                
+                $current_cape_subjects = array();
+                $current_application = Offer::find()
+                        ->where(['offerid' => $registration_to->offerto, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->getApplication()
+                        ->one();
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $deferral_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                
+                $deferral_info["deferral_officerid"] = $deferral->deferralofficer;
+                
+                $employee_name = Employee::getEmployeeName($deferral->deferralofficer);
+                $deferral_info["deferral_officer_name"] = $employee_name;
+                $current_year = AcademicYear::find()
+                        ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
+                            'academic_offering.academicyearid' => $current_application->academicofferingid, 'academic_offering.isactive' =>1, 'academic_offering.isdeleted' => 0])
+                        ->one();
+                if ($current_year == false)
+                    continue;
+                $deferral_info["current_year"] = $current_year ;
+                
+                $deferrals_data[] =  $deferral_info;
+            }
+            
+            $deferrals_provider = new ArrayDataProvider([
+                    'allModels' => $deferrals_data,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname', 'date'],
+                        ]
+            ]); 
+        }
+       
         
         return $this->render('transfers_and_deferrals', [
             'transfers_provider' => $transfers_provider,

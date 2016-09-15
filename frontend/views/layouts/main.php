@@ -198,7 +198,7 @@ else
                             <?php endif; ?>
                             
                             <?php if(Yii::$app->user->can('viewTransferData')):?>
-                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-transfers-and-deferrals'])?>"><i class="fa fa-circle-o"></i>View Transfers & Deferrals</a></li>
+                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/student/view-transfers-and-deferrals'])?>"><i class="fa fa-circle-o"></i>Transfers & Deferrals</a></li>
                             <?php endif; ?>
                                 
                             <?php if (Yii::$app->user->can('students')): ?>

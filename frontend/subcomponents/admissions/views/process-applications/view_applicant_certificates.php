@@ -181,11 +181,17 @@
                 ]); ?>
             </div><br/>
             
-            <?php if (Applicant::isRejected($applicant->personid) == true):?>
+            <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == false):?>
             <div>
                 <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
                     This applicant has been rejected from all of their programme choices.  Divisional processing restrictions have therefore 
-                    been removed from this application.  Any Dean/Deputy Dean is now permitted to issue a Custom Offer to this applicant.
+                    been removed from this application.  The Registrar and any Deans/Deputy Deans are permitted to issue a Custom Offer to this applicant.
+                </p>
+            <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
+            <div>
+                <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
+                    This applicant has been rejected from all of their programme choices and has been issued a rejection response.
+                    However as Registrar you are still permitted to issue a Custom Offer to this applicant.
                 </p>
             <?php elseif (Applicant::hasBeenIssuedOffer($applicant->personid) == false && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
             <div>
@@ -206,7 +212,20 @@
                 
                 <h2 class="custom_h2">
                     Applications
-                    <?php if (Applicant::isRejected($applicant->personid) == true):?>
+                    <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == false):?>
+                        <div class="pull-right" style="margin-right:5%">
+                            <?=Html::a(' Create Custom Offer', 
+                                        ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
+                                        ['class' => 'btn btn-warning',
+                                            'style' => '',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to create a customized offer for student?',
+//                                                'method' => 'post',
+                                            ],
+                                        ]);?>
+                        </div>
+                    
+                    <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
                         <div class="pull-right" style="margin-right:5%">
                             <?=Html::a(' Create Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 

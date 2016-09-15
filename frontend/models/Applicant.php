@@ -9,6 +9,8 @@ use frontend\models\Applicant;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\CsecQualification;
+use frontend\models\Rejection;
+use frontend\models\RejectionApplications;
 
 /**
  * This is the model class for table "applicant".
@@ -2732,6 +2734,48 @@ class Applicant extends \yii\db\ActiveRecord
                 ->where(['applicationid' => $ids,  'ispublished' => 1, 'offer.isdeleted' => 0, 'offertypeid' => 1])
                 ->all();
         if ($offers == true)
+            return true;
+        
+        return false;
+    }
+    
+    
+    /**
+     * Returns true if applicant has 
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 15/09/2016
+     * Date Last Modified: 15/09/2016
+     * 
+     */
+    public static function hasBeenIssuedRejection($personid)
+    {
+        $applications =Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                            ])
+                ->andWhere(['>', 'application.applicationstatusid', 2])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        
+        $ids = array();
+        foreach($applications as $application)
+        {
+            $ids[] = $application->applicationid;
+        }
+        
+        $rejections = Rejection::find()
+                ->innerJoin('rejection_applications', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                ->where(['rejection.ispublished' => 1,'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                'rejection_applications.applicationid' => $ids, 'rejection_applications.isactive' => 1, 'rejection_applications.isdeleted' => 0])
+                ->all();
+        if ($rejections == true)
             return true;
         
         return false;

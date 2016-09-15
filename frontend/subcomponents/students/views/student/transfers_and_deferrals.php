@@ -27,7 +27,7 @@
 
                 <p class="general_text" style="margin-left:2.5%">
                     Please select which report you wish to view.
-                    <?= Html::radioList('listing_category', null, ['transfers' => 'Transfers' , 'deferrals' => 'Defers'], ['class'=> 'form_field', 'onclick'=> 'checkTransferOrDeferral();', 'style' => 'margin-left:2.5%']);?>
+                    <?= Html::radioList('listing_category', null, ['transfers' => 'Transfers' , 'deferrals' => 'Deferrals'], ['class'=> 'form_field', 'onclick'=> 'checkTransferOrDeferral();', 'style' => 'margin-left:2.5%']);?>
                 </p>
 
                 <div id="transfers" style="display:none">
