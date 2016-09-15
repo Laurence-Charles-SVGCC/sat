@@ -285,19 +285,20 @@ class Application extends \yii\db\ActiveRecord
         }
         else
         {
-            $student_applications = Application::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->andWhere(['<', 'ordering', 4])
-                    ->andWhere(['>', 'applicationstatusid', 2])
-                    ->orderBy('ordering ASC')
-                    ->all();
-            $count2 = count($student_applications);
-            if ($count2 == 1)
-                $new_id = 2;
-            elseif ($count2 == 2)
-                $new_id = 3;
-            elseif ($count2 == 3)
-                $new_id = 4;
+            $new_id = 4;
+//            $student_applications = Application::find()
+//                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+//                    ->andWhere(['<', 'ordering', 4])
+//                    ->andWhere(['>', 'applicationstatusid', 2])
+//                    ->orderBy('ordering ASC')
+//                    ->all();
+//            $count2 = count($student_applications);
+//            if ($count2 == 1)
+//                $new_id = 2;
+//            elseif ($count2 == 2)
+//                $new_id = 3;
+//            elseif ($count2 == 3)
+//                $new_id = 4;
         }
         return $new_id;
     }

@@ -260,7 +260,7 @@ class StudentTransfer extends \yii\db\ActiveRecord
         $transfers = StudentTransfer::find()
                     ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0 ])
                     ->all();
-        if (count($transfers) > 0)
+        if ($transfers)
         {
             foreach($transfers as $transfer)
             {
