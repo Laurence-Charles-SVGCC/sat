@@ -23,6 +23,7 @@ use frontend\models\Hold;
  * @property integer $receivedpicture
  * @property integer $cardready
  * @property integer $cardcollected
+ * @property integer $iscurrent
  * @property integer $isactive
  * @property integer $isdeleted
  *
@@ -49,7 +50,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     {
         return [
             [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'currentlevel', 'registrationdate'], 'required'],
-            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'receivedpicture', 'cardready', 'cardcollected', 'isactive', 'isdeleted'], 'integer'],
+            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'receivedpicture', 'cardready', 'cardcollected', 'iscurrent', 'isactive', 'isdeleted'], 'integer'],
             [['registrationdate'], 'safe']
         ];
     }
@@ -72,6 +73,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
             'receivedpicture' => 'Receivedpicture',
             'cardready' => 'Cardready',
             'cardcollected' => 'Cardcollected',
+            'iscurrent' => 'Is Current',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
@@ -463,7 +465,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                     ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
-                    ->where(['student_registration.personid' => $personid, 'student_registration.isdeleted' => 0, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid])
+                    ->where(['student_registration.personid' => $personid, 'student_registration.isdeleted' => 0, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid, 'student_registration.iscurrent' => 1])
                     ->all();
         
         return $registrations;

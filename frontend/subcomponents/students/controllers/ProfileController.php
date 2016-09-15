@@ -4221,4 +4221,398 @@
         }
         
         
+        
+        
+        /**
+         * Defers a student to a current academic_offering
+         * 
+         * @param type $personid
+         * @param type $studentregistrationid
+         * @param type $recordid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 08/01/2016
+         * Date Last Modified: 10/01/2016
+         */
+        public function actionAddDeferral($personid, $studentregistrationid)
+        {
+            $current_reg = StudentRegistration::find()
+                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $offer = Offer::find()
+                    ->where(['offerid' => $current_reg->offerid, 'isdeleted' => 0])
+                    ->one();
+            $current_cape_subjects_names = array();                
+            $current_cape_subjects = array();
+            $current_application = $offer->getApplication()->one();
+            $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+            $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+            foreach ($current_cape_subjects as $cs)
+            { 
+                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+            }
+            $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
+            
+            date_default_timezone_set('America/St_Vincent');
+            $selected = NULL;
+            $capegroups = CapeGroup::getGroups();
+            $groupCount = count($capegroups);
+            $application = new Application();
+            $transfer = new StudentTransfer();
+
+            //Create blank records to accommodate capesubject-application associations
+            $applicationcapesubject = array();
+            for ($i = 0; $i < $groupCount; $i++)
+            {
+                $temp = new ApplicationCapesubject();
+                //Values giving default value so as to facilitate validation (selective saving will be implemented)
+                $temp->capesubjectid = 0;
+                $temp->applicationid = 0;
+                array_push($applicationcapesubject, $temp);
+            }
+            
+            //Handles post request
+            if ($post_data = Yii::$app->request->post())
+            {
+                //Application meodels flags
+                $application_load_flag = false;
+                $application_validation_flag = false;
+                $application_save_flag = false;
+
+                //ApplicatinonCapeSubject Flags
+                $capesubject_load_flag = false;
+                $capesubject_validation_flag = false;
+                $capesubject_save_flag = false;
+                
+                //Transfer flags
+                $transfer_load_flag = false;
+                $transfer_validation_flag = false;
+                $transfer_save_flag = false;
+                
+                //Register flag
+                 $registration_save_flag = false;
+                
+                //load models
+                $application_load_flag = $application->load($post_data);
+                $transfer_load_flag = $transfer->load($post_data);
+                        
+                if($transfer_load_flag == true  &&  $application_load_flag == true)
+                {
+                    $registration = StudentRegistration::find()
+                                ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                    
+                    if($registration == true)
+                    {
+                        //updates application model
+                        $application->personid = $personid;    
+                        $application->applicationtimestamp = date('Y-m-d H:i:s' );
+                        $application->submissiontimestamp = date('Y-m-d H:i:s' );
+                        $application->ordering = Application::getNextApplicationID($personid);
+                        $application->ipaddress = Yii::$app->request->getUserIP();
+                        $application->browseragent = Yii::$app->request->getUserAgent();
+                        $application->applicationstatusid = 9;
+                        $application_validation_flag = $application->validate();
+
+                        if ($application_validation_flag == true)
+                        {
+                            $transaction = \Yii::$app->db->beginTransaction();
+                            try 
+                            {
+                                //inactivate old offer
+                                $current_active_offer_save_flag = false;
+                                $current_active_offer = Offer::find()
+                                                    ->where(['offerid' => $registration->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                                                    ->one();
+                                if ($current_active_offer == true)
+                                {   
+                                    $current_active_offer->revokedby = Yii::$app->user->identity->personid;;
+                                    $current_active_offer->revokedate = date('Y-m-d H:i:s' );
+                                    $current_active_offer->isactive = 0;
+                                    $current_active_offer_save_flag = $current_active_offer->save();
+
+                                    if($current_active_offer_save_flag == true)
+                                    {
+                                        //inactivate old application
+                                        $old_application_save_flag = false;
+                                        $old_application = Application::find()
+                                                        ->where(['applicationid' => $current_active_offer->applicationid, 'isactive' => 1 , 'isdeleted' => 0])
+                                                        ->one();
+                                        if($old_application == true)
+                                        {
+                                            $old_application->isactive = 0;
+                                            $old_application_save_flag = $old_application->save();
+                                            if($old_application_save_flag == true)
+                                            {
+                                                if (Application::isCape($old_application->academicofferingid) == true)
+                                                {
+                                                    $old_application_cape_records = ApplicationCapesubject::find()
+                                                            ->where(['applicationid' => $old_application->applicationid, 'isdeleted' => 0])
+                                                            ->all();
+                                                    if ($old_application_cape_records == true)
+                                                    {
+                                                        foreach ($old_application_cape_records as $record)
+                                                        {
+                                                            $record->isactive = 0;
+                                                            $record_save_flag = $record->save();
+                                                            if ($record_save_flag == false)
+                                                            {
+                                                                $transaction->rollBack();
+                                                                Yii::$app->getSession()->setFlash('error', 'Error deactiveing application-capesubject records... Please try again.');
+                                                                return $this->render('add_transfer', [
+                                                                        'personid' => $personid, 
+                                                                        'studentregistrationid' => $studentregistrationid,
+                                                                        'capegroups' => $capegroups,
+
+                                                                        'application' => $application,
+                                                                        'applicationcapesubject' =>  $applicationcapesubject,
+                                                                        'transfer' => $transfer,
+                                                                        ]);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                $application_save_flag = $application->save();
+                                                if ($application_save_flag == true)
+                                                {
+                                                    //Processes application_cape_subject models
+                                                    $is_cape = Application::isCape($application->academicofferingid);
+                                                    if ($is_cape == true)       //if application is for CAPE programme
+                                                    {       
+                                                        $capesubject_load_flag = Model::loadMultiple($applicationcapesubject, $post_data);
+                                                        if ($capesubject_load_flag == true)
+                                                        {
+                                                            $capesubject_validation_flag = Model::validateMultiple($applicationcapesubject);
+
+                                                            if ($capesubject_validation_flag == true)
+                                                            {
+                                                                //CAPE subject selection is only updated if 3-4 subjects have been selected
+                                                                $selected = 0;
+                                                                foreach ($applicationcapesubject as $subject) 
+                                                                {
+                                                                    if ($subject->capesubjectid != 0)           //if valid subject is selected
+                                                                    {        
+                                                                        $selected++;
+                                                                    }
+                                                                }
+
+                                                                if($selected >= 2 && $selected <= 4)
+                                                                {
+                                                                    foreach ($applicationcapesubject as $subject) 
+                                                                    {
+                                                                        $subject->applicationid = $application->applicationid;      //updates applicationid
+
+                                                                        if ($subject->capesubjectid != 0 && $subject->applicationid != 0 )       //if none is selected then reocrd should not be saved
+                                                                        {        
+                                                                            $capesubject_save_flag = $subject->save();
+                                                                            if ($capesubject_save_flag == false)          //CapeApplicationSubject save operation succeeds
+                                                                            {
+                                                                                $transaction->rollBack();
+                                                                                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save cape subject records. Please try again.');
+                                                                                return $this->render('add_transfer', [
+                                                                                            'personid' => $personid, 
+                                                                                            'studentregistrationid' => $studentregistrationid,
+                                                                                            'capegroups' => $capegroups,
+
+                                                                                            'application' => $application,
+                                                                                            'applicationcapesubject' =>  $applicationcapesubject,
+                                                                                            'transfer' => $transfer,
+                                                                                ]); 
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else 
+                                                                {   
+                                                                    $transaction->rollBack();
+                                                                    Yii::$app->getSession()->setFlash('error', 'You must select 2-4 subjects... Please try again.');
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                $transaction->rollBack();
+                                                                Yii::$app->getSession()->setFlash('error', 'Error validating cape subject selection... Please try again.');
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            $transaction->rollBack();
+                                                            Yii::$app->getSession()->setFlash('error', 'Error loading cape subject models... Please try again.');
+                                                        }
+                                                    }//end of isCape block
+
+                                                    //Create new offer record
+                                                    $new_offer_save_flag = false;
+                                                    $new_offer = new Offer();
+                                                    $new_offer->applicationid = $application->applicationid;
+                                                    $new_offer->offertypeid = 1;
+                                                    $new_offer->issuedby = Yii::$app->user->identity->personid;
+                                                    $new_offer->issuedate = date('Y-m-d H:i:s' );
+                                                    $new_offer->ispublished = 1;
+                                                    $new_offer_save_flag = $new_offer->save();
+
+                                                    if ($new_offer_save_flag == true)
+                                                    {
+                                                        $registration->offerid = $new_offer->offerid;   //associate new offer with student_registration
+                                                        $registration->academicofferingid = $application->academicofferingid;
+                                                        $registration_save_flag = $registration->save();
+                                                        
+                                                        if($registration_save_flag == true)
+                                                        {
+                                                            //update and validate transfer model
+                                                            $transfer->studentregistrationid = $studentregistrationid;
+                                                            $transfer->personid = $personid;
+                                                            $transfer->transferofficer = Yii::$app->user->identity->personid;;
+                                                            $transfer->offerfrom = $current_active_offer->offerid;
+                                                            $transfer->offerto = $new_offer->offerid;
+                                                            $transfer->transferdate = date('Y-m-d H:i:s' );
+                                                            $transfer_validation_flag = $transfer->validate();
+                                                            
+                                                            if ($transfer_validation_flag == true)
+                                                            {
+                                                                $transfer_save_flag = $transfer->save();
+                                                                if($transfer_save_flag == true)
+                                                                {
+                                                                    if($application->divisionid != $old_application->divisionid)
+                                                                   {
+                                                                        $applicant = Applicant::find()
+                                                                            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                                                                            ->one();
+                                                                        if ($applicant)
+                                                                        {
+                                                                            $new_id = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "transfer");
+                                                                            $applicant->potentialstudentid = $new_id;
+                                                                            $applicant_save_flag = $applicant->save();
+                                                                            if ($applicant_save_flag == true)
+                                                                            {
+                                                                                $user = User::find()
+                                                                                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                                                                                        ->one();
+                                                                                $user->username = $new_id;
+                                                                                $user_save_flag = $user->save();
+                                                                                if($user_save_flag == true)
+                                                                                {
+                                                                                    $transaction->commit();
+                                                                                    return $this->redirect(['student-profile',
+                                                                                        'personid' => $personid, 
+                                                                                        'studentregistrationid' => $studentregistrationid,                     
+                                                                                    ]);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $transaction->rollBack();
+                                                                                    Yii::$app->getSession()->setFlash('error', 'Error updateing username... Please try again.');
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $transaction->rollBack();
+                                                                                Yii::$app->getSession()->setFlash('error', 'Error saving applicant record... Please try again.');
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $transaction->rollBack();
+                                                                            Yii::$app->getSession()->setFlash('error', 'Error loading applicant record... Please try again.');
+                                                                        }
+                                                                   }
+                                                                   else         //for transfers within the same division
+                                                                   {
+                                                                       $transaction->commit();
+                                                                        return $this->redirect(['student-profile',
+                                                                            'personid' => $personid, 
+                                                                            'studentregistrationid' => $studentregistrationid,                     
+                                                                        ]);
+                                                                   }
+                                                                }
+                                                                else
+                                                                {
+                                                                    $transaction->rollBack();
+                                                                    Yii::$app->getSession()->setFlash('error', 'Error saving transfer record... Please try again.');
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                $transaction->rollBack();
+                                                                Yii::$app->getSession()->setFlash('error', 'Error validating transfer record... Please try again.');
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            $transaction->rollBack();
+                                                            Yii::$app->getSession()->setFlash('error', 'Error updating registration record... Please try again.');
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        $transaction->rollBack();
+                                                        Yii::$app->getSession()->setFlash('error', 'Error saving new offer... Please try again.');
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $transaction->rollBack();
+                                                    Yii::$app->getSession()->setFlash('error', 'Error saving new application... Please try again.');
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $transaction->rollBack();
+                                                Yii::$app->getSession()->setFlash('error', 'Error updating old application... Please try again.');
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->getSession()->setFlash('error', 'Error retrieving old application... Please try again.');
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error saving old offer... Please try again.');
+                                    }
+                                }
+                                else
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error retrieving old offer... Please try again.');
+                                }
+                            }catch (Exception $e) 
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                            }
+                        }
+                        else
+                        {
+                            Yii::$app->getSession()->setFlash('error', 'Error validating new application. Please try again.');
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error retrieving registration record.... Please try again.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error loading transfer and application records... Please try again.');             
+                }
+            }//END POST
+            
+            return $this->render('add_transfer', [
+                        'personid' => $personid, 
+                        'studentregistrationid' => $studentregistrationid,
+                        'current_programme' => $current_programme,
+                
+                        'capegroups' => $capegroups,
+                        'application' => $application,
+                        'applicationcapesubject' =>  $applicationcapesubject,
+                        'transfer' => $transfer,          
+            ]); 
+        }
+        
+        
     }
