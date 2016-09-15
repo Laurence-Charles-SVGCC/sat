@@ -161,8 +161,16 @@ class Rejection extends \yii\db\ActiveRecord
                 
                 foreach($rej_applications as $record)
                 {
-                    $record->isactive = 0;
-                    $record->isdeleted = 1;
+                    if($rejection->ispublished == 1)
+                    {
+                        $record->isactive = 0;
+                        $record->isdeleted = 0;
+                    }
+                    else
+                    {
+                        $record->isactive = 0;
+                        $record->isdeleted = 1;
+                    }
                     $save_flag_1 = $record->save();
                     if ($save_flag_1 == false)
                         return false;

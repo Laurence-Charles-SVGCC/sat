@@ -2773,7 +2773,7 @@ class Applicant extends \yii\db\ActiveRecord
         $rejections = Rejection::find()
                 ->innerJoin('rejection_applications', '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
                 ->where(['rejection.ispublished' => 1,'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
-                                'rejection_applications.applicationid' => $ids, 'rejection_applications.isactive' => 1, 'rejection_applications.isdeleted' => 0])
+                                'rejection_applications.applicationid' => $ids, 'rejection_applications.isdeleted' => 0])
                 ->all();
         if ($rejections == true)
             return true;
