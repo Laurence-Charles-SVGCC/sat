@@ -564,6 +564,7 @@ class RejectionController extends Controller
             $rejection_data['personid'] = $applicant->personid;
             $rejection_data['rejectionid'] = $rejection->rejectionid;
             $rejection_data['rejectiontype'] = $rejection->rejectiontypeid;
+            $rejection_data['divisionid'] = $applications[0]->divisionid;
             $rejection_data['username'] = $username;
             $rejection_data['firstname'] = $applicant->firstname;
             $rejection_data['lastname'] = $applicant->lastname;

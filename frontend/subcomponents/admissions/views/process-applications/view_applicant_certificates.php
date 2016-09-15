@@ -187,7 +187,7 @@
                     This applicant has been rejected from all of their programme choices.  Divisional processing restrictions have therefore 
                     been removed from this application.  The Registrar and any Deans/Deputy Deans are permitted to issue a Custom Offer to this applicant.
                 </p>
-            <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
+            <?php elseif (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
             <div>
                 <br/><p class="alert alert-error" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
                     This applicant has been rejected from all of their programme choices and has been issued a rejection response.
@@ -225,7 +225,7 @@
                                         ]);?>
                         </div>
                     
-                    <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
+                    <?php elseif (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
                         <div class="pull-right" style="margin-right:5%">
                             <?=Html::a(' Create Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
