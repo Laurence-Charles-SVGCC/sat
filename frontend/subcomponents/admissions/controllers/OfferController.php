@@ -1303,6 +1303,7 @@ class OfferController extends Controller
             'dataProvider' => $dataProvider,
             'divisionabbr' => $division_abbr,
             'applicationperiodname' => $app_period_name,
+            'progs_with_pending_offers' => $progs_with_pending_offers,
             'divisions' => $divisions,
             'programmes' => $progs,
             'cape_subjects' => $capes,
