@@ -46,6 +46,7 @@
     use frontend\models\RelationType;
     use frontend\models\Hold;
     use frontend\models\StudentTransfer;
+    use frontend\models\StudentDeferral;
     use frontend\models\CapeGroup;
     use frontend\models\StudentStatus;
     use frontend\models\QualificationType;
@@ -4254,12 +4255,13 @@
             }
             $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
             
+            
             date_default_timezone_set('America/St_Vincent');
             $selected = NULL;
             $capegroups = CapeGroup::getGroups();
             $groupCount = count($capegroups);
             $application = new Application();
-            $transfer = new StudentTransfer();
+            $transfer = new StudentDeferral();
 
             //Create blank records to accommodate capesubject-application associations
             $applicationcapesubject = array();
@@ -4277,7 +4279,6 @@
             {
                 //Application meodels flags
                 $application_load_flag = false;
-                $application_validation_flag = false;
                 $application_save_flag = false;
 
                 //ApplicatinonCapeSubject Flags
@@ -4286,22 +4287,51 @@
                 $capesubject_save_flag = false;
                 
                 //Transfer flags
-                $transfer_load_flag = false;
-                $transfer_validation_flag = false;
-                $transfer_save_flag = false;
+                $deferral_load_flag = false;
+                $deferral_validation_flag = false;
+                $deferral_save_flag = false;
                 
                 //Register flag
                  $registration_save_flag = false;
                 
                 //load models
                 $application_load_flag = $application->load($post_data);
-                $transfer_load_flag = $transfer->load($post_data);
+                $deferral_load_flag = $transfer->load($post_data);
                         
                 if($transfer_load_flag == true  &&  $application_load_flag == true)
                 {
-                    $registration = StudentRegistration::find()
-                                ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    $current_registration = StudentRegistration::find()
+                                ->where(['studentregistrationid' => $studentregistrationid,'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                 ->one();
+                    if($current_registration == false)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error retrieving registration record.... Please try again.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    //updates application model
+                    $application->personid = $personid;    
+                    $application->applicationtimestamp = date('Y-m-d H:i:s' );
+                    $application->submissiontimestamp = date('Y-m-d H:i:s' );
+                    $application->ordering = Application::getNextApplicationID($personid);
+                    $application->ipaddress = Yii::$app->request->getUserIP();
+                    $application->browseragent = Yii::$app->request->getUserAgent();
+                    $application->applicationstatusid = 9;
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
+                    {
+                        $application_save_flag = $application->save();
+                        if ($application_save_flag == false)
+                        {
+                            
+                        }
+                        
+                    }catch (Exception $e){
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                    }
+                    
+                    
                     
                     if($registration == true)
                     {

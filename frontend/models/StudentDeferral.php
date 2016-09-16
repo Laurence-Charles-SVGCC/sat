@@ -13,6 +13,7 @@ use Yii;
  * @property string $registrationfrom
  * @property string $registrationto
  * @property string $deferraldate
+ * @property string $details
  * @property integer $iscurrent
  * @property integer $isactive
  * @property integer $isdeleted
@@ -35,7 +36,8 @@ class StudentDeferral extends \yii\db\ActiveRecord
         return [
             [['studentdeferralid', 'personid', 'deferralofficer', 'registrationfrom', 'registrationto', 'deferraldate'], 'required'],
             [['studentdeferralid', 'personid', 'deferralofficer', 'registrationfrom', 'registrationto', 'iscurrent', 'isactive', 'isdeleted'], 'integer'],
-            [['deferraldate'], 'safe']
+            [['deferraldate'], 'safe'],
+            [['details'], 'string']
         ];
     }
 
@@ -51,6 +53,7 @@ class StudentDeferral extends \yii\db\ActiveRecord
             'registrationfrom' => 'Registrationfrom',
             'registrationto' => 'Registrationto',
             'deferraldate' => 'Deferraldate',
+            'details' => 'Details',
             'iscurrent' => 'Iscurrent',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',

@@ -982,6 +982,9 @@ class ReportsController extends Controller {
         $accepted_data = array();
         $enrolled_data = array();
         
+        $prog = 0;
+        $subj = 0;
+        
         if (Yii::$app->request->post()) 
         {
             $request = Yii::$app->request;
@@ -993,8 +996,11 @@ class ReportsController extends Controller {
             if (!$application_periodid)
                 $application_periodid = Yii::$app->session->get('application_periodid');
 
+            
             $prog = $request->post('prog') ? $request->post('prog') : 0;
             $subj = $request->post('subj') ? $request->post('subj') : 0;
+            $dasgs = $request->post('dasgs_programme_search_criteria') ? $request->post('dasgs_programme_search_criteria') : 0;
+            $non_dasgs = $request->post('non_dasgs_programme_search_criteria') ? $request->post('non_dasgs_programme_search_criteria') : 0;
             
             if ($prog != 0) 
             {
@@ -1006,11 +1012,17 @@ class ReportsController extends Controller {
                 $programmeid = $subj;
                 $criteria = "subject";
             } 
-            elseif ($prog == 0  && $subj == 0) 
+            elseif($prog == 0  && $subj == 0) 
             {
-                $programmeid = -1;
-                $criteria = "all-programmes";
+                if ( (isset($dasgs) == true && $dasgs == 2)  
+                        ||  (isset($non_dasgs) == true  && $non_dasgs == 1)
+                   )
+                {
+                    $programmeid = -1;
+                    $criteria = "all-programmes";
+                }
             }
+            
             
             if(!$programmeid)
                 $programmeid = Yii::$app->session->get('programmeid');
