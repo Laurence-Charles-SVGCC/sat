@@ -5,6 +5,7 @@ namespace frontend\models;
 use Yii;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\StudentRegistration;
+use frontend\models\ApplicationPeriod;
 
 /**
  * This is the model class for table "academic_offering".
@@ -570,6 +571,39 @@ class AcademicOffering extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Returns tha academicoffering of the most recent DASGS application period
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 17/09/2016
+     * Date Last Modified: 17/09/2016
+     */
+    public static function getMostRecentCapeAcademicOfferingID()
+    {
+        $recent_dasgs_period = ApplicationPeriod::find()
+                ->innerJoin('academic_year', '`application_period`.`academicyearid` = `academic_year`.`academicyearid`')
+                ->where(['application_period.isdeleted' => 0, 'application_period.divisionid' => 4,
+                                'academic_year.isdeleted' => 0, 'academic_year.iscurrent' => 1])
+                ->one();
+        if ($recent_dasgs_period)
+        {
+            $offering = AcademicOffering::find()
+                    ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                    ->where([ 'academic_offering.isdeleted' => 0,
+                                    'programme_catalog.isdeleted' => 0, 'programme_catalog.name' => "CAPE",
+                                    'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $recent_dasgs_period->applicationperiodid
+                                ])
+                    ->one();
+        if ($offering)
+            return $offering->academicofferingid;
+        }
+        return false;
+    }
+    
+    
     
     /**
      * Returns the CAPE academic offering for the specified application period
@@ -639,7 +673,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
     public static function getHighestGPA($academicofferingid)
     {
         $enrolled_students = StudentRegistration::find()
-                            ->where(['student_registration.academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->where(['academicofferingid' => $academicofferingid, 'isdeleted' => 0])
                             ->all();
         $top_performers = array();
         $highest_gpa = 0;

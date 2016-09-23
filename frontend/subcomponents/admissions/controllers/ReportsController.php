@@ -776,7 +776,7 @@ class ReportsController extends Controller {
                     foreach ($offers as $offer) 
                     {
                         $has_enrolled = StudentRegistration::find()
-                                ->where(['offerid' => $offer->offerid])
+                                ->where(['offerid' => $offer->offerid, 'isdeleted' => 0])
                                 ->one();
                         
                         if($has_enrolled == false)
@@ -1203,7 +1203,7 @@ class ReportsController extends Controller {
                         $accepted_data[] = $accepted_info;
                         
                         $has_enrolled = StudentRegistration::find()
-                                ->where(['offerid' => $offer->offerid,  'isactive' => 1, 'isdeleted' => 0])
+                                ->where(['offerid' => $offer->offerid, 'isdeleted' => 0])
                                 ->one();
                         
                         if($has_enrolled == true)
@@ -1349,7 +1349,7 @@ class ReportsController extends Controller {
                                         'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('applicant.personid')
@@ -1365,7 +1365,7 @@ class ReportsController extends Controller {
                                         'application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('applicant.personid')
@@ -1380,7 +1380,7 @@ class ReportsController extends Controller {
                         ->where(['application.isactive' => 1, 'application.isdeleted' => 0,  'application.applicationstatusid' => 9,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $offering->academicofferingid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('applicant.personid')
@@ -1479,7 +1479,7 @@ class ReportsController extends Controller {
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                         'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('application.personid')
@@ -1497,7 +1497,7 @@ class ReportsController extends Controller {
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                         'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('application.personid')
@@ -1514,7 +1514,7 @@ class ReportsController extends Controller {
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                         'application_capesubject.isactive' => 1, 'application_capesubject.isdeleted' => 0, 'application_capesubject.capesubjectid' => $subject->capesubjectid,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
-                                        'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'student_registration.isdeleted' => 0,
                                         'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $application_periodid,
                                         ])
                         ->groupby('application.personid')

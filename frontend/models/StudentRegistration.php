@@ -132,7 +132,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     public static function getStudentRegistration($academicofferingid)
     {
         $registrations = StudentRegistration::find()
-                    ->where(['academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['academicofferingid' => $academicofferingid, 'isdeleted' => 0])
                     ->all();
         if (count($registrations) > 0)
             return $registrations;
@@ -163,7 +163,6 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
                     . " WHERE student_registration.studentregistrationid = ". $studentregistrationid
                     . " AND programme_catalog.name = 'CAPE'"
-                    . " AND student_registration.isactive = 1"
                     . " AND student_registration.isdeleted = 0;"
                     )
                     ->queryAll();
@@ -242,7 +241,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     public static function getAcademicStatusName($studentregistrationid)
     {
         $record = StudentRegistration::find()
-                ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
                 ->one();
         if($record)
         {
@@ -324,8 +323,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     . " ON student_hold.holdtypeid = hold_type.holdtypeid"
                     . " JOIN qualification_type"
                     . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
-                    . " WHERE student_registration.isactive = 1"
-                    . " AND student_registration.isdeleted = 0"
+                    . " WHERE student_registration.isdeleted = 0"
                     . " AND student_hold.holdstatus = 1"
                     . " AND student_hold.isactive = 1"
                     . " AND student_hold.isdeleted = 0"
@@ -363,7 +361,6 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     . " JOIN department"
                     . " ON programme_catalog.departmentid = department.departmentid"
                     . " WHERE department.divisionid = ". $divisionid
-                    . " AND student_registration.isactive = 1"
                     . " AND student_registration.isdeleted = 0"
                     . " AND student_hold.holdstatus = 1"
                     . " AND student_hold.isactive = 1"
@@ -465,7 +462,9 @@ class StudentRegistration extends \yii\db\ActiveRecord
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                     ->innerJoin('department', '`programme_catalog`.`departmentid` = `department`.`departmentid`')
-                    ->where(['student_registration.personid' => $personid, 'student_registration.isdeleted' => 0, 'offer.isdeleted' => 0, 'department.divisionid' => $divisionid, 'student_registration.iscurrent' => 1])
+                    ->where(['student_registration.personid' => $personid, 'student_registration.isdeleted' => 0, 'student_registration.isactive' => 1,
+                                    'offer.isdeleted' => 0, 'department.divisionid' => $divisionid
+                                ])
                     ->all();
         
         return $registrations;
@@ -489,7 +488,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
                ->innerJoin('student_registration', '`offer`.`offerid` = `student_registration`.`offerid`')
                ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
                                 'offer.isactive' => 1, 'offer.isdeleted' => 0,
-                                'student_registration.studentregistrationid' => $studentregistrationid, 'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0])
+                                'student_registration.studentregistrationid' => $studentregistrationid, 'student_registration.isdeleted' => 0])
                ->one();
        if ($application)
        {

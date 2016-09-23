@@ -62,7 +62,6 @@ class CardController extends \yii\web\Controller
                 $offer_cond['offer.isactive'] = 1;
                 $offer_cond['offer.isdeleted'] = 0;
                 $offer_cond['offer.ispublished'] = 1;
-                $offer_cond['student_registration.isactive'] = 1;
                 $offer_cond['student_registration.isdeleted'] = 0;
 
                 $offers = Offer::find()
@@ -188,7 +187,7 @@ class CardController extends \yii\web\Controller
                         { 
                             $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                         }
-                        $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1]);
+                            $student_reg = StudentRegistration::findOne(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0]);
 
                         $offer_data['offerid'] = $offer->offerid;
                         $offer_data['studentreg'] = $student_reg;

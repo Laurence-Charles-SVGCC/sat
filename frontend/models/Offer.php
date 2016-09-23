@@ -141,7 +141,6 @@ class Offer extends \yii\db\ActiveRecord
                 . " JOIN offer_type"
                 . " ON offer.offertypeid = offer_type.offertypeid"
                 . " WHERE application.personid = " . $personid
-                //. " AND offer.isactive = 1"
                 . " AND offer.isdeleted = 0"
                 . " AND offer.ispublished = 1;"
                 )

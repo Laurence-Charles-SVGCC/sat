@@ -33,6 +33,11 @@
                 <div id="transfers" style="display:none">
                     <hr>
                     <h2 class="custom_h2">Transfers</h2>
+                    <p style="margin-left: 2.5%">
+                        Click the following button to download a copy of the transfer listing.
+                        <?= Html::a('Download Transfers', ['export-transfers'], ['class' => 'btn btn-primary', 'style' => 'margin-left: 2.5%']) ?>
+                    </p>
+                    
                     <?php if ($transfers_provider) : ?>
                         <?= $this->render('transfer_results', [
                             'dataProvider' => $transfers_provider,
@@ -45,6 +50,11 @@
                 <div id="deferrals" style="display:none">
                     <hr>
                     <h2 class="custom_h2">Deferrals</h2>
+                    <p style="margin-left: 2.5%">
+                        Click the following button to download a copy of the deferral listing.
+                        <?= Html::a('Download Deferrals', ['export-deferrals'], ['class' => 'btn btn-primary', 'style' => 'margin-left: 2.5%']) ?>
+                    </p>
+                    
                     <?php if ($deferrals_provider) : ?>
                         <?= $this->render('deferral_results', [
                             'dataProvider' => $deferrals_provider,

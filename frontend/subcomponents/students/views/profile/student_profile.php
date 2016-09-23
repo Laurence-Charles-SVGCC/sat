@@ -27,6 +27,9 @@
     use frontend\models\NurseWorkExperience;
     use frontend\models\CriminalRecord;
     use frontend\models\PostSecondaryQualification;
+    use frontend\models\Offer;
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\AcademicYear;
 
     /* @var $this yii\web\View */
     $this->title = 'Student Profile';
@@ -2517,7 +2520,63 @@
                                 <!--Displays offers with the assumption that only the most recent application associated with a 'suggested' offer has 'isactive' => 1-->
                                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php if(Yii::$app->user->can('viewTranscriptData')):?>
-                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Transcript</div>
+                                        <?php if (count($enrollments) > 1):?>
+                                            <p class="alert alert-info" role="alert" style="margin: 0 auto; font-size:16px;">
+                                                Student has multiple registration records. You can view alternative registration(s) using the dropdownlist
+                                                labeled "Select Enrollment Record".
+                                            </p>
+                                        <?php endif;?>
+                                    
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">
+                                            Transcript
+                                            <?php if (count($enrollments) > 1):?>
+                                                <div class='dropdown pull-right'>
+                                                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                                                         <strong>Select Alternative Enrollment Record...</strong>
+                                                        <span class='caret'></span>
+                                                    </button>
+                                                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                                                        <?php
+                                                            foreach ($enrollments as $enrollment)
+                                                            {
+                                                                if ($studentregistrationid != $enrollment->studentregistrationid)
+                                                                {
+                                                                    $offer = Offer::find()
+                                                                            ->where(['offerid' => $enrollment->offerid, 'isdeleted' => 0])
+                                                                            ->one();
+                                                                    $current_cape_subjects_names = array();                
+                                                                    $current_cape_subjects = array();
+                                                                    $current_application = $offer->getApplication()->one();
+                                                                    $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                                                    $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                                                    foreach ($current_cape_subjects as $cs)
+                                                                    { 
+                                                                        $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                                                    }
+                                                                    $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                                                    
+                                                                    $academic_year = AcademicYear::find()
+                                                                            ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                                                                            ->where(['academic_year.isdeleted' => 0,
+                                                                                            'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $current_application->academicofferingid
+                                                                                        ])
+                                                                            ->one()
+                                                                            ->title;
+                                                                    $label = "(" . $academic_year . ")  " . $current_programme;
+                                                                    
+                                                                    $hyperlink = Url::toRoute(['/subcomponents/students/profile/student-profile/', 
+                                                                                                    'personid' => $person->personid,
+                                                                                                    'studentregistrationid' => $enrollment->studentregistrationid
+                                                                                                 ]);
+                                                                    echo "<li><a href='$hyperlink' target='_blank'>$label</a></li>";  
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </ul>
+                                                </div>
+                                            <?php endif;?>
+                                        </div>
+                                    
                                         <?php if ($iscape == true):?>
                                             <table class="table" style="width:95%; margin: 0 auto;">
                                                 <tr>
@@ -3043,13 +3102,11 @@
                                     <?php if(Yii::$app->user->can('viewTransferData')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Transfer History
                                             <?php if(Yii::$app->user->can('transferStudent')):?>
-                                                <a class='btn btn-warning glyphicon glyphicon-leaf pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Deferral Resumption</a>
-                                                
-                                                    <?php if (StudentRegistration::hasGradeRecords($studentregistrationid) == false):?>
+                                                <?php if (StudentRegistration::hasGradeRecords($studentregistrationid) == false):?>
                                                     <?php if (StudentRegistration::isCape($studentregistrationid) == true):?>
-                                                        <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Add/Drop</a>
+                                                        <a class='btn btn-success glyphicon glyphicon-transfer pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Add-Drop/Transfer</a>
                                                     <?php else: ?>
-                                                        <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Transfer Student</a>
+                                                        <a class='btn btn-success glyphicon glyphicon-transfer pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Transfer Student</a>
                                                     <?php endif;?>
                                                 <?php endif;?>
                                             <?php endif;?>
@@ -3079,6 +3136,48 @@
                                                             echo "<td>{$transfer['newprogramme']}</td>";
                                                             echo "<td>{$transfer['transferofficer']}</td>";
                                                             echo "<td>{$transfer['details']}</td>";
+                                                        echo "</tr>";
+                                                    }
+                                                echo "</table>";
+                                            }
+                                        ?>
+                                    <?php endif?>
+                                </div>
+                                
+                                <br/><br/>
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('viewTransferData')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Deferrals and Re-Enrollments
+                                            <?php if(Yii::$app->user->can('transferStudent')):?>
+                                                <a class='btn btn-warning glyphicon glyphicon-heart pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'type' =>'start_new']);?> role='button'> 2nd Chance</a>
+                                                <a class='btn btn-info glyphicon glyphicon-leaf pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'type' => 'deferral']);?> role='button'> Deferral Resumption</a>
+                                            <?php endif;?>
+                                        </div>
+
+                                        <?php
+                                            if($deferrals == false)
+                                            {
+                                                echo "<h4 style=''>Student has no deferrals or new registrations on record.</h4>";
+                                            }
+                                            else
+                                            {
+                                                echo "<table class='table table-hover' style='margin: 0 auto;'>";
+                                                    echo "<tr>";
+                                                        echo "<th>Date</th>";
+                                                        echo "<th>Previous Programme</th>";
+                                                        echo "<th>Current Programme</th>";
+                                                        echo "<th>Deferral Officer</th>";
+                                                        echo "<th>Notes</th>";
+                                                    echo "</tr>";
+
+                                                    foreach($deferrals as $deferral)
+                                                    {
+                                                        echo "<tr>";
+                                                            echo "<td>{$deferral['deferraldate']}</td>";
+                                                            echo "<td>{$deferral['previousprogramme']}</td>";
+                                                            echo "<td>{$deferral['newprogramme']}</td>";
+                                                            echo "<td>{$deferral['deferralofficer']}</td>";
+                                                            echo "<td>{$deferral['details']}</td>";
                                                         echo "</tr>";
                                                     }
                                                 echo "</table>";

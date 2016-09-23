@@ -19,7 +19,7 @@
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+//            ['class' => 'yii\grid\SerialColumn'],
             [
                 'format' => 'html',
                 'label' => 'Student ID',
@@ -35,25 +35,25 @@
                 'label' => 'First Name'
             ],
             [
-                'attribute' => 'middlename',
-                'format' => 'text',
-                'label' => 'Middle Name(s)'
-            ],
-            [
                 'attribute' => 'lastname',
                 'format' => 'text',
                 'label' => 'Last Name'
             ],
             [
-                'attribute' => 'gender',
+                'attribute' => 'current_programme',
                 'format' => 'text',
-                'label' => 'Gender'
+                'label' => 'Programme'
             ],
             [
                 'attribute' => 'studentstatus',
                 'format' => 'text',
                 'label' => 'Status'
-            ],     
+            ],    
+            [
+                'attribute' => 'enrollments',
+                'format' => 'text',
+                'label' => 'Registrations'
+            ],    
         ],
     ]); ?>     
 </div>

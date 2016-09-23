@@ -13,6 +13,10 @@
     use frontend\models\AcademicStatus;
     use frontend\models\BatchStudent;
     use frontend\models\StudentRegistration;
+    use frontend\models\Offer;
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\AcademicYear;
+    use frontend\models\ApplicationCapesubject;
     
     /* @var $this yii\web\View */
     $this->title = 'Academic Transcript';
@@ -77,6 +81,61 @@
                 </table>
                 <br/>
 
+                <?php if (count($enrollments) > 1):?>
+                    <p class="alert alert-info" role="alert" style="width:95%; margin: 0 auto; font-size:16px;">
+                        Student has multiple registration records. You can view alternative registration(s) using the dropdownlist
+                        labeled "Select Enrollment Record".
+                    </p><br/>
+                <?php endif;?>
+                
+                <?php if (count($enrollments) > 1):?>
+                    <div class="dropdown pull-right" style="margin-right:2.5%">
+                        <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                            <strong>Select Alternative Enrollment Record...</strong>
+                            <span class='caret'></span>
+                        </button>
+                        <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                            <?php
+                                foreach ($enrollments as $enrollment)
+                                {
+                                    if ($studentregistration->studentregistrationid != $enrollment->studentregistrationid)
+                                    {
+                                        $offer = Offer::find()
+                                                ->where(['offerid' => $enrollment->offerid, 'isdeleted' => 0])
+                                                ->one();
+                                        $current_cape_subjects_names = array();                
+                                        $current_cape_subjects = array();
+                                        $current_application = $offer->getApplication()->one();
+                                        $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                        $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                        foreach ($current_cape_subjects as $cs)
+                                        { 
+                                            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                        }
+                                        $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
+
+                                        $academic_year = AcademicYear::find()
+                                                ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                                                ->where(['academic_year.isdeleted' => 0,
+                                                                'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $current_application->academicofferingid
+                                                            ])
+                                                ->one()
+                                                ->title;
+                                        $label = "(" . $academic_year . ")  " . $current_programme;
+
+                                        $hyperlink = Url::toRoute(['/subcomponents/gradebook/gradebook/transcript/', 
+                                                                        'personid' => $person->personid,
+                                                                        'studentregistrationid' => $enrollment->studentregistrationid
+                                                                     ]);
+                                        echo "<li><a href='$hyperlink' target='_blank'>$label</a></li>";  
+                                    }
+                                }
+                            ?>
+                        </ul>
+                    </div>
+                <?php endif;?>
+                    
+                    
                 <?php
                     $semester_count = BatchStudent::getSemesterCount($studentregistration->studentregistrationid);
 

@@ -9,11 +9,9 @@
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
-    
 ?>
 
-
-<div id="transfers_listing">
+<div id="transfers_view_listing">  
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [

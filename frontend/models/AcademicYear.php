@@ -229,7 +229,7 @@ class AcademicYear extends \yii\db\ActiveRecord
                     ->innerJoin('student_registration', '`academic_offering`.`academicofferingid` = `student_registration`.`academicofferingid`')
                     ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
                                     'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                    'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0
+                                    'student_registration.isdeleted' => 0
                                    ])
                     ->all();
          

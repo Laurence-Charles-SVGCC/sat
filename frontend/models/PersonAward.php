@@ -147,7 +147,7 @@ class PersonAward extends \yii\db\ActiveRecord
             $comments = $award->comments;
             
             $student_registration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $award->studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $award->studentregistrationid, 'isdeleted' => 0])
                     ->one();
             $programme = ProgrammeCatalog::getProgrammeName($student_registration->academicofferingid);
             

@@ -1039,7 +1039,7 @@ class AdmissionsController extends Controller
                                 foreach ($offers as $offer) 
                                 {
                                     $has_enrolled = StudentRegistration::find()
-                                            ->where(['offerid' => $offer->offerid])
+                                            ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
                                             ->one();
 
                                     if($has_enrolled == false)

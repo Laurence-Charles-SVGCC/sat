@@ -813,7 +813,7 @@ class StudentController extends Controller
             elseif ($studentid != NULL  && strcmp($studentid, "") != 0)
             {
                 $info_string = $info_string .  " Student ID: " . $studentid;
-                $user = User::findOne(['username' => $studentid, 'isactive' => 1, 'isdeleted' => 0]);
+                $user = User::findOne(['username' => $studentid, 'isdeleted' => 0]);
 
                 if ($user)
                 { 
@@ -836,7 +836,7 @@ class StudentController extends Controller
                     else
                     {
                         $registrations = StudentRegistration::find()
-                                    ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                    ->where(['personid' => $user->personid, 'isactive' => 1,  'isdeleted' => 0])
                                     ->all();
                     }
                     if (count($registrations) > 0)
@@ -853,7 +853,29 @@ class StudentController extends Controller
                                 $all_students_info['middlename'] = $student->middlename;
                                 $all_students_info['lastname'] = $student->lastname;
                                 $all_students_info['gender'] = $student->gender;
-
+                                
+                                $offer_from = Offer::find()
+                                        ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                        ->one();
+                                if($offer_from == false)
+                                    continue;
+                                $current_cape_subjects_names = array();
+                                $current_cape_subjects = array();
+                                $current_application = $offer_from->getApplication()->one();
+                                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                foreach ($current_cape_subjects as $cs)
+                                { 
+                                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                }
+                                $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                $all_students_info['current_programme'] = $currentprogramme;
+                                
+                                $enrollments = StudentRegistration::find()
+                                        ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                        ->count();
+                                $all_students_info['enrollments'] = $enrollments;
+                                
                                 $student_status = StudentStatus::find()
                                                 ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
                                                 ->one();
@@ -909,7 +931,7 @@ class StudentController extends Controller
                 }
                 else
                 {
-                    $cond_arr['isactive'] = 1;
+//                    $cond_arr['isactive'] = 1;
                     $cond_arr['isdeleted'] = 0;
 
                     $students = Student::find()
@@ -945,6 +967,28 @@ class StudentController extends Controller
                                             $all_students_info['middlename'] = $student->middlename;
                                             $all_students_info['lastname'] = $student->lastname;
                                             $all_students_info['gender'] = $student->gender;
+                                            
+                                            $offer_from = Offer::find()
+                                                    ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                                    ->one();
+                                            if($offer_from == false)
+                                                continue;
+                                            $current_cape_subjects_names = array();
+                                            $current_cape_subjects = array();
+                                            $current_application = $offer_from->getApplication()->one();
+                                            $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                            $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                            foreach ($current_cape_subjects as $cs)
+                                            { 
+                                                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                            }
+                                            $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                            $all_students_info['current_programme'] = $currentprogramme;
+                                            
+                                             $enrollments = StudentRegistration::find()
+                                                    ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                                    ->count();
+                                            $all_students_info['enrollments'] = $enrollments;
 
                                             $student_status = StudentStatus::find()
                                                             ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
@@ -972,7 +1016,7 @@ class StudentController extends Controller
                             foreach ($students as $student)
                             {   
                                 $registration = StudentRegistration::find()
-                                        ->where(['personid' => $student->personid, 'isdeleted' => 0])
+                                        ->where(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0])
                                         ->one();    
                                 $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
                                 if ($registration && $user)
@@ -984,7 +1028,29 @@ class StudentController extends Controller
                                     $all_students_info['middlename'] = $student->middlename;
                                     $all_students_info['lastname'] = $student->lastname;
                                     $all_students_info['gender'] = $student->gender;
+                                    
+                                    $offer_from = Offer::find()
+                                            ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                            ->one();
+                                    if($offer_from == false)
+                                        continue;
+                                    $current_cape_subjects_names = array();
+                                    $current_cape_subjects = array();
+                                    $current_application = $offer_from->getApplication()->one();
+                                    $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                    $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                    foreach ($current_cape_subjects as $cs)
+                                    { 
+                                        $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                    }
+                                    $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                    $all_students_info['current_programme'] = $currentprogramme;
 
+                                     $enrollments = StudentRegistration::find()
+                                            ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                            ->count();
+                                      $all_students_info['enrollments'] = $enrollments;
+                                
                                     $student_status = StudentStatus::find()
                                                     ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
                                                     ->one();
@@ -1582,7 +1648,7 @@ class StudentController extends Controller
         $deferral_info = array();
         
         $transfers = StudentTransfer::find()
-                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->where(['isdeleted' => 0])
                 ->all();
         
         if($transfers)
@@ -1594,14 +1660,14 @@ class StudentController extends Controller
                 $transfer_info["personid"] = $transfer->personid;
                 
                 $user = User::find()
-                        ->where(['personid' => $transfer->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $transfer_info["username"] = $user->username;
                 
                 $student = Student::find()
-                        ->where(['personid' => $transfer->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
                 if ($student == false)
                     continue;
@@ -1667,7 +1733,7 @@ class StudentController extends Controller
         }
         
         $deferrals = StudentDeferral::find()
-                ->where(['isactive' => 1, 'isdeleted' => 0])
+                ->where(['isdeleted' => 0])
                 ->all();
         if($deferrals)
         {
@@ -1675,17 +1741,18 @@ class StudentController extends Controller
             {
                 
                 $deferral_info["studentdeferralid"] = $deferral->studentdeferralid;
+                $deferral_info["studentregistrationid"] = $deferral->registrationto;
                 $deferral_info["personid"] = $deferral->personid;
                 
                 $user = User::find()
-                        ->where(['personid' => $deferral->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $deferral_info["username"] = $user->username;
                 
                 $student = Student::find()
-                        ->where(['personid' => $deferral->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($student == false)
                     continue;
@@ -1694,10 +1761,10 @@ class StudentController extends Controller
                 $deferral_info["lastname"] = $student->lastname;
                 
                 $deferral_info["date"] = $deferral->deferraldate;
-                $deferral_info["iscurrent"] = $deferral->iscurrent;
+                $deferral_info["iscurrent"] = $deferral->isactive;
                 
                 $deferral_info["registration_from_id"] = $deferral->registrationfrom;
-                $registration_from = StudentRegistratoin::find()
+                $registration_from = StudentRegistration::find()
                         ->where(['studentregistrationid' => $deferral->registrationfrom, 'isdeleted' => 0])
                         ->one();
                 if($registration_from == false)
@@ -1706,7 +1773,7 @@ class StudentController extends Controller
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
                 $previous_application = Offer::find()
-                        ->where(['offerid' => $registration_from->offerfrom, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['offerid' => $registration_from->offerid, 'isdeleted' => 0])
                         ->one()
                         ->getApplication()
                         ->one();
@@ -1720,15 +1787,16 @@ class StudentController extends Controller
                 $deferral_info['previous_programme'] = $previous_programme_name;
                 $previous_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
-                        ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
-                            'academic_offering.academicyearid' => $previous_application->academicofferingid, 'academic_offering.isactive' =>1, 'academic_offering.isdeleted' => 0])
+                        ->where(['academic_year.isdeleted' => 0,
+                                    'academic_offering.academicofferingid' => $previous_application->academicofferingid, 'academic_offering.isdeleted' => 0
+                                    ])
                         ->one();
                 if ($previous_year == false)
                     continue;
                 $deferral_info["previous_year"] = $previous_year->title;
-                $deferral_info["previous_year_programme"] = "(" . $previous_year>title . ") " .  $previous_programme_name;
+                $deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
                 
-                $registration_to = StudentRegistratoin::find()
+                $registration_to = StudentRegistration::find()
                         ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
                         ->one();
                 if($registration_to == false)
@@ -1737,7 +1805,7 @@ class StudentController extends Controller
                 $current_cape_subjects_names = array();                
                 $current_cape_subjects = array();
                 $current_application = Offer::find()
-                        ->where(['offerid' => $registration_to->offerto, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['offerid' => $registration_to->offerid, 'isdeleted' => 0])
                         ->one()
                         ->getApplication()
                         ->one();
@@ -1756,13 +1824,13 @@ class StudentController extends Controller
                 $deferral_info["deferral_officer_name"] = $employee_name;
                 $current_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
-                        ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
-                            'academic_offering.academicyearid' => $current_application->academicofferingid, 'academic_offering.isactive' =>1, 'academic_offering.isdeleted' => 0])
+                        ->where(['academic_year.isdeleted' => 0,
+                                    'academic_offering.academicofferingid' => $current_application->academicofferingid, 'academic_offering.isdeleted' => 0])
                         ->one();
                 if ($current_year == false)
                     continue;
                 $deferral_info["current_year"] = $current_year->title;
-                $deferral_info["current_year_programme"] = "(" . $current_year>title . ") " .  $current_programme_name;
+                $deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
                 
                 $deferrals_data[] =  $deferral_info;
             }
@@ -1770,7 +1838,7 @@ class StudentController extends Controller
             $deferrals_provider = new ArrayDataProvider([
                     'allModels' => $deferrals_data,
                     'pagination' => [
-                        'pageSize' => 15,
+                        'pageSize' => 25,
                     ],
                     'sort' => [
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -1783,6 +1851,262 @@ class StudentController extends Controller
         return $this->render('transfers_and_deferrals', [
             'transfers_provider' => $transfers_provider,
             'deferrals_provider' => $deferrals_provider
+        ]);
+    }
+    
+    
+    /**
+     * Exports Transfers Listing
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date CreatedL 21/09/2016
+     * Date Last Modified: 21/09/2016
+     */
+    public function actionExportTransfers()
+    {
+        $transfers_data = NULL;
+        $transfers_provider = array();
+        $transfer_info = array();
+        
+        $transfers = StudentTransfer::find()
+                ->where(['isdeleted' => 0])
+                ->all();
+        
+        if($transfers)
+        {
+            foreach ($transfers as $transfer)
+            {
+                $transfer_info["studentregistrationid"] = $transfer->studentregistrationid;
+                $transfer_info["personid"] = $transfer->personid;
+                
+                $user = User::find()
+                        ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $transfer_info["username"] = $user->username;
+                
+                $student = Student::find()
+                        ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($student == false)
+                    continue;
+                $transfer_info["title"] = $student->title;
+                $transfer_info["firstname"] = $student->firstname;
+                $transfer_info["lastname"] = $student->lastname;
+                
+                $transfer_info["date"] = $transfer->transferdate;
+                
+                $offer_from = Offer::find()
+                        ->where(['offerid' => $transfer->offerfrom, 'isdeleted' => 0])
+                        ->one();
+                if($offer_from == false)
+                    continue;
+                $transfer_info["offer_from_id"] = $offer_from->offerid;
+                
+                $previous_cape_subjects_names = array();
+                $previous_cape_subjects = array();
+                $previous_application = $offer_from->getApplication()->one();
+                $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
+                foreach ($previous_cape_subjects as $cs)
+                { 
+                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $previous_cape_subjects_names);
+           
+                 $offer_to = Offer::find()
+                        ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
+                        ->one();
+                if($offer_to == false)
+                    continue;
+                $transfer_info["offer_to_id"] = $offer_to->offerid;
+                $current_cape_subjects_names = array();                
+                $current_cape_subjects = array();
+                $current_application = $offer_to->getApplication()->one();
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $transfer_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                
+                $transfer_info["transfer_officerid"] = $transfer->transferofficer;
+                
+                $employee_name = Employee::getEmployeeName($transfer->transferofficer);
+                $transfer_info["transfer_officer_name"] = $employee_name;
+                
+                $transfers_data[] =  $transfer_info;
+            }
+            
+            $transfers_provider = new ArrayDataProvider([
+                    'allModels' => $transfers_data,
+                    'pagination' => [
+                        'pageSize' => 100,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname', 'date'],
+                        ]
+            ]); 
+        }
+               
+        $title = "Title: Transfers";
+        $date =  "  Date: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
+        return $this->renderPartial('export_transfers', [
+            'dataProvider' => $transfers_provider,
+            'filename' => $filename,
+        ]);
+    }
+    
+    
+    /**
+     * Exports Deferrals Listing
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date CreatedL 21/09/2016
+     * Date Last Modified: 21/09/2016
+     */
+    public function actionExportDeferrals()
+    {
+        $deferrals_data = NULL;
+        $deferrals_provider = array();
+        $deferral_info = array();
+        
+        $deferrals = StudentDeferral::find()
+                ->where(['isdeleted' => 0])
+                ->all();
+        if($deferrals)
+        {
+            foreach ($deferrals as $deferral)
+            {
+                
+                $deferral_info["studentdeferralid"] = $deferral->studentdeferralid;
+                $deferral_info["studentregistrationid"] = $deferral->registrationto;
+                $deferral_info["personid"] = $deferral->personid;
+                
+                $user = User::find()
+                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $deferral_info["username"] = $user->username;
+                
+                $student = Student::find()
+                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($student == false)
+                    continue;
+                $deferral_info["title"] = $student->title;
+                $deferral_info["firstname"] = $student->firstname;
+                $deferral_info["lastname"] = $student->lastname;
+                
+                $deferral_info["date"] = $deferral->deferraldate;
+                $deferral_info["iscurrent"] = $deferral->isactive;
+                
+                $deferral_info["registration_from_id"] = $deferral->registrationfrom;
+                $registration_from = StudentRegistration::find()
+                        ->where(['studentregistrationid' => $deferral->registrationfrom, 'isdeleted' => 0])
+                        ->one();
+                if($registration_from == false)
+                    continue;
+                
+                $previous_cape_subjects_names = array();
+                $previous_cape_subjects = array();
+                $previous_application = Offer::find()
+                        ->where(['offerid' => $registration_from->offerid, 'isdeleted' => 0])
+                        ->one()
+                        ->getApplication()
+                        ->one();
+                $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
+                foreach ($previous_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $previous_programme_name = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $deferral_info['previous_programme'] = $previous_programme_name;
+                $previous_year = AcademicYear::find()
+                        ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->where(['academic_year.isdeleted' => 0,
+                                    'academic_offering.academicofferingid' => $previous_application->academicofferingid, 'academic_offering.isdeleted' => 0
+                                    ])
+                        ->one();
+                if ($previous_year == false)
+                    continue;
+                $deferral_info["previous_year"] = $previous_year->title;
+                $deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
+                
+                $registration_to = StudentRegistration::find()
+                        ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
+                        ->one();
+                if($registration_to == false)
+                    continue;
+                $deferral_info["registration_to_id"] = $deferral->registrationto;
+                $current_cape_subjects_names = array();                
+                $current_cape_subjects = array();
+                $current_application = Offer::find()
+                        ->where(['offerid' => $registration_to->offerid, 'isdeleted' => 0])
+                        ->one()
+                        ->getApplication()
+                        ->one();
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $current_programme_name = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
+                $deferral_info['current_programme'] = $current_programme_name;
+                
+                $deferral_info["deferral_officerid"] = $deferral->deferralofficer;
+                
+                $employee_name = Employee::getEmployeeName($deferral->deferralofficer);
+                $deferral_info["deferral_officer_name"] = $employee_name;
+                $current_year = AcademicYear::find()
+                        ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->where(['academic_year.isdeleted' => 0,
+                                    'academic_offering.academicofferingid' => $current_application->academicofferingid, 'academic_offering.isdeleted' => 0])
+                        ->one();
+                if ($current_year == false)
+                    continue;
+                $deferral_info["current_year"] = $current_year->title;
+                $deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
+                
+                $deferrals_data[] =  $deferral_info;
+            }
+            
+            $deferrals_provider = new ArrayDataProvider([
+                    'allModels' => $deferrals_data,
+                    'pagination' => [
+                        'pageSize' => 100,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname', 'date'],
+                        ]
+            ]); 
+        }
+       
+        
+        $title = "Title: Deferrals";
+        $date =  "  Date: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
+        return $this->renderPartial('export_deferrals', [
+            'dataProvider' => $deferrals_provider,
+            'filename' => $filename,
         ]);
     }
     

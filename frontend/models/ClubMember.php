@@ -158,7 +158,7 @@ class ClubMember extends \yii\db\ActiveRecord
             $comments = $club->comments;
             
             $student_registration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $club->studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $club->studentregistrationid, 'isdeleted' => 0])
                     ->one();
             $programme = ProgrammeCatalog::getProgrammeName($student_registration->academicofferingid);
             

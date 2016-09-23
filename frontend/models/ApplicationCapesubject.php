@@ -102,27 +102,24 @@ class ApplicationCapesubject extends \yii\db\ActiveRecord
      * Date Created: 10/12/2015
      * DAte Last Modified: 23/12/2015
      */
-    /**
-     * 
-     * @param type $applicationid
-     * @return string
-     */
     public static function getCapeSubjectListing($studentregistrationid)
     {
         $subjects = "";
         $registration = StudentRegistration::find()
-                    ->where(['studentregistrationid' =>$studentregistrationid])
+                    ->where(['studentregistrationid' =>$studentregistrationid, 'isdeleted' => 0])
                     ->one();
         if($registration)
         {
             $application = Application::find()
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                    ->where(['application.academicofferingid' => $registration->academicofferingid, 'application.personid' => $registration->personid, 'offer.isactive'=> 1, 'offer.isdeleted' =>0, 'application.isactive'=> 1, 'offer.isdeleted' =>0])
+                    ->where(['application.academicofferingid' => $registration->academicofferingid, 'application.personid' => $registration->personid, 'application.isdeleted' => 0,
+                                    'offer.isdeleted' => 0,  'offer.isdeleted' => 0
+                                ])
                     ->one();
             if($application)
             {
                 $records = ApplicationCapesubject::find()
-                            ->where(['applicationid' => $application->applicationid, 'isactive'=> 1, 'isdeleted' => 0])
+                            ->where(['applicationid' => $application->applicationid, 'isdeleted' => 0])
                             ->all();
                 $count = count($records);
                 
@@ -166,7 +163,7 @@ class ApplicationCapesubject extends \yii\db\ActiveRecord
     {
         $subjects = "";
         $registration = StudentRegistration::find()
-                    ->where(['studentregistrationid' =>$studentregistrationid])
+                    ->where(['studentregistrationid' =>$studentregistrationid, 'isdeleted' => 0])
                     ->one();
         if($registration)
         {

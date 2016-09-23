@@ -32,6 +32,7 @@
     use frontend\models\Batch;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\QualificationType;
+    use frontend\models\Offer;
     
     
     class GradebookController extends Controller
@@ -117,7 +118,6 @@
                 else
                     Yii::$app->getSession()->setFlash('error', 'Please select a divsion.');                
             }
-            
             
             
             $info_string = "";
@@ -257,6 +257,28 @@
                                     $all_students_info['middlename'] = $student->middlename;
                                     $all_students_info['lastname'] = $student->lastname;
                                     $all_students_info['gender'] = $student->gender;
+                                    
+                                    $offer_from = Offer::find()
+                                            ->where(['offerid' => $registrations[$k]->offerid, 'isdeleted' => 0])
+                                            ->one();
+                                    if($offer_from == false)
+                                        continue;
+                                    $current_cape_subjects_names = array();
+                                    $current_cape_subjects = array();
+                                    $current_application = $offer_from->getApplication()->one();
+                                    $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                    $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                    foreach ($current_cape_subjects as $cs)
+                                    { 
+                                        $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                    }
+                                    $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                    $all_students_info['current_programme'] = $currentprogramme;
+
+                                    $enrollments = StudentRegistration::find()
+                                            ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                            ->count();
+                                    $all_students_info['enrollments'] = $enrollments;
 
                                     $student_status = StudentStatus::find()
                                                     ->where(['studentstatusid' => $registrations[$k]->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
@@ -349,6 +371,28 @@
                                                 $all_students_info['middlename'] = $student->middlename;
                                                 $all_students_info['lastname'] = $student->lastname;
                                                 $all_students_info['gender'] = $student->gender;
+                                                
+                                                $offer_from = Offer::find()
+                                                        ->where(['offerid' => $registration->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                                                        ->one();
+                                                if($offer_from == false)
+                                                    continue;
+                                                $current_cape_subjects_names = array();
+                                                $current_cape_subjects = array();
+                                                $current_application = $offer_from->getApplication()->one();
+                                                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                                foreach ($current_cape_subjects as $cs)
+                                                { 
+                                                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                                }
+                                                $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                                $all_students_info['current_programme'] = $currentprogramme;
+
+                                                $enrollments = StudentRegistration::find()
+                                                        ->where(['personid' => $user->personid,'isactive' =>1, 'isdeleted' => 0])
+                                                        ->count();
+                                                $all_students_info['enrollments'] = $enrollments;
 
                                                 $student_status = StudentStatus::find()
                                                                 ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
@@ -389,6 +433,28 @@
                                         $all_students_info['middlename'] = $student->middlename;
                                         $all_students_info['lastname'] = $student->lastname;
                                         $all_students_info['gender'] = $student->gender;
+                                        
+                                        $offer_from = Offer::find()
+                                                ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                                ->one();
+                                        if($offer_from == false)
+                                            continue;
+                                        $current_cape_subjects_names = array();
+                                        $current_cape_subjects = array();
+                                        $current_application = $offer_from->getApplication()->one();
+                                        $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                        $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                        foreach ($current_cape_subjects as $cs)
+                                        { 
+                                            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                        }
+                                        $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                        $all_students_info['current_programme'] = $currentprogramme;
+
+                                        $enrollments = StudentRegistration::find()
+                                                ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                                ->count();
+                                        $all_students_info['enrollments'] = $enrollments;
 
                                         $student_status = StudentStatus::find()
                                                         ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
@@ -784,7 +850,7 @@
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
             $studentregistration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $studentregistrationid,  'isdeleted' => 0])
                     ->one();
             $student = Student::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -824,6 +890,9 @@
                             ->one();
                 $divisionid = $department->divisionid; 
                 
+                $enrollments = StudentRegistration::find()
+                    ->where(['personid' => $personid, 'isdeleted' => 0])
+                    ->all();
                 
                 //if CAPE registration programme and user has authorization to access transcript view
                 if ($is_cape == true && Yii::$app->user->can('accessTranscript') == true)      
@@ -840,6 +909,7 @@
                         'programmename' => $programmename, 
                         'divisionid' => $divisionid,
                         'programme_description' =>$programme_description,
+                        'enrollments' => $enrollments,
                     ]);
                 }
                 
@@ -860,7 +930,8 @@
                         'divisionid' => $divisionid,
                         'cumulative_gpa' => $cumulative_gpa,
                         'programme_description' =>$programme_description,
-                        'academic_status' => $academic_status
+                        'academic_status' => $academic_status,
+                        'enrollments' => $enrollments,
                     ]);
                 }
             }      
@@ -880,7 +951,7 @@
         {
             /********************* Needed to facilitate breadcrumb functionality ************************/
             $studentregistration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
                     ->one();
             $personid = $studentregistration->personid;
             $academicofferingid = $studentregistration->academicofferingid;
@@ -1129,7 +1200,7 @@
         public function actionEditTranscriptCancel($studentregistrationid)
         {
             $studentregistration = StudentRegistration::find()
-                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
                     ->one();
             return $this->redirect(['transcript',
                                     'personid' => $studentregistration->personid,
@@ -1350,7 +1421,7 @@
                                     if ($course_save_flag == true)
                                     {
                                         $studentregistration = StudentRegistration::find()
-                                                            ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                                                            ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
                                                             ->one();
                                         if ($studentregistration)
                                         {

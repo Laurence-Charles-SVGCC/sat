@@ -251,15 +251,16 @@ class StudentTransfer extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 10/01/2016
-     * Date LAst Modified: 10/01/2016
+     * Date Last Modified: 10/01/2016
      */
-    public static function getTransfers($studentregistrationid)
+    public static function getTransfers($personid)
     {
         $container = array();
         $end = false;
         
         $transfers = StudentTransfer::find()
-                    ->where(['studentregistrationid' => $studentregistrationid, 'isactive' => 1, 'isdeleted' => 0 ])
+//                    ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0 ])
+                    ->where(['personid' => $personid, 'isdeleted' => 0 ])
                     ->all();
         if ($transfers)
         {
