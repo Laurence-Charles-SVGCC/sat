@@ -53,6 +53,7 @@ class AppAsset extends AssetBundle
         'js/students/students.js',
         'js/students/ajax_functions.js',
         'js/students/transfers_and_deferrals.js',
+        'js/students/email_upload/index.js',
         'js/admissions/admissions.js',
         'js/admissions/reports.js',
         'js/admissions/register_student.js',

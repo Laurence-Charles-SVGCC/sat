@@ -239,6 +239,11 @@ else
                             <?php if (Yii::$app->user->can('students')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>"><i class="fa fa-circle-o"></i>Create Student Account</a></li>
                             <?php endif; ?>
+                            
+                            <?php if (Yii::$app->user->can('manageStudentEmails')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/students/email-upload'])?>"><i class="fa fa-circle-o"></i>Upload Emails</a></li>
+                            <?php endif; ?>
+                                
                                 
                            
                             <!--

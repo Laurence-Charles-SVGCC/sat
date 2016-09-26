@@ -265,7 +265,6 @@ class RegisterStudentController extends \yii\web\Controller
                         $reg->academicofferingid = $application->academicofferingid;
                         $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
                         $reg->registrationtypeid = $reg_type->registrationtypeid;
-                        $reg->currentlevel = 1;
                         $reg->registrationdate = date('Y-m-d');
                         $registration_save_flag = $reg->save();
 
