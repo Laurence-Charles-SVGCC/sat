@@ -23,7 +23,6 @@ use frontend\models\Hold;
  * @property integer $receivedpicture
  * @property integer $cardready
  * @property integer $cardcollected
- * @property integer $iscurrent
  * @property integer $isactive
  * @property integer $isdeleted
  *
@@ -50,7 +49,7 @@ class StudentRegistration extends \yii\db\ActiveRecord
     {
         return [
             [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'currentlevel', 'registrationdate'], 'required'],
-            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'receivedpicture', 'cardready', 'cardcollected', 'iscurrent', 'isactive', 'isdeleted'], 'integer'],
+            [['offerid', 'personid', 'academicofferingid', 'registrationtypeid', 'studentstatusid', 'academicstatusid', 'currentlevel', 'receivedpicture', 'cardready', 'cardcollected', 'isactive', 'isdeleted'], 'integer'],
             [['registrationdate'], 'safe']
         ];
     }
@@ -73,7 +72,6 @@ class StudentRegistration extends \yii\db\ActiveRecord
             'receivedpicture' => 'Receivedpicture',
             'cardready' => 'Cardready',
             'cardcollected' => 'Cardcollected',
-            'iscurrent' => 'Is Current',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
