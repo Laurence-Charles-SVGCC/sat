@@ -25,8 +25,10 @@
 
         public function upload()
         {
-            if ($this->validate()) { 
-                foreach ($this->files as $file) {
+            if ($this->validate()) 
+            { 
+                foreach ($this->files as $file) 
+                {
                     $dir =  Yii::getAlias('@frontend') . "/files/packages/" . $this->package_id . "_" . $this->package_name . "/";
                     $file->saveAs($dir . $file->baseName . '.' . $file->extension);
                 }

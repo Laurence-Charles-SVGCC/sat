@@ -16,14 +16,16 @@
         public function rules()
         {
             return [
-                [['files'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv', 'maxFiles' => 1],
+                [['files'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv, xlsx', 'maxFiles' => 5],
             ];
         }
 
         public function upload()
         {
-            if ($this->validate()) { 
-                foreach ($this->files as $file) {
+            if ($this->validate()) 
+            { 
+                foreach ($this->files as $file) 
+                {
                     $dir =  Yii::getAlias('@frontend') . "/files/student_emails/";
                     $file->saveAs($dir . $file->baseName . '.' . $file->extension);
                 }

@@ -331,7 +331,6 @@
                 {
                     Yii::$app->getSession()->setFlash('error', 'You have exceeded you stipulated attachment count.');              
                 }
-                
             }
 
             return $this->render('upload_attachments', 
