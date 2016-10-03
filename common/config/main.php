@@ -9,10 +9,10 @@ return [
             'class' => 'yii\rbac\DbManager',
             'defaultRoles' => ['guest'],
           ],
-        'urlManager' => [
-            'enablePrettyUrl' => false,
-            'showScriptName' => false,
-          ]
+//        'urlManager' => [
+//            'enablePrettyUrl' => false,
+//            'showScriptName' => false,
+//          ]
     ],
     'modules' => [
         'gridview' =>  [

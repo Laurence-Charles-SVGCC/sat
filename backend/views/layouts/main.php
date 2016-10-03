@@ -7,7 +7,7 @@ use common\widgets\Alert;
 
 use frontend\models\Employee;
 use frontend\models\EmployeeTitle;
-
+//$frontendUrl = Yii::$app->urlManagerFrontEnd->createUrl(['site/index']);
 /* @var $this \yii\web\View */
 /* @var $content string */
 
@@ -106,16 +106,23 @@ else
                     </p>
                   </li>
                   <!-- Menu Body -->
-                  <li class="user-body">
+<!--                  <li class="user-body">
                     <div class="col-xs-4 text-center">
                       <a href="#">Friends</a>
                     </div>
-                  </li>
+                  </li>-->
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
                       <a href="#" class="btn btn-default btn-flat">Profile</a>
                     </div>
+                    <?php if (Yii::$app->user->can('System Administrator')): ?>
+                        <div class="pull-left" style="margin-left:2.5%">
+                          <!--<a href="<?= Url::to(Yii::$app->urlManagerFrontEnd->createUrl(['/site/switch-to-frontend'])) ?>" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Frontend</a>-->
+                            <a href="./../../frontend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Frontend</a>
+                          <!--<a href="./../../frontend/web/">Go To Frontend</a>-->
+                        </div>
+                    <?php endif;?>
                     <div class="pull-right">
                       <a href="<?= Url::toRoute(['/site/logout']) ?>" class="btn btn-default btn-flat">Sign out</a>
                     </div>

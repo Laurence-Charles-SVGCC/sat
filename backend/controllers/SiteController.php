@@ -12,6 +12,7 @@ use frontend\models\Email;
 use common\models\User;
 use frontend\models\Department;
 use frontend\models\EmployeeDepartment;
+use yii\helpers\Url;
 
 use common\controllers\MailController;
 
@@ -30,11 +31,11 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => [ 'login', 'error', 'signup'],
+                        'actions' => [ 'login', 'error', 'signup', 'switch-to-frontend'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'switch-to-frontend'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -160,5 +161,18 @@ class SiteController extends Controller
             $num = '0' . $num;
         }
         return '1401' . $num;
+    }
+    
+    
+    
+    public function actionSwitchToFrontend()
+    {
+        if (Yii::$app->user->can('System Administrator'))
+        {
+            return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl(['site/index']));
+        }
+//        return $this->render('index');
+//        return $this->redirect(Yii::$app->urlManager->createUrl('./../../frontend/web/'));
+//        return $this->redirect(Yii::$app->urlManager->createUrl('./../../frontend/web/'));
     }
 }

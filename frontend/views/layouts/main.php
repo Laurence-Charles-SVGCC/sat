@@ -84,6 +84,11 @@ else
                                 <div class="pull-left">
                                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                                 </div>
+                                <?php if (Yii::$app->user->can('System Administrator')): ?>
+                                    <div class="pull-left" style="margin-left:2.5%">
+                                      <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
+                                    </div>
+                                <?php endif;?>
                                 <div class="pull-right">
                                   <a href="<?= Url::toRoute(['/site/logout']) ?>" class="btn btn-default btn-flat">Sign out</a>
                                 </div>
