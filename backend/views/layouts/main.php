@@ -7,7 +7,7 @@ use common\widgets\Alert;
 
 use frontend\models\Employee;
 use frontend\models\EmployeeTitle;
-//$frontendUrl = Yii::$app->urlManagerFrontEnd->createUrl(['site/index']);
+
 /* @var $this \yii\web\View */
 /* @var $content string */
 
@@ -118,9 +118,7 @@ else
                     </div>
                     <?php if (Yii::$app->user->can('System Administrator')): ?>
                         <div class="pull-left" style="margin-left:2.5%">
-                          <!--<a href="<?= Url::to(Yii::$app->urlManagerFrontEnd->createUrl(['/site/switch-to-frontend'])) ?>" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Frontend</a>-->
                             <a href="./../../frontend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Frontend</a>
-                          <!--<a href="./../../frontend/web/">Go To Frontend</a>-->
                         </div>
                     <?php endif;?>
                     <div class="pull-right">

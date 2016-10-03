@@ -163,16 +163,4 @@ class SiteController extends Controller
         return '1401' . $num;
     }
     
-    
-    
-    public function actionSwitchToFrontend()
-    {
-        if (Yii::$app->user->can('System Administrator'))
-        {
-            return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl(['site/index']));
-        }
-//        return $this->render('index');
-//        return $this->redirect(Yii::$app->urlManager->createUrl('./../../frontend/web/'));
-//        return $this->redirect(Yii::$app->urlManager->createUrl('./../../frontend/web/'));
-    }
 }
