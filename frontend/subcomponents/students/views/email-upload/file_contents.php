@@ -25,18 +25,12 @@
             <h1 class="custom_h1"><?= $this->title;?></h1>
 
             <div style="margin-left:2.5%"><br/>
-                <div id="email-dashboard-options">
-                    Please select appropriate action.
-                    <?= Html::radioList('email-action', null, [ '0' => 'Upload New File(s)', '1' => 'View Uploaded File(s)'], ['class'=> 'form_field', 'onclick'=> 'toggleEmailActions();']);?>
-               </div><br/>
-                    
-                <div id="upload-new-file" style="display:none">
-                    <a class="btn btn-success glyphicon glyphicon-upload" href=<?=Url::toRoute(['/subcomponents/students/email-upload/upload-email-file']);?> role="button">  Upload File(s)</a>
-                </div> 
-
-                <div id="process-file" style="display:none">
-                    <a class="btn btn-success glyphicon glyphicon-folder-open" href=<?=Url::toRoute(['/subcomponents/students/email-upload/view-email-files']);?> role="button">  View File(s)</a>
-                </div>
+                <p>Record Count = <?=$count;?></p>
+                <p>Filename = <?=$filename;?></p>
+                <p>New Filename = <?=$new_filename;?></p>
+                <p>Column count = <?=$columns;?></p>
+                <p>Username = <?=$username;?></p>
+                <p>Email = <?=$school_email;?></p>
         </div>
     </div>
 </div>

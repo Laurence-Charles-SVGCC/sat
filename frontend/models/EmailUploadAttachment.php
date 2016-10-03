@@ -22,19 +22,15 @@
 
         public function upload()
         {
-            if ($this->validate()) 
-            { 
-                foreach ($this->files as $file) 
-                {
-                    $dir =  Yii::getAlias('@frontend') . "/files/student_emails/";
-                    $file->saveAs($dir . $file->baseName . '.' . $file->extension);
-                }
-                return true;
-            } 
-            else 
+            $dir =  Yii::getAlias('@frontend') . "/files/student_emails/";
+            foreach ($this->files as $file) 
             {
-                return false;
+                $file->saveAs($dir . $file->baseName . '.' . $file->extension);
             }
+            return true;
         }
+        
+        
+        
     }
 

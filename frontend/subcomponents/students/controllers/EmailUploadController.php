@@ -6,8 +6,12 @@
     use yii\base\Model;
     use yii\helpers\FileHelper;
     use yii\web\UploadedFile;
+    use yii\data\ArrayDataProvider;
     
+    use common\models\User;
     use frontend\models\EmailUploadAttachment;
+    use frontend\models\Student;
+    use frontend\models\Employee;
     
     class EmailUploadController extends Controller
     {
@@ -38,7 +42,6 @@
          */
         public function actionUploadEmailFile()
         {
-            
             $model = new EmailUploadAttachment();
             
             if (Yii::$app->request->isPost) 
@@ -52,7 +55,7 @@
                 }
                 else
                 {
-                   Yii::$app->getSession()->setFlash('error', 'Error occured uploading file.');   
+                   Yii::$app->getSession()->setFlash('error', 'Error occured uploading file; ' . $count . ' files uploaded');   
                 }
             }
             return $this->render('upload_email_file', ['model' => $model]);
@@ -68,12 +71,207 @@
          * Date Created: 26/06/2016
          * Date Last Modified: 26/09/2016
          */
-        public function actionProcessEmailFile()
+        public function actionViewEmailFiles()
         {
              $dir = Yii::getAlias('@frontend') . "/files/student_emails";
              $files = FileHelper::findFiles($dir);
             
-             return $this->render('email_file_listing', ['files' => $files, 'count' => count($files)]);
+             return $this->render('email_file_listing', [
+                 'files' => $files,
+                 'count' => count($files)
+                 ]
+            );
+        }
+        
+        
+        /**
+         * Deletes and email from lisiting
+         * 
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 27/06/2016
+         * Date Last Modified: 27/09/2016
+         */
+        public function actionDownloadFile($index)
+        {
+            $dir = Yii::getAlias('@frontend') . "/files/student_emails";
+            $files = FileHelper::findFiles($dir);
+            
+           $target_file = $files[$index];
+           $target_file_name = substr($target_file,52);
+           
+           Yii::$app->response->sendFile($target_file, $target_file_name);
+           Yii::$app->response->send();
+           
+            return self::actionViewEmailFiles();
+        }
+        
+        
+        /**
+         * Deletes and email from lisiting
+         * 
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 27/06/2016
+         * Date Last Modified: 27/09/2016 | 28/09/2016
+         */
+        public function actionProcessFile($index)
+        {
+            $total = 0;
+            $successful = 0;
+            $target_file = NULL;
+            $new_filename = NULL;
+            $dataProvider = NULL;
+            $data = array();
+            
+            $dir = Yii::getAlias('@frontend') . '/files/student_emails';
+            $files = FileHelper::findFiles($dir);
+            
+            $target_file = $files[$index];
+            $new_filename = str_replace("/", "\\", $target_file );
+            
+            $file_validation = $this->validateFile($new_filename);
+            if ($file_validation == -1)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error.  File not found.');  
+                return self::actionViewEmailFiles();
+            }
+            elseif ($file_validation == -2)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error.  The column count for the title row is invalid.  Column Count= ' . count(fgetcsv(fopen($new_filename,"r"), 1000, ",")));  
+                return self::actionViewEmailFiles();
+            }
+            elseif ($file_validation == -3)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error.  The column arrangement for title row of file is invalid.'/* Column Count= ' . count(fgetcsv(fopen($new_filename,"r"), 1000, ","))*/);  
+                return self::actionViewEmailFiles();
+            }
+            elseif ($file_validation == -4)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error.  All rows dont have required number of columns.');  
+                return self::actionViewEmailFiles();
+            }
+            elseif ($file_validation == -5)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error.  File exceeds maximum record limit.');  
+                return self::actionViewEmailFiles();
+            }
+            
+            /***************  if validation is successful  *******************/
+            $file_handler = fopen($new_filename,"r");
+            
+            if ($file_handler == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error opening file');  
+                return self::actionViewEmailFiles();
+            }
+            
+            //reads row with column titles
+            $title_row = fgetcsv($file_handler, 1000, ",");
+            
+            while (($row = fgetcsv($file_handler, 1000, ",")) !== false) 
+            {
+                $total++;
+                $info = array();
+                
+                $title = $row[0];
+                $firstname = $row[1];
+                $lastname = $row[2];
+                $school_email = $row[3];
+                $username = $row[5];
+                
+                $user = User::find()
+                        ->where(['username' => $username, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                {
+                    $info['username'] = $username;
+                    $info['title'] = $title;
+                    $info['firstname'] = $firstname;
+                    $info['lastname'] = $lastname;
+                    $info['error'] = "User record not found";
+                    $data[] = $info;
+                    continue;
+                }
+                
+                $user->email = $school_email;
+                
+                $student = Student::find()
+                        ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                        ->one();
+                 if ($student == false)
+                {
+                    $info['username'] = $username;
+                    $info['title'] = $title;
+                    $info['firstname'] = $firstname;
+                    $info['lastname'] = $lastname;
+                    $info['error'] = "Student record not found";
+                    $data[] = $info;
+                     continue;
+                }
+                $student->email = $school_email;
+                
+                $student_save_flag = false;
+                $user_save_flag = false;
+                
+                $student_save_flag = $student->save();
+                if ($student_save_flag == false)
+                {
+                    $info['username'] = $username;
+                    $info['title'] = $title;
+                    $info['firstname'] = $firstname;
+                    $info['lastname'] = $lastname;
+                    $info['error'] = "Error saving student record";
+                    $data[] = $info;
+                    continue;
+                }
+
+                $user_save_flag = $user->save();
+                if ($user_save_flag == false)
+                {
+                    $info['username'] = $username;
+                    $info['title'] = $title;
+                    $info['firstname'] = $firstname;
+                    $info['lastname'] = $lastname;
+                    $info['error'] = "Error saving user record";
+                    $data[] = $info;
+                    continue;
+                }
+                
+                $successful++;
+            }
+            
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 25,
+                ],
+                 'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'lastname', 'firstname', 'error'],
+                    ],
+            ]);
+            
+            fclose($file_handler);
+            
+            $title = " Title: File Upload Results";
+            $date = " Date: " . date('Y-m-d') . "   ";
+            $employeeid = Yii::$app->user->identity->personid;
+            $generating_officer = " Generated By: " . Employee::getEmployeeName($employeeid);
+            $filename = $title . $date . $generating_officer;
+            
+            $percentage = round(($successful/$total) * 100);
+            
+            return $this->render('upload_results', [
+                    'dataProvider' => $dataProvider,
+                    'filename' => $filename,
+                    'total' => $total,
+                    'successful' => $successful,
+                    'percentage' => $percentage,
+                    'filename' => $new_filename
+                ]);
         }
         
         
@@ -98,11 +296,144 @@
                     unlink($file);
                 }
             }
-            return self::actionProcessEmailFile();
+            return self::actionViewEmailFiles();
         }
         
         
+         /**
+         * Return true if email file meets validation criteria
+         * 
+         * @param type $row
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 28/09/2016
+         * Date Last Modified: 28/09/2016    
+         */
+        private function validateFile($filename)
+        {
+            $count = 0;
+            $handler = fopen($filename, "r");
+            
+            if ($handler == false)
+                return -1;
+            
+            $title_row = fgetcsv($handler, 1000, ",");
+            $validate_title_count = $this->validateTitleRowCount($title_row);
+            if ($validate_title_count == false)
+            {
+                fclose($handler);
+                return -2;
+            }
+            
+            $validate_title_arrangement = $this->validateTitleRowArrangement($title_row);
+            if ($validate_title_arrangement == false)
+            {
+                fclose($handler);
+                return -3;
+            }
+            
+            while (($row = fgetcsv($handler, 1000, ",")) !== false) 
+            {
+                $count++;
+                if ( $this->validateDataRow($row) == false)
+                {
+                    fclose($handler);
+                    return -4;
+                }
+            }
+            
+            if ($count > 100)
+            {
+                fclose($handler);
+                return -5;
+            }
+            
+            fclose($handler);
+            return 1;
+        }
         
+        
+        /**
+         * Validate title row has correct numbers of columns
+         * 
+         * @param type $row
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 29/09/2016
+         * Date Last Modified: 29/09/2016    
+         */
+        private function validateTitleRowCount($row)
+        {
+            if (count($row) != 7)
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        
+        /**
+         * Validate title row are in the correct order.
+         * 
+         * @param type $row
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 29/09/2016
+         * Date Last Modified: 29/09/2016    
+         */
+        private function validateTitleRowArrangement($row)
+        {
+            $title = $row[0];
+            $firstname = $row[1];
+            $lastname = $row[2];
+            $email = $row[3];
+            $password = $row[4];
+            $username = $row[5];
+            $personalemail = $row[6];
+
+            if ($title == "title" && $firstname == "firstname"  && $lastname == "lastname"  && $password == "password"  
+                    && $email == "email" && $username == "username"  && $personalemail == "personalemail")
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        
+        /**
+         * Validate general row has correct numbers of columns and all columns 
+         * have data.
+         * 
+         * @param type $row
+         * @return boolean
+         * 
+         * Author: Laurence Charles
+         * Date Created: 29/09/2016
+         * Date Last Modified: 29/09/2016    
+         */
+         private function validateDataRow($row)
+        {
+            if (count($row) == 7)
+            {
+                $title = $row[0];
+                $firstname = $row[1];
+                $lastname = $row[2];
+                $email = $row[3];
+                $password = $row[4];
+                $username = $row[5];
+                $personalemail = $row[6];
+
+                if ($title == true && $firstname == true  && $lastname == true && $email == true
+                        && $password == true && $username == true  && $personalemail == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         
         
     }

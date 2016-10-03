@@ -241,7 +241,7 @@ else
                             <?php endif; ?>
                             
                             <?php if (Yii::$app->user->can('manageStudentEmails')): ?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/students/email-upload'])?>"><i class="fa fa-circle-o"></i>Upload Emails</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/students/email-upload'])?>"><i class="fa fa-circle-o"></i>Email Management</a></li>
                             <?php endif; ?>
                                 
                                 

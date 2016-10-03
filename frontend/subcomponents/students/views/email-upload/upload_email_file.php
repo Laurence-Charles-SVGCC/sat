@@ -16,18 +16,43 @@
 <div class="site-index">
     <div class = "custom_wrapper">
         <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                <span class="custom_module_label">Welcome to the Student Management System</span> 
-                <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
+            <a href="<?= Url::toRoute(['/subcomponents/students/email-upload/index']);?>" title="Email Management">     
+                <img class="custom_logo_students" src ="css/dist/img/header_images/email.png" alt="email">
+                <span class="custom_module_label">Welcome to the Email Management System</span> 
+                <img src ="css/dist/img/header_images/email.png" alt="email" class="pull-right">
             </a>   
         </div>
         
         
         <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title?></h1>
+            <h1 class="custom_h1"><?=$this->title?></h1><br/>
             
-            <br/>
+            <div class="alert alert-info" role="alert" style="width: 95%; margin: 0 auto; font-size:16px;">
+                <div class="alert alert-error" role="alert" style="width: 100%; margin: 0 auto; font-size:1.1em;">
+                    <strong>
+                        Please read the file requirement below and make the necessary correction to your files before upload.
+                        If criteria is not met file will upload, but will not be able to be processed.
+                    </strong>
+                </div>
+                <ol>
+                    <li>File must not exceed 100 records.</li>
+                    <li>File must contain a title row.</li>
+                    <li>All rows must contain seven(7) columns.</li>
+                    <li>
+                        All records must contain the following columns in the given ordered:
+                        <ol type="i">
+                            <li>title</li>
+                            <li>firstname</li>
+                            <li>lastname</li>
+                            <li>email</li>
+                            <li>password</li>
+                            <li>username</li>
+                            <li>personalemail</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div><br/>
+            
             <div style="width:95%; margin: 0 auto; font-size: 18px;">
                 <?php 
                     $form = ActiveForm::begin([
