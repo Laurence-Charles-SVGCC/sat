@@ -67,7 +67,7 @@
                         
                         <tr>
                             <th style='width:30%; vertical-align:middle'>End Date</th>
-                            <td><?=$event_details->startdate?></td>
+                            <td><?=$event_details->enddate?></td>
                         </tr>
                     </table>
                 </div><br/><br/><br/>
