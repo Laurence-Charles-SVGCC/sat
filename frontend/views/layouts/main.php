@@ -86,11 +86,10 @@ else
                                 </div>
                                 <?php if (Yii::$app->user->can('System Administrator')): ?>
                                     <div class="pull-left" style="margin-left:2.5%">
-<!--                                      <a href="./../../backend/web/index.php?r=site%2Findex" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>-->
                                             <?php if(strstr(Url::home(true), "localhost") == true) :?>
-                                                <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Local</a>
+                                                <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
                                             <?php else:?>
-                                                <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Live</a>
+                                                <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
                                             <?php endif;?>
                                     </div>
                                 <?php endif;?>
