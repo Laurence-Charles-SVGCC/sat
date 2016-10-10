@@ -86,7 +86,8 @@ else
                                 </div>
                                 <?php if (Yii::$app->user->can('System Administrator')): ?>
                                     <div class="pull-left" style="margin-left:2.5%">
-                                      <a href="./../../backend/web/index.php?r=site%2Findex" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
+<!--                                      <a href="./../../backend/web/index.php?r=site%2Findex" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>-->
+                                            <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
                                     </div>
                                 <?php endif;?>
                                 <div class="pull-right">
@@ -349,7 +350,7 @@ else
                         
                         <ul class="treeview-menu">
                             <?php if (Yii::$app->user->can('managePayments')  && Yii::$app->user->can('System Administrator')): ?>
-                                <!--<li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>-->
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
                             <?php endif; ?>
                                 
                             <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
