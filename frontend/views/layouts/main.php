@@ -348,7 +348,7 @@ else
                         </a>
                         
                         <ul class="treeview-menu">
-                            <?php if (Yii::$app->user->can('managePayments')): ?>
+                            <?php if (Yii::$app->user->can('managePayments')  && Yii::$app->user->can('System Administrator')): ?>
                                 <!--<li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>-->
                             <?php endif; ?>
                                 
