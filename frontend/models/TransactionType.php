@@ -9,8 +9,10 @@ use Yii;
  *
  * @property string $transactiontypeid
  * @property string $name
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property string $createdby
+ * @property string $lastmodifiedby
+ * @property integer $isactive
+ * @property integer $isdeleted
  *
  * @property Transaction[] $transactions
  */
@@ -31,7 +33,7 @@ class TransactionType extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['isactive', 'isdeleted'], 'boolean'],
+            [['isactive', 'isdeleted', 'createdby', 'lastmodifiedby'], 'integer'],
             [['name'], 'string', 'max' => 45]
         ];
     }
@@ -44,6 +46,8 @@ class TransactionType extends \yii\db\ActiveRecord
         return [
             'transactiontypeid' => 'Transactiontypeid',
             'name' => 'Transaction Type Name',
+            'createdby' => 'Created By',
+            'lastmodifiedby' =>  'Last Modified By',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
@@ -55,5 +59,26 @@ class TransactionType extends \yii\db\ActiveRecord
     public function getTransactions()
     {
         return $this->hasMany(Transaction::className(), ['transactiontypeid' => 'transactiontypeid']);
+    }
+    
+    
+    /**
+     * Returns true if TransactionType model has been utilized in any transaction record.
+     * 
+     * @param type $recordid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 06/10/2016
+     * Date Last Modified: 06/10/2016
+     */
+    public static function transactionTypeRecorded($recordid)
+    {
+        $types = Transaction::find()
+                ->where(['transactiontypeid' => $recordid, 'isdeleted' => 0])
+                ->all();
+        if ($types)
+            return true;
+        return false;
     }
 }

@@ -86,7 +86,7 @@ else
                                 </div>
                                 <?php if (Yii::$app->user->can('System Administrator')): ?>
                                     <div class="pull-left" style="margin-left:2.5%">
-                                      <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
+                                      <a href="./../../backend/web/index.php?r=site%2Findex" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
                                     </div>
                                 <?php endif;?>
                                 <div class="pull-right">
@@ -275,11 +275,9 @@ else
                         <ul class="treeview-menu">
                             <li>
                                 <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index'])?>">
-                                    <i class="fa fa-circle-o"></i>Find A Student
+                                    <i class="fa fa-circle-o"></i>View Student Grades
                                 </a>
                             </li>
-
-
                         </ul>                  
                     </li>
                 <?php endif; ?>
@@ -342,12 +340,53 @@ else
                     </li>
                 <?php endif; ?>
                     
-                    
-                    
-                    
-                    
-
+                   
+                <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')):?>
+                    <li class="active treeview">
+                        <a href="">
+                          <i class="glyphicon glyphicon-usd"></i> <span>Bursary</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        
+                        <ul class="treeview-menu">
+                            <?php if (Yii::$app->user->can('managePayments')): ?>
+                                <!--<li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>-->
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('viewTransactionPurpose')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-purposes'])?>"><i class="fa fa-circle-o"></i>Transaction Purposes</a></li>
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('viewPaymentMethod')): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/payment-methods'])?>"><i class="fa fa-circle-o"></i>Payment Methods</a></li>
+                            <?php endif; ?>
+                          </ul>
+                    </li>
+                <?php endif; ?>        
                 
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+               <!--     
                 <?php if (Yii::$app->user->can('System Administrator')/*Yii::$app->user->can('payments')*/): ?>
                 <li class="active treeview">
                   <a href="">
@@ -370,7 +409,7 @@ else
                   </ul>
                 </li>
                 <?php endif; ?>
-
+               -->
 
                 <!--
                 <?php if (Yii::$app->user->can('programmes')): ?>

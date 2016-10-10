@@ -152,4 +152,5 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'verifyingofficerid']);
     }
+    
 }

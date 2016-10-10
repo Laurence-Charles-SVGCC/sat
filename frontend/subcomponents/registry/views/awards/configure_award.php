@@ -15,7 +15,6 @@
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
     
-    
     $this->title = $action . " Award";
 ?>
 

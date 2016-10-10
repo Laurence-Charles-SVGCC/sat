@@ -9,9 +9,11 @@ use Yii;
  *
  * @property string $transactionpurposeid
  * @property string $name
+ * @property string $createdby
+ * @property string $lastmodifiedby
  * @property string $description
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  *
  * @property Transaction[] $transactions
  */
@@ -33,7 +35,7 @@ class TransactionPurpose extends \yii\db\ActiveRecord
         return [
             [['name', 'description'], 'required'],
             [['description'], 'string'],
-            [['isactive', 'isdeleted'], 'boolean'],
+            [['isactive', 'isdeleted', 'createdby', 'lastmodifiedby'], 'integer'],
             [['name'], 'string', 'max' => 45]
         ];
     }
@@ -47,6 +49,8 @@ class TransactionPurpose extends \yii\db\ActiveRecord
             'transactionpurposeid' => 'Transactionpurposeid',
             'name' => 'Name',
             'description' => 'Description',
+            'createdby' => 'Created By',
+            'lastmodifiedby' =>  'Last Modified By',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
         ];
@@ -58,5 +62,25 @@ class TransactionPurpose extends \yii\db\ActiveRecord
     public function getTransactions()
     {
         return $this->hasMany(Transaction::className(), ['transactionpurposeid' => 'transactionpurposeid']);
+    }
+    
+    /**
+     * Returns true if TransactionPurpose model has been utilized in any transaction record.
+     * 
+     * @param type $recordid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 07/10/2016
+     * Date Last Modified: 07/10/2016
+     */
+    public static function transactionPurposeRecorded($recordid)
+    {
+        $types = Transaction::find()
+                ->where(['transactionpurposeid' => $recordid, 'isdeleted' => 0])
+                ->all();
+        if ($types)
+            return true;
+        return false;
     }
 }
