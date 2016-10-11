@@ -58,6 +58,16 @@
                                             'label' => 'Last Name'
                                         ],
                                         [
+                                            'attribute' => 'potentialstudentid',
+                                            'format' => 'text',
+                                            'label' => 'StudentID'
+                                        ],
+                                        [
+                                            'attribute' => 'email',
+                                            'format' => 'text',
+                                            'label' => 'Email'
+                                        ],
+                                        [
                                             'attribute' => 'programme',
                                             'format' => 'text',
                                             'label' => 'Programme'
@@ -114,6 +124,16 @@
                                     'attribute' => 'lastname',
                                     'format' => 'text',
                                     'label' => 'Last Name'
+                                ],
+                                [
+                                    'attribute' => 'potentialstudentid',
+                                    'format' => 'text',
+                                    'label' => 'StudentID'
+                                ],
+                                [
+                                    'attribute' => 'email',
+                                    'format' => 'text',
+                                    'label' => 'Email'
                                 ],
                                 [
                                     'attribute' => 'programme',

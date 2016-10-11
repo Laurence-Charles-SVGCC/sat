@@ -807,12 +807,15 @@ class ReportsController extends Controller {
                             $info['personid'] = $applicant->personid;
                             $info['applicantid'] = $applicant->applicantid;
                             $info['username'] = $username;
+                            $info['potentialstudentid'] = $applicant->potentialstudentid;
+                            $info['email'] = Email::find()->where(['personid' => $applicant->personid, 'isdeleted' => 0])->one()->email;
                             $info['title'] = $applicant->title;
                             $info['firstname'] = $applicant->firstname;
                             $info['middlename'] = $applicant->middlename;
                             $info['lastname'] = $applicant->lastname;
                             $info['offerid'] = $offer->offerid;
                             $info['applicationid'] = $offer->applicationid;
+                            
                             $info['programme'] = $programme;
 
                             $data[] = $info;
