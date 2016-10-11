@@ -357,7 +357,7 @@ else
                             <?php endif; ?>
                                 
                             <?php if (Yii::$app->user->can('generateInsuranceListing')): ?>    
-                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/report/find-beneficieries'])?>"><i class="fa fa-circle-o"></i>Generate Beneficiery Listing</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/reports/find-beneficieries'])?>"><i class="fa fa-circle-o"></i>Generate Beneficiery Listing</a></li>
                             <?php endif; ?>
                                 
                             <?php if (Yii::$app->user->can('viewTransactionType')): ?>   
