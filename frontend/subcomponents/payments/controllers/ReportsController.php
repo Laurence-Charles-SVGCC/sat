@@ -193,7 +193,7 @@
                             $enrolled_info['middlename'] = $accepted_applicant->middlename;
                             $enrolled_info['lastname'] = $accepted_applicant->lastname;
                             
-                            $accepted_info['email'] = Email::find()->where(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->one()->email;
+                            $enrolled_info['email'] = Email::find()->where(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->one()->email;
                         
                             $address_record = Address::find()->where(['personid' => $accepted_applicant->personid, 'addresstypeid' => 1, 'isdeleted' => 0])->one();
                             $address = "";
