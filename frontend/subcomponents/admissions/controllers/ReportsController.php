@@ -1545,13 +1545,6 @@ class ReportsController extends Controller {
             ],
         ]);
         
-        $accepted_dataProvider = new ArrayDataProvider([
-            'allModels' => $accepted_data,
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
-        
         $enrolled_dataProvider = new ArrayDataProvider([
             'allModels' => $enrolled_data,
             'pagination' => [

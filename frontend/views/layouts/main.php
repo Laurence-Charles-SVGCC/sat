@@ -356,7 +356,11 @@ else
                                 <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
                             <?php endif; ?>
                                 
-                            <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
+                            <?php if (Yii::$app->user->can('generateInsuranceListing')): ?>    
+                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/reports/find-beneficieries'])?>"><i class="fa fa-circle-o"></i>Generate Beneficiery Listing</a></li>
+                            <?php endif; ?>
+                                
+                            <?php if (Yii::$app->user->can('viewTransactionType')): ?>   
                                 <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
                             <?php endif; ?>
                                 
@@ -370,50 +374,8 @@ else
                           </ul>
                     </li>
                 <?php endif; ?>        
-                
+  
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-               <!--     
-                <?php if (Yii::$app->user->can('System Administrator')/*Yii::$app->user->can('payments')*/): ?>
-                <li class="active treeview">
-                  <a href="">
-                    <i class="fa fa-money"></i> <span>Payments</span> <i class="fa fa-angle-left pull-right"></i>
-                  </a>
-                  <ul class="treeview-menu">
-                    <li class="active"><a href="<?= Url::toRoute(['/subcomponents/payments/payments/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
-                    <?php if (Yii::$app->user->can('managePayments')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/manage-payments'])?>"><i class="fa fa-circle-o"></i>Manage Payments</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('viewTransactionType')): ?>    
-                        <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('viewTransactionPurpose')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-purposes'])?>"><i class="fa fa-circle-o"></i>Transaction Purposes</a></li>
-                    <?php endif; ?>
-                    <?php if (Yii::$app->user->can('viewPaymentMethod')): ?>
-                        <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/payment-methods'])?>"><i class="fa fa-circle-o"></i>Payment Methods</a></li>
-                    <?php endif; ?>
-                  </ul>
-                </li>
-                <?php endif; ?>
-               -->
 
                 <!--
                 <?php if (Yii::$app->user->can('programmes')): ?>
