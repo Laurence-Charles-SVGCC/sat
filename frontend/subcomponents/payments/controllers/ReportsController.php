@@ -21,7 +21,7 @@
     use frontend\models\Address;
     
 
-    class ReportController extends Controller 
+    class ReportsController extends Controller 
     {
         
         /**
