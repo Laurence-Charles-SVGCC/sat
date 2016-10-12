@@ -27,7 +27,6 @@
             </div>
             
             
-
             <div class="custom_body"> 
                 <h1 class="custom_h1">Instructions</h1>
 
@@ -59,7 +58,7 @@
                         </p>
 
                         <div id="by_div" style="display:none">
-                            <?php if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))  && !Yii::$app->user->can('System Administrator')):?>
+                            <?php if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff'))  && !Yii::$app->user->can('System Administrator')):?>
                                 <?= Html::dropDownList('division', null, Division::getDivisionsAssignedTo(Yii::$app->user->identity->personid));?>
                                 <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?> 
                             <?php else:?>
