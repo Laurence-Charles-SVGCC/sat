@@ -245,7 +245,7 @@ else
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Past Applicant</a></li>
                             <?php endif; ?>
                                 
-                            <?php if (Yii::$app->user->can('students')): ?>
+                            <?php if (Yii::$app->user->can('students')  && Yii::$app->user->can('Assistant Registrar')): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>"><i class="fa fa-circle-o"></i>Create Student Account</a></li>
                             <?php endif; ?>
                             
