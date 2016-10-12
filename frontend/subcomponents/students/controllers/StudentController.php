@@ -10,6 +10,7 @@ use yii\data\ArrayDataProvider;
 
 use frontend\models\Division;
 use frontend\models\Employee;
+use frontend\models\EmployeeDepartment;
 use frontend\models\Student;
 use common\models\User;
 use frontend\models\StudentRegistration;
@@ -818,9 +819,10 @@ class StudentController extends Controller
                 if ($user)
                 { 
                     //if system user is a Dean or Deputy Dean then their search is contrained by their division
-                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean'))  && !Yii::$app->user->can('System Administrator'))
+                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff'))  && !Yii::$app->user->can('System Administrator'))
                     {
-                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+                        $divisionid = EmployeeDepartment::getUserDivision();
                         $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
                         
                         if (empty($registrations))
@@ -946,9 +948,10 @@ class StudentController extends Controller
                     {
                         //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
                         $eligible_students_found = false; //students within correct division
-                        if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')) &&  !Yii::$app->user->can('System Administrator'))
+                        if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff')) &&  !Yii::$app->user->can('System Administrator'))
                         {
-                            $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+//                            $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+                            $divisionid = EmployeeDepartment::getUserDivision();
                             foreach ($students as $student)
                             {
                                 $registrations = StudentRegistration::getStudentsByDivision($divisionid, $student->personid);
