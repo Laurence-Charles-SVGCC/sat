@@ -44,7 +44,7 @@
             
             <div class="custom_body">
                 <h1 class="custom_h1">Add New <?=$level?></h1>
-                <p>School Count = <?=count(Institution::initializeSchoolList($levelid));?></p>
+                
                 <?php
                     $form = ActiveForm::begin([
                                 //'action' => Url::to(['gradebook/index']),
