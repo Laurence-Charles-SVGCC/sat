@@ -100,12 +100,13 @@ class Institution extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 05/01/2016
-     * Date Last Modified: 05/01/2016
+     * Date Last Modified: 20/10/2016
      */
     public static function initializeSchoolList($levelid)
     {
         $institutions = Institution::find()
-                    ->where(['levelid' => $levelid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['levelid' => $levelid, 'personid' => null, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('name')
                     ->all();
         
         $keys = array();
