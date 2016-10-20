@@ -61,7 +61,7 @@
                 $applicant_data = array();
                 $user = User::findOne(['personid' => $applicant->personid]);
                 $recordid = PersonAccountProgress::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['personid' => $applicant->personid,  'isdeleted' => 0])
                         ->one()
                         ->personaccountprogressid;
                 
@@ -87,7 +87,11 @@
                 $applicant_data['firstname'] = $applicant->firstname;
                 $applicant_data['middlename'] = $applicant->middlename;
                 $applicant_data['lastname'] = $applicant->lastname;
-                $applicant_data['progress'] = "incomplete";
+                
+                if ($registrationid == 0)
+                    $applicant_data['progress'] = "Incomplete";
+                else
+                    $applicant_data['progress'] = "Complete";
                 $data[] = $applicant_data;
             }
             
