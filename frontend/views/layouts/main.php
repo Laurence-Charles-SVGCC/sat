@@ -167,7 +167,7 @@ else
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/snapshot'])?>"><i class="fa fa-circle-o"></i>Current Applicants Snapshot</a></li>
                     <?php endif; ?>
                         
-                        
+                         
                     <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
                         <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
                     <?php endif; ?>
@@ -245,7 +245,7 @@ else
                                 <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Past Applicant</a></li>
                             <?php endif; ?>
                                 
-                            <?php if (Yii::$app->user->can('students')  && Yii::$app->user->can('Assistant Registrar')): ?>
+                            <?php if (Yii::$app->user->can('students')  && (Yii::$app->user->can('Assistant Registrar')  || Yii::$app->user->can('Registry Staff'))): ?>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>"><i class="fa fa-circle-o"></i>Create Student Account</a></li>
                             <?php endif; ?>
                             
