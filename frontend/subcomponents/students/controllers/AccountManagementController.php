@@ -210,7 +210,7 @@
                                 else
                                 {
                                     $applicant = new Applicant();
-                                    $applicant->person= $person->personid;
+                                    $applicant->personid = $person->personid;
                                     $applicant->title = $model->title;
                                     $applicant->firstname = $model->firstname;
                                     $applicant->middlename = $model->middlename;
