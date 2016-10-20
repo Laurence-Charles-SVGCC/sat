@@ -21,6 +21,9 @@
     use frontend\models\CriminalRecord;
     use frontend\models\PostSecondaryQualification;
     use frontend\models\ExternalQualification;
+    use frontend\models\ConcurrentApplicant;
+    use frontend\models\Applicant;
+    use common\models\User;
     
     
     $relation_count = [
@@ -120,9 +123,28 @@
             
             <div class="custom_body" style="min-height:4500px;">                
                 <h1 class="custom_h1"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h1>
+                
+               <?php if ($applicant->hasduplicate == 1):?>
+                    <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">
+                        Applicant has duplicate applications related to the same/related application periods
+                    </div>
+                    <br/><br/>
+                    
+                     <?php if ($applicant->isprimary == 1):?>
+                        <div class ="btn btn-warning" style="font-size:16px; width: 95%; margin-left: 2.5%;">
+                           This account has been identified as the primary applicant account.
+                       </div><br/><br/>
+                    <?php else:?>
+                        <div class ="btn btn-warning" style="font-size:16px; width: 95%; margin-left: 2.5%;">
+                           This account has been identified as the duplicate applicant account.
+                       </div><br/><br/>
+                    <?php endif;?>
+               <?php endif;?>
+                
+                
                 <div>
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" role="tablist">
+                    <ul class="nav nav-tabs" role="tablist" style="font-size:16px; width: 95%; margin-left: 2.5%;">
                         <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('viewProfileTab')):?>
                             <li role="presentation" class="active"><a href="#personal_information" aria-controls="personal_information" role="tab" data-toggle="tab">Profile</a></li>
                         <?php endif;?>    
@@ -141,9 +163,105 @@
                         <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('viewApplicationOffersTab')):?>    
                             <li role="presentation"><a href="#applications" aria-controls="applications" role="tab" data-toggle="tab">Applications & Offers</a></li>                           
                         <?php endif;?>
-                    </ul>
-
+                    </ul><br/>
                     
+                    <?php if ($applicant->hasduplicate == 0):?>
+                        <p class="general_text" style="margin-left:2.5%">
+                            Would you like to flag this applicant as a duplicate?
+                            <?= Html::radioList('flag_status', null, ["Yes" => "Yes", "No" => "No"], ['style' => 'margin-left:2.5%', 'class'=> 'form_field', 'onclick'=> 'toggleFlagControls();']);?>
+                        </p>
+                        
+                        <div id="flag-controls" style="display:none">
+                            <?php 
+                                $form = ActiveForm::begin([
+                                    'action' => Url::to(['view-applicant/update-duplicate-status', 'applicantusername' => $applicantusername, 'unrestricted' => 1, 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid, 'flag' => 1]),
+                                    'id' => 'flag-duplicate',
+                                    'options' => [
+                                        'style' => 'margin-left:2.5%',
+                                       ]]);
+                             ?>
+                                <?= Html::label( 'Enter StudentID for related applicant:  ',  'studentid_label'); ?>
+                                <?= Html::input('text', 'studentid'); ?>
+                                <?= Html::submitButton('Update', ['class' => 'btn btn-md btn-success', 'style' => 'margin-left:2.5%;']) ?>
+                            <?php ActiveForm::end();?>
+                        </div>
+                         
+                     <?php else:?>
+<!--                        <p class="general_text" style="margin-left:2.5%">
+                            Would you like to remove a duplicate flag?
+                            <?= Html::radioList('flag_status', null, ["Yes" => "Yes", "No" => "No"], ['style' => 'margin-left:2.5%', 'class'=> 'form_field', 'onclick'=> 'toggleFlagControls();']);?>
+                        </p>
+                        
+                        <div id="flag-controls" style="display:none">
+                            <?php 
+                                $form = ActiveForm::begin([
+                                    'action' => Url::to(['view-applicant/update-duplicate-status', 'applicantusername' => $applicantusername, 'unrestricted' => 1, 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid, 'flag' => 0]),
+                                    'id' => 'flag-duplicate',
+                                    'options' => [
+                                        'style' => 'margin-left:2.5%',
+                                       ]]);
+                             ?>
+                                <?= Html::label( 'Enter StudentID for related applicant:  ',  'studentid_label'); ?>
+                                <?= Html::input('text', 'studentid'); ?>
+                                <?= Html::submitButton('Update', ['class' => 'btn btn-md btn-success', 'style' => 'margin-left:2.5%;']) ?>
+                            <?php ActiveForm::end();?>
+                        </div>-->
+                         
+                        <div class='dropdown pull-right' style='margin-right:2.5%'>
+                            <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                                 <strong>Select Duplicate Applications...</strong>
+                                <span class='caret'></span>
+                            </button>
+                            <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                                <?php
+                                    $linked_records = ConcurrentApplicant::getAssociatedApplicants($applicant->applicantid);
+                                    $unique_applicant_ids = array();
+                                    foreach ($linked_records as $record)
+                                    {
+                                        if ($record->primaryapplicantid == $applicant->applicantid  
+                                                && in_array($record->secondaryapplicantid, $unique_applicant_ids) == false
+                                             )
+                                         {
+                                             $unique_applicant_ids[] = $record->secondaryapplicantid;
+                                         }
+                                        
+                                         elseif ($record->secondaryapplicantid == $applicant->applicantid  
+                                                    && in_array($record->primaryapplicantid, $unique_applicant_ids) == false
+                                                 )  
+                                         {
+                                             $unique_applicant_ids[] = $record->primaryapplicantid;
+                                         }
+                                    }
+                                    
+                                    foreach ($unique_applicant_ids as $id)
+                                    {
+                                        $app_record = Applicant::find()
+                                                ->where(['applicantid' => $id, 'isdeleted' => 0])
+                                                ->one();
+                                        if ($app_record)
+                                        {
+                                            $user_record = User::find()
+                                                    ->where(['personid' => $app_record->personid, 'isdeleted' => 0])
+                                                ->one();
+                                            if ($user_record)
+                                            {
+                                                $name = $app_record->title . ". " . $app_record->firstname . " " . $app_record->lastname;
+                                                $label = $user_record->username . " - " . $name;
+                                                $hyperlink = Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile/', 
+                                                                            'applicantusername' => $user_record->username,
+                                                                            'unrestricted' => 1
+                                                                         ]);
+                                                echo "<li><a href='$hyperlink' target='_blank'>$label</a></li>";
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </ul>
+                        </div><br/>
+                     <?php endif;?>
+                   
+                      
+                    <!--Not sure why this is here [18/10/2016]-->
                     <?php if(Application::getAllVerifiedApplications($applicant->personid) == false):?>  
                         <div style="width:95%; margin: 0 auto;">
                             <br/><?=Html::a(' Reset Application', 
@@ -154,8 +272,8 @@
                                         'method' => 'post',
                                     ],
                                 ]);?><br/>
-                    </div>
-                            <?php endif;?>
+                        </div>
+                    <?php endif;?>
                                     
                                     
                     <!-- Tab panes -->

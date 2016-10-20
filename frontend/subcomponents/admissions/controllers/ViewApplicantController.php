@@ -45,6 +45,7 @@
     use frontend\models\DocumentSubmitted;
     use frontend\models\DocumentType;
     use frontend\models\Employee;
+    use frontend\models\ConcurrentApplicant;
 
 
 
@@ -1163,6 +1164,7 @@ class ViewApplicantController extends \yii\web\Controller
         /***********************************************************************/
         return $this->render('applicant_profile',[
             //models for profile tab
+            'applicantusername' => $applicantusername,
             'user' =>  $user,
             'applicant' => $applicant,
             'phone' => $phone,
@@ -3410,7 +3412,6 @@ class ViewApplicantController extends \yii\web\Controller
             }
         }
         
-        
         $transaction = \Yii::$app->db->beginTransaction();
         try 
         {
@@ -3428,17 +3429,180 @@ class ViewApplicantController extends \yii\web\Controller
                 }
             }
              $transaction->commit();
-             Yii::$app->session->setFlash('error', 'Application was successfully reset.');
+             Yii::$app->session->setFlash('success', 'Application was successfully reset.');
               return $this->redirect(Url::to(['admissions/find-current-applicant', 'status' => 'pending']));
-              
-              
-        }catch (Exception $e) 
+        } catch (Exception $e) 
         {
             $transaction->rollBack();
             Yii::$app->session->setFlash('error', 'Error occured processing request.');
         }
     }
     
+    
+    /**
+     * Links two applicant accounts
+     * 
+     * @param type $applicantusername
+     * @param type $unrestricted
+     * @param type $personid
+     * @param type $applicantid
+     * @param type $flag
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/10/2016
+     * Date Last Modified: 20/10/2016
+     */
+    public function actionUpdateDuplicateStatus($applicantusername, $unrestricted, $personid, $applicantid, $flag)
+    {
+        $target_applicant_save_flag = false;
+        $related_applicant_save_flag = false;
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            $username = $request->post('studentid');
+            
+            $target_applicant = Applicant::find()
+                ->where(['applicantid' => $applicantid, 'isdeleted' => 0])
+                ->one();
+            
+            $related_user = User::find()
+                ->where(['username' => $username, 'isdeleted' => 0])
+                ->one();
+            if ($related_user == false)
+            {
+                Yii::$app->session->setFlash('error', 'No user record has been found matching the entered username.');
+                return self::actionApplicantProfile($applicantusername, $unrestricted);
+            }
+            $related_applicant = Applicant::find()
+                ->where(['personid' => $related_user->personid, 'isdeleted' => 0])
+                ->one();
+            if ($related_user == false)
+            {
+                Yii::$app->session->setFlash('error', 'No applicant record has been found matching the entered username.');
+                return self::actionApplicantProfile($applicantusername, $unrestricted);
+            }
+            
+            
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                if ($flag == 1)    //if attempting to link applicant records
+                {
+                    $target_applicant->hasduplicate = $flag;
+                    
+                    //target_record's "isprimary" set to 0 iff its '$related_record' has a previously established link with another record
+                    if (ConcurrentApplicant::getAssociatedApplicants( $target_applicant->applicantid) == true)
+                    {
+                        $target_applicant->isprimary = 0;
+                    }
+                    
+                    $target_applicant_save_flag = $target_applicant->save();
+                    if ($target_applicant_save_flag == false)
+                    {
+                       $transaction->rollBack();
+                       Yii::$app->session->setFlash('error', 'Error occured updating target applicant.');
+                       return self::actionApplicantProfile($applicantusername, $unrestricted);
+                    }
+
+                    
+                    $related_applicant->hasduplicate = $flag;
+                    if (ConcurrentApplicant::isPrimary($related_applicant->applicantid) == false)
+                    {
+                        $related_applicant->isprimary = 0;
+                    }
+                    $related_applicant_save_flag = $related_applicant->save();
+                    if ($related_applicant_save_flag == false)
+                    {
+                       $transaction->rollBack();
+                       Yii::$app->session->setFlash('error', 'Error occured updating related applicant.');
+                       return self::actionApplicantProfile($applicantusername, $unrestricted);
+                    }
+                    
+                    $link = new ConcurrentApplicant();
+                    $link->primaryapplicantid = $target_applicant->applicantid;
+                    $link->secondaryapplicantid = $related_applicant->applicantid;
+                }
+                
+                elseif ($flag == 0)     //if attempting to remove link between applicant records
+                {
+                    //NB: Algorithm lacks consideration for updating 'isprimary' status of applicant records.
+                    $targeted_records = ConcurrentApplicant::find()
+                            ->where(['primaryapplicantid' => $target_applicant->applicantid, 'isdeleted' => 0])
+                            ->orWhere(['secondaryapplicantid' => $target_applicant->applicantid, 'isdeleted' => 0])
+                            ->all();
+                    if (count($target_records) == 1)
+                    {
+                        $target_applicant->hasduplicate = $flag;
+                        $target_applicant_save_flag = $target_applicant->save();
+                        if ($target_applicant_save_flag == false)
+                        {
+                           $transaction->rollBack();
+                           Yii::$app->session->setFlash('error', 'Error occured updating target applicant.');
+                           return self::actionApplicantProfile($applicantusername, $unrestricted);
+                        }
+                    }
+                    
+                    $related_records = ConcurrentApplicant::find()
+                            ->where(['primaryapplicantid' => $related_applicant->applicantid, 'isdeleted' => 0])
+                            ->orWhere(['secondaryapplicantid' => $related_applicant->applicantid, 'isdeleted' => 0])
+                            ->all();
+                    if (count($related_records) == 1)
+                    {
+                        $related_applicant->hasduplicate = $flag;
+                        $related_applicant_save_flag = $related_applicant->save();
+                        if ($related_applicant_save_flag == false)
+                        {
+                           $transaction->rollBack();
+                           Yii::$app->session->setFlash('error', 'Error occured updating related applicant.');
+                           return self::actionApplicantProfile($applicantusername, $unrestricted);
+                        }
+                    }
+                
+                    
+                    if (ConcurrentApplicant::isPrimary == true)
+                    {
+                        $link = ConcurrentApplicant::find()
+                                ->where(['primaryapplicantid' => $target_applicant->applicantid, 'isdeleted' => 0])
+                                ->one();
+                        $link->isactive = 0;
+                        $link->isdeleted = 1;
+                    }
+                    elseif (ConcurrentApplicant::isSecondary == true)
+                    {
+                        $link = ConcurrentApplicant::find()
+                                    ->where(['primaryapplicantid' => $related_applicant->applicantid,
+                                                    'secondaryapplicantid' => $target_applicant->applicantid,
+                                                    'isdeleted' => 0
+                                                ])
+                                    ->one();
+                        $link->isactive = 0;
+                        $link->isdeleted = 1;
+                    }
+                }
+                
+                $link_save_flag = false;  
+                $link_save_flag = $link->save();
+                if ($link_save_flag == false)
+                {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Error occured creating linkage record.');
+                    return self::actionApplicantProfile($applicantusername, $unrestricted);
+                }
+                
+                $transaction->commit();
+//                Yii::$app->session->setFlash('success', 'Applicant accounts  was successfully reset.');
+                return self::actionApplicantProfile($applicantusername, $unrestricted);
+            }
+            catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing request.');
+            }
+        }
+        return self::actionApplicantProfile($applicantusername, $unrestricted);
+    }
     
     
 
