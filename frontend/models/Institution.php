@@ -15,8 +15,8 @@ use Yii;
  * @property string $constituency
  * @property string $town
  * @property string $addressline
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  * @property string $personid
  *
  * @property Level $level
@@ -40,8 +40,7 @@ class Institution extends \yii\db\ActiveRecord
     {
         return [
             [['levelid', 'name'], 'required'],
-            [['levelid', 'personid'], 'integer'],
-            [['isactive', 'isdeleted'], 'boolean'],
+            [['levelid', 'personid', 'isactive', 'isdeleted'], 'integer'],
             [['name', 'formername', 'country', 'constituency', 'town', 'addressline'], 'string', 'max' => 100]
         ];
     }
@@ -105,7 +104,7 @@ class Institution extends \yii\db\ActiveRecord
     public static function initializeSchoolList($levelid)
     {
         $institutions = Institution::find()
-                    ->where(['levelid' => $levelid, 'personid' => null, 'isactive' => 1, 'isdeleted' => 0])
+                    ->where(['levelid' => $levelid, 'personid' => null, 'isdeleted' => 0])
                     ->orderBy('name')
                     ->all();
         
