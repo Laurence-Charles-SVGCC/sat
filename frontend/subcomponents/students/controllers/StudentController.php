@@ -754,12 +754,12 @@ class StudentController extends Controller
             //Everytime a new search is initiated session variable must be removed
              if (Yii::$app->session->get('studentid'))
                 Yii::$app->session->remove('studentid');
+             
+            if (Yii::$app->session->get('firstname'))
+                Yii::$app->session->remove('firstname');
             
             if (Yii::$app->session->get('lastname'))
                 Yii::$app->session->remove('lastname');
-            
-            if (Yii::$app->session->get('firstname'))
-                Yii::$app->session->remove('firstname');
             
             
             $request = Yii::$app->request;
