@@ -170,8 +170,18 @@ else
                   <ul class="treeview-menu">
                     <li class="active"><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
                     <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create User</a></li>
-                    <li><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>Employees</a></li>
-                    <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>Departments</a></li>
+                  
+                    <li class="treeview">
+                        <a href="">
+                            <i class="fa fa-dashboard"></i> <span>Employee Mgmt.</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="active"><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>View Employees</a></li>
+                            <li><a href="<?= Url::toRoute(['/employee/assign-password'])?>"><i class="fa fa-circle-o"></i>Assign Password</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>View Departments</a></li>
                     <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
                   </ul>
                 </li>

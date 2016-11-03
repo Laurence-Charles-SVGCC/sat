@@ -6,6 +6,7 @@ use Yii;
 use common\models\User;
 
 use frontend\models\EmployeeDivision;
+use backend\models\AuthAssignment;
 
 /**
  * This is the model class for table "employee".
@@ -155,7 +156,7 @@ class Employee extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns an associative array is ['personid'=>'fullname'
+     * Returns an associative array is ['personid'=>'fullname']
      * 
      * @param type $employeetitle
      * @return type
@@ -191,6 +192,51 @@ class Employee extends \yii\db\ActiveRecord
          }
         $combined = array_combine($keys, $values);
         return $combined;
+    }
+    
+    
+    
+    /**
+     * Returns an associative array is ['personid'=>'fullname'] of all employees
+     * 
+     * @param type $employeetitle
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 02/11/2016
+     * Date Last Modified: 02/11/2016
+     */
+    public static function getAllEmployees()
+    {
+         $employees = Employee::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                 ->orderBy('lastname')
+                    ->all();
+         
+        if ($employees)
+        {
+            $keys = array();
+            array_push($keys, '');
+
+            $values = array();
+            array_push($values, 'Select Emploee...');
+
+           foreach($employees as $employee)
+           {
+               $role = AuthAssignment::find()
+                       ->where(['user_id' => $employee->personid ])
+                       ->one();
+               if ($role == false ||  ($role == true && $role->item_name!="System Administrator"))
+               {
+                    $key = $employee->personid;
+                    array_push($keys, $key);
+                    $value = self::getEmployeeName($employee->personid);
+                    array_push($values, $value);
+               }
+            }
+        }
+       $combined = array_combine($keys, $values);
+       return $combined;
     }
     
     
