@@ -302,7 +302,7 @@
                         $all_students_provider = new ArrayDataProvider([
                                 'allModels' => $all_student_data_container,
                                 'pagination' => [
-                                    'pageSize' => 20,
+                                    'pageSize' => 25,
                                 ],
                                 'sort' => [
                                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -475,7 +475,7 @@
                             $all_students_provider = new ArrayDataProvider([
                                     'allModels' => $all_student_data_container,
                                     'pagination' => [
-                                        'pageSize' => 30,
+                                        'pageSize' => 25,
                                     ],
                                     'sort' => [
                                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],

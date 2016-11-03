@@ -675,6 +675,12 @@ class StudentController extends Controller
         $s_z_provider = array();
         $s_z_info = array();
         
+        $divisionid = NULL;
+        $studentid = NULL;
+        $firstname = NULL;
+        $lastname = NULL;
+            
+            
         //need to facilitate breadcrumb navigation from 'student_listing' to 'programme_listing' of source division
         if ($id)
         {
@@ -745,87 +751,295 @@ class StudentController extends Controller
         
         if (Yii::$app->request->post())
         {
+            //Everytime a new search is initiated session variable must be removed
+             if (Yii::$app->session->get('studentid'))
+                Yii::$app->session->remove('studentid');
+            
+            if (Yii::$app->session->get('lastname'))
+                Yii::$app->session->remove('lastname');
+            
+            if (Yii::$app->session->get('firstname'))
+                Yii::$app->session->remove('firstname');
+            
+            
             $request = Yii::$app->request;
             $divisionid = $request->post('division');
             $studentid = $request->post('id_field');
             $firstname = $request->post('fname_field');
             $lastname = $request->post('lname_field');
+            
+             if(Yii::$app->session->get('studentid') == null  && $studentid == true)
+                Yii::$app->session->set('studentid', $studentid);
+            
+            if(Yii::$app->session->get('firstname') == null  && $firstname == true)
+                Yii::$app->session->set('firstname', $firstname);
+            
+            if(Yii::$app->session->get('lastname') == null  && $lastname == true)
+                Yii::$app->session->set('lastname', $lastname);
+        }
+        else    
+        {
+            $studentid = Yii::$app->session->get('studentid');
+            $firstname = Yii::$app->session->get('firstname');
+            $lastname = Yii::$app->session->get('lastname');
+        }
+            
 
-            //if user initiates search based on programme
-            if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
+        //if user initiates search based on programme
+        if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
+        {
+            $division_name = Division::getDivisionAbbreviation($divisionid);
+            $department_count = count(Department::getDepartments($divisionid));
+
+            $data_package = array();
+            $programme_collection = array();
+            /*
+             * Package Collection structure is as follows
+             * [department_count, [[programme, cohort_count, [cohorts,...]]]
+             */
+            array_push($data_package, $department_count);
+
+            $programmes = ProgrammeCatalog::getProgrammes($divisionid);
+            if ($programmes)
             {
-                $division_name = Division::getDivisionAbbreviation($divisionid);
-                $department_count = count(Department::getDepartments($divisionid));
-
-                $data_package = array();
-                $programme_collection = array();
-                /*
-                 * Package Collection structure is as follows
-                 * [department_count, [[programme, cohort_count, [cohorts,...]]]
-                 */
-                array_push($data_package, $department_count);
-
-                $programmes = ProgrammeCatalog::getProgrammes($divisionid);
-                if ($programmes)
+                foreach ($programmes as $programme) 
                 {
-                    foreach ($programmes as $programme) 
+                    $temp_array = array();
+
+                    $cohort_array = array();
+
+                    array_push($temp_array, $programme);
+
+                    $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid); //yet to be created
+                    array_push($temp_array, $cohort_count);
+
+                    if ($cohort_count > 0)
                     {
-                        $temp_array = array();
+                        $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); //yet to be created
 
-                        $cohort_array = array();
-
-                        array_push($temp_array, $programme);
-
-                        $cohort_count = AcademicOffering::getCohortCount($programme->programmecatalogid); //yet to be created
-                        array_push($temp_array, $cohort_count);
-
-                        if ($cohort_count > 0)
+                        for($i = 0 ; $i < $cohort_count ; $i++)
                         {
-                            $cohorts = AcademicOffering::getCohorts($programme->programmecatalogid); //yet to be created
-
-                            for($i = 0 ; $i < $cohort_count ; $i++)
-                            {
-                                array_push($cohort_array, $cohorts[$i]);
-                            }
-                            array_push($temp_array, $cohort_array);
+                            array_push($cohort_array, $cohorts[$i]);
                         }
-
-                        array_push($programme_collection, $temp_array);
-
-                        $temp_array = NULL;
-                        $cohort_array = NULL;
-                        $name = NULL;
-                        $cohort_count = NULL;
-                        $cohorts = NULL;
+                        array_push($temp_array, $cohort_array);
                     }
-                    array_push($data_package, $programme_collection);
 
-                    return $this->render('programme_listing', [
-                        'division_id' => $divisionid,
-                        'division_name' => $division_name,
-                        'data' => $data_package,
-                    ]);
+                    array_push($programme_collection, $temp_array);
+
+                    $temp_array = NULL;
+                    $cohort_array = NULL;
+                    $name = NULL;
+                    $cohort_count = NULL;
+                    $cohorts = NULL;
+                }
+                array_push($data_package, $programme_collection);
+
+                return $this->render('programme_listing', [
+                    'division_id' => $divisionid,
+                    'division_name' => $division_name,
+                    'data' => $data_package,
+                ]);
+            }
+            else
+                Yii::$app->getSession()->setFlash('error', 'No programmes found.');
+        }
+
+        //if user initiates search based on studentID
+        elseif ($studentid != NULL  && strcmp($studentid, "") != 0)
+        {
+            $info_string = $info_string .  " Student ID: " . $studentid;
+            $user = User::findOne(['username' => $studentid, 'isdeleted' => 0]);
+
+            if ($user)
+            { 
+                //if system user is a Dean or Deputy Dean then their search is contrained by their division
+                if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff'))  && !Yii::$app->user->can('System Administrator'))
+                {
+//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+                    $divisionid = EmployeeDepartment::getUserDivision();
+                    $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
+
+                    if (empty($registrations))
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria within your division.');
+                        return $this->render('find_a_student_index',[
+                            'all_students_provider' => $all_students_provider,
+                            'info_string' => $info_string,
+                        ]);
+                    }
+                }
+                //if system user is not a Dean or Deputy Dean then their search is not contrained
+                else
+                {
+                    $registrations = StudentRegistration::find()
+                                ->where(['personid' => $user->personid, 'isactive' => 1,  'isdeleted' => 0])
+                                ->all();
+                }
+                if (count($registrations) > 0)
+                {    
+                    foreach ($registrations as $registration) 
+                    { 
+                        $student = Student::getStudent($user->personid);
+                        if ($student)
+                        {
+                            $all_students_info['personid'] = $user->personid;
+                            $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                            $all_students_info['studentno'] = $user->username;
+                            $all_students_info['firstname'] = $student->firstname;
+                            $all_students_info['middlename'] = $student->middlename;
+                            $all_students_info['lastname'] = $student->lastname;
+                            $all_students_info['gender'] = $student->gender;
+
+                            $offer_from = Offer::find()
+                                    ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                    ->one();
+                            if($offer_from == false)
+                                continue;
+                            $current_cape_subjects_names = array();
+                            $current_cape_subjects = array();
+                            $current_application = $offer_from->getApplication()->one();
+                            $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                            $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                            foreach ($current_cape_subjects as $cs)
+                            { 
+                                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                            }
+                            $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                            $all_students_info['current_programme'] = $currentprogramme;
+
+                            $enrollments = StudentRegistration::find()
+                                    ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                    ->count();
+                            $all_students_info['enrollments'] = $enrollments;
+
+                            $student_status = StudentStatus::find()
+                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                            ->one();
+                            $all_students_info['studentstatus'] = $student_status->name;
+                            $all_student_data_container[] = $all_students_info;
+                        }
+                        else
+                        {
+                            Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+                        }
+                    }
                 }
                 else
-                    Yii::$app->getSession()->setFlash('error', 'No programmes found.');
+                {
+                    Yii::$app->session->setFlash('error', 'No students found matching this criteria.');
+                }                    
+
+                $all_students_provider = new ArrayDataProvider([
+                        'allModels' => $all_student_data_container,
+                        'pagination' => [
+                            'pageSize' => 25,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                            'attributes' => ['firstname', 'lastname'],
+                        ]
+                ]);
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
+            }                     
+        }
+
+        //if user initiates search based student name
+        elseif( ($firstname != NULL && strcmp($firstname,"") != 0)  || ($lastname != NULL && strcmp($lastname,"") != 0) )
+        {
+
+//                    Yii::$app->getSession()->setFlash('error', 'Lets search using student name.');
+            if ($firstname)
+            {
+                $cond_arr['firstname'] = $firstname;
+                $info_string = $info_string .  " First Name: " . $firstname; 
+            }
+            if ($lastname)
+            {
+                $cond_arr['lastname'] = $lastname;
+                $info_string = $info_string .  " Last Name: " . $lastname;
             }
 
-            //if user initiates search based on studentID
-            elseif ($studentid != NULL  && strcmp($studentid, "") != 0)
+            if (empty($cond_arr))
             {
-                $info_string = $info_string .  " Student ID: " . $studentid;
-                $user = User::findOne(['username' => $studentid, 'isdeleted' => 0]);
+                Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+            }
+            else
+            {
+//                    $cond_arr['isactive'] = 1;
+                $cond_arr['isdeleted'] = 0;
 
-                if ($user)
-                { 
-                    //if system user is a Dean or Deputy Dean then their search is contrained by their division
-                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff'))  && !Yii::$app->user->can('System Administrator'))
+                $students = Student::find()
+                        ->where($cond_arr)
+                        ->all();
+
+                if (empty($students))
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
+                }
+                else
+                {
+                    //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
+                    $eligible_students_found = false; //students within correct division
+                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff')) &&  !Yii::$app->user->can('System Administrator'))
                     {
-//                        $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
+//                            $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
                         $divisionid = EmployeeDepartment::getUserDivision();
-                        $registrations = StudentRegistration::getStudentsByDivision($divisionid, $user->personid);
-                        
-                        if (empty($registrations))
+                        foreach ($students as $student)
+                        {
+                            $registrations = StudentRegistration::getStudentsByDivision($divisionid, $student->personid);
+                            if (!empty($registrations))
+                            {
+                                foreach ($registrations as $registration)
+                                {
+                                    $eligible_students_found = true;
+                                    $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                                    if ($registration && $user)
+                                    {
+                                        $all_students_info['personid'] = $student->personid;
+                                        $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
+                                        $all_students_info['studentno'] = $user->username;
+                                        $all_students_info['firstname'] = $student->firstname;
+                                        $all_students_info['middlename'] = $student->middlename;
+                                        $all_students_info['lastname'] = $student->lastname;
+                                        $all_students_info['gender'] = $student->gender;
+
+                                        $offer_from = Offer::find()
+                                                ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
+                                                ->one();
+                                        if($offer_from == false)
+                                            continue;
+                                        $current_cape_subjects_names = array();
+                                        $current_cape_subjects = array();
+                                        $current_application = $offer_from->getApplication()->one();
+                                        $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                                        $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                                        foreach ($current_cape_subjects as $cs)
+                                        { 
+                                            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                        }
+                                        $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+                                        $all_students_info['current_programme'] = $currentprogramme;
+
+                                         $enrollments = StudentRegistration::find()
+                                                ->where(['personid' => $user->personid, 'isdeleted' => 0])
+                                                ->count();
+                                        $all_students_info['enrollments'] = $enrollments;
+
+                                        $student_status = StudentStatus::find()
+                                                        ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                                                        ->one();
+                                        $all_students_info['studentstatus'] = $student_status->name;
+                                        $all_student_data_container[] = $all_students_info;
+                                    }
+                                }
+                            }  
+                        }
+
+                        //if among the possible matching 'student' records there are no 'student_registration' records related to the user's division
+                        if ($eligible_students_found == false)
                         {
                             Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria within your division.');
                             return $this->render('find_a_student_index',[
@@ -837,25 +1051,22 @@ class StudentController extends Controller
                     //if system user is not a Dean or Deputy Dean then their search is not contrained
                     else
                     {
-                        $registrations = StudentRegistration::find()
-                                    ->where(['personid' => $user->personid, 'isactive' => 1,  'isdeleted' => 0])
-                                    ->all();
-                    }
-                    if (count($registrations) > 0)
-                    {    
-                        foreach ($registrations as $registration) 
-                        { 
-                            $student = Student::getStudent($user->personid);
-                            if ($student)
+                        foreach ($students as $student)
+                        {   
+                            $registration = StudentRegistration::find()
+                                    ->where(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->one();    
+                            $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
+                            if ($registration && $user)
                             {
-                                $all_students_info['personid'] = $user->personid;
+                                $all_students_info['personid'] = $student->personid;
                                 $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
                                 $all_students_info['studentno'] = $user->username;
                                 $all_students_info['firstname'] = $student->firstname;
                                 $all_students_info['middlename'] = $student->middlename;
                                 $all_students_info['lastname'] = $student->lastname;
                                 $all_students_info['gender'] = $student->gender;
-                                
+
                                 $offer_from = Offer::find()
                                         ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
                                         ->one();
@@ -872,12 +1083,12 @@ class StudentController extends Controller
                                 }
                                 $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
                                 $all_students_info['current_programme'] = $currentprogramme;
-                                
-                                $enrollments = StudentRegistration::find()
+
+                                 $enrollments = StudentRegistration::find()
                                         ->where(['personid' => $user->personid, 'isdeleted' => 0])
                                         ->count();
-                                $all_students_info['enrollments'] = $enrollments;
-                                
+                                  $all_students_info['enrollments'] = $enrollments;
+
                                 $student_status = StudentStatus::find()
                                                 ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
                                                 ->one();
@@ -887,205 +1098,23 @@ class StudentController extends Controller
                             else
                             {
                                 Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-                            }
+                            }                  
                         }
                     }
-                    else
-                    {
-                        Yii::$app->session->setFlash('error', 'No students found matching this criteria.');
-                    }                    
 
                     $all_students_provider = new ArrayDataProvider([
                             'allModels' => $all_student_data_container,
                             'pagination' => [
-                                'pageSize' => 20,
+                                'pageSize' => 25,
                             ],
                             'sort' => [
                                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                                 'attributes' => ['firstname', 'lastname'],
                             ]
-                    ]);    
-                }
-                else
-                {
-                    Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-                }                     
+                    ]);  
+                } 
             }
-
-            //if user initiates search based student name
-            elseif( ($firstname != NULL && strcmp($firstname,"") != 0)  || ($lastname != NULL && strcmp($lastname,"") != 0) )
-            {
-//                    Yii::$app->getSession()->setFlash('error', 'Lets search using student name.');
-                if ($firstname)
-                {
-                    $cond_arr['firstname'] = $firstname;
-                    $info_string = $info_string .  " First Name: " . $firstname; 
-                }
-                if ($lastname)
-                {
-                    $cond_arr['lastname'] = $lastname;
-                    $info_string = $info_string .  " Last Name: " . $lastname;
-                }
-
-                if (empty($cond_arr))
-                {
-                    Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
-                }
-                else
-                {
-//                    $cond_arr['isactive'] = 1;
-                    $cond_arr['isdeleted'] = 0;
-
-                    $students = Student::find()
-                            ->where($cond_arr)
-                            ->all();
-                    
-                    if (empty($students))
-                    {
-                        Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria.');
-                    }
-                    else
-                    {
-                        //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
-                        $eligible_students_found = false; //students within correct division
-                        if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff')) &&  !Yii::$app->user->can('System Administrator'))
-                        {
-//                            $divisionid = Employee::getEmployeeDivisionID(Yii::$app->user->identity->personid);
-                            $divisionid = EmployeeDepartment::getUserDivision();
-                            foreach ($students as $student)
-                            {
-                                $registrations = StudentRegistration::getStudentsByDivision($divisionid, $student->personid);
-                                if (!empty($registrations))
-                                {
-                                    foreach ($registrations as $registration)
-                                    {
-                                        $eligible_students_found = true;
-                                        $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
-                                        if ($registration && $user)
-                                        {
-                                            $all_students_info['personid'] = $student->personid;
-                                            $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
-                                            $all_students_info['studentno'] = $user->username;
-                                            $all_students_info['firstname'] = $student->firstname;
-                                            $all_students_info['middlename'] = $student->middlename;
-                                            $all_students_info['lastname'] = $student->lastname;
-                                            $all_students_info['gender'] = $student->gender;
-                                            
-                                            $offer_from = Offer::find()
-                                                    ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
-                                                    ->one();
-                                            if($offer_from == false)
-                                                continue;
-                                            $current_cape_subjects_names = array();
-                                            $current_cape_subjects = array();
-                                            $current_application = $offer_from->getApplication()->one();
-                                            $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
-                                            $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
-                                            foreach ($current_cape_subjects as $cs)
-                                            { 
-                                                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
-                                            }
-                                            $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
-                                            $all_students_info['current_programme'] = $currentprogramme;
-                                            
-                                             $enrollments = StudentRegistration::find()
-                                                    ->where(['personid' => $user->personid, 'isdeleted' => 0])
-                                                    ->count();
-                                            $all_students_info['enrollments'] = $enrollments;
-
-                                            $student_status = StudentStatus::find()
-                                                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
-                                                            ->one();
-                                            $all_students_info['studentstatus'] = $student_status->name;
-                                            $all_student_data_container[] = $all_students_info;
-                                        }
-                                    }
-                                }  
-                            }
-
-                            //if among the possible matching 'student' records there are no 'student_registration' records related to the user's division
-                            if ($eligible_students_found == false)
-                            {
-                                Yii::$app->getSession()->setFlash('error', 'No students found matching this criteria within your division.');
-                                return $this->render('find_a_student_index',[
-                                    'all_students_provider' => $all_students_provider,
-                                    'info_string' => $info_string,
-                                ]);
-                            }
-                        }
-                        //if system user is not a Dean or Deputy Dean then their search is not contrained
-                        else
-                        {
-                            foreach ($students as $student)
-                            {   
-                                $registration = StudentRegistration::find()
-                                        ->where(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0])
-                                        ->one();    
-                                $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
-                                if ($registration && $user)
-                                {
-                                    $all_students_info['personid'] = $student->personid;
-                                    $all_students_info['studentregistrationid'] = $registration->studentregistrationid;
-                                    $all_students_info['studentno'] = $user->username;
-                                    $all_students_info['firstname'] = $student->firstname;
-                                    $all_students_info['middlename'] = $student->middlename;
-                                    $all_students_info['lastname'] = $student->lastname;
-                                    $all_students_info['gender'] = $student->gender;
-                                    
-                                    $offer_from = Offer::find()
-                                            ->where(['offerid' => $registration->offerid, 'isdeleted' => 0])
-                                            ->one();
-                                    if($offer_from == false)
-                                        continue;
-                                    $current_cape_subjects_names = array();
-                                    $current_cape_subjects = array();
-                                    $current_application = $offer_from->getApplication()->one();
-                                    $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
-                                    $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
-                                    foreach ($current_cape_subjects as $cs)
-                                    { 
-                                        $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
-                                    }
-                                    $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
-                                    $all_students_info['current_programme'] = $currentprogramme;
-
-                                     $enrollments = StudentRegistration::find()
-                                            ->where(['personid' => $user->personid, 'isdeleted' => 0])
-                                            ->count();
-                                      $all_students_info['enrollments'] = $enrollments;
-                                
-                                    $student_status = StudentStatus::find()
-                                                    ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
-                                                    ->one();
-                                    $all_students_info['studentstatus'] = $student_status->name;
-                                    $all_student_data_container[] = $all_students_info;
-                                }
-                                else
-                                {
-                                    Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-                                }                  
-                            }
-                        }
-
-                        $all_students_provider = new ArrayDataProvider([
-                                'allModels' => $all_student_data_container,
-                                'pagination' => [
-                                    'pageSize' => 30,
-                                ],
-                                'sort' => [
-                                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                                    'attributes' => ['firstname', 'lastname'],
-                                ]
-                        ]);      
-                    } 
-                }
-            }
-
-            else    //if user clicks 'search' button without entering any search criteria
-            {
-                Yii::$app->getSession()->setFlash('error', 'Please select enter valid search criteria.');
-            }
-        }  
+        }
 
         return $this->render('find_a_student_index',[
             'all_students_provider' => $all_students_provider,

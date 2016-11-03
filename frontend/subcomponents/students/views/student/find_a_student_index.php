@@ -84,8 +84,7 @@
                         </div>            
                     <?php ActiveForm::end(); ?>
                 </div><hr>
-
-
+                
                 <?php if ($all_students_provider) : ?>
                     <h2 class="custom_h2"><?= "Search results for: " . $info_string ?></h2>
                     <?= $this->render('_find_a_student_result', [
