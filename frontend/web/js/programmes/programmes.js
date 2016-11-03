@@ -222,34 +222,76 @@ function toggleProgrammeOptions()
 function toggleAcademicOfferingOptions()
 {
     var search_by = document.getElementsByName('academic_offering_options');    //captures input
-    if (search_by[0].checked == true)            //if Manage Programme Booklets
+    var selected_value = null;
+    for (var i = 0 ; i<search_by.length ; i++)
     {
-         document.getElementById("manage-booklets").style.display = "block";       
-         document.getElementById("manage-courses").style.display = "none";
-         document.getElementById("intake-reports").style.display = "none";
-         document.getElementById("student-performance-reports").style.display = "none";
+        if (search_by[i].checked)
+        {
+            selected_value = search_by[i].value;
+            break;
+        }
     }
-    else if (search_by[1].checked == true)        //if Manage Courses
+    
+    if (selected_value != null)
     {
-         document.getElementById("manage-booklets").style.display = "none";       
-         document.getElementById("manage-courses").style.display = "block";
-         document.getElementById("intake-reports").style.display = "none";
-         document.getElementById("student-performance-reports").style.display = "none";
+        if (selected_value == 1)            //if Manage Programme Booklets
+        {
+             document.getElementById("manage-booklets").style.display = "block";       
+             document.getElementById("manage-courses").style.display = "none";
+             document.getElementById("intake-reports").style.display = "none";
+             document.getElementById("student-performance-reports").style.display = "none";
+        }
+        else if (selected_value == 2)        //if Manage Courses
+        {
+             document.getElementById("manage-booklets").style.display = "none";       
+             document.getElementById("manage-courses").style.display = "block";
+             document.getElementById("intake-reports").style.display = "none";
+             document.getElementById("student-performance-reports").style.display = "none";
+         }
+         else if (selected_value == 3)        //if View Intake Reports
+        {
+            document.getElementById("manage-booklets").style.display = "none";       
+             document.getElementById("manage-courses").style.display = "none";
+             document.getElementById("intake-reports").style.display = "block";
+             document.getElementById("student-performance-reports").style.display = "none";
+         }
+         else if (selected_value == 4)        //if View Performance Reports
+        {
+             document.getElementById("manage-booklets").style.display = "none";       
+             document.getElementById("manage-courses").style.display = "none";
+             document.getElementById("intake-reports").style.display = "none";
+             document.getElementById("student-performance-reports").style.display = "block";
+         }
      }
-     else if (search_by[2].checked == true)        //if View Intake Reports
-    {
-        document.getElementById("manage-booklets").style.display = "none";       
-         document.getElementById("manage-courses").style.display = "none";
-         document.getElementById("intake-reports").style.display = "block";
-         document.getElementById("student-performance-reports").style.display = "none";
-     }
-     else if (search_by[3].checked == true)        //if View Performance Reports
-    {
-         document.getElementById("manage-booklets").style.display = "none";       
-         document.getElementById("manage-courses").style.display = "none";
-         document.getElementById("intake-reports").style.display = "none";
-         document.getElementById("student-performance-reports").style.display = "block";
-     }
+//    var search_by = document.getElementsByName('academic_offering_options');    //captures input
+//    if (search_by[0].checked == true)            //if Manage Programme Booklets
+//    {
+//         document.getElementById("manage-booklets").style.display = "block";       
+//         document.getElementById("manage-courses").style.display = "none";
+//         document.getElementById("intake-reports").style.display = "none";
+//         document.getElementById("student-performance-reports").style.display = "none";
+//    }
+//    else if (search_by[1].checked == true)        //if Manage Courses
+//    {
+//         document.getElementById("manage-booklets").style.display = "none";       
+//         document.getElementById("manage-courses").style.display = "block";
+//         document.getElementById("intake-reports").style.display = "none";
+//         document.getElementById("student-performance-reports").style.display = "none";
+//     }
+//     else if (search_by[2].checked == true)        //if View Intake Reports
+//    {
+//        document.getElementById("manage-booklets").style.display = "none";       
+//         document.getElementById("manage-courses").style.display = "none";
+//         document.getElementById("intake-reports").style.display = "block";
+//         document.getElementById("student-performance-reports").style.display = "none";
+//     }
+//     else if (search_by[3].checked == true)        //if View Performance Reports
+//    {
+//         document.getElementById("manage-booklets").style.display = "none";       
+//         document.getElementById("manage-courses").style.display = "none";
+//         document.getElementById("intake-reports").style.display = "none";
+//         document.getElementById("student-performance-reports").style.display = "block";
+//     }
 }
 
 

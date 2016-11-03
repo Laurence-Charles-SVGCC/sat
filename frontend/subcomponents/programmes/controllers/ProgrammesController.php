@@ -1376,7 +1376,11 @@ class ProgrammesController extends Controller
                      ON cape_subject.academicofferingid = academic_offering.academicofferingid
                      JOIN programme_catalog
                      ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid
-                     WHERE cape_subject.academicofferingid = " . $academicofferingid
+                     WHERE student_registration.isactive = 1
+                    AND student_registration.isdeleted = 0
+                    AND student.isactive = 1
+                    AND student.isdeleted = 0 
+                     AND cape_subject.academicofferingid = " . $academicofferingid
                      . ";"
 
                  )
@@ -1441,7 +1445,11 @@ class ProgrammesController extends Controller
                      ON course_offering.academicofferingid = academic_offering.academicofferingid
                      JOIN programme_catalog
                      ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid
-                     WHERE course_offering.academicofferingid = " . $academicofferingid
+                     WHERE student_registration.isactive = 1
+                     AND student_registration.isdeleted = 0
+                     AND student.isactive = 1
+                     AND student.isdeleted = 0 
+                     AND course_offering.academicofferingid = " . $academicofferingid
                      . ";"
 
                  )
@@ -1508,7 +1516,11 @@ class ProgrammesController extends Controller
                         ON student_registration.personid = person.personid
                         JOIN student
                         ON person.personid = student.personid
-                        WHERE student_registration.academicofferingid = " . $academicofferingid
+                        WHERE student_registration.isactive = 1
+                        AND student_registration.isdeleted = 0
+                        AND student.isactive = 1
+                        AND student.isdeleted = 0
+                        AND student_registration.academicofferingid = " . $academicofferingid
                         . ";"
 
                  )

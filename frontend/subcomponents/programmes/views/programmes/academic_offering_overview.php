@@ -20,7 +20,9 @@
                                                             ])];
     $this->params['breadcrumbs'][] = $this->title;
     
-    if (Yii::$app->user->can('viewPerformanceReports'))
+    
+    if (Yii::$app->user->can('Assistant Registrar')  || Yii::$app->user->can('Registrar')
+            ||   Yii::$app->user->can('Deputy Dean')  || Yii::$app->user->can('Deputy Director'))
     {
         $menu_items = [
             1 => "Manage Programme Booklets",
@@ -32,9 +34,9 @@
     else
     {
         $menu_items = [
-            1 => "Manage Programme Booklets",
             2 => "View Course Details",
-            3 => "View Intake Reports"
+            3 => "View Intake Reports",
+            4 => "View Performance Report",
         ];
     }
 ?>
@@ -220,23 +222,12 @@
                             </fieldset>
                         </div>
 
-                        <?php if (Yii::$app->user->can('viewPerformanceReports')): ?>
+                        
                             <div id="student-performance-reports" style="display:none">
                                 <fieldset>
                                    <legend class="custom_h2" style="margin-left:0%;">Student Performance</legend>
-                                   <p>
-                                       <strong>1.</strong> Select the button below to generate a report that summaries the overall performance of students 
-                                       enrolled in a particular course.
-                                   </p>
-                                   <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:30%; margin:0 auto;" 
-                                       href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-programme-broadsheet',
-                                                                               'academicofferingid' => $academicofferingid
-                                                                           ]);
-                                                   ?> role="button"> Generate Programme Summary
-                                   </a><br/><br/><br/>
-
                                    <?php if($broadsheet_dataprovider  && $iscape == false):?>
-                                           <p><strong>2.</strong>Click on the following links to download a detailed ASc. programme broadsheet in the format of your choice</p>
+                                           <p><strong>1.</strong>Click on the following links to download a detailed ASc. programme broadsheet in the format of your choice</p>
                                            <?= ExportMenu::widget([
                                                    'dataProvider' => $broadsheet_dataprovider,
                                                    'columns' => [
@@ -324,7 +315,7 @@
                                                ]);
                                            ?>
                                    <?php elseif($broadsheet_dataprovider  && $iscape == true):?>
-                                       <p><strong>2.</strong>Click on the following links to download a detailed CAPE programme broadsheet in the format of your choice</p>
+                                       <p><strong>1.</strong>Click on the following links to download a detailed CAPE programme broadsheet in the format of your choice</p>
                                        <?= ExportMenu::widget([
                                                'dataProvider' => $broadsheet_dataprovider,
                                                'columns' => [
@@ -412,7 +403,7 @@
                                    <?php if($cumulative_grade_dataprovider  && $iscape == false):?>
                                            <br/><br/>
                                            <p>
-                                               <strong>3.</strong>Click on any of the following links to download a student listing of all the enrolled 
+                                               <strong>2.</strong>Click on any of the following links to download a student listing of all the enrolled 
                                                students within this ASc. programme. The primary focus of this report is a student's current cumulative
                                                academic performance.
                                            </p>
@@ -468,7 +459,7 @@
                                        <?php if($programme_comparison_dataprovider  && $iscape == false):?>
                                            <br/><br/>
                                            <p>
-                                               <strong>4.</strong>Click on any of the following links to download a report showing the current top 
+                                               <strong>3.</strong>Click on any of the following links to download a report showing the current top 
                                                performers from each ASc. Programme.
                                            </p>
                                            <?= ExportMenu::widget([
@@ -527,10 +518,21 @@
                                                    ],
                                                ]);
                                            ?>
-                                       <?php endif;?>
+                                       <?php endif;?><br/><br/>
+                                       <?php if (Yii::$app->user->can('viewPerformanceReports')): ?>
+                                            <p>
+                                                 <strong>4.</strong> Select the button below to generate a report that summaries the overall performance of students 
+                                                 enrolled in a particular course.
+                                             </p>
+                                             <a class="btn btn-success glyphicon glyphicon-list-alt" style="width:30%; margin:0 auto;" 
+                                                 href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-programme-broadsheet',
+                                                                                         'academicofferingid' => $academicofferingid
+                                                                                     ]);
+                                                             ?> role="button"> Generate Programme Summary
+                                             </a><br/><br/><br/>
+                                         <?php endif;?>
                                </fieldset>
                            </div>
-                        <?php endif;?>
                     </div>
             </div>
          </div>
