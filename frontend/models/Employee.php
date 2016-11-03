@@ -172,6 +172,7 @@ class Employee extends \yii\db\ActiveRecord
                  ->where(['employee.isactive' => 1, 'employee.isdeleted' => 0,
                                 'employee_title.isactive' => 1, 'employee_title.isdeleted' => 0, 'employee_title.name' => $employeetitle
                                 ])
+                 ->orderBy('lastname')
                  ->all();
          
         if ($employees)
@@ -209,9 +210,9 @@ class Employee extends \yii\db\ActiveRecord
     public static function getAllEmployees()
     {
          $employees = Employee::find()
-                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                 ->where(['isactive' => 1, 'isdeleted' => 0])
                  ->orderBy('lastname')
-                    ->all();
+                 ->all();
          
         if ($employees)
         {

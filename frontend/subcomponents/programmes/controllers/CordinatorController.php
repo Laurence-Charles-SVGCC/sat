@@ -223,7 +223,7 @@ class CordinatorController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 22/06/216
-     * Date Last Modified: 22/06/2016
+     * Date Last Modified: 22/06/2016 | 03/00/2016
      */
     public function actionCreate()
     {
@@ -250,7 +250,7 @@ class CordinatorController extends Controller
                 $cordinator->dateassigned = date('Y-m-d');
                 $cordinator->assignedby = Yii::$app->user->identity->personid;
                
-               //uses must be prevented from creating 
+               
                if ($departmentid)
                {
                    $cordinator->departmentid = $departmentid;
@@ -258,21 +258,21 @@ class CordinatorController extends Controller
                            ->where(['cordinatortypeid' => 1, 'departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
-               if ($academicofferingid)
+               elseif ($academicofferingid)
                {
                    $cordinator->academicofferingid = $academicofferingid;
                    $duplicate_cordinator = Cordinator::find()
                            ->where(['cordinatortypeid' => 2, 'academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
-               if ($courseofferingid)
+               elseif ($courseofferingid)
                {
                    $cordinator->courseofferingid = $courseofferingid;
                    $duplicate_cordinator = Cordinator::find()
                            ->where(['cordinatortypeid' => 3, 'courseofferingid' => $courseofferingid, 'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
-               if ($capesubjectid)
+               elseif ($capesubjectid)
                {
                    $cordinator->capesubjectid = $capesubjectid;
                    $duplicate_cordinator = Cordinator::find()
