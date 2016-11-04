@@ -149,7 +149,7 @@
                                 <?php endif;?>
                                 
                                 <?php if(ApplicationPeriod::divisionPeriodIncomplete(7) == true  && $offertype==2):?>
-                                    <?= Html::a('Generate Nursing Interview List', ['divisional-offers-academics', 'division_id' => 7, 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                                    <br/><br/><?= Html::a('Generate Nursing Interview List', ['divisional-offers-academics', 'division_id' => 7, 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
                                 <?php endif;?>
                             </div>
 
