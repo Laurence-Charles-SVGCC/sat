@@ -929,14 +929,14 @@ class CsecQualification extends \yii\db\ActiveRecord
     {
         $qualifications = "";
         $subjects = self::getSubjects($personid);
-        foreach ($subjects as $sub)
+        foreach ($subjects as $index=>$sub)
         {
             $record = "";
             $examinationbody = ExaminationBody::find()->where(['examinationbodyid' => $sub->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])->one()->abbreviation;
             $subject = Subject::find()->where(['subjectid' => $sub->subjectid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
             $grade = ExaminationGrade::find()->where(['examinationgradeid' => $sub->examinationgradeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
             $proficiency = ExaminationProficiencyType::find()->where(['examinationproficiencytypeid' => $sub->examinationproficiencytypeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
-            $record = $examinationbody . " " . $subject . "(Grade-" . $grade . "," . $proficiency . ", " . $sub->year . ")     ";
+            $record = $index+1 . "." .$examinationbody . " " . $subject . "(Grade-" . $grade . "," . $proficiency . ", " . $sub->year . ")     ";
             $qualifications.= $record;
         }
         return $qualifications;
