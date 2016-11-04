@@ -20,7 +20,8 @@
     /* @var $this yii\web\View */
     $this->title = 'Academic Transcript';
     $this->params['breadcrumbs'][] = ['label' => 'Gradebook', 'url' => ['index']];
-    $this->params['breadcrumbs'][] = ['label' => 'Programme Listing', 'url' => ['index', 'id' => $divisionid]];
+    if (Yii::$app->user->can('Cordinator') == false)
+        $this->params['breadcrumbs'][] = ['label' => 'Programme Listing', 'url' => ['index', 'id' => $divisionid]];
     $this->params['breadcrumbs'][] = ['label' => 'Student Listing', 'url' => ['students',
                                                                                'academicyearid' => $academicyearid, 
                                                                                'academicofferingid' => $academicofferingid,

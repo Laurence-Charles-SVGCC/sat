@@ -13,7 +13,8 @@
     /* @var $this yii\web\View */
     $this->title = 'Student Listing';
     $this->params['breadcrumbs'][] = ['label' => 'Gradebook', 'url' => ['index']];
-    $this->params['breadcrumbs'][] = ['label' => 'Programme Listing', 'url' => ['index', 'id' => $division_id]];
+    if (Yii::$app->user->can('Cordinator') == false)
+        $this->params['breadcrumbs'][] = ['label' => 'Programme Listing', 'url' => ['index', 'id' => $division_id]];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
