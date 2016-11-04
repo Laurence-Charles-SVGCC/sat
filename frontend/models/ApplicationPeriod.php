@@ -441,6 +441,33 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
             return $periods;
         return false;
     }
+    
+    
+    /**
+     * Returns true if an applicationperiod for a particular division is "Incomplete" 
+     * 
+     * @param type $divisionid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date LAst Modified: 04/11/2016
+     */
+    public static function divisionPeriodIncomplete($divisionid)
+    {
+        $periods = self::periodIncomplete();
+        if ($periods)
+        {
+            foreach($periods as $period)
+            {
+                if($period->divisionid == $divisionid)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     
     /**

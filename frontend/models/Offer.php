@@ -5,8 +5,11 @@ namespace frontend\models;
 use Yii;
 
 use frontend\models\Application;
+use frontend\models\Address;
+use frontend\models\Phone;
 use common\models\User;
 use frontend\models\OfferType;
+use frontend\models\Applicant;
 
 /**
  * This is the model class for table "offer".
@@ -294,7 +297,7 @@ class Offer extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns the username of an offer
+     * Returns the username of applicant
      * 
      * @return type
      * 
@@ -311,6 +314,101 @@ class Offer extends \yii\db\ActiveRecord
                         ])
                 ->one();
         return $user->username;
+    }
+    
+
+    /**
+     * Returns the fullname of applicant
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public function getApplicantFullName()
+    {
+        $name = "Unknown";
+        
+        $applicant = Applicant::find()
+                ->innerJoin('application' , '`application`.`personid` = `applicant`.`personid`')
+                 ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                                'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0
+                            ])
+                ->one();
+        if ($applicant)
+        {
+            $name = $applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname;
+        }
+        return $name;
+    }
+    
+    
+    /**
+     * Returns the address of applicant
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public function getApplicantAddress()
+    {
+        $address = "Unknown";
+        
+        $application = Application::find()
+                ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($application)
+        {
+             $permanent_address = Address::find()
+                    ->where(['personid' => $application->personid, 'addresstypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+             if ($permanent_address)
+             {
+                 if ($permanent_address->town == "other")
+                 {
+                     $address = $permanent_address->addressline . ",  " . $permanent_address->country;
+                 }
+                 else
+                 {
+                     $address = $permanent_address->town . ",  " . $permanent_address->country;
+                 }
+                 return $address;
+             }
+        }
+        return $address;
+    }
+    
+    
+    /**
+     * Returns the contact numbers of  applicant
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public function getApplicantContact()
+    {
+        $contact = "Unknown";
+        
+        $application = Application::find()
+                ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($application)
+        {
+            $phone = Phone::find()
+                    ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            if ($phone)
+            {
+                $contact = $phone->homephone . ", " . $phone->workphone . ", " . $phone->cellphone;
+            }
+        }
+        return $contact;
     }
     
     

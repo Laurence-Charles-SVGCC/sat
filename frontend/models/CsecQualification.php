@@ -2,12 +2,13 @@
 
 namespace frontend\models;
 
+use Yii;
+
+use frontend\models\ExaminationProficiencyType;
 use frontend\models\ExaminationBody;
 use frontend\models\Subject;
-use frontend\models\ExaminationGrade;
+use frontend\models\ExaminationGrade; 
 
-
-use Yii;
 
 /**
  * This is the model class for table "csec_qualification".
@@ -912,5 +913,34 @@ class CsecQualification extends \yii\db\ActiveRecord
                     return false;
         return true;    
     }
+    
+    
+    /**
+     * Returns formatted list of an applcant's qualifications
+     * 
+     * @param type $personid
+     * @return string
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public static function getFormattedQualification($personid)
+    {
+        $qualifications = "";
+        $subjects = self::getSubjects($personid);
+        foreach ($subjects as $sub)
+        {
+            $record = "";
+            $examinationbody = ExaminationBody::find()->where(['examinationbodyid' => $sub->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])->one()->abbreviation;
+            $subject = Subject::find()->where(['subjectid' => $sub->subjectid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+            $grade = ExaminationGrade::find()->where(['examinationgradeid' => $sub->examinationgradeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+            $proficiency = ExaminationProficiencyType::find()->where(['examinationproficiencytypeid' => $sub->examinationproficiencytypeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+            $record = $examinationbody . " " . $subject . "(Grade-" . $grade . "," . $proficiency . ", " . $sub->year . ")     ";
+            $qualifications.= $record;
+        }
+        return $qualifications;
+    }
+    
     
 }
