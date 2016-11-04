@@ -160,7 +160,7 @@
                                     <?php
                                         $periods = ApplicationPeriod::periodIncomplete();
                                         if (Offer::anyPendingOfferExists($periods, $offertype) == false  ||  Package::hasCompletePackage(1,1) == false)
-                                            echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
+                                            echo "<p><strong>No offers can be published at this time. Please ensure the requisit packages have been created.</strong></p>";
                                         
                                         elseif (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1,1) == true && $periods == true)
                                         {
@@ -258,7 +258,7 @@
                         'attribute' => 'offerid',
                         'label' => 'Revoke',
                         'format' => 'html',
-                        'value' => function($row)
+                        'value' => function($row) 
                          {
                             if (Yii::$app->user->can('deleteOffer'))
                             {
@@ -294,27 +294,34 @@
                          {
                             if (Yii::$app->user->can('publishOffer'))
                             {
-                                if ($row['ispublished'] == 1)
+                                if (Package::hasCompletePackage($row['divisionid'], 1, $row['offertype'] ) == false)
                                 {
-                                    return Html::a(' ', 
-                                                ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
-                                                ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
-                                                    'data' => [
-                                                        'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
-                                                        'method' => 'post',
-                                                    ],
-                                                ]);
+                                    return "N/A";
                                 }
-                                else
+                                else 
                                 {
-                                    return Html::a(' ', 
-                                                ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
-                                                ['class' => 'btn btn-success glyphicon glyphicon-send',
-                                                    'data' => [
-                                                        'confirm' => 'Are you sure you want to publish this offer?',
-                                                        'method' => 'post',
-                                                    ],
-                                                ]);
+                                    if ($row['ispublished'] == 1)
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
+                                                    ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                        'data' => [
+                                                            'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
+                                    else
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
+                                                    ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
                                 }
                             }
                             else
