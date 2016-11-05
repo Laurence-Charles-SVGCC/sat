@@ -155,6 +155,92 @@ class Cordinator extends \yii\db\ActiveRecord
         else
             return false;
     }
+    
+    
+    /**
+     * Returns array of cordinator types that a particular employee have been assigned.
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public static function getCordinatorTypes()
+    {
+        $roles = Cordinator::find()
+                ->where(['personid' => Yii::$app->user->getId(), 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if ($roles)
+        {
+            $unique_types = array();
+            foreach($roles as $role)
+            {
+                if(in_array($role->cordinatortypeid, $unique_types))
+                {
+                    continue;
+                }
+                else
+                {
+                     $unique_types[] = $role->cordinatortypeid;
+                }
+            }
+            return $unique_types;
+        }
+        return false;
+    }
+    
+    
+     /**
+     * Returns array of cordinated items that a particular employee have been assigned to cordinate.
+     * 
+     * @param type $personid
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 04/11/2016
+     * Date Last Modified: 04/11/2016
+     */
+    public static function getCordinationScope($cordinatortypeid)
+    {
+        $unique_items = array();
+        if ($cordinatortypeid == 1)             //if Head of Department
+        {
+            
+        }
+        elseif($cordinatortypeid == 2)      //if Programme Head
+        {
+            $roles = Cordinator::find()
+                ->where(['personid' => Yii::$app->user->getId(), 'cordinatortypeid' => $cordinatortypeid,  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            if ($roles)
+            {
+                $unique_items = array();
+                foreach($roles as $role)
+                {
+                    if(in_array($role->academicofferingid, $unique_items))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                         $unique_items[] = $role->academicofferingid;
+                    }
+                }
+                return $unique_items;
+            }
+        }
+        elseif($cordinatortypeid == 3)      //if CourseHead
+        {
+            
+        }
+        elseif($cordinatortypeid == 4)      //if CapeSubject Head
+        {
+            
+        }
+        return false;
+    }
          
     
 }

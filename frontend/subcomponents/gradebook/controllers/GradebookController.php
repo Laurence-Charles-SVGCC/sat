@@ -45,7 +45,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 04/12/2015
-         * Date Last Modified: 10/12/2015
+         * Date Last Modified: 10/12/2015 | 04/11/2016
          */
         public function actionIndex($id = NULL)
         {
@@ -250,7 +250,7 @@
             {
                 $info_string = $info_string .  " Student ID: " . $studentid;
                 $user = User::findOne(['username' => $studentid, 'isactive' => 1, 'isdeleted' => 0]);
-
+  
                 if ($user)
                 {    
                     //if system user is a Dean or Deputy Dean then their search is contrained by their division
@@ -278,10 +278,25 @@
                                     ->all();
                     }
 
-                    if (count($registrations) > 0)
+                    if ($registrations) 
                     {          
                         for ($k = 0 ; $k < count($registrations) ; $k++)
                         {
+                            //if user is 'Cordinator then they can only find students that re enrolled in a programme or department that they are cordinating
+                            if(Yii::$app->user->can('Cordinator'))
+                            {
+                                $role_types = Cordinator::getCordinatorTypes();
+                                //assess possible programmes if user is/was assigned Programme Head role
+                                if ($role_types == true && in_array(2, $role_types))
+                                {
+                                    $programmes_cordinated = Cordinator::getCordinationScope(2);
+                                    if ($programmes_cordinated == true  && in_array($registrations[$k]->academicofferingid, $programmes_cordinated) == false)
+                                    {
+                                        continue;
+                                    }
+                                }
+                            }
+                                
                             $student = Student::getStudent($user->personid);
                             if ($student)
                             {
@@ -459,6 +474,23 @@
                                 $registration = StudentRegistration::find()
                                         ->where(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0])
                                         ->one();    
+                                
+                                //if user is 'Cordinator then they can only find students that re enrolled in a programme or department that they are cordinating
+                                if(Yii::$app->user->can('Cordinator'))
+                                {
+                                    $role_types = Cordinator::getCordinatorTypes();
+                                    //assess possible programmes if user is/was assigned Programme Head role
+                                    if ($role_types == true && in_array(2, $role_types))
+                                    {
+                                        $programmes_cordinated = Cordinator::getCordinationScope(2);
+                                        if ($programmes_cordinated == true  && in_array($registration->academicofferingid, $programmes_cordinated) == false)
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                
+                                
                                 $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
                                 if ($registration && $user)
                                 {
