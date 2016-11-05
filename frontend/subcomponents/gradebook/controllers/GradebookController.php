@@ -286,15 +286,26 @@
                             if(Yii::$app->user->can('Cordinator'))
                             {
                                 $role_types = Cordinator::getCordinatorTypes();
-                                //assess possible programmes if user is/was assigned Programme Head role
-                                if ($role_types == true && in_array(2, $role_types))
+                                //assess possible programmes if user is/was assigned Department Head role
+                                if ($role_types == true && in_array(1, $role_types))
                                 {
-                                    $programmes_cordinated = Cordinator::getCordinationScope(2);
-                                    if ($programmes_cordinated == true  && in_array($registrations[$k]->academicofferingid, $programmes_cordinated) == false)
+                                    $cordinated_items = Cordinator::getCordinationScope(1);
+                                    if ($cordinated_items == true  && in_array($registrations[$k]->academicofferingid, $cordinated_items) == false)
                                     {
                                         continue;
                                     }
                                 }
+                                
+                                //assess possible programmes if user is/was assigned Programme Head role
+                                elseif ($role_types == true && in_array(2, $role_types))
+                                {
+                                    $cordinated_items = Cordinator::getCordinationScope(2);
+                                    if ($cordinated_items == true  && in_array($registrations[$k]->academicofferingid, $cordinated_items) == false)
+                                    {
+                                        continue;
+                                    }
+                                }
+                                
                             }
                                 
                             $student = Student::getStudent($user->personid);
@@ -479,8 +490,18 @@
                                 if(Yii::$app->user->can('Cordinator'))
                                 {
                                     $role_types = Cordinator::getCordinatorTypes();
+                                    //assess possible programmes if user is/was assigned Department Head role
+                                    if ($role_types == true && in_array(1, $role_types))
+                                    {
+                                        $cordinated_items = Cordinator::getCordinationScope(1);
+                                        if ($cordinated_items == true  && in_array($registrations[$k]->academicofferingid, $cordinated_items) == false)
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    
                                     //assess possible programmes if user is/was assigned Programme Head role
-                                    if ($role_types == true && in_array(2, $role_types))
+                                    elseif ($role_types == true && in_array(2, $role_types))
                                     {
                                         $programmes_cordinated = Cordinator::getCordinationScope(2);
                                         if ($programmes_cordinated == true  && in_array($registration->academicofferingid, $programmes_cordinated) == false)

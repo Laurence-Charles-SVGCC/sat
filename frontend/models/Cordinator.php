@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use frontend\models\ProgrammeCatalog;
+
 /**
  * This is the model class for table "cordinator".
  *
@@ -207,8 +209,40 @@ class Cordinator extends \yii\db\ActiveRecord
         $unique_items = array();
         if ($cordinatortypeid == 1)             //if Head of Department
         {
-            
+            $roles = Cordinator::find()
+                ->where(['personid' => Yii::$app->user->getId(), 'cordinatortypeid' => $cordinatortypeid,  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            if ($roles)
+            {
+                foreach($roles as $role)
+                {
+                    $unique_academicofferingids = array();
+                    $offerings = AcademicOffering::find()
+                            ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                            ->where(['academic_offering.academicyearid' => $role->academicyearid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                            'programme_catalog.departmentid' => $role->departmentid,'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0
+                                ])
+                            ->all();
+                    if ($offerings)
+                    {
+                        foreach($offerings as $offering)
+                        {
+                            if(in_array($offering->academicofferingid, $unique_academicofferingids) == true)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                $unique_academicofferingids[] = $offering->academicofferingid;
+                            }
+                        }
+                        return $unique_academicofferingids;
+                    }
+                }
+                return $unique_academicofferingids;
+            }
         }
+        
         elseif($cordinatortypeid == 2)      //if Programme Head
         {
             $roles = Cordinator::find()
