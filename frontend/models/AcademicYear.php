@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 
+use frontend\models\ApplicantIntent;
+
 /**
  * This is the model class for table "academic_year".
  *
@@ -245,7 +247,12 @@ class AcademicYear extends \yii\db\ActiveRecord
             {
                 $key = $year->academicyearid;
                 array_push($keys, $key);
-                $value = $year->title;
+                $year_title = $year->title;
+                $year_division = ApplicantIntent::find()
+                        ->where(['applicantintentid' => $year->applicantintentid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()->name;
+                $value = $year_title . " (" . $year_division . ")";  
+//                $value = $year->title;
                 array_push($values, $value);
             }
          }
