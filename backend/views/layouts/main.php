@@ -46,7 +46,12 @@ else
     <div class="wrap">
         <header class="main-header">
         <!-- Logo -->
-        <a href="<?= Url::to('site/index'); ?>" class="logo">
+         <?php if(strstr(Url::home(true), "localhost") == true) :?>
+             <a href="./../../backend/web/" class="logo">  
+         <?php else:?>
+             <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="logo">    
+        <?php endif;?>
+<!--        <a href="<?= Url::to('site/index'); ?>" class="logo">-->
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini">SAT</span>
           <!-- logo for regular state and mobile devices -->
