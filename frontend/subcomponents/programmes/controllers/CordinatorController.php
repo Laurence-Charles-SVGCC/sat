@@ -21,6 +21,7 @@ use frontend\models\CourseCatalog;
 use frontend\models\CapeSubject;
 use frontend\models\AcademicOffering;
 use frontend\models\ProgrammeCatalog;
+use frontend\models\ApplicantIntent;
 
 use backend\models\AuthAssignment;
 
@@ -125,9 +126,14 @@ class CordinatorController extends Controller
             
             $year = AcademicYear::find()
                     ->where(['academicyearid' => $cordinator->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one()
-                    ->title;
-            $cordinator_info['academicyear'] = $year;
+                    ->one();
+            $year_title = $year->title;
+            $year_division = ApplicantIntent::find()
+                    ->where(['applicantintentid' => $year->applicantintentid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->name;
+            $year_label = $year_title . " (" . $year_division . ")";  
+            $cordinator_info['academicyear'] = $year_label;
+            
             $cordinator_info['isserving'] = $cordinator->isserving;
             
             $cordinator_container[] = $cordinator_info;
