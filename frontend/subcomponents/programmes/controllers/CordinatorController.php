@@ -376,7 +376,7 @@ class CordinatorController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 22/06/2016
-     * Date Last Modified: 22/06/2016
+     * Date Last Modified: 22/06/2016 | 07/11/2016
      */
     public function actionUpdate($action, $id)
     {
@@ -389,11 +389,21 @@ class CordinatorController extends Controller
          {
             $cordinator->isserving = 0;
             
-            $permission = AuthAssignment::find()
+            $other_cordinator_roles = Cordinator::find()
+                ->where(['personid' => $cordinator->personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->andWhere(['<>' , 'cordinatorid', $id])
+                ->all();
+        
+            //permission is only deleted if the user has no other active cordinator roles
+            if($other_cordinator_roles == false)
+            {
+                $permission = AuthAssignment::find()
                             ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
                             ->one();
-            $permission->delete();
-            
+                if ($permission)
+                    $permission->delete();
+            }
+           
             $cordinator_save_flag = $cordinator->save();
             if($cordinator_save_flag == false)
            {
@@ -409,21 +419,32 @@ class CordinatorController extends Controller
                 $cordinator_save_flag = $cordinator->save();
                 if($cordinator_save_flag == true)
                 {
-                    $permission_save_flag = false;
-                    $permission = new AuthAssignment();
-                    $permission->created_at =  time();
-                    $permission->item_name = "Cordinator";
-                    $permission->user_id = $cordinator->personid;
-                    $permission_save_flag = $permission->save();
-                    if($permission_save_flag == true)
+                    //new permission is only created if the user does not maintain the Cordinator 'permission' because of another active "Cordinator" role
+                    $permission = AuthAssignment::find()
+                            ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
+                            ->one();
+                    if ($permission == true)
                     {
                         $transaction->commit();
                     }
                     else
                     {
-                         $transaction->rollBack();
-                         Yii::$app->getSession()->setFlash('error', 'Error occured saving permission record.');
-                     }
+                        $permission_save_flag = false;
+                        $permission = new AuthAssignment();
+                        $permission->created_at =  time();
+                        $permission->item_name = "Cordinator";
+                        $permission->user_id = $cordinator->personid;
+                        $permission_save_flag = $permission->save();
+                        if($permission_save_flag == true)
+                        {
+                            $transaction->commit();
+                        }
+                        else
+                        {
+                             $transaction->rollBack();
+                             Yii::$app->getSession()->setFlash('error', 'Error occured saving permission record.');
+                         }
+                    }
                 }
                 else
                 {
@@ -447,7 +468,7 @@ class CordinatorController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 26/06/216
-     * Date Last Modified: 26/06/2016
+     * Date Last Modified: 26/06/2016 | 07/11/2016
      */
     public function actionDeleteCordinator($id)
     {
@@ -455,10 +476,21 @@ class CordinatorController extends Controller
                 ->where(['cordinatorid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
         
-        $permission = AuthAssignment::find()
+        $other_cordinator_roles = Cordinator::find()
+                ->where(['personid' => $cordinator->personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->andWhere(['<>' , 'cordinatorid', $id])
+                ->all();
+        
+        //permission is only deleted if the user has no other active cordinator roles
+        if($other_cordinator_roles == false)
+        {
+            $permission = AuthAssignment::find()
                         ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
                         ->one();
-        $permission->delete();
+             if ($permission)
+                    $permission->delete();
+        }
+        
         
         $cordinator->isserving = 0;
         $cordinator->isactive = 0;

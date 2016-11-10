@@ -659,7 +659,7 @@ class ProgrammesController extends Controller
                     }
                 }
             }
-            else
+            else       
             {
                 $cordinated_offerings = AcademicOffering::getCordinatedAcademicofferings();
                 $unique_offerings = array();
@@ -4350,15 +4350,25 @@ class ProgrammesController extends Controller
     
     
     
-    
+    /**
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: ??
+     * Date Last Modified: 07/11/2016
+     */
     public function actionProgrammeCordinator()
     {
-        /*Any programme coridinator for a particular academic_offering with also be granted access to all the
-         * to all other corresponding academic_offering for the same programme
-         */
+        $is_programme_cordinator = false;
+        $is_course_head = false;
+        $is_cape_subject_head = false;
+                
         $employeeid = Yii::$app->user->identity->personid;
         
         $cordinated_programme_academicofferingids = ( AcademicOffering::getCordinatedAcademicofferingids())?  AcademicOffering::getCordinatedAcademicofferingids(): array();
+        if ($cordinated_programme_academicofferingids)
+            $is_programme_cordinator = true;
         
         $programme_dataprovider = NULL;
       
@@ -4422,36 +4432,15 @@ class ProgrammesController extends Controller
         return $this->render('cordinator_programme_results',
             [
                 'dataProvider' => $programme_dataprovider,
+                'is_programme_cordinator' => $is_programme_cordinator,
+                'is_course_head' => $is_course_head,
+                'is_cape_subject_head' => $is_cape_subject_head,
             ]);
     }
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     //deprecated functionality
     public function actionViewAllCourses()

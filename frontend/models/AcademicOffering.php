@@ -237,7 +237,7 @@ class AcademicOffering extends \yii\db\ActiveRecord
         * 
         * Author: Laurence Charles
         * Date Created: 29/06/2016
-        * Date LAst Modified: 29/.6/2016
+        * Date LAst Modified: 29/06/2016
         */
        public static function getCordinatedAcademicofferingids()
        {

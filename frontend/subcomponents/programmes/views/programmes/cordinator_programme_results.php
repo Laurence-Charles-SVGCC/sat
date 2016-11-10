@@ -16,7 +16,7 @@
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
     
-    $this->title = 'Programme Cordinator  Control Panel';
+    $this->title = 'Cordinator  Control Panel';
 ?>
 
 
@@ -31,60 +31,63 @@
             </div>
             
             <div class="custom_body">  
-                <h1 class="custom_h1"><?=$this->title?></h1>
+                <h1 class="custom_h1"><?=$this->title?></h1><br/>
                 
-                <br/>
-                <div class="cordinator-programme-result">
-                    <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
-                            [
-                                'format' => 'html',
-                                'value' => function($row)
-                                    {
-                                        return Html::a($row['name'], 
-                                                        Url::to(['programmes/programme-overview', 'programmecatalogid' => $row['programmecatalogid']]));
-                                    }
-                            ],
-                            [
-                                'attribute' => 'qualificationtype',
-                                'format' => 'text',
-                                'label' => 'Qualification'
-                            ],
-                            [
-                                'attribute' => 'specialisation',
-                                'format' => 'text',
-                                'label' => 'Specialisation'
-                            ],
-                            [
-                                'attribute' => 'department',
-                                'format' => 'text',
-                                'label' => 'Department'
-                            ],
-                            [
-                                'attribute' => 'exambody',
-                                'format' => 'text',
-                                'label' => 'Exam Body'
-                            ],
-                            [
-                                'attribute' => 'programmetype',
-                                'format' => 'text',
-                                'label' => 'Type'
-                            ],     
-                            [
-                                'attribute' => 'duration',
-                                'format' => 'text',
-                                'label' => 'Duration'
-                            ],
-                            [
-                                'attribute' => 'creationdate',
-                                'format' => 'text',
-                                'label' => 'Created'
-                            ],
-                        ],
-                    ]); ?>     
-                </div>
+                <?php if ($is_programme_cordinator):?>
+                    <fieldset class="programe-cordinator-result">
+                        <legend class="custom_h2">Programme(s) Cordinated</legend>
+                            <?= GridView::widget([
+                                'dataProvider' => $dataProvider,
+                                'columns' => [
+        //                            ['class' => 'yii\grid\SerialColumn'],
+                                    [
+                                        'label' => 'Name',
+                                        'format' => 'html',
+                                        'value' => function($row)
+                                            {
+                                                return Html::a($row['name'], 
+                                                                Url::to(['programmes/programme-overview', 'programmecatalogid' => $row['programmecatalogid']]));
+                                            }
+                                    ],
+                                    [
+                                        'attribute' => 'qualificationtype',
+                                        'format' => 'text',
+                                        'label' => 'Qualification'
+                                    ],
+                                    [
+                                        'attribute' => 'specialisation',
+                                        'format' => 'text',
+                                        'label' => 'Specialisation'
+                                    ],
+                                    [
+                                        'attribute' => 'department',
+                                        'format' => 'text',
+                                        'label' => 'Department'
+                                    ],
+        //                            [
+        //                                'attribute' => 'exambody',
+        //                                'format' => 'text',
+        //                                'label' => 'Exam Body'
+        //                            ],
+                                    [
+                                        'attribute' => 'programmetype',
+                                        'format' => 'text',
+                                        'label' => 'Type'
+                                    ],     
+        //                            [
+        //                                'attribute' => 'duration',
+        //                                'format' => 'text',
+        //                                'label' => 'Duration'
+        //                            ],
+        //                            [
+        //                                'attribute' => 'creationdate',
+        //                                'format' => 'text',
+        //                                'label' => 'Created'
+        //                            ],
+                                ],
+                            ]); ?>     
+                    </fieldset>        
+              <?php endif;?>
             </div>
         </div>
     </div>

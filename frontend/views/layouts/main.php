@@ -191,7 +191,7 @@ else
                                             && (in_array('Head of Department', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid)) 
                                                         ||  in_array('Programme Head', CordinatorType::getCordinatorTypes(Yii::$app->user->identity->personid))) 
                                      ): ?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator'])?>"><i class="fa fa-circle-o"></i>View Programme Performance</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator'])?>"><i class="fa fa-circle-o"></i>Audit Programme(s)</a></li>
                                 <li><a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index'])?>"><i class="fa fa-circle-o"></i>View Student Grades</a></li>
                             <?php endif; ?>
                             

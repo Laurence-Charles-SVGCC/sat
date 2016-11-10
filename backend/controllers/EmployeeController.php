@@ -150,12 +150,21 @@
                 }
                 else
                 {
+                    $employee = Employee::find()
+                             ->where(['personid' => $model->userid,  'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($employee = false)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Employee record not found.');
+                    }
+                    $name = Employee::getEmployeeName($model->userid);
+                    
                     $user = User::find()
                             ->where(['personid' => $model->userid,  'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     if ($user == false)
                     {
-                        Yii::$app->getSession()->setFlash('error', 'Employee record not found.');
+                        Yii::$app->getSession()->setFlash('error', 'User record not found.');
                     }
                     else
                     {
