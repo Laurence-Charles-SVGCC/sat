@@ -307,9 +307,12 @@ class CordinatorController extends Controller
                    $is_currently_cordinator =  AuthAssignment::find()
                                ->where(['user_id' => $cordinator->personid, 'item_name' => 'Cordinator'])
                                ->one();
+                   $is_currently_registry =  AuthAssignment::find()
+                               ->where(['user_id' => $cordinator->personid, 'item_name' => 'registry'])
+                               ->one();
                    if ($cordinator_save_flag == true)
                    {
-                       if($is_currently_cordinator == true)
+                       if($is_currently_cordinator == true  && $is_currently_registry == true)
                        {
                            $transaction->commit();
                            return self::actionIndex();
