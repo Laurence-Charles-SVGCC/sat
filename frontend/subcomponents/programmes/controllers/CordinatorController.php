@@ -406,11 +406,17 @@ class CordinatorController extends Controller
             //permission is only deleted if the user has no other active cordinator roles
             if($other_cordinator_roles == false)
             {
-                $permission = AuthAssignment::find()
+                $cordinator_permission = AuthAssignment::find()
                             ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
                             ->one();
-                if ($permission)
-                    $permission->delete();
+                if ($cordinator_permission)
+                    $cordinator_permission->delete();
+                
+                 $registry_permission = AuthAssignment::find()
+                        ->where(['item_name' => 'registry', 'user_id' => $cordinator->personid])
+                        ->one();
+                if ($registry_permission)
+                    $registry_permission->delete();
             }
            
             $cordinator_save_flag = $cordinator->save();
@@ -429,29 +435,46 @@ class CordinatorController extends Controller
                 if($cordinator_save_flag == true)
                 {
                     //new permission is only created if the user does not maintain the Cordinator 'permission' because of another active "Cordinator" role
-                    $permission = AuthAssignment::find()
+                    $cordinator_permission = AuthAssignment::find()
                             ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
                             ->one();
-                    if ($permission == true)
+                     $registry_permission = AuthAssignment::find()
+                        ->where(['item_name' => 'registry', 'user_id' => $cordinator->personid])
+                        ->one();
+                    if ($cordinator_permission == true  && $registry_permission == true)
                     {
                         $transaction->commit();
                     }
                     else
                     {
-                        $permission_save_flag = false;
-                        $permission = new AuthAssignment();
-                        $permission->created_at =  time();
-                        $permission->item_name = "Cordinator";
-                        $permission->user_id = $cordinator->personid;
-                        $permission_save_flag = $permission->save();
-                        if($permission_save_flag == true)
+                        $cordinator_permission_save_flag = false;
+                        $cordinator_permission = new AuthAssignment();
+                        $cordinator_permission->created_at =  time();
+                        $cordinator_permission->item_name = "Cordinator";
+                        $cordinator_permission->user_id = $cordinator->personid;
+                        $cordinator_permission_save_flag = $cordinator_permission->save();
+                        if($cordinator_permission_save_flag == true)
                         {
-                            $transaction->commit();
+                            $registry_permission_save_flag = false;
+                            $registry_permission = new AuthAssignment();
+                            $registry_permission->created_at =  time();
+                            $registry_permission->item_name = "registry";
+                            $registry_permission->user_id = $cordinator->personid;
+                            $registry_permission_save_flag = $registry_permission->save();
+                            if($registry_permission_save_flag == true)
+                            {
+                                 $transaction->commit();
+                            }
+                            else
+                            {
+                                 $transaction->rollBack();
+                                 Yii::$app->getSession()->setFlash('error', 'Error occured saving registry permission record.');
+                             }
                         }
                         else
                         {
                              $transaction->rollBack();
-                             Yii::$app->getSession()->setFlash('error', 'Error occured saving permission record.');
+                             Yii::$app->getSession()->setFlash('error', 'Error occured saving cordinator permission record.');
                          }
                     }
                 }
@@ -490,14 +513,20 @@ class CordinatorController extends Controller
                 ->andWhere(['<>' , 'cordinatorid', $id])
                 ->all();
         
-        //permission is only deleted if the user has no other active cordinator roles
+        //permissions only deleted if the user has no other active cordinator roles
         if($other_cordinator_roles == false)
         {
-            $permission = AuthAssignment::find()
+            $cordinator_permission = AuthAssignment::find()
                         ->where(['item_name' => 'Cordinator', 'user_id' => $cordinator->personid])
                         ->one();
-             if ($permission)
-                    $permission->delete();
+             if ($cordinator_permission)
+                    $cordinator_permission->delete();
+             
+             $registry_permission = AuthAssignment::find()
+                        ->where(['item_name' => 'registry', 'user_id' => $cordinator->personid])
+                        ->one();
+             if ($registry_permission)
+                    $registry_permission->delete();
         }
         
         
