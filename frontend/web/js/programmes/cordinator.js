@@ -178,7 +178,8 @@ function respondToAcademicYearSelection(e)
     if (baseUrl.search("localhost")!=-1)
         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
     else
-        url = "http://www.sat.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+//        url = "http://www.sat.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+        url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
     
     url+= "listingtype=" + listing_type;
     
