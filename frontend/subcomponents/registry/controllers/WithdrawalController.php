@@ -77,7 +77,6 @@
                         ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-//                        ->where(['student_registration.iscurrent' => 1, 'student_registration.isdeleted' => 0,
                         ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
                                         'offer.isactive' => 1, 'offer.isdeleted' => 0,
                                         'application.isactive' => 1, 'application.isdeleted' => 0,
