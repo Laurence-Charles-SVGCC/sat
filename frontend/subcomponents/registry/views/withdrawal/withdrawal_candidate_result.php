@@ -52,76 +52,9 @@
                     <p>
                         Click the following link to export a copy of the listing.
                         <?= Html::a('Export Listing', ['export-withdrawal-listing', 'application_periodid' => $application_periodid], ['class' => 'btn btn-primary']) ?>
-                    </p><br/>
-                    <!--<div id="withdrawal-export">
-                    <p>Click the link below to export a copy of the listing.</p>
-                    <?= ExportMenu::widget([
-                            'dataProvider' => $dataProvider,
-                            'columns' => [
-                                    [
-                                        'attribute' => 'username',
-                                        'format' => 'text',
-                                        'label' => 'Student No.'
-                                    ],
-                                    [
-                                        'attribute' => 'title',
-                                        'format' => 'text',
-                                        'label' => 'Title'
-                                    ],
-                                    [
-                                        'attribute' => 'first_name',
-                                        'format' => 'text',
-                                        'label' => 'First Name'
-                                    ],
-                                    [
-                                        'attribute' => 'middle_name',
-                                        'format' => 'text',
-                                        'label' => 'Middle Name'
-                                    ],
-                                    [
-                                        'attribute' => 'last_name',
-                                        'format' => 'text',
-                                        'label' => 'Last Name'
-                                    ],
-                                    [
-                                        'attribute' => 'programme',
-                                        'format' => 'text',
-                                        'label' => 'Programme'
-                                    ],
-                                    [
-                                        'attribute' => 'current_level',
-                                        'format' => 'text',
-                                        'label' => 'Level'
-                                    ],
-                                    [
-                                        'attribute' => 'student_status',
-                                        'format' => 'text',
-                                        'label' => 'Status'
-                                    ],
-                                    [
-                                        'attribute' => 'email',
-                                        'format' => 'text',
-                                        'label' => 'Email'
-                                    ],
-                                ],
-                            'fontAwesome' => true,
-                            'dropdownOptions' => [
-                                'label' => 'Select Export Type',
-                                'class' => 'btn btn-default'
-                            ],
-                            'asDropdown' => false,
-                            'showColumnSelector' => false,
-                            'filename' => $filename,
-                            'exportConfig' => [
-                                ExportMenu::FORMAT_TEXT => false,
-                                ExportMenu::FORMAT_HTML => false,
-                                ExportMenu::FORMAT_EXCEL => false,
-                                ExportMenu::FORMAT_EXCEL_X => false,
-                                ExportMenu::FORMAT_PDF => false
-                            ],
-                        ]);
-                    ?>
-                </div><br/>-->
+                    </p>
+                </div><br/>
+                
 
                 <div id="withdrawal-display">
                     <?= GridView::widget([
@@ -175,9 +108,9 @@
             </div><br/>
             
             
-            <div id="withdrawal-progress-report"  style="width:95%; margin: 0 auto">
+            <div id="withdrawal-progress-report">
                 <hr><h2 class="custom_h2" >Withdrawal Application Report</h2>
-                <table class="table table-hover">
+                <table class="table table-hover"   style="width:95%; margin: 0 auto">
                     <thead>
                         <tr>
                             <th>Prospective Withdrawals</th>
