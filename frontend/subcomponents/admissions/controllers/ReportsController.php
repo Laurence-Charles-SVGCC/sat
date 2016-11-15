@@ -1296,15 +1296,16 @@ class ReportsController extends Controller {
             $current_male_present_count = 0;
             $current_male_academic_withdrawn_count = 0;
             $current_male_voluntary_withdrawn_count = 0;
+            $current_male_other_count = 0;
             
            $curent_female_iscurrent_count = 0;
             $current_female_probation_count = 0;
             $current_female_present_count = 0;
             $current_female_academic_withdrawn_count = 0;
             $current_female_voluntary_withdrawn_count = 0;
+            $current_female_other_count = 0;
             
            
-            
             foreach($academic_offerings as $offering)
             {
                 $programme_record = ProgrammeCatalog::find()
@@ -1561,6 +1562,7 @@ class ReportsController extends Controller {
                 $progression_info['current_male_probation_count'] = $current_male_probation_count;
                 $progression_info['current_male_academic_withdrawn_count'] = $current_male_academic_withdrawn_count;
                 $progression_info['current_male_voluntary_withdrawn_count'] = $current_male_voluntary_withdrawn_count;
+                $progression_info['current_male_other_count'] = $enrolled_male_count - ($curent_male_iscurrent_count + $current_male_probation_count);
                 
                 $progression_info['enrolled_females'] = $enrolled_female_count;
                 $progression_info['current_female_present_count'] = $curent_female_iscurrent_count + $current_female_probation_count;
@@ -1568,6 +1570,7 @@ class ReportsController extends Controller {
                 $progression_info['current_female_probation_count'] = $current_female_probation_count;
                 $progression_info['current_female_academic_withdrawn_count'] = $current_female_academic_withdrawn_count;
                 $progression_info['current_female_voluntary_withdrawn_count'] = $current_female_voluntary_withdrawn_count;
+                $progression_info['current_female_other_count'] = $enrolled_female_count - ($curent_female_iscurrent_count + $current_female_probation_count);
                 
                 $progression_data[] = $progression_info;
             }

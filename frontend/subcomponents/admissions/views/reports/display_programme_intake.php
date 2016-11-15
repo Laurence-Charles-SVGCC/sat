@@ -86,6 +86,11 @@
                                             'label' => 'Male - Voluntary Withdrawal'
                                         ],
                                         [
+                                            'attribute' => 'current_male_other_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Other'
+                                        ],
+                                        [
                                             'attribute' => 'enrolled_females',
                                             'format' => 'text',
                                             'label' => 'Enrolled Females'
@@ -114,6 +119,11 @@
                                             'attribute' => 'current_female_voluntary_withdrawn_count',
                                             'format' => 'text',
                                             'label' => 'Female - Voluntary Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_other_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Other'
                                         ],
                                     ],
                                 'fontAwesome' => true,
@@ -185,6 +195,11 @@
                                             'label' => 'Male- Voluntary Withdrawal'
                                         ],
                                         [
+                                            'attribute' => 'current_male_other_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Other'
+                                        ],
+                                        [
                                             'attribute' => 'enrolled_females',
                                             'format' => 'text',
                                             'label' => 'Enrolled Females'
@@ -213,6 +228,11 @@
                                             'attribute' => 'current_female_voluntary_withdrawn_count',
                                             'format' => 'text',
                                             'label' => 'Female- Voluntary Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_other_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Other'
                                         ],
                                     ],
                                 ]); 
