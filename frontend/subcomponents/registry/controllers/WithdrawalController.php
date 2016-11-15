@@ -24,8 +24,8 @@
     use frontend\models\BatchStudentCape;
       
 
-    class WithdrawalController extends Controller {
-
+    class WithdrawalController extends Controller 
+    {
         /**
          * Renders withdrawl candidates search view
          * 
@@ -42,11 +42,8 @@
              return $this->render('select_candidate_criteria',
                 [
                     'periods' => $periods,
-//                    'application_periodid' => $application_periodid,
                 ]);
          }
-        
-        
         
         
         /**
@@ -254,9 +251,6 @@
                     'current' => $current,
                 ]);
         }
-        
-        
-        
         
         
         /**
