@@ -220,7 +220,8 @@ else
                             <?php endif; ?>
                            
                            <?php if (Yii::$app->user->can('students')): ?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index', 'new' => 1])?>"><i class="fa fa-circle-o"></i>Withdrawals & Promotions</a></li>
+<!--                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index', 'new' => 1])?>"><i class="fa fa-circle-o"></i>Withdrawals & Promotions</a></li>-->
+                                <li><a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index'])?>"><i class="fa fa-circle-o"></i>Withdrawals & Promotions</a></li>
                             <?php endif; ?>
                                 
                             <!--<?php if (Yii::$app->user->can('manageTranscripts')): ?>

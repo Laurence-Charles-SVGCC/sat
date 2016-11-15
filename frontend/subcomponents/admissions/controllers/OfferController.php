@@ -1737,20 +1737,6 @@ class OfferController extends Controller
             
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * Generates Report for All Offers
      * 
