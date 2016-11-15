@@ -34,6 +34,195 @@
             <br/>
             
             <div style = 'margin-left: 2.5%;'>
+                <?php if( $academic_offering_in_second_year == 1):?> 
+                    <h2 class="custom_h2" style="margin-left:2.5%"><?= $progression_header?></h2>
+                    <div id="progression-export">
+                        <?= ExportMenu::widget([
+                                'dataProvider' => $progression_dataProvider,
+                                'columns' => [
+                                        [
+                                            'attribute' => 'name',
+                                            'format' => 'text',
+                                            'label' => 'Programme'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled',
+                                            'format' => 'text',
+                                            'label' => 'Total Enrolled'
+                                        ],
+                                        [
+                                            'attribute' => 'total_current',
+                                            'format' => 'text',
+                                            'label' => 'Total Current'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_males',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Males'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_present_count',
+                                            'format' => 'text',
+                                            'label' => 'Present Males'
+                                        ],
+                                        [
+                                            'attribute' => 'curent_male_iscurrent_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Current'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_probation_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Probationary Retention'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_academic_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Academic Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_voluntary_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Voluntary Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_females',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Females'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_present_count',
+                                            'format' => 'text',
+                                            'label' => 'Present Females'
+                                        ],
+                                        [
+                                            'attribute' => 'curent_female_iscurrent_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Current'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_probation_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Probationary Retention'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_academic_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Academic Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_voluntary_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Female - Voluntary Withdrawal'
+                                        ],
+                                    ],
+                                'fontAwesome' => true,
+                                'dropdownOptions' => [
+                                    'label' => 'Select Export Type',
+                                    'class' => 'btn btn-default'
+                                ],
+                                'asDropdown' => false,
+                                'showColumnSelector' => false,
+                                'filename' => $progression_filename,
+                                'exportConfig' => [
+                                    ExportMenu::FORMAT_TEXT => false,
+                                    ExportMenu::FORMAT_HTML => false,
+                                    ExportMenu::FORMAT_EXCEL => false,
+                                    ExportMenu::FORMAT_EXCEL_X => false
+                                ],
+                            ]);
+                        ?>
+                    </div>
+                    
+                    <div id="progression-display">
+                            <?= GridView::widget([
+                                    'dataProvider' => $progression_dataProvider,
+                                    'options' => ['style' => 'width: 95%; margin: 0 auto;'],
+                                    'columns' => [
+                                        [
+                                            'attribute' => 'name',
+                                            'format' => 'text',
+                                            'label' => 'Programme'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled',
+                                            'format' => 'text',
+                                            'label' => 'Total Enrolled'
+                                        ],
+                                        [
+                                            'attribute' => 'total_current',
+                                            'format' => 'text',
+                                            'label' => 'Total Current'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_males',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Males'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_present_count',
+                                            'format' => 'text',
+                                            'label' => 'Present Males'
+                                        ],
+                                        [
+                                            'attribute' => 'curent_male_iscurrent_count',
+                                            'format' => 'text',
+                                            'label' => 'Male - Current'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_probation_count',
+                                            'format' => 'text',
+                                            'label' => 'Male- Probationary Retention'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_academic_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Male- Academic Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_male_voluntary_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Male- Voluntary Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'enrolled_females',
+                                            'format' => 'text',
+                                            'label' => 'Enrolled Females'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_present_count',
+                                            'format' => 'text',
+                                            'label' => 'Present Females'
+                                        ],
+                                        [
+                                            'attribute' => 'curent_female_iscurrent_count',
+                                            'format' => 'text',
+                                            'label' => 'Female- Current'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_probation_count',
+                                            'format' => 'text',
+                                            'label' => 'Female- Probationary Retention'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_academic_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Female- Academic Withdrawal'
+                                        ],
+                                        [
+                                            'attribute' => 'current_female_voluntary_withdrawn_count',
+                                            'format' => 'text',
+                                            'label' => 'Female- Voluntary Withdrawal'
+                                        ],
+                                    ],
+                                ]); 
+                            ?>
+                        </div>
+                    </div>
+                    <br/>
+                <?php endif;?>
+                
+                
                 <?php if($summary_dataProvider):?>
                     <div id="summary-listing">
                         <h2 class="custom_h2" style="margin-left:2.5%"><?= $summary_header?></h2>
