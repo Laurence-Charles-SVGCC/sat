@@ -416,7 +416,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 12/09/2016
-         * Date Last Modified: 12/09/2016
+         * Date Last Modified: 12/09/2016 | 17/11/2016
          */
         public function actionPromoteStudents($applicationperiodid)
         {
@@ -449,10 +449,10 @@
                         {
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex(1);
+                            return self::actionIndex();
                         }
                     }
-                    elseif (StudentRegistration::getStudentDivision($registration->studentregistrationid) == 6 && $registration->currentlevel == 2 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
+                    elseif (StudentRegistration::getStudentDivision($registration->studentregistrationid) == 7 && $registration->currentlevel == 2 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
                     {
                         $registration->currentlevel = 3;
                         $save_flag = $registration->save();
@@ -460,18 +460,18 @@
                         {
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex(1);
+                            return self::actionIndex();
                         }
                     }
                 }
                 
                 $transaction->commit();
-                return self::actionIndex(1);
+                return self::actionIndex();
                 
             } catch (Exception $ex) {
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
-                 return self::actionIndex(1);
+                 return self::actionIndex();
             }
         }
         
@@ -484,7 +484,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 12/09/2016
-         * Date Last Modified: 12/09/2016
+         * Date Last Modified: 12/09/2016 | 17/11/2016
          */
         public function actionUndoPromotions($applicationperiodid)
         {
@@ -517,13 +517,13 @@
                         {
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex(1);
+                            return self::actionIndex();
                         }
                     }
                 }
                 
                 $transaction->commit();
-                return self::actionIndex(1);
+                return self::actionIndex();
                 
             } catch (Exception $ex) {
                 $transaction->rollBack();
