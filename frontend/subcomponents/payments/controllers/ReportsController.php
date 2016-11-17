@@ -141,7 +141,15 @@
                         if ($beneficiery == false)
                         {
                             $beneficiery = CompulsoryRelation::find()->where(['personid' => $accepted_applicant->personid, 'relationtypeid' => 6, 'isdeleted' => 0])->one();
-                            $accepted_info['beneficiery_address'] = $beneficiery->address;
+                            if ($beneficiery == false)
+                            {
+//                                $accepted_info['beneficiery_address'] = "??";
+                                continue;
+                            }
+                            else
+                            {
+                                $accepted_info['beneficiery_address'] = $beneficiery->address;
+                            }
                         }
                         else
                         {
