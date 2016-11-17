@@ -138,7 +138,7 @@
 
                     <ul>
                         <li>
-                            Click the button below to perform the promotion of students from Level 1 to Level 2.
+                            Click the button below to perform the promotion of students to the next level of their respective programmes.
                         </li>
                         <li>
                             Please ensure you would have updated the statuses of the students appearing
@@ -146,7 +146,7 @@
                         </li>
                         <li>
                             Clicking the button will ensure that all students that have not been withdrawn;
-                            have their 'Current Level' updated to Level 2.
+                            have their 'Current Level' promoted.
                         </li>
                     </ul><br/>
 
