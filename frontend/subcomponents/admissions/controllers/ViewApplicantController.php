@@ -46,7 +46,7 @@
     use frontend\models\DocumentType;
     use frontend\models\Employee;
     use frontend\models\ConcurrentApplicant;
-
+    use frontend\models\ApplicantDeferral;
 
 
 class ViewApplicantController extends \yii\web\Controller
@@ -792,7 +792,7 @@ class ViewApplicantController extends \yii\web\Controller
      * 
      * Author: Laurence Charles
      * Date Created: 20/12/2015
-     * Date Last Modified: 28/02/2016
+     * Date Last Modified: 28/02/2016 | 18/11/2016 | 21/11/2016
      */
     public function actionApplicantProfile($applicantusername, $unrestricted = false)
     {
@@ -1125,6 +1125,10 @@ class ViewApplicantController extends \yii\web\Controller
         /********************************* Offers ******************************/
         $offers = Offer::getOffers($personid);
 
+        /**************************  Applicant Deferrals  ************************/
+        $applicant_deferral = ApplicantDeferral::find()
+                ->where(['applicantid' => $applicant->applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
         /*************************** Documents/Submitted ***********************/
         $document_details = array();
         $documents = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
@@ -1218,6 +1222,7 @@ class ViewApplicantController extends \yii\web\Controller
             'third' => $third,
             'thirdDetails' =>$thirdDetails,
             'offers' => $offers,
+            'applicant_deferral' => $applicant_deferral,
             'document_details' => $document_details,
         ]);
     }
@@ -3605,5 +3610,168 @@ class ViewApplicantController extends \yii\web\Controller
     }
     
     
+    /**
+     * Defers a successful applicant's offer
+     * 
+     * @param type $personid
+     * @param type $applicantid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/11/2016
+     * Date Last Modified: 18/11/2016
+     */
+    public function actionDeferApplicant($personid, $applicantid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $applicant_deferral = new ApplicantDeferral();
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $load_flag = false;
+            $deferral_save_flag = false;
+            $applicant_save_flag = false;
+
+            $load_flag = $applicant_deferral->load($post_data);
+            if($load_flag == true)
+            {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    $applicant_deferral->personid = $personid;
+                    $applicant_deferral->applicantid = $applicantid;
+                    $applicant_deferral->deferraldate = date('Y-m-d');
+                    $applicant_deferral->deferredby = Yii::$app->user->identity->personid;
+                    
+                    $deferral_save_flag = $applicant_deferral->save();
+                    if($deferral_save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->session->setFlash('error', 'Error occured saving deferral.');
+                    }
+                    else
+                    {
+                        $applicant = Applicant::find()
+                                ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                        if ($applicant == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured retrieving applicant record.');
+                        }
+                        else
+                        {
+                            $applicant->hasdeferred = 1;
+                            $applicant_save_flag = $applicant->save();
+                             if($applicant_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured updating applicant record.');
+                            }
+                            else
+                            {
+                                $transaction->commit();
+                                return self::actionApplicantProfile($user->username);
+                            }
+                        }
+                    }
+                }
+                catch (Exception $e) 
+                {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Error occured processing request.');
+                } 
+            }
+            else
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load deferral record.');        
+            }
+        }
+       
+        return $this->render('defer_applicant', [
+            'user' => $user,
+            'applicant_deferral' => $applicant_deferral,
+        ]);
+    }
+    
+    
+    
+    /**
+     * Defers a successful applicant's offer
+     * 
+     * @param type $personid
+     * @param type $applicantid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 18/11/2016
+     * Date Last Modified: 18/11/2016
+     */
+    public function actionCancelDeferral($personid, $applicantid)
+    {
+        $load_flag = false;
+        $deferral_save_flag = false;
+        $applicant_save_flag = false;
+            
+        $applicant_deferral = ApplicantDeferral::find()
+                ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($applicant_deferral == true)
+        {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $applicant_deferral->isactive = 0;
+                $applicant_deferral->isdeleted = 1;
+                $deferral_save_flag = $applicant_deferral->save();
+                if($deferral_save_flag == true)
+                {
+                    $applicant = Applicant::find()
+                            ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($applicant == true)
+                    {
+                        $applicant->hasdeferred = 0;
+                        $applicant_save_flag = $applicant->save();
+                        if($applicant_save_flag == true)
+                        {
+                            $transaction->commit();
+                            return self::actionApplicantProfile($user->username);
+                        }
+                        else
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured save deferral.');
+                        }
+                    }
+                    else
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->session->setFlash('error', 'Error occured retrieving applicant record.');
+                    }
+                }
+                else
+                {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Error occured saving deferral.');
+                } 
+            }
+            catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing request.');
+            }
+        }
+        {
+            Yii::$app->session->setFlash('error', 'Error occured loading deferral record');
+        }
+        
+        return self::actionApplicantProfile($user->username);
+    }
+        
+        
 
 }

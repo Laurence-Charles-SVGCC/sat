@@ -110,6 +110,7 @@
                         $accepted_info['firstname'] = $accepted_applicant->firstname;
                         $accepted_info['middlename'] = $accepted_applicant->middlename;
                         $accepted_info['lastname'] = $accepted_applicant->lastname;
+                        $accepted_info['dateofbirth'] = $accepted_applicant->dateofbirth;
                         $accepted_info['email'] = Email::find()->where(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->one()->email;
                         
                         $address_record = Address::find()->where(['personid' => $accepted_applicant->personid, 'addresstypeid' => 1, 'isdeleted' => 0])->one();
@@ -200,6 +201,7 @@
                             $enrolled_info['firstname'] = $accepted_applicant->firstname;
                             $enrolled_info['middlename'] = $accepted_applicant->middlename;
                             $enrolled_info['lastname'] = $accepted_applicant->lastname;
+                            $enrolled_info['dateofbirth'] = $accepted_applicant->dateofbirth;
                             
                             $enrolled_info['email'] = Email::find()->where(['personid' => $accepted_applicant->personid, 'isdeleted' => 0])->one()->email;
                         

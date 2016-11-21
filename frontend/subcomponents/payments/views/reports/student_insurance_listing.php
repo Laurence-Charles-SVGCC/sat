@@ -55,6 +55,11 @@
                                                 'label' => 'Last Name'
                                             ],
                                             [
+                                                'attribute' => 'dateofbirth',
+                                                'format' => 'text',
+                                                'label' => 'Date Of Birth'
+                                            ],
+                                            [
                                                 'attribute' => 'phone',
                                                 'format' => 'text',
                                                 'label' => 'Phone'
@@ -130,6 +135,11 @@
                                             'label' => 'Last Name'
                                         ],
                                         [
+                                            'attribute' => 'dateofbirth',
+                                            'format' => 'text',
+                                            'label' => 'DOB (Y/M/D)'
+                                        ],
+                                        [
                                             'attribute' => 'phone',
                                             'format' => 'text',
                                             'label' => 'Phone'
@@ -188,6 +198,11 @@
                                                 'attribute' => 'lastname',
                                                 'format' => 'text',
                                                 'label' => 'Last Name'
+                                            ],
+                                            [
+                                                'attribute' => 'dateofbirth',
+                                                'format' => 'text',
+                                                'label' => 'Date Of Birth'
                                             ],
                                             [
                                                 'attribute' => 'phone',
@@ -263,6 +278,11 @@
                                             'attribute' => 'lastname',
                                             'format' => 'text',
                                             'label' => 'Last Name'
+                                        ],
+                                        [
+                                            'attribute' => 'dateofbirth',
+                                            'format' => 'text',
+                                            'label' => 'DOB (Y/M/D)'
                                         ],
                                         [
                                             'attribute' => 'phone',

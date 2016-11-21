@@ -124,6 +124,52 @@
             <div class="custom_body" style="min-height:4500px;">                
                 <h1 class="custom_h1"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h1>
                 
+                <?php if ($offers == true && $applicant->hasdeferred == 0 /*&& ($applicant->hasduplicate == 0*/):?>
+                    <a class="btn btn-warning glyphicon glyphicon glyphicon-share-alt pull-right" style="margin-right:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/defer-applicant', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Defer Applicant</a>
+                <?php elseif ($applicant->hasdeferred == 1):?>
+                    
+                    <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">
+                        Applicant has been issued an offer but has subsequently deferred their enrollment.
+                    </div>
+                    <table class="table table-striped"  style="font-size:16px; width: 95%; margin-left: 2.5%;">
+                            <thead>
+                                <tr>
+                                    <th>Officer</th>
+                                    <th>Date</th>
+                                    <th>Deferral Details</th>
+                                    
+                                    <?php if ($applicant_deferral->dateresumed == NULL && $applicant_deferral->resumedby == NULL):?>
+                                        <th>Cancel</th>
+                                        <th>Resume</th>
+                                    <?php endif;?>
+                                        
+                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                        <th>Resumed By</th>
+                                        <th>Date Resumed</th>
+                                    <?php endif;?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><?= Employee::getEmployeeName($applicant_deferral->deferredby) ;?></td>
+                                    <td><?= $applicant_deferral->deferraldate ;?></td>
+                                    <td><?= $applicant_deferral->details ;?></td>
+                                    
+                                    <?php if ($applicant_deferral->dateresumed == NULL && $applicant_deferral->resumedby == NULL):?>
+                                        <td><a class="btn btn-danger glyphicon glyphicon-remove-sign" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/cancel-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Cancel </a></td>
+                                        <td><a class="btn btn-primary glyphicon glyphicon-remove-sign"  href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/resume-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Resume</a></td>
+                                    <?php endif;?>
+                                        
+                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                        <th><?= $applicant_deferral->resumedby ;?>/th>
+                                        <th><?= $applicant_deferral->dateresumed ;?></th>
+                                    <?php endif;?>
+                                </tr>
+                            </tbody>
+                        </table>
+                    <br/>
+               <?php endif;?>
+                    
                <?php if ($applicant->hasduplicate == 1):?>
                     <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">
                         Applicant has duplicate applications related to the same/related application periods
