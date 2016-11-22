@@ -3142,10 +3142,45 @@
                                     <?php endif?>
                                 </div>
                                 
+                                
                                 <br/><br/>
                                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php if(Yii::$app->user->can('viewTransferData')):?>
-                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Deferrals and Re-Enrollments
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Pre-Registration Deferrals</div>
+                                        <table class="table table-striped"  style="font-size:16px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Officer</th>
+                                                    <th>Deferral Details</th>
+
+                                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                                        <th>Resumed By</th>
+                                                        <th>Date Resumed</th>
+                                                    <?php endif;?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><?= $applicant_deferral->deferraldate ;?></td>
+                                                    <td><?= Employee::getEmployeeName($applicant_deferral->deferredby) ;?></td>
+                                                    <td><?= $applicant_deferral->details ;?></td>
+
+                                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                                        <td><?= $applicant_deferral->resumedby ;?></td>
+                                                        <td><?= $applicant_deferral->dateresumed ;?></td>
+                                                    <?php endif;?>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    <?php endif?>
+                                </div>
+                                
+                                
+                                <br/><br/>
+                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                    <?php if(Yii::$app->user->can('viewTransferData')):?>
+                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Post-Registration Deferrals and Re-Enrollments
                                             <?php if(Yii::$app->user->can('transferStudent')):?>
                                                 <a class='btn btn-warning glyphicon glyphicon-heart pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'type' =>'start_new']);?> role='button'> 2nd Chance</a>
                                                 <a class='btn btn-info glyphicon glyphicon-leaf pull-right' style="margin-left:2.5%" href=<?=Url::toRoute(['/subcomponents/students/profile/add-deferral', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid, 'type' => 'deferral']);?> role='button'> Deferral Resumption</a>

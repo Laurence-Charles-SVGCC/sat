@@ -13,7 +13,7 @@
 ?>
 
 
-<div id="deferrals_listing">
+<div id="post_registration_deferrals_listing">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [

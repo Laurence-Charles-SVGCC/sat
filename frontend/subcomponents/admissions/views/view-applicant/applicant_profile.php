@@ -161,8 +161,8 @@
                                     <?php endif;?>
                                         
                                     <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
-                                        <th><?= $applicant_deferral->resumedby ;?>/th>
-                                        <th><?= $applicant_deferral->dateresumed ;?></th>
+                                        <td><?= $applicant_deferral->resumedby ;?></td>
+                                        <td><?= $applicant_deferral->dateresumed ;?></td>
                                     <?php endif;?>
                                 </tr>
                             </tbody>

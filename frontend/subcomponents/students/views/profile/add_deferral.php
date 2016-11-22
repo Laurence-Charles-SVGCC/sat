@@ -41,13 +41,13 @@
                 
                 <?php if ($title = "Deferral Resumption"):?>
                    <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used to enroll a student that received approval 
-                        to defer their enrollment.
+                        The feature should only be used to re-enroll a student that received prior approval to defer their enrollment
+                        (after registration was already completed).  
                     </div>
                 <?php elseif ($title = "Registration Renewal"):?>
                     <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used in the event a current student received approval to enroll in a 
-                        new programme as a year one student.
+                        The feature should only be used in the event a current student received approval to re-enroll in a 
+                        new programme as a Year One student.
                     </div>
                 <?php endif;?>
                     

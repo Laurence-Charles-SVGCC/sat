@@ -42,6 +42,7 @@ use frontend\models\BatchStudentCape;
 use frontend\models\Hold;
 use frontend\models\StudentTransfer;
 use frontend\models\StudentDeferral;
+use frontend\models\ApplicantDeferral;
 
 class StudentController extends Controller
 {
@@ -1671,13 +1672,16 @@ class StudentController extends Controller
     public function actionViewTransfersAndDeferrals()
     {
         $transfers_data = NULL;
-        $deferrals_data = NULL;
+        $pre_registration_deferrals_data = NULL;
+        $post_registration_deferrals_data = NULL;
         
         $transfers_provider = array();
-        $deferrals_provider = array();
+        $pre_registration_deferrals_provider = array();
+        $post_registration_deferrals_provider = array();
         
         $transfer_info = array();
-        $deferral_info = array();
+        $pre_registration_deferrals_info = array();
+        $post_registration_deferral_info = array();
         
         $transfers = StudentTransfer::find()
                 ->where(['isdeleted' => 0])
@@ -1764,40 +1768,98 @@ class StudentController extends Controller
             ]); 
         }
         
-        $deferrals = StudentDeferral::find()
-                ->where(['isdeleted' => 0])
+        
+         $applicant_deferrals = ApplicantDeferral::find()
+                ->where([ 'isdeleted' => 0])
                 ->all();
-        if($deferrals)
-        {
-            foreach ($deferrals as $deferral)
+         if($applicant_deferrals)
+         {
+            foreach ($applicant_deferrals as $applicant_deferral)
             {
-                
-                $deferral_info["studentdeferralid"] = $deferral->studentdeferralid;
-                $deferral_info["studentregistrationid"] = $deferral->registrationto;
-                $deferral_info["personid"] = $deferral->personid;
+                $pre_registration_deferral_info["applicantdeferralid"] = $applicant_deferral->applicantdeferralid;
+                $pre_registration_deferral_info["applicantid"] = $applicant_deferral->applicantid;
+                $pre_registration_deferral_info["personid"] = $applicant_deferral->personid;
+                $pre_registration_deferral_info["details"] = $applicant_deferral->details;
                 
                 $user = User::find()
-                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
+                        ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
-                $deferral_info["username"] = $user->username;
+                $pre_registration_deferral_info["username"] = $user->username;
+                
+                $applicant = Student::find()
+                        ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($applicant == false)
+                    continue;
+                $pre_registration_deferral_info["title"] = $applicant->title;
+                $pre_registration_deferral_info["firstname"] = $applicant->firstname;
+                $pre_registration_deferral_info["lastname"] = $applicant->lastname;
+                
+                $pre_registration_deferral_info["deferraldate"] = $applicant_deferral->deferraldate;
+                $pre_registration_deferral_info["deferredby"] = Employee::getEmployeeName($applicant_deferral->deferredby);
+                 
+                if ($applicant_deferral->dateresumed == NULL) 
+                {
+                    $pre_registration_deferral_info["dateresumed"] = "N/A";
+                    $pre_registration_deferral_info["resumedby"] = "N/A";
+                }
+                else
+                {
+                    $pre_registration_deferral_info["dateresumed"] = $applicant_deferral->dateresumed;
+                    $pre_registration_deferral_info["resumedby"] = Employee::getEmployeeName($applicant_deferral->resumedby);
+                }
+                
+                $pre_registration_deferrals_data[] =  $pre_registration_deferral_info;
+            }
+            
+            $pre_registration_deferrals_provider = new ArrayDataProvider([
+                    'allModels' => $pre_registration_deferrals_data,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                        'attributes' => ['username', 'firstname', 'lastname', 'deferraldate'],
+                        ]
+            ]); 
+        }
+        
+         
+        $post_registration_deferrals = StudentDeferral::find()
+                ->where(['isdeleted' => 0])
+                ->all();
+        if($post_registration_deferrals)
+        {
+            foreach ($post_registration_deferrals as $post_registration_deferral)
+            {
+                $post_registration_deferral_info["studentdeferralid"] = $post_registration_deferral->studentdeferralid;
+                $post_registration_deferral_info["studentregistrationid"] = $post_registration_deferral->registrationto;
+                $post_registration_deferral_info["personid"] = $post_registration_deferral->personid;
+                
+                $user = User::find()
+                        ->where(['personid' => $post_registration_deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $post_registration_deferral_info["username"] = $user->username;
                 
                 $student = Student::find()
-                        ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
+                        ->where(['personid' => $post_registration_deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($student == false)
                     continue;
-                $deferral_info["title"] = $student->title;
-                $deferral_info["firstname"] = $student->firstname;
-                $deferral_info["lastname"] = $student->lastname;
+                $post_registration_deferral_info["title"] = $student->title;
+                $post_registration_deferral_info["firstname"] = $student->firstname;
+                $post_registration_deferral_info["lastname"] = $student->lastname;
                 
-                $deferral_info["date"] = $deferral->deferraldate;
-                $deferral_info["iscurrent"] = $deferral->isactive;
+                $post_registration_deferral_info["date"] = $post_registration_deferral->deferraldate;
+                $post_registration_deferral_info["iscurrent"] = $post_registration_deferral->isactive;
                 
-                $deferral_info["registration_from_id"] = $deferral->registrationfrom;
+                $post_registration_deferral_info["registration_from_id"] = $post_registration_deferral->registrationfrom;
                 $registration_from = StudentRegistration::find()
-                        ->where(['studentregistrationid' => $deferral->registrationfrom, 'isdeleted' => 0])
+                        ->where(['studentregistrationid' => $post_registration_deferral->registrationfrom, 'isdeleted' => 0])
                         ->one();
                 if($registration_from == false)
                     continue;
@@ -1816,7 +1878,7 @@ class StudentController extends Controller
                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
                 $previous_programme_name = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
-                $deferral_info['previous_programme'] = $previous_programme_name;
+                $post_registration_deferral_info['previous_programme'] = $previous_programme_name;
                 $previous_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
                         ->where(['academic_year.isdeleted' => 0,
@@ -1825,15 +1887,15 @@ class StudentController extends Controller
                         ->one();
                 if ($previous_year == false)
                     continue;
-                $deferral_info["previous_year"] = $previous_year->title;
-                $deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
+                $post_registration_deferral_info["previous_year"] = $previous_year->title;
+                $post_registration_deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
                 
                 $registration_to = StudentRegistration::find()
-                        ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
+                        ->where(['studentregistrationid' => $post_registration_deferral->registrationto, 'isdeleted' => 0])
                         ->one();
                 if($registration_to == false)
                     continue;
-                $deferral_info["registration_to_id"] = $deferral->registrationto;
+                $post_registration_deferral_info["registration_to_id"] = $post_registration_deferral->registrationto;
                 $current_cape_subjects_names = array();                
                 $current_cape_subjects = array();
                 $current_application = Offer::find()
@@ -1848,12 +1910,12 @@ class StudentController extends Controller
                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
                 }
                 $current_programme_name = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
-                $deferral_info['current_programme'] = $current_programme_name;
+                $post_registration_deferral_info['current_programme'] = $current_programme_name;
                 
-                $deferral_info["deferral_officerid"] = $deferral->deferralofficer;
+                $post_registration_deferral_info["deferral_officerid"] = $post_registration_deferral->deferralofficer;
                 
-                $employee_name = Employee::getEmployeeName($deferral->deferralofficer);
-                $deferral_info["deferral_officer_name"] = $employee_name;
+                $employee_name = Employee::getEmployeeName($post_registration_deferral->deferralofficer);
+                $post_registration_deferral_info["deferral_officer_name"] = $employee_name;
                 $current_year = AcademicYear::find()
                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
                         ->where(['academic_year.isdeleted' => 0,
@@ -1861,14 +1923,14 @@ class StudentController extends Controller
                         ->one();
                 if ($current_year == false)
                     continue;
-                $deferral_info["current_year"] = $current_year->title;
-                $deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
+                $post_registration_deferral_info["current_year"] = $current_year->title;
+                $post_registration_deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
                 
-                $deferrals_data[] =  $deferral_info;
+                $post_registration_deferrals_data[] =  $post_registration_deferral_info;
             }
             
-            $deferrals_provider = new ArrayDataProvider([
-                    'allModels' => $deferrals_data,
+            $post_registration_deferrals_provider = new ArrayDataProvider([
+                    'allModels' => $post_registration_deferrals_data,
                     'pagination' => [
                         'pageSize' => 25,
                     ],
@@ -1882,7 +1944,8 @@ class StudentController extends Controller
         
         return $this->render('transfers_and_deferrals', [
             'transfers_provider' => $transfers_provider,
-            'deferrals_provider' => $deferrals_provider
+            'pre_registration_deferrals_provider' => $pre_registration_deferrals_provider,
+            'post_registration_deferrals_provider' => $post_registration_deferrals_provider,
         ]);
     }
     
@@ -2006,9 +2069,9 @@ class StudentController extends Controller
      * 
      * Author: Laurence Charles
      * Date CreatedL 21/09/2016
-     * Date Last Modified: 21/09/2016
+     * Date Last Modified: 21/09/2016 | 22/11/2016
      */
-    public function actionExportDeferrals()
+    public function actionExportPostRegistrationDeferrals()
     {
         $deferrals_data = NULL;
         $deferrals_provider = array();
@@ -2136,7 +2199,7 @@ class StudentController extends Controller
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
         $filename = $title . $date . $generating_officer;
         
-        return $this->renderPartial('export_deferrals', [
+        return $this->renderPartial('export_post_registration_deferrals', [
             'dataProvider' => $deferrals_provider,
             'filename' => $filename,
         ]);

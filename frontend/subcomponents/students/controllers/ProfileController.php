@@ -87,6 +87,7 @@
     use frontend\models\DocumentSubmitted;
     use frontend\models\DocumentType;
     use frontend\models\Employee;
+    use frontend\models\ApplicantDeferral;
     
     
     class ProfileController extends Controller
@@ -426,6 +427,10 @@
             /********************************* Offers ******************************/
             $offers = Offer::getOffers($personid);
             
+            /**************************  Applicant Deferrals  ************************/
+            $applicant_deferral = ApplicantDeferral::find()
+                ->where(['applicantid' => $applicant->applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
             /*************************** Documents/Submitted ***********************/
             $document_details = array();
             $documents = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
@@ -651,6 +656,7 @@
                 //models for transfers tab
                 'transfers' => $transfers,
                 'deferrals' => $deferrals,
+                'applicant_deferral' => $applicant_deferral,
                 
                 //models for awards and clubs
                 'awards' => $awards,

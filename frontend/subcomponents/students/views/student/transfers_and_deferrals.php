@@ -27,7 +27,7 @@
 
                 <p class="general_text" style="margin-left:2.5%">
                     Please select which report you wish to view.
-                    <?= Html::radioList('listing_category', null, ['transfers' => 'Transfers' , 'deferrals' => 'Deferrals'], ['class'=> 'form_field', 'onclick'=> 'checkTransferOrDeferral();', 'style' => 'margin-left:2.5%']);?>
+                    <?= Html::radioList('listing_category', null, ['transfers' => 'Transfers',  'pre-registration-deferrals' => 'Pre-Registration Deferrals',  'post-registration-deferrals' => 'Post-Registration Deferrals'], ['class'=> 'form_field', 'onclick'=> 'checkTransferOrDeferral();', 'style' => 'margin-left:2.5%']);?>
                 </p>
 
                 <div id="transfers" style="display:none">
@@ -47,20 +47,37 @@
                     <?php endif; ?>
                 </div>
                 
-                <div id="deferrals" style="display:none">
+                <div id="pre-registration-deferrals" style="display:none">
                     <hr>
-                    <h2 class="custom_h2">Deferrals</h2>
-                    <?php if ($deferrals_provider) : ?>
+                    <h2 class="custom_h2">Pre-Registration Deferrals</h2>
+                    <?php if ($pre_registration_deferrals_provider) : ?>
                         <p style="margin-left: 2.5%">
                             Click the following button to download a copy of the deferral listing.
-                            <?= Html::a('Download Deferrals', ['export-deferrals'], ['class' => 'btn btn-primary', 'style' => 'margin-left: 2.5%']) ?>
+                            <?= Html::a('Download Deferrals', ['export-pre-registration-deferrals'], ['class' => 'btn btn-primary', 'style' => 'margin-left: 2.5%']) ?>
                         </p>
                         
-                        <?= $this->render('deferral_results', [
-                            'dataProvider' => $deferrals_provider,
+                        <?= $this->render('pre_registration_deferral_results', [
+                            'dataProvider' => $pre_registration_deferrals_provider,
                         ]) ?>
                     <?php else:?>
-                        <p style="margin-left:2.5%"><strong>There are no recorded student deferrals.</strong></p>
+                        <p style="margin-left:2.5%"><strong>There are no recorded student pre-registration deferrals.</strong></p>
+                    <?php endif; ?>
+                </div>
+                
+                <div id="post-registration-deferrals" style="display:none">
+                    <hr>
+                    <h2 class="custom_h2">Post-Registration Deferrals</h2>
+                    <?php if ($post_registration_deferrals_provider) : ?>
+                        <p style="margin-left: 2.5%">
+                            Click the following button to download a copy of the deferral listing.
+                            <?= Html::a('Download Deferrals', ['export-post-registration-deferrals'], ['class' => 'btn btn-primary', 'style' => 'margin-left: 2.5%']) ?>
+                        </p>
+                        
+                        <?= $this->render('post_registration_deferral_results', [
+                            'dataProvider' => $post_registration_deferrals_provider,
+                        ]) ?>
+                    <?php else:?>
+                        <p style="margin-left:2.5%"><strong>There are no recorded student post-registration deferrals.</strong></p>
                     <?php endif; ?>
                 </div>
             </div>
