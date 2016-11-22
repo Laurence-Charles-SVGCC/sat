@@ -3113,7 +3113,7 @@
                                         <?php
                                             if($transfers == false)
                                             {
-                                                echo "<h4 style=''>Student has no transfers on record.</h4>";
+                                                echo "<h4>Student has no transfers on record.</h4>";
                                             }
                                             else
                                             {
@@ -3147,32 +3147,36 @@
                                 <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                                     <?php if(Yii::$app->user->can('viewTransferData')):?>
                                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Pre-Registration Deferrals</div>
-                                        <table class="table table-striped"  style="font-size:16px;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Officer</th>
-                                                    <th>Deferral Details</th>
+                                         <?php if($applicant_deferral == false):?>
+                                               <h4 >Student had no pre-registration deferrals.</h4>
+                                        <?php else:?>
+                                            <table class="table table-striped"  style="font-size:16px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Officer</th>
+                                                        <th>Deferral Details</th>
 
-                                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
-                                                        <th>Resumed By</th>
-                                                        <th>Date Resumed</th>
-                                                    <?php endif;?>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><?= $applicant_deferral->deferraldate ;?></td>
-                                                    <td><?= Employee::getEmployeeName($applicant_deferral->deferredby) ;?></td>
-                                                    <td><?= $applicant_deferral->details ;?></td>
+                                                        <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                                            <th>Resumed By</th>
+                                                            <th>Date Resumed</th>
+                                                        <?php endif;?>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><?= $applicant_deferral->deferraldate ;?></td>
+                                                        <td><?= Employee::getEmployeeName($applicant_deferral->deferredby) ;?></td>
+                                                        <td><?= $applicant_deferral->details ;?></td>
 
-                                                    <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
-                                                        <td><?= $applicant_deferral->resumedby ;?></td>
-                                                        <td><?= $applicant_deferral->dateresumed ;?></td>
-                                                    <?php endif;?>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                        <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                                                            <td><?= $applicant_deferral->resumedby ;?></td>
+                                                            <td><?= $applicant_deferral->dateresumed ;?></td>
+                                                        <?php endif;?>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                       <?php endif?>
                                     <?php endif?>
                                 </div>
                                 
