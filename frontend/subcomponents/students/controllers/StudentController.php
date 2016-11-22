@@ -1957,7 +1957,7 @@ class StudentController extends Controller
      * 
      * Author: Laurence Charles
      * Date CreatedL 21/09/2016
-     * Date Last Modified: 21/09/2016
+     * Date Last Modified: 21/09/2016 | 22/11/2016
      */
     public function actionExportTransfers()
     {
@@ -2063,12 +2063,93 @@ class StudentController extends Controller
     
     
     /**
-     * Exports Deferrals Listing
+     * Exports Pre Registration Deferrals Listing
      * 
      * @return type
      * 
      * Author: Laurence Charles
-     * Date CreatedL 21/09/2016
+     * Date Created: 22/11/2016
+     * Date Last Modified: 22/11/2016
+     */
+    public function actionExportPreRegistrationDeferrals()
+    {
+        $pre_registration_deferrals_data = NULL;
+        $pre_registration_deferrals_provider = array();
+        $pre_registration_deferral_info = array();
+        
+         $applicant_deferrals = ApplicantDeferral::find()
+                ->where([ 'isdeleted' => 0])
+                ->all();
+         if($applicant_deferrals)
+         {
+            foreach ($applicant_deferrals as $applicant_deferral)
+            {
+                $pre_registration_deferral_info["applicantdeferralid"] = $applicant_deferral->applicantdeferralid;
+                $pre_registration_deferral_info["applicantid"] = $applicant_deferral->applicantid;
+                $pre_registration_deferral_info["personid"] = $applicant_deferral->personid;
+                $pre_registration_deferral_info["details"] = $applicant_deferral->details;
+                
+                $user = User::find()
+                        ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($user == false)
+                    continue;
+                $pre_registration_deferral_info["username"] = $user->username;
+                
+                $applicant = Student::find()
+                        ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
+                        ->one();
+                if ($applicant == false)
+                    continue;
+                $pre_registration_deferral_info["title"] = $applicant->title;
+                $pre_registration_deferral_info["firstname"] = $applicant->firstname;
+                $pre_registration_deferral_info["lastname"] = $applicant->lastname;
+                
+                $pre_registration_deferral_info["deferraldate"] = $applicant_deferral->deferraldate;
+                $pre_registration_deferral_info["deferredby"] = Employee::getEmployeeName($applicant_deferral->deferredby);
+                 
+                if ($applicant_deferral->dateresumed == NULL) 
+                {
+                    $pre_registration_deferral_info["dateresumed"] = "N/A";
+                    $pre_registration_deferral_info["resumedby"] = "N/A";
+                }
+                else
+                {
+                    $pre_registration_deferral_info["dateresumed"] = $applicant_deferral->dateresumed;
+                    $pre_registration_deferral_info["resumedby"] = Employee::getEmployeeName($applicant_deferral->resumedby);
+                }
+                
+                $pre_registration_deferrals_data[] =  $pre_registration_deferral_info;
+            }
+            
+            $pre_registration_deferrals_provider = new ArrayDataProvider([
+                    'allModels' => $pre_registration_deferrals_data,
+                    'pagination' => [
+                        'pageSize' => 1000,
+                    ]
+            ]); 
+        }
+       
+        $title = "Title: Pre-Registration Deferrals";
+        $date =  "  Date: " . date('Y-m-d') . "     ";
+        $employeeid = Yii::$app->user->identity->personid;
+        $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
+        $filename = $title . $date . $generating_officer;
+        
+        return $this->renderPartial('export_pre_registration_deferrals', [
+            'dataProvider' => $pre_registration_deferrals_provider,
+            'filename' => $filename,
+        ]);
+    }
+    
+    
+    /**
+     * Exports Post Registration Deferrals Listing
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 21/09/2016
      * Date Last Modified: 21/09/2016 | 22/11/2016
      */
     public function actionExportPostRegistrationDeferrals()
@@ -2183,7 +2264,7 @@ class StudentController extends Controller
             $deferrals_provider = new ArrayDataProvider([
                     'allModels' => $deferrals_data,
                     'pagination' => [
-                        'pageSize' => 100,
+                        'pageSize' => 1000,
                     ],
                     'sort' => [
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
@@ -2193,7 +2274,7 @@ class StudentController extends Controller
         }
        
         
-        $title = "Title: Deferrals";
+        $title = "Title: Post Registration Deferrals";
         $date =  "  Date: " . date('Y-m-d') . "     ";
         $employeeid = Yii::$app->user->identity->personid;
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
