@@ -119,12 +119,16 @@
                             }
                         ?>
                     </div><br/><br/>  
-                    
+
                     <div class="form-group">
-                        <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
+                        <?php if ($title == "Applicant Deferral Resumption"):?>
+                            <?= Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
+                        <?php else:?>
+                            <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
+                        <?php endif;?>
+                             
                         <?= Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
-                    </div><br/><br/>  
-                     
+                    </div><br/><br/> 
                     <?php ActiveForm::end();?>
             </div>
         </div>

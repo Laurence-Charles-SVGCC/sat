@@ -157,7 +157,7 @@
                                     
                                     <?php if ($applicant_deferral->dateresumed == NULL && $applicant_deferral->resumedby == NULL):?>
                                         <td><a class="btn btn-danger glyphicon glyphicon-remove-sign" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/cancel-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Cancel </a></td>
-                                        <td><a class="btn btn-primary glyphicon glyphicon-remove-sign"  href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/resume-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Resume</a></td>
+                                        <td><a class="btn btn-primary glyphicon glyphicon-remove-sign"  href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/enroll-deferred-applicant', 'personid' => $applicant->personid]);?> role="button"> Resume Deferral</a></td>
                                     <?php endif;?>
                                         
                                     <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>

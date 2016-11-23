@@ -4259,8 +4259,6 @@
         }
         
         
-        
-        
         /**
          * Defers a student to a current academic_offering
          * 

@@ -47,6 +47,8 @@
     use frontend\models\Employee;
     use frontend\models\ConcurrentApplicant;
     use frontend\models\ApplicantDeferral;
+    use frontend\models\CapeGroup;
+    use frontend\models\StudentDeferral;
 
 
 class ViewApplicantController extends \yii\web\Controller
@@ -3770,6 +3772,262 @@ class ViewApplicantController extends \yii\web\Controller
         }
         
         return self::actionApplicantProfile($user->username);
+    }
+    
+    
+    /**
+     * Enrols a successful applicant that deferred the acceptance before they completed the registration process
+     * 
+     * @param type $personid
+     * @param type $studentregistrationid
+     * @param type $recordid
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 08/01/2016
+     * Date Last Modified: 10/01/2016 | 20/09/2016
+     */
+    public function actionEnrollDeferredApplicant($personid)
+    {
+        $user = User::find()
+                ->where(['personid' => $personid, 'isdeleted' => 0])
+                ->one();
+         if($user == false)
+        {
+            Yii::$app->getSession()->setFlash('error', 'Error retrieving user record.');
+            return $this->redirect(\Yii::$app->request->getReferrer());
+        }
+        
+        $title = "Applicant Deferral Resumption";
+
+        $current_offer =  Offer::getActiveFullOffer($personid);
+        if($current_offer == false)
+        {
+            Yii::$app->getSession()->setFlash('error', 'Error retrieving offer record.');
+            return $this->redirect(\Yii::$app->request->getReferrer());
+        }
+
+        $current_cape_subjects_names = array();                
+        $current_cape_subjects = array();
+        $current_application = $current_offer->getApplication()->one();
+        $programme_record = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+        $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+        foreach ($current_cape_subjects as $cs)
+        { 
+            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+        }
+        $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
+
+
+        date_default_timezone_set('America/St_Vincent');
+        $selected = NULL;
+        $capegroups = CapeGroup::getGroups();
+        $groupCount = count($capegroups);
+        $new_application = new Application();
+        $deferral = new StudentDeferral();
+
+        //Create blank records to accommodate capesubject-application associations
+        $applicationcapesubject = array();
+        for ($i = 0; $i < $groupCount; $i++)
+        {
+            $temp = new ApplicationCapesubject();
+            //Values giving default value so as to facilitate validation (selective saving will be implemented)
+            $temp->capesubjectid = 0;
+            $temp->applicationid = 0;
+            array_push($applicationcapesubject, $temp);
+        }
+
+        //Handles post request
+        if ($post_data = Yii::$app->request->post())
+        {
+            //Register flags
+             $new_registration_save_flag = false;
+
+            $application_load_flag = $new_application->load($post_data);
+
+            if($application_load_flag == true)
+            {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    /**********  current applications, applicationcapesubject and offers made inactive ***********/
+                    $current_application_save_flag = false;
+                    $current_application->isactive = 0;
+                    $current_application_save_flag = $current_application->save();
+                    if($current_application_save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error de-activating current application record.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+
+                    if (Application::isCape($current_application->academicofferingid) == true)
+                    {
+                        $current_application_cape_records = ApplicationCapesubject::find()
+                                ->where(['applicationid' => $current_application->applicationid, 'isdeleted' => 0])
+                                ->all();
+                        if ($current_application_cape_records == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error retrieving capesubject records.');
+                            return $this->redirect(\Yii::$app->request->getReferrer());
+                        }
+
+                        foreach ($current_application_cape_records as $record)
+                        {
+                            $record->isactive = 0;
+                            $record_save_flag = $record->save();
+                            if ($record_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error de-activating capesubject records.');
+                                return $this->redirect(\Yii::$app->request->getReferrer());
+                            }
+                        }
+                    }
+
+                    $current_offer_save_flag = false;
+                    $current_offer->isactive = 0;
+                    $current_offer_save_flag = $current_offer->save();
+                    /******************************************************************************************/
+
+                    $new_application_load_flag = false;
+                    $new_application_save_flag = false;
+                    $capesubject_load_flag = false;
+                    $capesubject_save_flag = false;
+
+                    $new_application->personid = $personid;    
+                    $new_application->applicationtimestamp = date('Y-m-d H:i:s' );
+                    $new_application->submissiontimestamp = date('Y-m-d H:i:s' );
+                    $new_application->ordering = Application::getNextApplicationID($personid);
+                    $new_application->ipaddress = Yii::$app->request->getUserIP();
+                    $new_application->browseragent = Yii::$app->request->getUserAgent();
+                    $new_application->applicationstatusid = 9;
+
+                    $new_application_save_flag = $new_application->save();
+                    if ($new_application_save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error retrieving registration record.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+
+                    //Processes application_cape_subject models
+                    $is_cape = Application::isCape($new_application->academicofferingid);
+                    if ($is_cape == true)       //if application is for CAPE programme
+                    {       
+                        $capesubject_load_flag = Model::loadMultiple($applicationcapesubject, $post_data);
+                        if ($capesubject_load_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error loading cape subjects.');
+                            return $this->redirect(\Yii::$app->request->getReferrer());
+                        }
+
+                        //CAPE subject selection is only updated if 3-4 subjects have been selected
+                        $selected = 0;
+                        foreach ($applicationcapesubject as $subject) 
+                        {
+                            if ($subject->capesubjectid != 0)           //if valid subject is selected
+                            {        
+                                $selected++;
+                            }
+                        }
+
+                        if($selected < 2 && $selected > 4)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'You must select 2-4 subjects... Please try again.');
+                            return $this->redirect(\Yii::$app->request->getReferrer());
+                        }
+
+                        foreach ($applicationcapesubject as $subject) 
+                        {
+                            $subject->applicationid = $new_application->applicationid;      //updates applicationid
+
+                            if ($subject->capesubjectid != 0 && $subject->applicationid != 0 )  
+                            {        
+                                $capesubject_save_flag = $subject->save();
+                                if ($capesubject_save_flag == false)          
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save cape subject records. Please try again.');
+                                     return $this->redirect(\Yii::$app->request->getReferrer());
+                                }
+                            }
+                        }  
+                    }//end of isCape block
+
+                    //Create new offer record
+                    $new_offer_save_flag = false;
+                    $new_offer = new Offer();
+                    $new_offer->applicationid = $new_application->applicationid;
+                    $new_offer->offertypeid = 1;
+                    $new_offer->issuedby = Yii::$app->user->identity->personid;
+                    $new_offer->issuedate = date('Y-m-d');
+                    $new_offer->ispublished = 1;
+                    $new_offer_save_flag = $new_offer->save();
+
+                    if ($new_offer_save_flag == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured saving offer.');
+                         return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+
+                    //Creates new  student registration
+                    $new_registration = new StudentRegistration();
+                    $new_registration->offerid = $new_offer->offerid;
+                    $new_registration->personid = $personid;
+                    $new_registration->academicofferingid = $new_application->academicofferingid;
+                    $programme_catalog = ProgrammeCatalog::find()
+                            ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
+                            ->where(['programme_catalog.isdeleted' => 0,
+                                            'academic_offering.academicofferingid' => $new_application->academicofferingid, 'academic_offering.isdeleted' => 0
+                                        ])
+                            ->one();
+                    if ($programme_catalog == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error retrieving programme catalog.');
+                         return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+
+                    $new_registration->registrationtypeid = $programme_catalog->programmetypeid;
+                    $new_registration->currentlevel = 1;
+                    $new_registration->registrationdate = date('Y-m-d');
+                    $new_registration_save_flag = $new_registration->save();
+
+                    if ($new_registration_save_flag == false)
+                    {   
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error saving new student registration record.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $transaction->commit();
+                    return self::actionStudentProfile($personid, $new_registration->studentregistrationid);     
+
+                }catch (Exception $e){
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                    return $this->redirect(\Yii::$app->request->getReferrer());
+                }
+            }
+        }//END POST
+
+
+        return $this->render('add_deferral', [
+                    'personid' => $personid, 
+                     'user' => $user,
+                     'title' => $title,
+                    'current_programme' => $current_programme,
+
+                    'capegroups' => $capegroups,
+                    'new_application' => $new_application,
+                    'applicationcapesubject' =>  $applicationcapesubject,
+                    'deferral' => $deferral
+        ]); 
     }
         
         
