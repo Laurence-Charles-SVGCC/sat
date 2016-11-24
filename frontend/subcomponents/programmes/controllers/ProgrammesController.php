@@ -1077,7 +1077,7 @@ class ProgrammesController extends Controller
                 ->one();
         
         $cordinator_details = "";
-        $unique_cordinators = array();
+        $unique_cordinator_ids = array();
       
        $cordinators = Cordinator::find()
                ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
@@ -1087,9 +1087,9 @@ class ProgrammesController extends Controller
        {
            foreach($cordinators as $cordinator)
            {
-               if (in_array($cordinator->personid, $unique_cordinators) == false)
+               if (in_array($cordinator->personid, $unique_cordinator_ids) == false)
                {
-                   $unique_cordinators_ids[] = $cordinator->personid;
+                   $unique_cordinator_ids[] = $cordinator->personid;
                }
                else
                 {
@@ -1317,7 +1317,7 @@ class ProgrammesController extends Controller
            }
         
            $cordinator_details = "";
-           $unique_cordinators_ids = array();
+           $unique_cordinator_ids = array();
            
            $offerings = AcademicOffering::find()
                    ->where(['programmecatalogid' => $programme->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
@@ -1335,9 +1335,9 @@ class ProgrammesController extends Controller
            {
                 foreach($cordinators as $key =>$cordinator)
                 {
-                    if (in_array($cordinator->personid, $unique_cordinators) == false)
+                    if (in_array($cordinator->personid, $unique_cordinator_ids) == false)
                     {
-                        $unique_cordinators_id[] = $cordinator->personid;
+                        $unique_cordinator_ids[] = $cordinator->personid;
                     }
                     else
                     {
