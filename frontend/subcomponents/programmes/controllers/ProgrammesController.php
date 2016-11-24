@@ -1097,7 +1097,7 @@ class ProgrammesController extends Controller
                 }
            }
            
-           foreach($unique_cordinators as $key => $cordinator)
+           foreach($cordinators as $key => $cordinator)
            {
                $name = "";
                $name = Employee::getEmployeeName($cordinators[$key]->personid);
