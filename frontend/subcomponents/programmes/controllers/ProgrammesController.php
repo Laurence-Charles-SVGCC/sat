@@ -1145,8 +1145,8 @@ class ProgrammesController extends Controller
                                     'pageSize' => 50,
                                 ],
                                 'sort' => [
-                                    'defaultOrder' => ['code' => SORT_ASC],
-                                    'attributes' => ['code'],
+                                    'defaultOrder' => ['coursecode' => SORT_ASC],
+                                    'attributes' => ['coursecode'],
                                 ]
                         ]);      
                     $unique_listing_filename = "Title: " . $programme_name. " (" . $academic_year->title . ") Course Listing " . $date . "  " .  $generating_officer;
@@ -1199,8 +1199,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['code' => SORT_ASC],
-                                'attributes' => ['code', 'subject'],
+                                'defaultOrder' => ['coursecode' => SORT_ASC],
+                                'attributes' => ['coursecode', 'subject'],
                             ]
                     ]);            
         }
