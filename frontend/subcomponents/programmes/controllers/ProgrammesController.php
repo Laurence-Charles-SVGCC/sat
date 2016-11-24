@@ -741,8 +741,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['code' => SORT_ASC],
-                                'attributes' => ['code', 'subject'],
+                                'defaultOrder' => ['coursecode' => SORT_ASC],
+                                'attributes' => ['coursecode', 'subject'],
                             ]
                     ]);            
         }
@@ -782,8 +782,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['code' => SORT_ASC],
-                                'attributes' => ['code'],
+                                'defaultOrder' => ['coursecode' => SORT_ASC],
+                                'attributes' => ['coursecode'],
                             ]
                     ]);            
            }
