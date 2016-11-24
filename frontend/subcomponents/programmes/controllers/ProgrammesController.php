@@ -1077,6 +1077,7 @@ class ProgrammesController extends Controller
                 ->one();
         
         $cordinator_details = "";
+        $unique_cordinators = array();
       
        $cordinators = Cordinator::find()
                ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
@@ -1084,7 +1085,15 @@ class ProgrammesController extends Controller
                -> all();
        if($cordinators)
        {
-           foreach($cordinators as $key => $cordinator)
+           foreach($cordinators as $cordinator)
+           {
+               if (in_array($cordinator->personid, $unique_cordinators) == false)
+               {
+                   $unique_cordinators[] = $cordinator;
+               }
+           }
+           
+           foreach($unique_cordinators as $key => $cordinator)
            {
                $name = "";
                $name = Employee::getEmployeeName($cordinators[$key]->personid);
@@ -1639,7 +1648,7 @@ class ProgrammesController extends Controller
                     'course_details_dataprovider' => $course_details_dataprovider,
                     'cape_course_details_dataprovider' => $cape_course_details_dataprovider,
                     'iscape' => $is_cape,
-                     'broadsheet_dataprovider' =>  $broadsheet_dataprovider,
+                    'broadsheet_dataprovider' =>  $broadsheet_dataprovider,
                     'filename' => $filename,
                     'cumulative_grade_dataprovider' => $cumulative_grade_dataprovider,
                     'cumulative_grade_filename' => $cumulative_grade_filename,
