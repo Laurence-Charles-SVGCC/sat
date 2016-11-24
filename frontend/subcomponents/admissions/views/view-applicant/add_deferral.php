@@ -39,22 +39,10 @@
                 <br/>
                 <h2 class="custom_h2" style="margin-left:7.5%">Current Programme: <?= $current_programme;?></h2>
                 
-                <?php if ($title == "Applicant Deferral Resumption"):?>
-                   <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used to re-enroll a student that received prior approval to defer their enrollment.  
-                    </div>
-                <?php elseif ($title == "Deferral Resumption"):?>
-                   <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used to re-enroll a student that received prior approval to defer their enrollment
-                        (after registration was already completed).  
-                    </div>
-                <?php elseif ($title == "Registration Renewal"):?>
-                    <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used in the event a current student received approval to re-enroll in a 
-                        new programme as a Year One student.
-                    </div>
-                <?php endif;?>
-                    
+               <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
+                    The feature should only be used to re-enroll a student that received prior approval to defer their enrollment.  
+                </div>
+                
                 <br/>
                 <?php
                     $form = ActiveForm::begin([
@@ -121,12 +109,7 @@
                     </div><br/><br/>  
 
                     <div class="form-group">
-                        <?php if ($title == "Applicant Deferral Resumption"):?>
-                            <?= Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                        <?php else:?>
-                            <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                        <?php endif;?>
-                             
+                        <?= Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
                         <?= Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
                     </div><br/><br/> 
                     <?php ActiveForm::end();?>

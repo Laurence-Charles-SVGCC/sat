@@ -125,7 +125,7 @@
                 <h1 class="custom_h1"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h1>
                 
                 <?php if ($offers == true && $applicant->hasdeferred == 0 /*&& ($applicant->hasduplicate == 0*/):?>
-                    <a class="btn btn-warning glyphicon glyphicon glyphicon-share-alt pull-right" style="margin-right:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/defer-applicant', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Defer Applicant</a>
+                    <a class="btn btn-warning glyphicon glyphicon glyphicon-share-alt pull-right" style="margin-right:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/defer-applicant', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Defer Applicant Enrollment</a>
                 <?php elseif ($applicant->hasdeferred == 1):?>
                     
                     <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">

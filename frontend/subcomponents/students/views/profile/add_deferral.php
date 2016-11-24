@@ -39,11 +39,7 @@
                 <br/>
                 <h2 class="custom_h2" style="margin-left:7.5%">Current Programme: <?= $current_programme;?></h2>
                 
-                <?php if ($title == "Applicant Deferral Resumption"):?>
-                   <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
-                        The feature should only be used to re-enroll a student that received prior approval to defer their enrollment.  
-                    </div>
-                <?php elseif ($title == "Deferral Resumption"):?>
+                <?php if ($title == "Deferral Resumption"):?>
                    <div class="alert alert-info" role="alert" style="width: 85%; margin: 0 auto; font-size:16px;">
                         The feature should only be used to re-enroll a student that received prior approval to defer their enrollment
                         (after registration was already completed).  
