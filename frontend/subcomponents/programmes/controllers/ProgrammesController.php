@@ -1089,8 +1089,12 @@ class ProgrammesController extends Controller
            {
                if (in_array($cordinator->personid, $unique_cordinators) == false)
                {
-                   $unique_cordinators[] = $cordinator;
+                   $unique_cordinators_ids[] = $cordinator->personid;
                }
+               else
+                {
+                    unset($cordinators[$key]);
+                }
            }
            
            foreach($unique_cordinators as $key => $cordinator)
@@ -1313,7 +1317,7 @@ class ProgrammesController extends Controller
            }
         
            $cordinator_details = "";
-           $unique_cordinators = array();
+           $unique_cordinators_ids = array();
            
            $offerings = AcademicOffering::find()
                    ->where(['programmecatalogid' => $programme->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
@@ -1329,11 +1333,15 @@ class ProgrammesController extends Controller
                    -> all();
            if($cordinators)
            {
-                foreach($cordinators as $cordinator)
+                foreach($cordinators as $key =>$cordinator)
                 {
                     if (in_array($cordinator->personid, $unique_cordinators) == false)
                     {
-                        $unique_cordinators[] = $cordinator;
+                        $unique_cordinators_id[] = $cordinator->personid;
+                    }
+                    else
+                    {
+                        unset($cordinators[$key]);
                     }
                 }
            
