@@ -29,6 +29,8 @@
     use frontend\models\ExaminationGrade;
     use frontend\models\EmployeeDepartment;
     use frontend\models\Package;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\Reference;
 
 /**
  * OfferController implements the CRUD actions for Offer model.
@@ -1663,6 +1665,7 @@ class OfferController extends Controller
     
     
     
+    
     public function actionDivisionalOffersAcademics($division_id, $offertype)
     {
         $offer_cond = array();
@@ -1672,7 +1675,6 @@ class OfferController extends Controller
         $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isactive'] = 1;
-        
         
         $offers = Offer::find()
                 ->joinWith('application')
@@ -1684,13 +1686,14 @@ class OfferController extends Controller
         $data = array();
         foreach ($offers as $offer)
         {
+            $application = $offer->getApplication()->one();
+            $subjects = CsecQualification::getSubjects($application->personid);
             $username = $offer->getApplicantUsername();
             $fullname = $offer->getApplicantFullName();
             $address = $offer->getApplicantAddress();
             $contact = $offer->getApplicantContact();
-            
+
             $cape_subjects_names = array();
-            $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
@@ -1699,17 +1702,30 @@ class OfferController extends Controller
                 $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
             }
             
-            $qualifications = CsecQualification::getFormattedQualification($applicant->personid);
+            $references = Reference::getReferencesNameAndQualification($application->personid);
             
-            $offer_data = array();
-            $offer_data['username'] = $username;
-            $offer_data['fullname'] = $fullname;
-            $offer_data['address'] = $address;
-            $offer_data['phone'] = $contact;
-            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
-            $offer_data['qualifications'] = $qualifications;
-            
-            $data[] = $offer_data;
+            foreach ($subjects as $index=>$sub)
+            {
+                $offer_data = array();
+                $offer_data['username'] = $username;
+                $offer_data['fullname'] = $fullname;
+                $offer_data['address'] = $address;
+                $offer_data['phone'] = $contact;
+                $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+
+                $examinationbody = ExaminationBody::find()->where(['examinationbodyid' => $sub->examinationbodyid, 'isactive' => 1, 'isdeleted' => 0])->one()->abbreviation;
+                $subject = Subject::find()->where(['subjectid' => $sub->subjectid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+                $grade = ExaminationGrade::find()->where(['examinationgradeid' => $sub->examinationgradeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+                $proficiency = ExaminationProficiencyType::find()->where(['examinationproficiencytypeid' => $sub->examinationproficiencytypeid, 'isactive' => 1, 'isdeleted' => 0])->one()->name;
+         
+                $offer_data['subject'] = $subject . "(" .  $examinationbody . ")";
+                $offer_data['proficiency'] =  $proficiency;
+                $offer_data['grade'] = $grade;
+                $offer_data['year'] = $sub->year;
+                $offer_data['references'] = $references;
+                
+                $data[] = $offer_data;
+            }
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
@@ -1728,12 +1744,93 @@ class OfferController extends Controller
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
         $filename = "Title: " . $title . $date . $generating_officer;
         
-        return $this->render('export_offers_academics', [
+        return $this->render('export_offers_academics_1', [
             'dataProvider' => $dataProvider,
             'filename' => $filename,
             'title' => $title,
         ]);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//    public function actionDivisionalOffersAcademics($division_id, $offertype)
+//    {
+//        $offer_cond = array();
+//        
+//        $offer_cond['application.divisionid'] = $division_id;
+//        $offer_cond['application_period.isactive'] = 1;
+//        $offer_cond['application_period.iscomplete'] = 0;
+//        $offer_cond['offer.offertypeid'] = $offertype;
+//        $offer_cond['offer.isactive'] = 1;
+//        
+//        
+//        $offers = Offer::find()
+//                ->joinWith('application')
+//                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+//                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+//                ->where($offer_cond)
+//                ->all();
+//        
+//        $data = array();
+//        foreach ($offers as $offer)
+//        {
+//            $username = $offer->getApplicantUsername();
+//            $fullname = $offer->getApplicantFullName();
+//            $address = $offer->getApplicantAddress();
+//            $contact = $offer->getApplicantContact();
+//            
+//            $cape_subjects_names = array();
+//            $application = $offer->getApplication()->one();
+//            $applicant = Applicant::findOne(['personid' => $application->personid]);
+//            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
+//            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $application->applicationid]);
+//            foreach ($cape_subjects as $cs) 
+//            {
+//                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+//            }
+//            
+//            $qualifications = CsecQualification::getFormattedQualification($applicant->personid);
+//            
+//            $offer_data = array();
+//            $offer_data['username'] = $username;
+//            $offer_data['fullname'] = $fullname;
+//            $offer_data['address'] = $address;
+//            $offer_data['phone'] = $contact;
+//            $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+//            $offer_data['qualifications'] = $qualifications;
+//            
+//            $data[] = $offer_data;
+//        }
+//        $dataProvider = new ArrayDataProvider([
+//            'allModels' => $data,
+//            'pagination' => [
+//                'pageSize' => 25,
+//            ],
+//        ]);
+//        
+//        if ($offertype == 1)
+//            $title = "Successful Applicants Listing     ";
+//        elseif ($offertype == 2)
+//            $title = "Interview Listing     ";
+//        
+//        $date =  " Date: " . date('Y-m-d') . "     ";
+//        $employeeid = Yii::$app->user->identity->personid;
+//        $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
+//        $filename = "Title: " . $title . $date . $generating_officer;
+//        
+//        return $this->render('export_offers_academics', [
+//            'dataProvider' => $dataProvider,
+//            'filename' => $filename,
+//            'title' => $title,
+//        ]);
+//    }
             
     
     

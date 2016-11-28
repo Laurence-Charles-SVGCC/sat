@@ -170,4 +170,30 @@ class Reference extends \yii\db\ActiveRecord
         
         return false;
     }
+    
+    
+    public static function getReferencesNameAndQualification($personid)
+    {
+        $refs = "";
+        $references = Reference::find()
+                ->where(['personid' => $personid, 'isdeleted' => 0])
+                ->all();
+        if ($references)
+        {
+            foreach($references as $key=>$reference)
+            {
+                $name = $reference->title . ". " . $reference->firstname . " " .  $reference->lastname;
+                $occupation = $reference->occupation;
+                if ($key != count($references) - 1)
+                {
+                    $refs.= $name . " - " . $occupation . ",";
+                }
+                else
+                {
+                    $refs.= $name . " - " . $occupation;
+                }
+            }
+        }
+        return $refs;
+    }
 }
