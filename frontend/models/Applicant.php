@@ -534,6 +534,21 @@ class Applicant extends \yii\db\ActiveRecord
                     elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11 && $applications[2]->applicationstatusid == 11)
                         $application_status =11;
                 }
+                
+                elseif ($count > 3)
+                {
+                    foreach ($applications as $app)
+                    {
+                        $active_offer = Offer::find()
+                                ->where(['applicationid' => $app->applicationid, 'isactive' => 1, 'isdeleted' => 0, 'ispublished' => 1])
+                                ->one();
+                        if ($active_offer)
+                        {
+                            $application_status = 9;
+                            break;
+                        }
+                    }
+                }
 
                 $target = Application::getTarget($applications, $application_status);
 
