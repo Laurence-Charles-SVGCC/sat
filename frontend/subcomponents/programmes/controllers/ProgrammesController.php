@@ -819,7 +819,7 @@ class ProgrammesController extends Controller
            $unique_cordinator_ids = array();
 
            $cordinators = Cordinator::find()
-                   ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                   ->where(['academicofferingid' => $offerids , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
                    ->orderBy('cordinatorid DESC')
                    -> all();
            if($cordinators)
