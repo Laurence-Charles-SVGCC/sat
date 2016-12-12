@@ -788,7 +788,7 @@ class ProgrammesController extends Controller
                     ]);            
            }
         
-           $cordinator_details = "";
+          
            
            $offerings = AcademicOffering::find()
                    ->where(['programmecatalogid' => $programme->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
@@ -797,13 +797,45 @@ class ProgrammesController extends Controller
            foreach($offerings as $offering)
                array_push($offerids, $offering->academicofferingid);
               
-          
+//           $cordinator_details = "";
+//           $cordinators = Cordinator::find()
+//                   ->where(['academicofferingid' => $offerids , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+//                   ->orderBy('cordinatorid DESC')
+//                   -> all();
+//           if($cordinators)
+//           {
+//               foreach($cordinators as $key => $cordinator)
+//               {
+//                   $name = "";
+//                   $name = Employee::getEmployeeName($cordinators[$key]->personid);
+//                   if(count($cordinators) - 1 == 0)
+//                    $cordinator_details .= $name;
+//                    else 
+//                        $cordinator_details .= $name . ", ";
+//               }
+//           }
+           
+           $cordinator_details = "";
+           $unique_cordinator_ids = array();
+
            $cordinators = Cordinator::find()
-                   ->where(['academicofferingid' => $offerids , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                   ->where(['academicofferingid' => $academicofferingid , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
                    ->orderBy('cordinatorid DESC')
                    -> all();
            if($cordinators)
            {
+               foreach($cordinators as $cordinator)
+               {
+                   if (in_array($cordinator->personid, $unique_cordinator_ids) == false)
+                   {
+                       $unique_cordinator_ids[] = $cordinator->personid;
+                   }
+                   else
+                    {
+                        unset($cordinators[$key]);
+                    }
+               }
+
                foreach($cordinators as $key => $cordinator)
                {
                    $name = "";
