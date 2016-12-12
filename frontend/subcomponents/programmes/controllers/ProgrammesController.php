@@ -713,6 +713,14 @@ class ProgrammesController extends Controller
                 {
                     $course_info['capecourseid'] = $course->capecourseid;
                     $course_info['programmecatalogid'] = $programmecatalogid;
+                    
+                   
+                    $course_info['semesterid'] = $course->semesterid;
+                    $course_info['semester-title'] =  Semester::find()
+                                                ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one()
+                                                ->title;
+                    
                     $course_info['coursecode'] = $course->coursecode;
                     $course_info['name'] = $course->name;
                     
@@ -741,8 +749,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['coursecode' => SORT_ASC],
-                                'attributes' => ['coursecode', 'subject'],
+                                'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                'attributes' => ['semester-title', 'coursecode', 'subject'],
                             ]
                     ]);            
         }
@@ -765,6 +773,14 @@ class ProgrammesController extends Controller
                 {
                     $course_info['coursecatalogid'] = $course->coursecatalogid;
                     $course_info['programmecatalogid'] = $programmecatalogid;
+                    
+                    $semester = Semester::find()
+                            ->innerJoin('course_offering', '`course_offering`.`semesterid` = `semester`.`semesterid`')
+                            ->where(['semester.isactive' => 1, 'semester.isdeleted' => 0,
+                                            'course_offering.coursecatalogid' => $course->coursecatalogid,  'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0])
+                            ->one();
+                    $course_info['semesterid'] = $semester->semesterid;
+                    $course_info['semester-title'] = $semester->title;
                     $course_info['coursecode'] = $course->coursecode;
                     $course_info['name'] = $course->name;
                     
@@ -782,8 +798,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['coursecode' => SORT_ASC],
-                                'attributes' => ['coursecode'],
+                                'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                'attributes' => ['semester-title', 'semesterid', 'coursecode'],
                             ]
                     ]);            
            }
@@ -796,25 +812,7 @@ class ProgrammesController extends Controller
            $offerids = array();
            foreach($offerings as $offering)
                array_push($offerids, $offering->academicofferingid);
-              
-//           $cordinator_details = "";
-//           $cordinators = Cordinator::find()
-//                   ->where(['academicofferingid' => $offerids , 'isserving' => 1, 'isactive' => 1, 'isdeleted' => 0])
-//                   ->orderBy('cordinatorid DESC')
-//                   -> all();
-//           if($cordinators)
-//           {
-//               foreach($cordinators as $key => $cordinator)
-//               {
-//                   $name = "";
-//                   $name = Employee::getEmployeeName($cordinators[$key]->personid);
-//                   if(count($cordinators) - 1 == 0)
-//                    $cordinator_details .= $name;
-//                    else 
-//                        $cordinator_details .= $name . ", ";
-//               }
-//           }
-           
+            
            $cordinator_details = "";
            $unique_cordinator_ids = array();
 
