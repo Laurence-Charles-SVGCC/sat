@@ -11,8 +11,8 @@
     use yii\widgets\ActiveForm;
 
     use frontend\models\Division;
+    use frontend\models\EmployeeDepartment;
 
-    /* @var $this yii\web\View */
     $this->title = 'Grade Book';
 ?>
     
