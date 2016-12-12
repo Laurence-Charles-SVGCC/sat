@@ -824,7 +824,7 @@ class ProgrammesController extends Controller
                    -> all();
            if($cordinators)
            {
-               foreach($cordinators as $cordinator)
+               foreach($cordinators as $key=>$cordinator)
                {
                    if (in_array($cordinator->personid, $unique_cordinator_ids) == false)
                    {
@@ -1117,7 +1117,7 @@ class ProgrammesController extends Controller
                -> all();
        if($cordinators)
        {
-           foreach($cordinators as $cordinator)
+           foreach($cordinators as $key=>$cordinator)
            {
                if (in_array($cordinator->personid, $unique_cordinator_ids) == false)
                {
@@ -1139,6 +1139,7 @@ class ProgrammesController extends Controller
                     $cordinator_details .= $name . ", ";
            }
        }
+       
        
         $course_details_dataprovider = NULL;
         $cape_course_details_dataprovider = NULL;
