@@ -3230,52 +3230,54 @@
                                 <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
                             </div>
                             
-                            <div role="tabpanel" class="tab-pane fade" id="library"> 
-                                <h2 class="custom_h2">Librarian Notes</h2>
-                                <div class="panel panel-default" style="width:95%; margin: 0 auto;">
-                                    <?php if(Yii::$app->user->can('studentCard')):?>
-                                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Student Card Information
-                                            <?php if(Yii::$app->user->can('updateStudentCard')):?>
-                                                <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/edit-student-card', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid]);?> role='button'> Update</a>
-                                              <?php endif;?>
-                                        </div>
-                                        
-                                        <table class='table table-hover' style='margin: 0 auto;'>
-                                            <tr>
-                                                <th>Institution ID Criteria</th>
-                                                <th>Status</th>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Picture Received</td>
-                                                <?php if ($studentregistration->receivedpicture == 1):?>
-                                                    <td> <i class="glyphicon glyphicon-ok"></i> </td>
-                                                <?php else:?>
-                                                    <td><i class="glyphicon glyphicon-remove"></td>
-                                                <?php endif;?>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Card Ready</td>
-                                                <?php if ($studentregistration->cardready == 1):?>
-                                                    <td> <i class="glyphicon glyphicon-ok"></i> </td>
-                                                <?php else:?>
-                                                    <td><i class="glyphicon glyphicon-remove"></td>
-                                                <?php endif;?>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Card Delivered</td>
-                                                <?php if ($studentregistration->cardcollected == 1):?>
-                                                    <td> <i class="glyphicon glyphicon-ok"></i> </td>
-                                                <?php else:?>
-                                                    <td><i class="glyphicon glyphicon-remove"></td>
-                                                <?php endif;?>
-                                            </tr>
-                                        </table>
-                                    <?php endif;?>
+                            <?php if(Yii::$app->user->can('viewLibraryData')):?>
+                                <div role="tabpanel" class="tab-pane fade" id="library"> 
+                                    <h2 class="custom_h2">Librarian Notes</h2>
+                                    <div class="panel panel-default" style="width:95%; margin: 0 auto;">
+                                        <?php if(Yii::$app->user->can('studentCard')):?>
+                                            <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Student Card Information
+                                                <?php if(Yii::$app->user->can('updateStudentCard')):?>
+                                                    <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/edit-student-card', 'personid' => $applicant->personid, 'recordid' => $studentregistrationid]);?> role='button'> Update</a>
+                                                  <?php endif;?>
+                                            </div>
+
+                                            <table class='table table-hover' style='margin: 0 auto;'>
+                                                <tr>
+                                                    <th>Institution ID Criteria</th>
+                                                    <th>Status</th>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Picture Received</td>
+                                                    <?php if ($studentregistration->receivedpicture == 1):?>
+                                                        <td> <i class="glyphicon glyphicon-ok"></i> </td>
+                                                    <?php else:?>
+                                                        <td><i class="glyphicon glyphicon-remove"></td>
+                                                    <?php endif;?>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Card Ready</td>
+                                                    <?php if ($studentregistration->cardready == 1):?>
+                                                        <td> <i class="glyphicon glyphicon-ok"></i> </td>
+                                                    <?php else:?>
+                                                        <td><i class="glyphicon glyphicon-remove"></td>
+                                                    <?php endif;?>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Card Delivered</td>
+                                                    <?php if ($studentregistration->cardcollected == 1):?>
+                                                        <td> <i class="glyphicon glyphicon-ok"></i> </td>
+                                                    <?php else:?>
+                                                        <td><i class="glyphicon glyphicon-remove"></td>
+                                                    <?php endif;?>
+                                                </tr>
+                                            </table>
+                                        <?php endif;?>
+                                    </div>
                                 </div>
-                            </div>
+                             <?php endif;?>       
                             
                             <div role="tabpanel" class="tab-pane fade" id="student_log"> 
                                 
