@@ -180,7 +180,7 @@ function respondToAcademicYearSelection(e)
     else
 //        url = "http://www.sat.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
 //        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
-     url = "http://www.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
     
     url+= "listingtype=" + listing_type;
     
