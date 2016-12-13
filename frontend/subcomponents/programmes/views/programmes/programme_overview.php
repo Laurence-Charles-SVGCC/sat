@@ -124,10 +124,10 @@
                     <div id="options-panel" style='width: 90%; margin: 0 auto;'>
                         <div id="options">
                              Please select one of the following actions:
-                             <?= Html::radioList('programme_options', null, $menu_items, [ 'onclick'=> 'toggleProgrammeOptions();',  'style' => 'width: 40%']);?>
+                             <?= Html::radioList('programme_options', 1, $menu_items, [ 'onclick'=> 'toggleProgrammeOptions();',  'style' => 'width: 40%']);?>
                         </div><br/>
 
-                        <div id="view-course-outlines" style="display:none;">
+                        <div id="view-course-outlines">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Course Catalog Listing</legend>
                                 <p>The following is a list of all the courses associated with the programme in question since it's inception.</p>

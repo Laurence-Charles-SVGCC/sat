@@ -799,7 +799,7 @@ class ProgrammesController extends Controller
                             ],
                             'sort' => [
                                 'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
-                                'attributes' => ['semester-title', 'semesterid', 'coursecode'],
+                                'attributes' => ['semester-title', 'semesterid', 'coursecode', 'name'],
                             ]
                     ]);            
            }
@@ -1181,6 +1181,13 @@ class ProgrammesController extends Controller
                     {
                         $unique_course_listing_info['coursecode'] = $course->coursecode;
                         $unique_course_listing_info['name'] = $course->name;
+                        
+                        $unique_course_listing_info['semesterid'] = $course->semesterid;
+                        $unique_course_listing_info['semester-title'] =  Semester::find()
+                                                ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one()
+                                                ->title;
+                        
                         $unique_course_listing_container[] = $unique_course_listing_info;
                     }
                     $unique_course_listing_dataprovider  = new ArrayDataProvider([
@@ -1189,8 +1196,8 @@ class ProgrammesController extends Controller
                                     'pageSize' => 50,
                                 ],
                                 'sort' => [
-                                    'defaultOrder' => ['coursecode' => SORT_ASC],
-                                    'attributes' => ['coursecode'],
+                                    'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                    'attributes' => ['coursecode', 'semester-title'],
                                 ]
                         ]);      
                     $unique_listing_filename = "Title: " . $programme_name. " (" . $academic_year->title . ") Course Listing " . $date . "  " .  $generating_officer;
@@ -1215,6 +1222,12 @@ class ProgrammesController extends Controller
                             ->subjectname;
                     $course_info['subject'] =  $cape_subject;
                     
+                    $course_info['semesterid'] = $course->semesterid;
+                    $course_info['semester-title'] =  Semester::find()
+                                                ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one()
+                                                ->title;
+                    
                     if(CourseOutline::getCourseOutlines(1,  $course->capecourseid) == true)
                         $course_info['has_outline'] = true;
                     else
@@ -1233,6 +1246,37 @@ class ProgrammesController extends Controller
                 else 
                     $course_info['has_grades'] = false;
                 
+                
+                $lecs = EmployeeBatchCape::find()
+                         ->innerJoin('batch_cape', '`employee_batch_cape`.`batchcapeid` = `batch_cape`.`batchcapeid`')
+                        ->innerJoin('cape_course', '`batch_cape`.`capecourseid`=`cape_course`.`capecourseid`')
+                         ->where(['cape_course.capecourseid' => $course->capecourseid])
+                        ->all();
+                if($lecs)
+                    $has_lecs = true;
+                else
+                    $has_lecs = false;
+                $lecturers = "";
+
+                 if($has_lecs)
+                 {
+                     $lec_count = count($lecs);
+                     foreach($lecs as $key=>$lec)
+                     {
+                         if($lec_count - $key == 1 )     //if last lecturer
+                         {
+                             $lecturers .= Employee::getEmployeeName($lec->personid);
+                         }
+                         else       //not last lecturer
+                         {
+                             $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                         }
+                     }
+                      $course_info['lecturer'] = $lecturers;
+                 }
+                 else
+                      $course_info['lecturer'] = "Unavailable"; 
+                 
                     $course_container[] = $course_info;
                 }
             }
@@ -1243,8 +1287,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['coursecode' => SORT_ASC],
-                                'attributes' => ['coursecode', 'subject'],
+                                'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                'attributes' => ['semester-title', 'coursecode', 'subject', 'name'],
                             ]
                     ]);            
         }
@@ -1274,6 +1318,11 @@ class ProgrammesController extends Controller
                             ->one();
                     $unique_course_listing_info['coursecode'] = $catalog->coursecode;
                     $unique_course_listing_info['name'] = $catalog->name;
+                    $unique_course_listing_info['semesterid'] = $course->semesterid;
+                    $unique_course_listing_info['semester-title'] =  Semester::find()
+                                                ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one()
+                                                ->title;
                     $unique_course_listing_container[] = $unique_course_listing_info;
                 }
                 $unique_course_listing_dataprovider  = new ArrayDataProvider([
@@ -1282,8 +1331,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 50,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['code' => SORT_ASC],
-                                'attributes' => ['code'],
+                                'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                'attributes' => ['semester-title', 'coursecode'],
                             ]
                     ]);      
                 $unique_listing_filename = "Title: " . $programme_name. " (" . $academic_year->title . ") Course Listing " . $date ."  " .  $generating_officer;
@@ -1313,6 +1362,12 @@ class ProgrammesController extends Controller
                     $course_info['coursecode'] = $catalog->coursecode;
                     $course_info['name'] = $catalog->name;
                     
+                    $course_info['semesterid'] = $course->semesterid;
+                    $course_info['semester-title'] =  Semester::find()
+                                                ->where(['semesterid' => $course->semesterid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one()
+                                                ->title;
+                    
                     if(CourseOutline::getCourseOutlines(0,  $course->coursecatalogid) == true)
                         $course_info['has_outline'] = true;
                     else
@@ -1331,6 +1386,36 @@ class ProgrammesController extends Controller
                     else 
                         $course_info['has_grades'] = false;
                     
+                    $lecs = EmployeeBatch::find()
+                         ->innerJoin('batch', '`employee_batch`.`batchid` = `batch`.`batchid`')
+                        ->innerJoin('course_offering', '`batch`.`courseofferingid`=`course_offering`.`courseofferingid`')
+                         ->where(['course_offering.courseofferingid' => $course->courseofferingid])
+                        ->all();
+                    if($lecs)
+                        $has_lecs = true;
+                    else
+                        $has_lecs = false;
+                    $lecturers = "";
+
+                     if($has_lecs)
+                     {
+                         $lec_count = count($lecs);
+                         foreach($lecs as $key=>$lec)
+                         {
+                             if($lec_count - $key == 1 )     //if last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid);
+                             }
+                             else       //not last lecturer
+                             {
+                                 $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                             }
+                         }
+                          $course_info['lecturer'] = $lecturers;
+                     }
+                     else
+                          $course_info['lecturer'] = "Unavailable"; 
+                    
                     $course_container[] = $course_info;
                 }
             }
@@ -1341,8 +1426,8 @@ class ProgrammesController extends Controller
                                 'pageSize' => 20,
                             ],
                             'sort' => [
-                                'defaultOrder' => ['code' => SORT_ASC],
-                                'attributes' => ['code'],
+                                'defaultOrder' => ['semester-title' => SORT_ASC, 'coursecode' => SORT_ASC],
+                                'attributes' => ['semester-title', 'coursecode', 'name'],
                             ]
                     ]);            
            }

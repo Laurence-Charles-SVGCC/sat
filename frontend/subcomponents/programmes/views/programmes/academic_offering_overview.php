@@ -106,7 +106,7 @@
                     <div id="offering-options-panel" style='width: 90%; margin: 0 auto;'>
                         <div id="options">
                              Please select one of the following actions:
-                             <?= Html::radioList('academic_offering_options', null, $menu_items, [ 'onclick'=> 'toggleAcademicOfferingOptions();',  'style' => 'width: 30%']);?>
+                             <?= Html::radioList('academic_offering_options', 2, $menu_items, [ 'onclick'=> 'toggleAcademicOfferingOptions();',  'style' => 'width: 30%']);?>
                         </div><br/>
 
                         <div id="manage-booklets" style="display:none;">
@@ -151,7 +151,7 @@
                             </fieldset>
                         </div>
 
-                         <div id="manage-courses" style="display:none">
+                         <div id="manage-courses">
                             <fieldset>
                                 <legend class="custom_h2" style="margin-left:0%;">Manage Courses</legend>
                                 <?php if ($unique_course_listing_dataprovider): ?>
@@ -169,6 +169,11 @@
                                                         'attribute' => 'name',
                                                         'format' => 'text',
                                                         'label' => 'Course Name'
+                                                    ],
+                                                    [
+                                                        'attribute' => 'semester-title',
+                                                        'format' => 'text',
+                                                        'label' => 'Semester'
                                                     ],
                                                 ],
                                                 'fontAwesome' => true,

@@ -18,12 +18,7 @@
             'dataProvider' => $dataProvider,
             'columns' => 
                 [
-//                    ['class' => 'yii\grid\SerialColumn'],
-                    [
-                        'attribute' => 'semester-title',
-                        'format' => 'text',
-                        'label' => 'Semester'
-                    ],
+                    ['class' => 'yii\grid\SerialColumn'],
                     [
                         'label' => 'Course Code',
                         'format' => 'html',
@@ -44,6 +39,11 @@
                         'attribute' => 'name',
                         'format' => 'text',
                         'label' => 'Course Name'
+                    ],
+                    [
+                        'attribute' => 'semester-title',
+                        'format' => 'text',
+                        'label' => 'Semester'
                     ],
                 ],
             ]); 

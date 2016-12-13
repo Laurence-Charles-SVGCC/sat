@@ -31,6 +31,16 @@
                         'format' => 'text',
                         'label' => 'Course Name'
                     ],
+                    [
+                        'attribute' => 'lecturer',
+                        'format' => 'text',
+                        'label' => 'Lecturer'
+                    ],
+                    [
+                        'attribute' => 'semester-title',
+                        'format' => 'text',
+                        'label' => 'Semester'
+                    ],
                 ],
             ]); 
         ?>     
