@@ -2499,26 +2499,26 @@
             if($intent == NULL)
             {
                 $records = $db->createCommand(
-                    'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name'
-                    . ' FROM programme_catalog'
-                    . ' JOIN academic_offering'
-                    . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
-                    . ' JOIN qualification_type'
-                    . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
-                    . ' JOIN application_period'
-                    . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
-                    . ' JOIN intent_type'
-                    . ' ON programme_catalog.programmetypeid = intent_type.intenttypeid' 
-                    . ' WHERE academic_offering.isactive=1'
-                    . ' AND academic_offering.isdeleted=0'
-                    . ' AND application_period.iscomplete = 0'
-                    . ' AND application_period.isactive = 1'
-                    . ' AND programme_catalog.departmentid'
-                    . ' IN ('
-                    . ' SELECT departmentid'
-                    . ' FROM department'
-                    . ' WHERE divisionid = '. $division_id
-                    . ' );'
+                    "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name AS 'programmetype'"
+                    . " FROM programme_catalog"
+                    . " JOIN academic_offering"
+                    . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                    . " JOIN qualification_type"
+                    . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                    . " JOIN application_period"
+                    . " ON academic_offering.applicationperiodid = application_period.applicationperiodid" 
+                    . " JOIN intent_type"
+                    . " ON programme_catalog.programmetypeid = intent_type.intenttypeid" 
+                    . " WHERE academic_offering.isactive=1"
+                    . " AND academic_offering.isdeleted=0"
+                    . " AND application_period.iscomplete = 0"
+                    . " AND application_period.isactive = 1"
+                    . " AND programme_catalog.departmentid"
+                    . " IN ("
+                    . " SELECT departmentid"
+                    . " FROM department"
+                    . " WHERE divisionid = ". $division_id
+                    . " );"
                     )
                     ->queryAll();  
             }
@@ -2535,27 +2535,27 @@
                 } 
 
                 $records = $db->createCommand(
-                        'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name'
-                        . ' FROM programme_catalog'
-                        . ' JOIN academic_offering'
-                        . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
-                        . ' JOIN qualification_type'
-                        . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
-                        . ' JOIN application_period'
-                        . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
-                        . ' JOIN intent_type'
-                        . ' ON programme_catalog.programmetypeid = intent_type.intenttypeid' 
-                        . ' WHERE academic_offering.isactive=1'
-                        . ' AND academic_offering.isdeleted=0'
-                        . ' AND application_period.iscomplete = 0'
-                        . ' AND application_period.isactive = 1'
-                        . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
-                        . ' AND programme_catalog.departmentid'
-                        . ' IN ('
-                        . ' SELECT departmentid'
-                        . ' FROM department'
-                        . ' WHERE divisionid = '. $division_id
-                        . ' );'
+                        "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name AS 'programmetype'"
+                        . " FROM programme_catalog"
+                        . " JOIN academic_offering"
+                        . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                        . " JOIN qualification_type"
+                        . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                        . " JOIN application_period"
+                        . " ON academic_offering.applicationperiodid = application_period.applicationperiodid" 
+                        . " JOIN intent_type"
+                        . " ON programme_catalog.programmetypeid = intent_type.intenttypeid" 
+                        . " WHERE academic_offering.isactive=1"
+                        . " AND academic_offering.isdeleted=0"
+                        . " AND application_period.iscomplete = 0"
+                        . " AND application_period.isactive = 1"
+                        . " AND programme_catalog.programmetypeid= " . $programmetypeid
+                        . " AND programme_catalog.departmentid"
+                        . " IN ("
+                        . " SELECT departmentid"
+                        . " FROM department"
+                        . " WHERE divisionid = ". $division_id
+                        . " );"
                         )
                         ->queryAll(); 
             }
@@ -2570,7 +2570,7 @@
                 array_push($keys, "name");
                 $k1 = strval($record["academicofferingid"]);
                 
-                if ($record["name"] == "part")
+                if ($record["programmetype"] == "part")
                 {
                     $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"] . "(Part-Time)" );
                 }
