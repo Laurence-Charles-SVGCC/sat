@@ -2533,7 +2533,7 @@
                 } 
 
                 $records = $db->createCommand(
-                        'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
+                        'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name'
                         . ' FROM programme_catalog'
                         . ' JOIN academic_offering'
                         . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
@@ -2541,6 +2541,8 @@
                         . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
                         . ' JOIN application_period'
                         . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
+                        . ' JOIN intent_type'
+                        . ' ON programme_catalog.programmetypeid = intent_type.intenttypeid' 
                         . ' WHERE academic_offering.isactive=1'
                         . ' AND academic_offering.isdeleted=0'
                         . ' AND application_period.iscomplete = 0'
@@ -2565,7 +2567,16 @@
                 array_push($keys, "id");
                 array_push($keys, "name");
                 $k1 = strval($record["academicofferingid"]);
-                $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"]);
+                
+                if ($record["programmetypeid"] == "part")
+                {
+                    $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"] . "(Part-Time)" );
+                }
+                else
+                {
+                    $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"]);
+                }
+                
                 array_push($values, $k1);
                 array_push($values, $k2);
                 $combined = array_combine($keys, $values);
