@@ -2499,7 +2499,7 @@
             if($intent == NULL)
             {
                 $records = $db->createCommand(
-                    'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
+                    'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name'
                     . ' FROM programme_catalog'
                     . ' JOIN academic_offering'
                     . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
@@ -2507,6 +2507,8 @@
                     . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid'
                     . ' JOIN application_period'
                     . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid' 
+                    . ' JOIN intent_type'
+                    . ' ON programme_catalog.programmetypeid = intent_type.intenttypeid' 
                     . ' WHERE academic_offering.isactive=1'
                     . ' AND academic_offering.isdeleted=0'
                     . ' AND application_period.iscomplete = 0'
