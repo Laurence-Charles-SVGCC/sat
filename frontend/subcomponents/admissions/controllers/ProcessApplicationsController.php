@@ -2568,7 +2568,7 @@
                 array_push($keys, "name");
                 $k1 = strval($record["academicofferingid"]);
                 
-                if ($record["programmetypeid"] == "part")
+                if ($record["name"] == "part")
                 {
                     $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"] . "(Part-Time)" );
                 }
