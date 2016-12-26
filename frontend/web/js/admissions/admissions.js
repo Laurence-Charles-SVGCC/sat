@@ -256,8 +256,19 @@ function checkSearchHow()
  */
 function filterOffer()
 {
-    var search_by = document.getElementsByName('offer_filter');
-    if (search_by[0].checked == true)           //if no filter
+    var radios = document.getElementsByName('offer_filter')
+    var i, val;
+    var len = radios.length;
+    for (i=0; i<len; i++) 
+    {
+        if ( radios[i].checked ) 
+        { 
+            val = radios[i].value; 
+            break;
+        }
+    }
+    
+    if (val == 'none')           //if no filter
     {  
         document.getElementById("offer-division-field").selectedIndex = 0;
         document.getElementById("offer-programme-field").selectedIndex = 0;  
@@ -272,7 +283,7 @@ function filterOffer()
         document.getElementById("offer-revoked").style.display = "none";
     } 
     
-    if (search_by[1].checked == true)           //if by division
+    else if (val == 'division')           //if by division
     {  
         document.getElementById("offer-programme-field").selectedIndex = 0;  
         document.getElementById("offer-cape-field").selectedIndex = 0;  
@@ -285,7 +296,7 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     } 
-    else if (search_by[2].checked == true)           //if by programme
+    else if (val == 'programme')           //if by programme
     {         
         document.getElementById("offer-division-field").selectedIndex = 0;
         document.getElementById("offer-cape-field").selectedIndex = 0;
@@ -298,7 +309,7 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
-    else if (search_by[3].checked == true)           //if by CAPE subject
+    else if (val == 'cape_subject')           //if by CAPE subject
     {        
         document.getElementById("offer-division-field").selectedIndex = 0;  
         document.getElementById("offer-programme-field").selectedIndex = 0; 
@@ -311,10 +322,11 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
-    else if (search_by[4].checked == true)           //if was published
+    else if (val == 'pending')           //if was pending
     {        
         document.getElementById("offer-division-field").selectedIndex = 0;  
         document.getElementById("offer-programme-field").selectedIndex = 0; 
+        document.getElementById("offer-cape-field").selectedIndex = 0;  
         
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "none";
@@ -324,10 +336,11 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "none";
     }
-    else if (search_by[5].checked == true)           //if was published
+    else if (val == 'ispublished')           //if was published
     {        
         document.getElementById("offer-division-field").selectedIndex = 0;  
-        document.getElementById("offer-programme-field").selectedIndex = 0; 
+        document.getElementById("offer-programme-field").selectedIndex = 0;
+        document.getElementById("offer-cape-field").selectedIndex = 0;  
         
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "none";
@@ -337,10 +350,11 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "block";
         document.getElementById("offer-revoked").style.display = "none";
     }
-    else if (search_by[6].checked == true)           //if was published
+    else if (val == 'revoked')           //if was revoked
     {        
         document.getElementById("offer-division-field").selectedIndex = 0;  
         document.getElementById("offer-programme-field").selectedIndex = 0; 
+        document.getElementById("offer-cape-field").selectedIndex = 0;  
         
         document.getElementById("offer-division").style.display = "none";       
         document.getElementById("offer-programme").style.display = "none";
@@ -350,8 +364,105 @@ function filterOffer()
         document.getElementById("offer-published").style.display = "none";
         document.getElementById("offer-revoked").style.display = "block";
     }
-    
 }
+//function filterOffer()
+//{
+//    var search_by = document.getElementsByName('offer_filter');
+//    if (search_by[0].checked == true)           //if no filter
+//    {  
+//        document.getElementById("offer-division-field").selectedIndex = 0;
+//        document.getElementById("offer-programme-field").selectedIndex = 0;  
+//        document.getElementById("offer-cape-field").selectedIndex = 0;  
+//        
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "block";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    } 
+//    
+//    else if (search_by[1].checked == true)           //if by division
+//    {  
+//        document.getElementById("offer-programme-field").selectedIndex = 0;  
+//        document.getElementById("offer-cape-field").selectedIndex = 0;  
+//        
+//        document.getElementById("offer-division").style.display = "block";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    } 
+//    else if (search_by[2].checked == true)           //if by programme
+//    {         
+//        document.getElementById("offer-division-field").selectedIndex = 0;
+//        document.getElementById("offer-cape-field").selectedIndex = 0;
+//               
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "block";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    }
+//    else if (search_by[3].checked == true)           //if by CAPE subject
+//    {        
+//        document.getElementById("offer-division-field").selectedIndex = 0;  
+//        document.getElementById("offer-programme-field").selectedIndex = 0; 
+//        
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "block";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    }
+//    else if (search_by[4].checked == true)           //if was published
+//    {        
+//        document.getElementById("offer-division-field").selectedIndex = 0;  
+//        document.getElementById("offer-programme-field").selectedIndex = 0; 
+//        
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "block";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    }
+//    else if (search_by[5].checked == true)           //if was published
+//    {        
+//        document.getElementById("offer-division-field").selectedIndex = 0;  
+//        document.getElementById("offer-programme-field").selectedIndex = 0; 
+//        
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "block";
+//        document.getElementById("offer-revoked").style.display = "none";
+//    }
+//    else if (search_by[6].checked == true)           //if was published
+//    {        
+//        document.getElementById("offer-division-field").selectedIndex = 0;  
+//        document.getElementById("offer-programme-field").selectedIndex = 0; 
+//        
+//        document.getElementById("offer-division").style.display = "none";       
+//        document.getElementById("offer-programme").style.display = "none";
+//        document.getElementById("offer-cape").style.display = "none";
+//        document.getElementById("offer-home").style.display = "none";
+//        document.getElementById("offer-awaiting-publish").style.display = "none";
+//        document.getElementById("offer-published").style.display = "none";
+//        document.getElementById("offer-revoked").style.display = "block";
+//    }
+//    
+//}
 
 
 /**
