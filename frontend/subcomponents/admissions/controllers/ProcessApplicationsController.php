@@ -1300,7 +1300,7 @@
                                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                 ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
-                                        'application.isdeleted' => 0, 'application.personid' => $$update_candidate->personid,
+                                        'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                         ])
