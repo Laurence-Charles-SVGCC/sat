@@ -861,7 +861,7 @@
                                 if ($applications_save_flag == false)
                                 {
                                     $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when savingapplication');
+                                    Yii::$app->session->setFlash('error', 'Error occured when saving application');
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
@@ -920,7 +920,7 @@
                             if ($result == false)
                             {
                                 $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
+                                Yii::$app->session->setFlash('error', 'Error occured when rescinding rejection');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
@@ -1250,12 +1250,13 @@
                      */
                     elseif($new_status == 10  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
-                        //updates subsequent applications
+                        //updates subsequent applications to pending
+                        //this is done because admin may want to issue offer to subsequent applicants
                         if($count - $position > 1)
                         {
                             for ($i = $position+1 ; $i < $count ; $i++)
                             {
-                                $applications[$i]->applicationstatusid = 6;
+                                $applications[$i]->applicationstatusid = 3;
                                 $applications_save_flag = $applications[$i]->save();
                                 if ($applications_save_flag == false)
                                 {
