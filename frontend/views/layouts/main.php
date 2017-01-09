@@ -111,7 +111,7 @@
                   <!-- sidebar menu: : style can be found in sidebar.less -->
                   <ul class="sidebar-menu">
                    <?php if (Yii::$app->user->can('admissions')): ?>
-                    <li class="active treeview">
+                    <li class="treeview">
                       <a href="">
                         <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
                       </a>
@@ -176,7 +176,7 @@
 
 
                     <?php if (Yii::$app->user->can('registry')): ?>
-                        <li class="active treeview">
+                        <li class="treeview">
                             <a href="">
                                 <i class="fa fa-graduation-cap"></i> <span>Registry</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
@@ -232,7 +232,7 @@
 
 
                     <?php if (Yii::$app->user->can('students')): ?>
-                        <li class="active treeview">
+                        <li class="treeview">
                             <a href="">
                                 <i class="fa fa-user"></i> <span>Students</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
@@ -271,7 +271,7 @@
 
 
                     <?php if (Yii::$app->user->can('gradebook')): ?>
-                        <li class="active treeview">
+                        <li class="treeview">
                             <a href="">
                                 <i class="glyphicon glyphicon-book"></i> <span>Grade Book</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
@@ -289,7 +289,7 @@
 
                     <!--Legacy-->
                     <?php if (false/*Yii::$app->user->can('legacy')*/): ?>
-                        <li class="active treeview">
+                        <li class="treeview">
                             <a href="">
                                 <i class="glyphicon glyphicon-leaf"></i> <span>Legacy</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
@@ -346,7 +346,7 @@
 
 
                     <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')):?>
-                        <li class="active treeview">
+                        <li class="treeview">
                             <a href="">
                               <i class="glyphicon glyphicon-usd"></i> <span>Bursary</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
