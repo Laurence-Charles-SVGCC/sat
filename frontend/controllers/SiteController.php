@@ -72,10 +72,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        if (\Yii::$app->user->isGuest) {
+        if (\Yii::$app->user->isGuest) 
+        {
             return $this->actionLogin();
         }
-        
         return $this->render('index');
     }
 
@@ -128,6 +128,7 @@ class SiteController extends Controller
                 ]);
             }
         }
+        
         return $this->render('login', [
                     'model' => $model,
                 ]);
