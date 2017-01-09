@@ -18,7 +18,7 @@
         $employee_name = $employee->firstname . " " . $employee->lastname;
         $employee_username = Yii::$app->user->identity->username;
         $title = EmployeeTitle::findOne(['employeetitleid' => $employee->employeetitleid]);
-        $employee_job_title = $title? $title: "Undefined Job Title";
+        $employee_job_title = $title? $title->name: "Undefined Job Title";
     }
     else
     {
