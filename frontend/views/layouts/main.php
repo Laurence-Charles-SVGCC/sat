@@ -431,14 +431,17 @@
                 <div class="content-wrapper">
                     <!-- Content Header (Page header) -->
                     <div class="container">
-                        <?= Breadcrumbs::widget([
-                            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-                        ]) ?>
+                        <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [], ]) ?>
                         <?= Alert::widget() ?>
-                        <?= $content ?>
                     </div>
+                    
+                    <!-- Main Content -->
+                    <section class="content">
+                        <?= $content ?>
+                    </section>
                 </div>
 
+                
                 <footer class="footer">
                     <div class="container">
                     <p class="pull-left">&copy; SVGCC <?= date('Y') ?></p>
