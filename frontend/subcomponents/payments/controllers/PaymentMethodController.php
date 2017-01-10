@@ -204,6 +204,7 @@
                 $method->isactive = 1;              //reactivate
             }
             
+            $payment_method->lastmodifiedby = Yii::$app->user->identity->personid;
             $save_flag = $method->save();
             if ($save_flag == false)
             {

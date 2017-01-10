@@ -23,7 +23,7 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title"><?= $this->title?></span>
-         <?php if(Yii::$app->user->can('createPaymentMethod')):?>
+         <?php if(Yii::$app->user->can('createTransactionPurpose')):?>
             <a class="btn btn-info pull-right" href=<?=Url::to(['configure-transaction-purpose', 'action' => 'create']);?> role="button"> Create</a>
         <?php endif;?>
     </div>

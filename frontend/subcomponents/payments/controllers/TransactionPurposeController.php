@@ -203,7 +203,8 @@
            {
                $record->isactive = 1;              //reactivate
            }
-
+           
+           $transaction_purpose->lastmodifiedby = Yii::$app->user->identity->personid;
            $save_flag = $record->save();
            if ($save_flag == false)
            {

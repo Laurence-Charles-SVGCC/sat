@@ -16,19 +16,6 @@
      */
     class TransactionTypeController extends Controller
     {
-        public function behaviors()
-        {
-            return [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['post'],
-                    ],
-                ],
-            ];
-        }
-
-
         /**
          * Lists all TransactionType models.
          * 
@@ -123,7 +110,7 @@
                 if (Yii::$app->user->can('createTransactionType'))
                 {
                     $transaction_type = new TransactionType();
-                    $action = "Create";
+                    $operation = "Create";
                 }
                 else
                 {
@@ -138,7 +125,7 @@
                     $transaction_type = TransactionType::find()
                             ->where(['transactiontypeid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
-                    $action = "Update";
+                    $operation = "Update";
                 }
                 else
                 {
@@ -150,6 +137,16 @@
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = $transaction_type->load($post_data);
+                
+                 if ($action == "create")
+                {
+                    $transaction_type->createdby = Yii::$app->user->identity->personid;
+                }
+                elseif ($action == "update")
+                {
+                    $transaction_type->lastmodifiedby = Yii::$app->user->identity->personid;
+                }
+                
                 $save_flag = $transaction_type->save();
                 if ($save_flag == true)
                     return self::actionIndex();
@@ -162,7 +159,7 @@
             return $this->render('create_update',
                     [
                         'transaction_type' => $transaction_type,
-                        'action' => $action,
+                        'operation' => $operation,
                     ]);
         }
 
@@ -203,7 +200,8 @@
             {
                 $record->isactive = 1;              //reactivate
             }
-
+            
+            $transaction_type->lastmodifiedby = Yii::$app->user->identity->personid;
             $save_flag = $record->save();
             if ($save_flag == false)
             {
