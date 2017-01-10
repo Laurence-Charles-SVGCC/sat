@@ -8,6 +8,8 @@
     $this->params['breadcrumbs'][] = ['label' => 'Payment Methods', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/payments/payment-method/index']);?>" title="Payment Method Home">
         <h1>Welcome to the Payment Management System</h1>
@@ -23,7 +25,7 @@
         <span class="box-title"><?= $this->title?></span>
      </div>
     
-    <?php $form = ActiveForm::begin([ "options" => []]);?>
+    <?php $form = ActiveForm::begin();?>
         <div class="box-body">
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Name:</label>

@@ -6,7 +6,7 @@
     
     use frontend\models\PaymentMethod;
 
-    $this->title = 'Payment Methods Listing';
+    $this->title = 'Payment Methods';
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
