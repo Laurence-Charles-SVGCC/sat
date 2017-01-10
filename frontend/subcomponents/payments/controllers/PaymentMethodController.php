@@ -4,7 +4,6 @@
 
     use Yii;
     use yii\web\Controller;
-    use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
     use yii\data\ArrayDataProvider;
     
@@ -36,7 +35,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 05/10/2016
-         * Date LAst Modified: 05/10/2016
+         * Date Last Modified: 05/10/2016
          */
         public function actionIndex()
         {
@@ -123,7 +122,7 @@
                  if (Yii::$app->user->can('createPaymentMethod'))
                  {
                       $payment_method = new PaymentMethod();
-                      $action = "Create";
+                      $operation = "Create";
                  }
                  else
                  {
@@ -138,7 +137,7 @@
                     $payment_method = PaymentMethod::find()
                         ->where(['paymentmethodid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
-                    $action = "Update";
+                    $operation= "Update";
                 }
                 else
                 {
@@ -150,6 +149,16 @@
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = $payment_method->load($post_data);
+                
+                if ($action == "create")
+                {
+                    $payment_method->createdby = Yii::$app->user->identity->personid;
+                }
+                elseif ($action == "update")
+                {
+                    $payment_method->lastmodifiedby = Yii::$app->user->identity->personid;
+                }
+                
                 $save_flag = $payment_method->save();
                 if ($save_flag == true)
                     return self::actionIndex();
@@ -162,7 +171,7 @@
             return $this->render('create_update',
                     [
                         'payment_method' => $payment_method,
-                        'action' => $action,
+                        'operation' => $operation,
                     ]);
         }
 
@@ -258,21 +267,5 @@
                 return $this->redirect(['index']); 
             }
             return $this->redirect(['index']);
-        }
-
-        /**
-         * Finds the PaymentMethod model based on its primary key value.
-         * If the model is not found, a 404 HTTP exception will be thrown.
-         * @param string $id
-         * @return PaymentMethod the loaded model
-         * @throws NotFoundHttpException if the model cannot be found
-         */
-        protected function findModel($id)
-        {
-            if (($model = PaymentMethod::findOne($id)) !== null) {
-                return $model;
-            } else {
-                throw new NotFoundHttpException('The requested page does not exist.');
-            }
         }
     }

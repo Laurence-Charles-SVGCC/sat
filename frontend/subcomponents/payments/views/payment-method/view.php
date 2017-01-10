@@ -1,45 +1,43 @@
 <?php
+    use yii\widgets\Breadcrumbs;
+    use yii\helpers\Url;
 
-        use yii\helpers\Html;
-        use yii\helpers\Url;
+    use frontend\models\Employee;
 
-        use frontend\models\Employee;
-
-        $this->title = "Payment Method Details";
-        $this->params['breadcrumbs'][] = ['label' => 'Payment Methods', 'url' => ['index']];
-        $this->params['breadcrumbs'][] = $this->title;
+    $this->title = "Payment Method Details";
+    $this->params['breadcrumbs'][] = ['label' => 'Payment Methods', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="payment-method-view">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/payments/payment-method/index']);?>" title="Payment Method Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/bursary.png" alt="bursary-avatar">
-                <span class="custom_module_label">Welcome to the Bursary Management System</span> 
-                <img src ="css/dist/img/header_images/bursary.png" alt="bursary-avatar" class="pull-right">
-            </a>    
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/payments/payment-method/index']);?>" title="Payment Method Home">
+        <h1>Welcome to the Payment Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary">
+     <div class="box-header with-border">
+         <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <div class="container">
+        <div class="row" style="height:3em;">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><strong>Name</strong></div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><?= $payment_method->name; ?></div>
         </div>
         
-         <div class="custom_body">
-            <h1 class="custom_h1"><?= $this->title?></h1>
-            
-            <br/>
-            <table class='table table-hover' style='width:70%; margin: 0 auto;'>
-                <tr>
-                    <th style="width:30%; vertical-align:middle">Name</th>
-                    <td style="vertical-align:middle"><?= $payment_method->name; ?></td>
-                </tr>
-                
-                <tr>    
-                    <th style="width:30%; vertical-align:middle">Creator</th>
-                    <td style="vertical-align:middle"><?= Employee::getEmployeeName($payment_method->createdby); ?></td>
-                </tr>
-                
-                <tr>  
-                    <th style="width:30%; vertical-align:middle">Last Modified By</th>
-                    <td style="vertical-align:middle"><?= (Employee::getEmployeeName($payment_method->lastmodifiedby))? Employee::getEmployeeName($payment_method->lastmodifiedby) : "N/A"; ?></td>
-                </tr>
-            </table><br/>
+        <div class="row" style="height:3em;">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><strong>Creator</strong></div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><?= Employee::getEmployeeName($payment_method->createdby); ?></div>
+        </div>
+        
+        <div class="row" style="height:3em;">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><strong>Last Modified By</strong></div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><?= (Employee::getEmployeeName($payment_method->lastmodifiedby))? Employee::getEmployeeName($payment_method->lastmodifiedby) : "N/A"; ?></div>
         </div>
     </div>
 </div>

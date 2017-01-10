@@ -430,9 +430,8 @@
                 <!-- Content Wrapper. Contains page content -->
                 <div class="content-wrapper">
                     <!-- Content Header (Page header) -->
-                    <div class="container">
-                        <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [], ]) ?>
-                        <?= Alert::widget() ?>
+                    <div>
+                        <p style="width:90%"><?= Alert::widget() ?></p>
                     </div>
                     
                     <!-- Main Content -->
