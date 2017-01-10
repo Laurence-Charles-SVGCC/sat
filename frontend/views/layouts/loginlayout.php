@@ -18,19 +18,18 @@
             
             <body class="login-page">
                 <?php $this->beginBody() ?>
-                <div class="wrap">   
-                    <div class="container">   
-                        <?= $content ?>
+                    <div class="wrap">   
+                        <div class="container">   
+                            <?= $content ?>
+                        </div>
                     </div>
-                </div>
 
-                <footer class="footer">
-                    <div class="container">
-                        <p class="pull-left">&copy; SVGCC <?= date('Y') ?></p>
-                        <p class="pull-right"><?= Yii::powered() ?></p>
-                    </div>
-                </footer>
-
+                    <footer class="footer">
+                        <div class="container">
+                            <p class="pull-left">&copy; SVGCC <?= date('Y') ?></p>
+                            <p class="pull-right"><?= Yii::powered() ?></p>
+                        </div>
+                    </footer>
                 <?php $this->endBody() ?>
             </body>
         </html>
