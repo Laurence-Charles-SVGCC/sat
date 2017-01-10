@@ -6,6 +6,7 @@
     use yii\web\Controller;
     use yii\filters\VerbFilter;
     use yii\data\ArrayDataProvider;
+    use yii\web\NotFoundHttpException;
     
     use frontend\models\PaymentMethod;
     use frontend\models\PaymentMethodSearch;
@@ -267,5 +268,22 @@
                 return $this->redirect(['index']); 
             }
             return $this->redirect(['index']);
+        }
+        
+        
+        /**
+         * Finds the TransactionType model based on its primary key value.
+         * If the model is not found, a 404 HTTP exception will be thrown.
+         * @param string $id
+         * @return TransactionType the loaded model
+         * @throws NotFoundHttpException if the model cannot be found
+         */
+        protected function findModel($id)
+        {
+            if (($model = PaymentMethod::findOne($id)) !== null) {
+                return $model;
+            } else {
+                throw new NotFoundHttpException('The requested page does not exist.');
+            }
         }
     }

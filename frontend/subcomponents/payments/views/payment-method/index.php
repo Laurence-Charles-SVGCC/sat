@@ -20,7 +20,7 @@
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
 </section><br/><br/>
 
-<div class="box box-primary table-responsive no-padding">
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title"><?= $this->title?></span>
          <?php if(Yii::$app->user->can('createPaymentMethod')):?>
