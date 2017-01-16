@@ -1,44 +1,39 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 25/09/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
 
     $this->title = "Email Upload Dashboard";
 ?>
     
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/students/email-upload/index']);?>" title="Email Management">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/email.png" alt="email">
-                <span class="custom_module_label">Welcome to the Email Management System</span> 
-                <img src ="css/dist/img/header_images/email.png" alt="email" class="pull-right">
-            </a>        
-        </div>
+<div class="page-header text-center no-padding">
+     <a href="<?= Url::toRoute(['/subcomponents/students/email-upload/index']);?>" title="Email Management">     
+        <h1>Welcome to the Email Management System</h1>
+    </a>
+</div>
 
-        <div class="custom_body"> 
-            <h1 class="custom_h1"><?= $this->title;?></h1>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-            <div style="margin-left:2.5%"><br/>
-                <div id="email-dashboard-options">
-                    Please select appropriate action.
-                    <?= Html::radioList('email-action', null, [ '0' => 'Upload New File(s)', '1' => 'View Uploaded File(s)'], ['class'=> 'form_field', 'onclick'=> 'toggleEmailActions();']);?>
-               </div><br/>
-                    
-                <div id="upload-new-file" style="display:none">
-                    <a class="btn btn-success glyphicon glyphicon-upload" href=<?=Url::toRoute(['/subcomponents/students/email-upload/upload-email-file']);?> role="button">  Upload File(s)</a>
-                </div> 
 
-                <div id="process-file" style="display:none">
-                    <a class="btn btn-success glyphicon glyphicon-folder-open" href=<?=Url::toRoute(['/subcomponents/students/email-upload/view-email-files']);?> role="button">  View File(s)</a>
-                </div>
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em">
+     <div class="box-header with-border">
+         <span class="box-title"><?= $this->title?></span>
+    </div>
+    
+    <div class="box-body">
+        <div id="email-dashboard-options">
+            Please select appropriate action.
+            <?= Html::radioList('email-action', null, [ '0' => 'Upload New File(s)', '1' => 'View Uploaded File(s)'], ['class'=> 'form_field', 'onclick'=> 'toggleEmailActions();']);?>
+       </div><br/>
+
+        <div id="upload-new-file" style="display:none">
+            <a class="btn btn-success glyphicon glyphicon-upload" href=<?=Url::toRoute(['/subcomponents/students/email-upload/upload-email-file']);?> role="button">  Upload File(s)</a>
+        </div> 
+
+        <div id="process-file" style="display:none">
+            <a class="btn btn-success glyphicon glyphicon-folder-open" href=<?=Url::toRoute(['/subcomponents/students/email-upload/view-email-files']);?> role="button">  View File(s)</a>
         </div>
     </div>
 </div>
-
-

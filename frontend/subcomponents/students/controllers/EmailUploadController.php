@@ -115,7 +115,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 27/06/2016
-         * Date Last Modified: 27/09/2016 | 28/09/2016
+         * Date Last Modified: 27/09/2016 | 28/09/2016  | 16/01/2017   
          */
         public function actionProcessFile($index)
         {
@@ -145,7 +145,7 @@
             }
             elseif ($file_validation == -3)
             {
-                Yii::$app->getSession()->setFlash('error', 'Error.  The column arrangement for title row of file is invalid.'/* Column Count= ' . count(fgetcsv(fopen($new_filename,"r"), 1000, ","))*/);  
+                Yii::$app->getSession()->setFlash('error', 'Error.  The column arrangement for title row of file is invalid.');  
                 return self::actionViewEmailFiles();
             }
             elseif ($file_validation == -4)
@@ -176,11 +176,8 @@
                 $total++;
                 $info = array();
                 
-                $title = $row[0];
-                $firstname = $row[1];
-                $lastname = $row[2];
-                $school_email = $row[3];
-                $username = $row[5];
+                $username = $row[0];
+                $email = $row[1];
                 
                 $user = User::find()
                         ->where(['username' => $username, 'isactive' => 1, 'isdeleted' => 0])
@@ -188,15 +185,12 @@
                 if ($user == false)
                 {
                     $info['username'] = $username;
-                    $info['title'] = $title;
-                    $info['firstname'] = $firstname;
-                    $info['lastname'] = $lastname;
                     $info['error'] = "User record not found";
                     $data[] = $info;
                     continue;
                 }
                 
-                $user->email = $school_email;
+                $user->email = $email;
                 
                 $student = Student::find()
                         ->where(['personid' => $user->personid, 'isdeleted' => 0])
@@ -204,14 +198,12 @@
                  if ($student == false)
                 {
                     $info['username'] = $username;
-                    $info['title'] = $title;
-                    $info['firstname'] = $firstname;
-                    $info['lastname'] = $lastname;
                     $info['error'] = "Student record not found";
                     $data[] = $info;
                      continue;
                 }
-                $student->email = $school_email;
+                
+                $student->email = $email;
                 
                 $student_save_flag = false;
                 $user_save_flag = false;
@@ -220,9 +212,6 @@
                 if ($student_save_flag == false)
                 {
                     $info['username'] = $username;
-                    $info['title'] = $title;
-                    $info['firstname'] = $firstname;
-                    $info['lastname'] = $lastname;
                     $info['error'] = "Error saving student record";
                     $data[] = $info;
                     continue;
@@ -232,9 +221,6 @@
                 if ($user_save_flag == false)
                 {
                     $info['username'] = $username;
-                    $info['title'] = $title;
-                    $info['firstname'] = $firstname;
-                    $info['lastname'] = $lastname;
                     $info['error'] = "Error saving user record";
                     $data[] = $info;
                     continue;
@@ -249,8 +235,8 @@
                     'pageSize' => 25,
                 ],
                  'sort' => [
-                        'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                        'attributes' => ['username', 'lastname', 'firstname', 'error'],
+                        'defaultOrder' => ['username' => SORT_ASC],
+                        'attributes' => ['username', 'error'],
                     ],
             ]);
             
@@ -308,7 +294,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 28/09/2016
-         * Date Last Modified: 28/09/2016    
+         * Date Last Modified: 28/09/2016 | 16/01/2017     
          */
         private function validateFile($filename)
         {
@@ -352,6 +338,48 @@
             fclose($handler);
             return 1;
         }
+//        private function validateFile($filename)
+//        {
+//            $count = 0;
+//            $handler = fopen($filename, "r");
+//            
+//            if ($handler == false)
+//                return -1;
+//            
+//            $title_row = fgetcsv($handler, 1000, ",");
+//            $validate_title_count = $this->validateTitleRowCount($title_row);
+//            if ($validate_title_count == false)
+//            {
+//                fclose($handler);
+//                return -2;
+//            }
+//            
+//            $validate_title_arrangement = $this->validateTitleRowArrangement($title_row);
+//            if ($validate_title_arrangement == false)
+//            {
+//                fclose($handler);
+//                return -3;
+//            }
+//            
+//            while (($row = fgetcsv($handler, 1000, ",")) !== false) 
+//            {
+//                $count++;
+//                if ( $this->validateDataRow($row) == false)
+//                {
+//                    fclose($handler);
+//                    return -4;
+//                }
+//            }
+//            
+//            if ($count > 100)
+//            {
+//                fclose($handler);
+//                return -5;
+//            }
+//            
+//            fclose($handler);
+//            return 1;
+//        }
         
         
         /**
@@ -362,11 +390,11 @@
          * 
          * Author: Laurence Charles
          * Date Created: 29/09/2016
-         * Date Last Modified: 29/09/2016    
+         * Date Last Modified: 29/09/2016  | 16/01/2017   
          */
         private function validateTitleRowCount($row)
         {
-            if (count($row) != 7)
+            if (count($row) != 2)
             {
                 return false;
             }
@@ -382,20 +410,14 @@
          * 
          * Author: Laurence Charles
          * Date Created: 29/09/2016
-         * Date Last Modified: 29/09/2016    
+         * Date Last Modified: 29/09/2016  | 16/01/2017
          */
         private function validateTitleRowArrangement($row)
         {
-            $title = $row[0];
-            $firstname = $row[1];
-            $lastname = $row[2];
-            $email = $row[3];
-            $password = $row[4];
-            $username = $row[5];
-            $personalemail = $row[6];
+            $username = $row[0];
+            $email = $row[1];
 
-            if ($title == "title" && $firstname == "firstname"  && $lastname == "lastname"  && $password == "password"  
-                    && $email == "email" && $username == "username"  && $personalemail == "personalemail")
+            if ($username == "username" && $email == "email")
             {
                 return true;
             }
@@ -416,18 +438,12 @@
          */
          private function validateDataRow($row)
         {
-            if (count($row) == 7)
+            if (count($row) == 2)
             {
-                $title = $row[0];
-                $firstname = $row[1];
-                $lastname = $row[2];
-                $email = $row[3];
-                $password = $row[4];
-                $username = $row[5];
-                $personalemail = $row[6];
+                $username = $row[0];
+                $email = $row[1];
 
-                if ($title == true && $firstname == true  && $lastname == true && $email == true
-                        && $password == true && $username == true  && $personalemail == true)
+                if ($username == true && $email == true)
                 {
                     return true;
                 }

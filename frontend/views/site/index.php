@@ -1,3 +1,7 @@
+<?php
+    $this->title = "Home"
+?>
+
 <div>
     <div class="jumbotron">
         <h1> SVGCC Administrative Terminal</h1>

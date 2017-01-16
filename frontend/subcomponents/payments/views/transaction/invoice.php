@@ -1,16 +1,27 @@
 <?php
+    use yii\widgets\Breadcrumbs;
+    use yii\helpers\Url;
+    use frontend\models\Employee;
 
-use yii\helpers\Url;
-use frontend\models\Employee;
+    $this->title = 'Receipt';
+    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant/Student', 'url' => ['find-applicant-or-student', 'status' => $status, 'new_search' => 1]];
+    $this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['view-user-transactions', 'id' => $personid, 'status' => $status]];
+    $this->params['breadcrumbs'][] = $this->title;
 
-$this->title = 'Receipt';
-$this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
-
-$invoice_total = 0.0;
+    $invoice_total = 0.0;
 ?>
 
-<div class="content-wrapper">
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/payments/payments/print-transaction-receipt', 'receiptnumber' => $models[0]->receiptnumber]);?>">
+        <h1>Print Receipt</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/>
+
+<div class="content-wrapper" style="margin: 0 auto">
         <!-- Main content -->
         <section class="invoice">
           <!-- title row -->
@@ -53,6 +64,7 @@ $invoice_total = 0.0;
                     <th>Purpose</th>
                     <th>Payment Method</th>
                     <th>Date</th>
+                    <th>Total Due</th>
                     <th>Amount</th>
                     <th>Balance</th>
                     <th>Recepient</th>
@@ -63,13 +75,14 @@ $invoice_total = 0.0;
                     <?php $recepient = Employee::find()->where(['personid' => $model->getRecepient()->one()->personid])->one();
                        $rname = $recepient ? $recepient->firstname . " " . $recepient->lastname : 'Recepient Undefined'; ?>
                   <tr>
-                    <td><?= $model->receiptnumber ?></td>
+                      <td><a href="#"><?= $model->receiptnumber ?></a></td>
                     <td><?= $model->getTransactiontype()->one()->name ?></td>
                     <td><?= $model->getTransactionpurpose()->one()->name ?></td>
                     <td><?= $model->getPaymentmethod()->one()->name; ?></td>
                     <td><?= $model->paydate; ?></td>
-                    <td>$<?= $model->paymentamount; ?></td>
                     <td>$<?= $model->totaldue; ?></td>
+                    <td>$<?= $model->paymentamount; ?></td>
+                    <td>$<?= $model->totaldue - $model->paymentamount; ?></td>
                     <td><?= $rname; ?></td>
                     <?php $invoice_total += $model->paymentamount; ?>
                   </tr>

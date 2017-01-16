@@ -13,7 +13,7 @@ $invoice_total = 0.0;
             <div class="col-xs-12">
               <h2 class="page-header">
                   <i class="fa"><img src="<?= Url::to('css/dist/img/logo.png')?>"/></i>
-                <small class="pull-right">Date: <?= date('Y-m-d');?></small>
+                    <small class="pull-right">Date: <?= date('Y-m-d');?></small>
               </h2>
             </div><!-- /.col -->
           </div>
@@ -48,6 +48,7 @@ $invoice_total = 0.0;
                     <th>Purpose</th>
                     <th>Payment Method</th>
                     <th>Date</th>
+                    <th>Total Due</th>
                     <th>Amount</th>
                     <th>Balance</th>
                     <th>Recepient</th>
@@ -63,8 +64,9 @@ $invoice_total = 0.0;
                     <td><?= $model->getTransactionpurpose()->one()->name ?></td>
                     <td><?= $model->getPaymentmethod()->one()->name; ?></td>
                     <td><?= $model->paydate; ?></td>
-                    <td>$<?= $model->paymentamount; ?></td>
                     <td>$<?= $model->totaldue; ?></td>
+                    <td>$<?= $model->paymentamount; ?></td>
+                    <td>$<?= $model->totaldue - $model->paymentamount; ?></td>
                     <td><?= $rname; ?></td>
                     <?php $invoice_total += $model->paymentamount; ?>
                   </tr>
