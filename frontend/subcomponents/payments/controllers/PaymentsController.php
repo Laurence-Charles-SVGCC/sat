@@ -711,6 +711,7 @@ class PaymentsController extends Controller
             'dataProvider' => $dataProvider,
             'status' => $status,
             'heading' => $heading,
+            'id' => $id
         ]);
     }
 }

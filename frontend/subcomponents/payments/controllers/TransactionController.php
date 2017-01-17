@@ -5,6 +5,7 @@ namespace app\subcomponents\payments\controllers;
 use Yii;
 use yii\helpers\Url;
 use frontend\models\Transaction;
+use frontend\models\TransactionSummary;
 use frontend\models\TransactionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -118,6 +119,88 @@ class TransactionController extends Controller
 
         return $this->redirect(['index']);
     }
+    
+    
+    /**
+     * Create full payment transaction
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 17/01/2017
+     * Date Last Modified: 17/01/2017
+     */
+    public function actionCreateFullPayment($id)
+    {
+        $transaction = new Transaction();
+
+        if ($post_data = Yii::$app->request->post()) 
+        {
+            $transaction_load_flag = $transaction->load($post_data);
+            
+            if($transaction_load_flag == true)
+            {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    $transaction_summary = new TransactionSummary();
+                    $transaction_summary->balance = 0;
+                    $transaction_summary->totalpaid = $transaction->paymentamount;
+                    if ($transaction_summary->save() == false)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured saving transaction summary record');
+                        $transaction->rollBack();
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $transaction->personid = $id;
+                    $transaction->recepientid = Yii::$app->user->getId();
+                    $transaction->transactionsummaryid = $transaction_summary->transactionsummaryid;
+                    $transaction->receiptnumber = PaymentsController::getReceiptNumber();
+                
+                    if ($transaction>save() == false)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured saving transaction record');
+                        $transaction->rollBack();
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
+                    
+                    $transaction->commit();
+                } catch (Exception $ex) {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                }
+            }
+            else 
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load transaction. Please try again.');  
+            }
+        }
+        
+        return $this->render('create-full-payment', [
+            'transaction' => $transaction,
+            'id' => $id,
+        ]); 
+    }
+    
+    
+    
+    
+    
+    
+    /**
+     * Create part-payment transaction
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 17/01/2017
+     * Date Last Modified: 17/01/2017
+     */
+    public function actionCreatePartPayment($id)
+    {
+        
+    }
 
     /**
      * Finds the Transaction model based on its primary key value.
@@ -134,4 +217,8 @@ class TransactionController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+    
+    
+    
 }

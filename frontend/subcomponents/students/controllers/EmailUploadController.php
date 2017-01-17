@@ -130,8 +130,9 @@
             $files = FileHelper::findFiles($dir);
             
             $target_file = $files[$index];
-            $new_filename = str_replace("/", "\\", $target_file );
+//            $new_filename = str_replace("/", "\\", $target_file );     //only needed for local impementation due to local server naming convention
             
+            $new_filename = $target_file;
             $file_validation = $this->validateFile($new_filename);
             if ($file_validation == -1)
             {

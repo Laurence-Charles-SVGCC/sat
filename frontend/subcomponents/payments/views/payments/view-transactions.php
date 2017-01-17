@@ -92,6 +92,14 @@ if (count($dataProvider->getModels()) > 0)
                     }
             ],
             'paydate',
+//           [
+//                'label' => 'Pay Date',
+//                'value' => function($model)
+//                    {
+//                        
+//                       return substr($model->paydate, 2, 2);
+//                    }
+//            ],         
             'paymentamount',
             'totaldue',
             'comments:ntext',

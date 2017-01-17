@@ -10,6 +10,7 @@ use common\models\User;
  * This is the model class for table "transaction".
  *
  * @property string $transactionid
+ * @property string $transactionitemid
  * @property string $transactiontypeid
  * @property string $personid
  * @property string $transactionpurposeid
@@ -52,9 +53,9 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            //[['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
+            //[['transactiontypeid', 'transactionitemid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'paydate', 'paymentamount', 'totaldue', 'receiptnumber'], 'required'],
             [['transactionpurposeid'], 'required'],
-            [['transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'verifyingofficerid'], 'integer'],
+            [['transactionitemid', 'transactiontypeid', 'personid', 'transactionpurposeid', 'recepientid', 'semesterid', 'paymentmethodid', 'transactionsummaryid', 'verifyingofficerid'], 'integer'],
             [['paydate'], 'safe'],
             [['paymentamount', 'totaldue'], 'number'],
             [['isverified', 'isactive', 'isdeleted'], 'boolean'],
@@ -151,6 +152,50 @@ class Transaction extends \yii\db\ActiveRecord
     public function getVerifyingofficer()
     {
         return $this->hasOne(User::className(), ['personid' => 'verifyingofficerid']);
+    }
+    
+    
+    /**
+     * Create full payment transaction
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 17/01/2017
+     * Date Last Modified: 17/01/2017
+     */
+    public static function generateReceiptNumber()
+    {
+        
+        $last_transaction = Transaction::find()->orderBy('transactionid DESC', 'desc')->one();
+        $num = $last_transaction ? strval($last_transaction->receiptnumber + 1) : 1;
+        while (strlen($num) < 6)
+        {
+            $num = '0' . $num;
+        }
+        
+        return strlen($num) > 6 ? $num : '15' . $num;
+    }
+    
+    
+    
+    
+    private function isFirstAnnualTransaction ($date)
+    {
+        $target_receipt = self::getYearFromDate($date) . "000001";
+        $transaction = Transaction::find()
+                ->where(['receiptnumber' => $target_receipt,  'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        if ($transaction)
+            return $transaction;
+        return false;
+    }
+    
+    
+    
+    private function getYearFromDate($date)
+    {
+         return substr($date, 2, 2);
     }
     
 }

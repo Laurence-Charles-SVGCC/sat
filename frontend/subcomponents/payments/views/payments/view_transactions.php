@@ -21,7 +21,30 @@
      <div class="box-header with-border">
          <span class="box-title"><?= $heading?></span>
          <?php if(Yii::$app->user->can('CreateTransaction')):?>
-            <a class="btn btn-info pull-right" href="#" role="button"> Create</a>
+            <!--<a class="btn btn-info pull-right" href="#" role="button"> Create</a>-->
+                <div class='dropdown pull-right'>
+                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                       Enter New Payment...
+                        <span class='caret'></span>
+                    </button>
+                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                        <li>
+                            <a href="<?= Url::toRoute(['/subcomponents/payments/transactions/create-full-payment', 'personid' => $id]);?>">
+                                Enter New Full Payment
+                            </a>
+                        </li>
+                         <li>
+                            <a href="<?= Url::toRoute(['/subcomponents/payments/transactions/create-part-payment', 'personid' => $id]);?>">
+                                Enter New Partial Payment
+                            </a>
+                        </li>
+                         <li>
+                            <a href="<?= Url::toRoute(['/subcomponents/payments/transactions/pay-outstanding', 'personid' => $id]);?>">
+                               Pay Outstanding Charge
+                            </a>
+                        </li>
+                    </ul>
+              </div>
         <?php endif;?>
     </div>
     
