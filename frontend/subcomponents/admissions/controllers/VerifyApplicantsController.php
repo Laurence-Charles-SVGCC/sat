@@ -6,7 +6,6 @@ use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\Request;
 use yii\helpers\Json;
-//use common\controllers\DatabaseWrapperController;
 use yii\base\Model;
 
 use common\models\User;

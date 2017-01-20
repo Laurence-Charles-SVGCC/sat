@@ -35,21 +35,29 @@
             <div>
                 There are three ways in which you can navigate this application.
                 <ol>
-                    <li>You may begin your search based on your Applicant ID.</li>
-
-                    <li>You may begin your search based on your Applicant Name.</li>
-
+                    <?php if($status == "applicant"): ?>
+                        <li>You may begin your search based on your ApplicantID/StudentID.</li>
+                    <?php elseif($status == "student"): ?>
+                        <li>You may begin your search based on your StudentID.</li>
+                   <?php endif;?>     
+                        
+                    <?php if($status == "applicant"): ?>
+                        <li>You may begin your search based on your Applicant Name.</li>
+                    <?php elseif($status == "student"): ?>
+                        <li>You may begin your search based on your Student Name.</li>
+                    <?php endif;?>   
+                        
                     <li>You may begin your search based on your Email Address.</li>
                 </ol>
             </div> 
 
             <p class="general_text">
                 Please select a method by which to begin your search.
-                <?= Html::radioList('search_how', null, ['applicantid' => 'By Applicant ID' , 'name' => 'By Applicant Name', 'email' => 'By Email'], ['class'=> 'form_field', 'onclick'=> 'checkSearchHow();']);?>
+                <?= Html::radioList('search_how', null, ['applicantid' => 'By ID' , 'name' => 'By Name', 'email' => 'By Email'], ['class'=> 'form_field', 'onclick'=> 'checkSearchHow();']);?>
             </p>
 
             <div id="applicantid" style="display:none">
-                <?= Html::label( 'Applicant ID',  'studentid_label'); ?>
+                <?= Html::label( 'ID',  'studentid_label'); ?>
                 <?= Html::input('text', 'applicantid_field'); ?>
                 <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>
             </div>

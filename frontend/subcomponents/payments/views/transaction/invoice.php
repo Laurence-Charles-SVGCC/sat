@@ -45,6 +45,11 @@
                 Email: bursary@svgcc.vc
               </address>
             </div><!-- /.col -->
+            
+            <div class="col-sm-4 invoice-col">
+            </div><!-- /.col -->
+            
+            
             <div class="col-sm-4 invoice-col">
               To
               <address>
@@ -61,7 +66,7 @@
                   <tr>
                     <th>Receipt Number</th>
                     <th>Type</th>
-                    <th>Purpose</th>
+                    <th>Item</th>
                     <th>Payment Method</th>
                     <th>Date</th>
                     <th>Total Due</th>
@@ -75,9 +80,9 @@
                     <?php $recepient = Employee::find()->where(['personid' => $model->getRecepient()->one()->personid])->one();
                        $rname = $recepient ? $recepient->firstname . " " . $recepient->lastname : 'Recepient Undefined'; ?>
                   <tr>
-                      <td><a href="#"><?= $model->receiptnumber ?></a></td>
+                    <td><a href="<?= Url::toRoute(['/subcomponents/payments/transaction/edit-transaction', 'transactionid' => $model->transactionid, 'personid' => $model->personid, 'status' => $status, 'receiptnumber' => $receiptnumber]);?>"><?= $model->receiptnumber ?></a></td>
                     <td><?= $model->getTransactiontype()->one()->name ?></td>
-                    <td><?= $model->getTransactionpurpose()->one()->name ?></td>
+                    <td><?= $model->getTransactionitem()->one()->name ?></td>
                     <td><?= $model->getPaymentmethod()->one()->name; ?></td>
                     <td><?= $model->paydate; ?></td>
                     <td>$<?= $model->totaldue; ?></td>
