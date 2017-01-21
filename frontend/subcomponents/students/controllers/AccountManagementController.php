@@ -156,6 +156,11 @@
         {
             $model = new InitializeAccountModel();
             
+            $recordid = PersonAccountProgress::find()
+                        ->where(['personid' => $applicant->personid,  'isdeleted' => 0])
+                        ->one()
+                        ->personaccountprogressid;
+            
             if ($post_data = Yii::$app->request->post())
             { 
                 $model_load_flag = false;
@@ -245,6 +250,7 @@
             
             return $this->render('initialize_account',[
                                 'model' => $model,
+                                'recordid' => $recordid,
                                 ]);
         }
         
@@ -377,6 +383,7 @@
             
             return $this->render('profile_entry',[
                                 'model' => $model,
+                                'recordid' => $recordid,
                                 ]);
         }
         
@@ -454,6 +461,7 @@
             
             return $this->render('contacts_entry',[
                                 'model' => $model,
+                                'recordid' => $recordid,
                 ]);
         }
         
@@ -549,6 +557,7 @@
         
             return $this->render('address_entry',[
                                 'addresses' => $addresses,
+                                'recordid' => $recordid,
                 ]);
         }
         
@@ -818,6 +827,7 @@
                         'applicationcapesubject' =>  $applicationcapesubject,
                         'capegroups' => $capegroups,
                         'personid' => $personid,
+                        'recordid' => $recordid,
                     ]);
         }
          

@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 29/05/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\web\UrlManager;
@@ -22,97 +17,81 @@
     use frontend\models\ApplicationCapesubject;
     use frontend\models\AcademicOffering;
     
-    /* @var $this yii\web\View */
-    /* @var $form yii\bootstrap\ActiveForm */
-    
     $this->title = 'Programme Selection';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Student Listing', 'url' => Url::toRoute(['/subcomponents/students/account-management'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/students/account-management/account-dashboard', 'recordid' => $recordid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
-<div class="verify-applicants-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/create_male.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/create_female.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        <div class="custom_body">
-           
-            <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2><br/>
-    
-            <div>           
-                <?php 
-                    $form = yii\bootstrap\ActiveForm::begin([
-                       'id' => 'programme-entry',
-                        'enableAjaxValidation' => false,
-                        'enableClientValidation' => true,
-                        'validateOnSubmit' => true,
-                        'validateOnBlur' => true,
-                        'successCssClass' => 'alert in alert-block fade alert-success',
-                        'errorCssClass' => 'alert in alert-block fade alert-error',
-                        'options' => [
-                            'class' => 'form-layout'
-                        ],
-                    ])
-                ?>
-
-                    <?= Html::hiddenInput('cape-id', AcademicOffering::getCurrentCapeID()); ?>
-
-                    <!--Parent--> 
-                    <div id="choice-division" style="font-size:17px;">              
-                        <p><?= $form->field($application, 'divisionid')->label("Select your division of first choice")->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division-id', 'onchange' => 'showCape();']);?></p>   
-                    </div>
-                    </br>
-
-                    <!--Child--> 
-                    <div id="cape-first-choice-programme" style="font-size:17px;">       
-                        <p> <?= $form->field($application, 'academicofferingid')->widget(DepDrop::classname(), [
-                                'options'=>['id'=>'academicoffering-id', 'onchange' => 'showCape();'],
-                                'pluginOptions'=>[
-                                    'depends'=>['division-id'],
-                                    'placeholder'=>'Select...',
-                                    'url'=> Url::toRoute(['/subcomponents/admissions/process-applications/academic-offering', 'personid' => $personid])
-//                                    'url'=> Url::to(['process-applications/academic-offering', 'personid' => $personid])
-                                    ]
-                            ])->label('Select your programme of choice:');?>
-                    </div></br> 
-
-                    <div id="cape-choice" style="font-size:14px; border: thin black solid; padding:10px; display:none;">
-                        <h3 style='text-align:center'>CAPE Subject Selection</h3>
-                        <p><strong>
-                                The options below represents the CAPE subjects from which you can select.
-                                You are allowed to select 3 or 4 subjects. You can not select two
-                                subjects from the same group.
-                        </strong></p>
-                        
-                        <?php
-                            foreach($capegroups as $key=>$group)
-                            {                           
-                                echo "<fieldset>";
-                                echo "<legend>".$group->name;echo"</legend>";                         
-                                $groupid = $group->capegroupid;
-//                                $subjects = CapeSubjectGroup::getSubjects($groupid);             
-                                $subjects = CapeSubjectGroup::getActiveSubjects($groupid);               
-                                $vals =  CapeSubject::processGroup($subjects);
-                                echo $form->field($applicationcapesubject[$key], "[{$key}]capesubjectid")->label("")->radioList($vals, ['id' => 'choice1-group1', 'class' => 'radio1']);
-                                echo "</fieldset>"; 
-                                echo "</br>";
-                            }
-                        ?>
-                    </div></br></br>
-
-                   <div class="form-group">
-                       <?= Html::submitButton('Save', ['class' => 'btn btn-success']);?>
-                   </div>
-                <?php yii\bootstrap\ActiveForm::end(); ?>       
-            </div>    
-        </div>    
-    </div>  
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>" title="Student Creation Management">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
 </div>
 
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+             <?= Html::hiddenInput('cape-id', AcademicOffering::getCurrentCapeID()); ?>
 
+            <!--Parent--> 
+            <div class="form-group" id="choice-division">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="divisionid">Select Division:</label>
+                <p><?= $form->field($application, 'divisionid')->label('')->dropDownList(Division::getDivisions(Applicant::getApplicantIntent($personid)), ['id' => 'division-id', 'onchange' => 'showCape();', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?></p>   
+            </div>
 
+            <!--Child--> 
+            <div id="cape-first-choice-programme" class="form-group"> 
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="divisionid">Select your programme of choice:</label>
+                <?= $form->field($application, 'academicofferingid')->widget(DepDrop::classname(), [
+                        'options'=>['id'=>'academicoffering-id', 'onchange' => 'showCape();'],
+                        'pluginOptions'=>[
+                            'depends'=>['division-id'],
+                            'placeholder'=>'Select...',
+                            'url'=> Url::toRoute(['/subcomponents/admissions/process-applications/academic-offering', 'personid' => $personid])
+                            ]
+                    ])->label('');?>
+            </div>
+
+            <div id="cape-choice" style="display:none;" class="form-group">
+                <h3 style='text-align:center'>CAPE Subject Selection</h3>
+                <p><strong>
+                        The options below represents the CAPE subjects from which you can select.
+                        You are allowed to select 3 or 4 subjects. You can not select two
+                        subjects from the same group.
+                </strong></p>
+
+                <?php
+                    foreach($capegroups as $key=>$group)
+                    {                           
+                        echo "<fieldset>";
+                        echo "<legend>".$group->name;echo"</legend>";                         
+                        $groupid = $group->capegroupid;            
+                        $subjects = CapeSubjectGroup::getActiveSubjects($groupid);               
+                        $vals =  CapeSubject::processGroup($subjects);
+                        echo $form->field($applicationcapesubject[$key], "[{$key}]capesubjectid")->label("")->radioList($vals, ['id' => 'choice1-group1', 'class' => 'radio1']);
+                        echo "</fieldset>"; 
+                        echo "</br>";
+                    }
+                ?>
+            
+         </div>
+
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['account-management/account-dashboard', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

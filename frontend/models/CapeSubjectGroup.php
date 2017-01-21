@@ -112,7 +112,6 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
     }
     
     
-    
     /**
      * Returns most recent cape subjects
      * 

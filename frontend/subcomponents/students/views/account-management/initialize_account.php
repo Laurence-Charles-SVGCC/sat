@@ -1,66 +1,76 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 27/05/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\bootstrap\ActiveForm;
     use yii\bootstrap\Modal;
+    use yii\helpers\ArrayHelper;
     
     $this->title = 'Initialize Account';
-    $this->title;
+     $this->params['breadcrumbs'][] = ['label' => 'Student Listing', 'url' => Url::toRoute(['/subcomponents/students/account-management'])];
+     $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/students/account-management/account-dashboard', 'recordid' => $recordid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/create_male.png" alt="Find A Student">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/create_female.png" alt="student avatar" class="pull-right">
-                </a>   
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>" title="Student Creation Management">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Title:</label>
+               <?= $form->field($model, 'title')->label('')->dropDownList(Yii::$app->params['titles'], [ 'prompt'=>'Select Title', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?> 
             </div>
-        
-            <div class="custom_body"> 
-                <h1 class="custom_h1"><?= $this->title?></h1>
-                <br/>
-                
-                <?php 
-                    $form = ActiveForm::begin([
-                        'id' => 'initialize-student',
-                        'enableAjaxValidation' => false,
-                        'enableClientValidation' => true,
-                        'validateOnSubmit' => true,
-                        'validateOnBlur' => true,
-                        'successCssClass' => 'alert in alert-block fade alert-success',
-                        'errorCssClass' => 'alert in alert-block fade alert-error',
-                        'options' => [
-                            'class' => 'form-layout',
-                        ],
-                    ]);
-                ?>
-                
-                    <?= $form->field($model, 'title')->label('Title *', ['class'=> 'form-label'])->dropDownList(Yii::$app->params['titles']);?> 
-                                         
-                    <?= $form->field($model, 'firstname')->label('First Name *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'middlename')->label('Middle Name', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'lastname')->label('Last Name *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-                    
-                    <?= $form->field($model, 'email')->label('Student\'s Personal Email: ', ['class'=> 'form-label'])->textInput()?>
-
-                    <?= $form->field($model, 'pword')->label('Password: ', ['class'=> 'form-label'])->passwordInput([]) ?>
-
-                    <?= $form->field($model, 'confirm')->label('Confirm Password', ['class'=> 'form-label'])->passwordInput([]) ?>
-                
-                    <div class="form-group">
-                       <?= Html::submitButton('Save' , ['class' => 'btn btn-success', 'style' => 'margin-left:90%; width:10%;']) ?>
-                    </div>       
-                <?php ActiveForm::end(); ?>
-             </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="firstname">First Name*:</label>
+               <?= $form->field($model, 'firstname')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="middlename">Middle Name:</label>
+               <?= $form->field($model, 'middlename')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="lastname">Last Name*:</label>
+               <?= $form->field($model, 'lastname')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email">Student's Personal Email*:</label>
+               <?= $form->field($model, 'email')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="pword">Password*:</label>
+               <?= $form->field($model, 'pword')->label('')->passwordInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="pword"> Confirm Password*:</label>
+               <?= $form->field($model, 'confirm')->label('')->passwordInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+       </div>
+    
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['account-management/account-dashboard', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>
+            </span>
         </div>
-    </div>
+    <?php ActiveForm::end(); ?>
+</div>

@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 29/05/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\bootstrap\ActiveForm;
     use yii\bootstrap\Modal;
@@ -20,9 +15,9 @@
     use frontend\models\MedicalCondition;
 
     $this->title = 'Profile Entry';
-    
-    /* @var $this yii\web\View */
-    /* @var $form yii\bootstrap\ActiveForm */
+    $this->params['breadcrumbs'][] = ['label' => 'Student Listing', 'url' => Url::toRoute(['/subcomponents/students/account-management'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/students/account-management/account-dashboard', 'recordid' => $recordid])];
+    $this->params['breadcrumbs'][] = $this->title;
     
     $relationType = [
         '' => 'Select...',
@@ -48,91 +43,126 @@
     ];
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/create_male.png" alt="Find A Student">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/create_female.png" alt="student avatar" class="pull-right">
-                </a>   
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/account-management'])?>" title="Student Creation Management">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Title:</label>
+               <?= $form->field($model, 'title')->label('')->dropDownList(Yii::$app->params['titles'], [ 'prompt'=>'Select Title', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?> 
             </div>
-        
-            <div class="custom_body"> 
-                <h1 class="custom_h1"><?= $this->title?></h1>
-                <br/>
-
-                <?php 
-                    $form = ActiveForm::begin([
-                        'id' => 'profile-information-form',
-                        'enableAjaxValidation' => false,
-                        'enableClientValidation' => true,
-                        'validateOnSubmit' => true,
-                        'validateOnBlur' => true,
-                        'successCssClass' => 'alert in alert-block fade alert-success',
-                        'errorCssClass' => 'alert in alert-block fade alert-error',
-                        'options' => [
-                            'class' => 'form-layout'
-                        ],
-                    ])
-                ?>
-
-                    <fieldset>
-                        <legend>Profile</legend>
-
-                        <?= $form->field($model, 'title')->label('Title *', ['class'=> 'form-label'])->dropDownList(Yii::$app->params['titles']);?>  
-
-                        <?= $form->field($model, 'firstname')->label('First Name *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'middlename')->label('Middle Name', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'lastname')->label('Last Name *', ['class'=> 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'dateofbirth')->label('Date Of Birth *', ['class'=> 'form-label'])->widget(
-                                DatePicker::className(), [
-                                    'inline' => false,
-        //                             modify template for custom rendering
-                                    'template' => '{addon}{input}',
-                                    'clientOptions' => [
-                                        'autoclose' => true,
-                                        'format' => 'yyyy-mm-dd'
-                                    ]
-                                ]);
-                        ?>
-
-                        <?= $form->field($model, 'gender')->label('Gender *', ['class'=> 'form-label'])->inline()->radioList(Yii::$app->params['gender'], ['class'=> 'form-field']) ?>                                      
-
-                        <?= $form->field($model, 'nationality')->label('Nationality *', ['class'=> 'form-label'])->dropDownList(Yii::$app->params['nationality']);?>
-
-                        <?= $form->field($model, 'placeofbirth')->label('Place Of Birth *', ['class'=> 'form-label'])->dropDownList(Yii::$app->params['placeofbirth']);?>
-
-                        <?= $form->field($model, 'religion')->label('Religion', ['class'=> 'form-label'])->dropDownList(Yii::$app->params['religion']);?>
-
-                        <?= $form->field($model, 'maritalstatus')->label("What is your marital Status *", ['class'=> 'form-label'])->inline()->radioList(Yii::$app->params['maritalstatus'], ['class'=> 'form-field', 'onclick' => 'showSpouse();']);?>
-
-                        <?= $form->field($model, 'sponsorname')->label("If sponsored please name the organisation(s).", ['class' => 'form-label'])->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'isexternal')->label("Were you awarded any academic certificates outside of St. Vincent and the Grenadines? *", ['class'=> 'form-label2'])->inline()->radioList(Yii::$app->params['external'], ['class'=> 'form-field'] );?>
-
-                        <?= $form->field($model, 'otheracademics')->label("Techincal and Vocation Academic Experience", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-
-                        <?= $form->field($model, 'nationalsports')->label("National Sports", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-
-                        <?= $form->field($model, 'othersports')->label("Recreational Sports", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-
-                        <?= $form->field($model, 'clubs')->label("Club Participation", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-
-                        <?= $form->field($model, 'otherinterests')->label("Other Interests", ['class'=> 'form-label'])->textArea(['rows' => '5']) ?>
-                    </fieldset></br>
-
-                    <div class="form-group">
-                        <?= Html::submitButton('Save', ['class' => 'btn btn-success']);?>
-                    </div>
-
-                <?php ActiveForm::end(); ?>
-            </div>    
-        </div>   
-    </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="firstname">First Name*:</label>
+               <?= $form->field($model, 'firstname')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="middlename">Middle Name:</label>
+               <?= $form->field($model, 'middlename')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="lastname">Last Name*:</label>
+               <?= $form->field($model, 'lastname')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="dateofbirth">Date Of Birth:</label>
+               <?= $form->field($model, 'dateofbirth')->label(false)->widget(
+                        DatePicker::className(), [
+                            'inline' => false,
+                            'template' => '{addon}{input}',
+                            'clientOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"
+                            ]
+                        ]); 
+               ?>
+            </div>
+            
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="gender">Gender*:</label>
+               <?= $form->field($model, 'gender')->label(false)->inline()->radioList(Yii::$app->params['gender'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>                                      
+           </div><br/><br/>
            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="nationality">Nationality*:</label>
+                <?= $form->field($model, 'nationality')->label('')->dropDownList(Yii::$app->params['nationality'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+           </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="placeofbirth">Place Of Birth*:</label>
+                <?= $form->field($model, 'placeofbirth')->label('')->dropDownList(Yii::$app->params['placeofbirth'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="religion">Religion*:</label>
+                <?= $form->field($model, 'religion')->label('')->dropDownList(Yii::$app->params['religion'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="maritalstatus">What is your marital Status*:</label>
+                <?= $form->field($model, 'maritalstatus')->label(false)->inline()->radioList(Yii::$app->params['maritalstatus'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'onclick' => 'showSpouse();']);?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="sponsorname">If sponsored please name the organisation(s):</label>
+                <?= $form->field($model, 'sponsorname')->label(false)->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="'isexternal">Were you awarded any academic certificates outside of St. Vincent and the Grenadines? *:</label>
+                <?= $form->field($model, 'isexternal')->label(false)->inline()->radioList(Yii::$app->params['external'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9'] );?>
+            </div><br/><br/><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="otheracademics">Technical and Vocation Academic Experience:</label>
+                <?= $form->field($model, 'otheracademics')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="nationalsports">National Sports:</label>
+                <?= $form->field($model, 'nationalsports')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="othersports">Recreational Sports:</label>
+                <?= $form->field($model, 'othersports')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="clubs">Club Participation:</label>
+                <?= $form->field($model, 'clubs')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="otherinterests">Other Interests:</label>
+                <?= $form->field($model, 'otherinterests')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+            </div>
+        </div>
 
-
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['account-management/account-dashboard', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

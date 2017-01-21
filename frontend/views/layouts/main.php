@@ -358,15 +358,15 @@
                                         </a>
                                         <ul class="treeview-menu">
                                             <?php if (Yii::$app->user->can('viewPaymentMethod')): ?>
-                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/payment-methods'])?>"><i class="fa fa-circle-o"></i>Payment Methods</a></li>
+                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payment-method/index'])?>"><i class="fa fa-circle-o"></i>Payment Methods</a></li>
                                             <?php endif; ?>
                                                 
                                             <?php if (Yii::$app->user->can('viewTransactionPurpose')): ?>
-                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-purposes'])?>"><i class="fa fa-circle-o"></i>Transaction Purposes</a></li>
+                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/transaction-purpose/index'])?>"><i class="fa fa-circle-o"></i>Transaction Purposes</a></li>
                                             <?php endif; ?>
                                                 
                                             <?php if (Yii::$app->user->can('viewTransactionType')): ?>   
-                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/payments/transaction-types'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
+                                                <li><a href="<?= Url::toRoute(['/subcomponents/payments/transaction-type/index'])?>"><i class="fa fa-circle-o"></i>Transaction Types</a></li>
                                             <?php endif; ?>
                                                 
                                             <?php if (Yii::$app->user->can('viewTransactionItem')): ?>   
