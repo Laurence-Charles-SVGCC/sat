@@ -51,7 +51,7 @@
                 </ol>
             </div> 
 
-            <p class="general_text">
+            <p>
                 Please select a method by which to begin your search.
                 <?= Html::radioList('search_how', null, ['applicantid' => 'By ID' , 'name' => 'By Name', 'email' => 'By Email'], ['class'=> 'form_field', 'onclick'=> 'checkSearchHow();']);?>
             </p>
@@ -83,12 +83,12 @@
 
 <?php if ($dataProvider != NULL):?>
     <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;">
-            <h3><?= "Search results for: " . $info_string ?></h3>
-            <?= $this->render('find_applicant_student_results', [
-                                'dataProvider' => $dataProvider,
-                                'info_string' => $info_string,
-                                'status' => $status,
-            ]) ?>
-        </div>
+        <h3><?= "Search results for: " . $info_string ?></h3>
+        <?= $this->render('find_applicant_student_results', [
+                            'dataProvider' => $dataProvider,
+                            'info_string' => $info_string,
+                            'status' => $status,
+        ]) ?>
+    </div>
 <?php endif;?>
 

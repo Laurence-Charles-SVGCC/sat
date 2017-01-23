@@ -34,6 +34,7 @@
                             {
                                 return Html::a($row['username'], 
                                                      Url::to(['view-applicant/applicant-profile',
+                                                              'search_status' => $row['status'],
                                                               'applicantusername' => $row['username'],
                                                               'unrestricted' => true
                                                              ])
@@ -43,7 +44,8 @@
                             {
                                 return Html::a($row['username'], 
                                              Url::to(['view-applicant/applicant-profile',
-                                                      'applicantusername' => $row['username']
+                                                        'search_status' => $row['status'],
+                                                        'applicantusername' => $row['username']
                                                      ])
                                          );
                             }

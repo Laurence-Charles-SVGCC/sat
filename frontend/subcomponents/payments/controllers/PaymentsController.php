@@ -216,6 +216,7 @@ class PaymentsController extends Controller
             if ($status == "applicant")
             {
                 $applicants = Applicant::find()
+                            ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                             ->where($cond_arr)
                             ->groupBy('applicant.personid')
                             ->all();

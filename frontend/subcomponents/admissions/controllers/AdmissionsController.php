@@ -842,268 +842,307 @@ class AdmissionsController extends Controller
         
         if (Yii::$app->request->post())
         {
+            //Everytime a new search is initiated session variable must be removed
+             if (Yii::$app->session->get('app_id'))
+                Yii::$app->session->remove('app_id');
+             
+            if (Yii::$app->session->get('firstname'))
+                Yii::$app->session->remove('firstname');
+            
+            if (Yii::$app->session->get('lastname'))
+                Yii::$app->session->remove('lastname');
+            
+             if (Yii::$app->session->get('email'))
+                Yii::$app->session->remove('email');
+             
             $request = Yii::$app->request;
             $app_id = $request->post('applicantid_field');
             $email = $request->post('email_field');
             $firstname = $request->post('FirstName_field');
             $lastname = $request->post('LastName_field');
+            
+             if(Yii::$app->session->get('app_id') == null  && $app_id == true)
+                Yii::$app->session->set('app_id', $app_id);
+            
+            if(Yii::$app->session->get('firstname') == null  && $firstname == true)
+                Yii::$app->session->set('firstname', $firstname);
+            
+            if(Yii::$app->session->get('lastname') == null  && $lastname == true)
+                Yii::$app->session->set('lastname', $lastname);
+            
+            if(Yii::$app->session->get('email') == null  && $email == true)
+                Yii::$app->session->set('email', $email);
+        }
+        else    
+        {
+            $app_id = Yii::$app->session->get('app_id');
+            $firstname = Yii::$app->session->get('firstname');
+            $lastname = Yii::$app->session->get('lastname');
+            $email = Yii::$app->session->get('email');
+        }
+            
         
-            //if user initiates search based on applicantid
-            if ($app_id)
-            {
-                $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
-                $cond_arr['applicant.personid'] = $user? $user->personid : null;
-                $info_string = $info_string .  " Applicant ID: " . $app_id;
-            }    
+        //if user initiates search based on applicantid
+        if ($app_id)
+        {
+            $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
+            $cond_arr['applicant.personid'] = $user? $user->personid : null;
+            $info_string = $info_string .  " Applicant ID: " . $app_id;
+        }    
 
-            //if user initiates search based on applicant name    
-            if ($firstname)
+        //if user initiates search based on applicant name    
+        if ($firstname)
+        {
+            $cond_arr['applicant.firstname'] = $firstname;
+            $info_string = $info_string .  " First Name: " . $firstname; 
+        }
+        if ($lastname)
+        {
+            $cond_arr['applicant.lastname'] = $lastname;
+            $info_string = $info_string .  " Last Name: " . $lastname;
+        }        
+
+        //if user initiates search based on applicant email
+        if ($email)
+        {
+            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+            $info_string = $info_string .  " Email: " . $email;
+        }
+
+
+        if (empty($cond_arr))
+        {
+            Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+        }
+        else
+        {
+            $cond_arr['applicant.isactive'] = 1;
+            $cond_arr['applicant.isdeleted'] = 0;
+            $cond_arr['academic_offering.isactive'] = 1;
+            $cond_arr['academic_offering.isdeleted'] = 0;
+            $cond_arr['application_period.isactive'] = 1;
+
+            if ($status== "pending")
+                $cond_arr['application_period.iscomplete'] = 0;
+
+            $cond_arr['application.isactive'] = 1;
+            $cond_arr['application.isdeleted'] = 0;
+            if ($status == "pending" || $status == "pending-unlimited")
+                $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
+
+            elseif ($status == "successful")
             {
-                $cond_arr['applicant.firstname'] = $firstname;
-                $info_string = $info_string .  " First Name: " . $firstname; 
+                $cond_arr['application.applicationstatusid'] = 9;
+                $cond_arr['offer.isactive'] = 1;  
+                $cond_arr['offer.isdeleted'] = 0;
+                $cond_arr['offer.ispublished'] = 1;
             }
-            if ($lastname)
+
+            /*
+             *  If DASGS or DTVE, both divisions are searched
+             *  This is because applicants may apply to both divisions
+             */
+            if ($division_id == 4  || $division_id == 5 )
+                $cond_arr['application.divisionid'] = [4,5];
+
+            /*
+             *  If DTE or DNE the applicants are constrained to each division
+             */
+            elseif ($division_id == 6  || $division_id == 7 )
+                $cond_arr['application.divisionid'] = $division_id;
+
+            if ($status == "pending" || $status == "pending-unlimited")
             {
-                $cond_arr['applicant.lastname'] = $lastname;
-                $info_string = $info_string .  " Last Name: " . $lastname;
-            }        
-
-            //if user initiates search based on applicant email
-            if ($email)
-            {
-                $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
-                $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
-                $info_string = $info_string .  " Email: " . $email;
-            }
-
-
-            if (empty($cond_arr))
-            {
-                Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
-            }
-            else
-            {
-                $cond_arr['applicant.isactive'] = 1;
-                $cond_arr['applicant.isdeleted'] = 0;
-                $cond_arr['academic_offering.isactive'] = 1;
-                $cond_arr['academic_offering.isdeleted'] = 0;
-                $cond_arr['application_period.isactive'] = 1;
-                
-                if ($status== "pending")
-                    $cond_arr['application_period.iscomplete'] = 0;
-                
-                $cond_arr['application.isactive'] = 1;
-                $cond_arr['application.isdeleted'] = 0;
-                if ($status == "pending" || $status == "pending-unlimited")
-                    $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
-                
-                elseif ($status == "successful")
-                {
-                    $cond_arr['application.applicationstatusid'] = 9;
-                    $cond_arr['offer.isactive'] = 1;  
-                    $cond_arr['offer.isdeleted'] = 0;
-                    $cond_arr['offer.ispublished'] = 1;
-                }
-
-                /*
-                 *  If DASGS or DTVE, both divisions are searched
-                 *  This is because applicants may apply to both divisions
-                 */
-                if ($division_id == 4  || $division_id == 5 )
-                    $cond_arr['application.divisionid'] = [4,5];
-
-                /*
-                 *  If DTE or DNE the applicants are constrained to each division
-                 */
-                elseif ($division_id == 6  || $division_id == 7 )
-                    $cond_arr['application.divisionid'] = $division_id;
-                
-                if ($status == "pending" || $status == "pending-unlimited")
-                {
-                    $applicants = Applicant::find()
-                                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                                ->where($cond_arr)
-                                ->groupBy('applicant.personid')
-                                ->all();
-                }
-                elseif($status == "successful")
-                {
-                    $applicants = Applicant::find()
+                $applicants = Applicant::find()
                             ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                             ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                             ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                             ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                             ->where($cond_arr)
                             ->groupBy('applicant.personid')
                             ->all();
-                }
-               
-                if (empty($applicants))
+            }
+            elseif($status == "successful")
+            {
+                $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                         ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->where($cond_arr)
+                        ->groupBy('applicant.personid')
+                        ->all();
+            }
+
+            if (empty($applicants))
+            {
+                Yii::$app->getSession()->setFlash('error', 'No applicant found matching this criteria.');
+            }
+            else
+            {
+                $data = array();
+                foreach ($applicants as $applicant)
                 {
-                    Yii::$app->getSession()->setFlash('error', 'No applicant found matching this criteria.');
-                }
-                else
-                {
-                    $data = array();
-                    foreach ($applicants as $applicant)
+                    if($status == "pending"  || $status == "pending-unlimited")
                     {
-                        if($status == "pending"  || $status == "pending-unlimited")
+                        $app = array();
+                        $user = $applicant->getPerson()->one();
+                        
+                        
+                        $app['status'] = $status;
+                        $app['username'] = $user ? $user->username : '';
+                        $app['personid'] = $applicant->personid;
+                        $app['applicantid'] = $applicant->applicantid;
+                        $app['firstname'] = $applicant->firstname;
+                        $app['middlename'] = $applicant->middlename;
+                        $app['lastname'] = $applicant->lastname;
+                        $app['gender'] = $applicant->gender;
+                        $app['dateofbirth'] = $applicant->dateofbirth;
+
+                        $applications = Application::getApplications($applicant->personid);
+                        $divisionid = $applications[0]->divisionid;
+
+                        /*
+                         * If division is DTE or DNE then all applications refer to one division
+                         */
+                        if ($divisionid == 6  || $divisionid == 7)
                         {
-                            $app = array();
-                            $user = $applicant->getPerson()->one();
-
-                            $app['username'] = $user ? $user->username : '';
-                            $app['personid'] = $applicant->personid;
-                            $app['applicantid'] = $applicant->applicantid;
-                            $app['firstname'] = $applicant->firstname;
-                            $app['middlename'] = $applicant->middlename;
-                            $app['lastname'] = $applicant->lastname;
-                            $app['gender'] = $applicant->gender;
-                            $app['dateofbirth'] = $applicant->dateofbirth;
-                            
-                            $applications = Application::getApplications($applicant->personid);
-                            $divisionid = $applications[0]->divisionid;
-                            
-                            /*
-                             * If division is DTE or DNE then all applications refer to one division
-                             */
-                            if ($divisionid == 6  || $divisionid == 7)
-                            {
-                                $division = Division::getDivisionAbbreviation($divisionid);
-                                $app["division"] = $division;
-                            }
-                            /*
-                             * If division is DASGS or DTVE then applications may refer to multiple divisions
-                             */
-                            elseif ($divisionid == 4  || $divisionid == 5)
-                            {
-                                $dasgs = 0;
-                                $dtve = 0;
-                                foreach($applications as $application)
-                                {
-                                    if ($application->divisionid == 4)
-                                        $dasgs++;
-                                    elseif ($application->divisionid == 5)
-                                        $dtve++;
-                                }
-                                if ($dasgs>=1  && $dtve>=1)
-                                    $divisions = "DASGS & DTVE";
-                                elseif ($dasgs>=1  && $dtve==0)
-                                    $divisions = "DASGS";
-                                elseif ($dasgs==0  && $dtve>=1)
-                                    $divisions = "DTVE";
-                                else
-                                     $divisions = "Unknown";
-                                $app["division"] = $divisions;
-                            }
-                            
-                            
-                            if($status == "pending-unlimited")
-                                $info = Applicant::getApplicantInformation($applicant->personid, true);
-                            else
-                                $info = Applicant::getApplicantInformation($applicant->personid);
-
-                            $app['programme_name'] = $info["prog"];
-                            $app['application_status'] = $info["status"];
-                            
-                            if(Application::hasOldApplication($applicant->personid)==true)
-                                $app['has_deprecated_application'] = true;
-                            else
-                                $app['has_deprecated_application'] = false;
-                            
-                            if(Offer::hasActivePublishedFullOffer($applicant->personid))
-                                $app['has_offer'] = true;
-                            else
-                                $app['has_offer'] = false;
-                            
-                            if(Application::hasActiveApplications($applicant->personid))
-                                $app['has_active_applications'] = true;
-                            else
-                                $app['has_active_applications'] = false;
-                            
-                            if(Application::hasInactiveApplications($applicant->personid))
-                                $app['has_inactive_applications'] = true;
-                            else
-                                $app['has_inactive_applications'] = false;
-                            
-                            $data[] = $app;
+                            $division = Division::getDivisionAbbreviation($divisionid);
+                            $app["division"] = $division;
                         }
-                        elseif($status =="successful")
+                        /*
+                         * If division is DASGS or DTVE then applications may refer to multiple divisions
+                         */
+                        elseif ($divisionid == 4  || $divisionid == 5)
                         {
-                            $offers = Offer::hasOffer($applicant->personid);
-                
-                            if($offers == true)
+                            $dasgs = 0;
+                            $dtve = 0;
+                            foreach($applications as $application)
                             {
-                                foreach ($offers as $offer) 
+                                if ($application->divisionid == 4)
+                                    $dasgs++;
+                                elseif ($application->divisionid == 5)
+                                    $dtve++;
+                            }
+                            if ($dasgs>=1  && $dtve>=1)
+                                $divisions = "DASGS & DTVE";
+                            elseif ($dasgs>=1  && $dtve==0)
+                                $divisions = "DASGS";
+                            elseif ($dasgs==0  && $dtve>=1)
+                                $divisions = "DTVE";
+                            else
+                                 $divisions = "Unknown";
+                            $app["division"] = $divisions;
+                        }
+
+
+                        if($status == "pending-unlimited")
+                            $info = Applicant::getApplicantInformation($applicant->personid, true);
+                        else
+                            $info = Applicant::getApplicantInformation($applicant->personid);
+
+                        $app['programme_name'] = $info["prog"];
+                        $app['application_status'] = $info["status"];
+
+                        if(Application::hasOldApplication($applicant->personid)==true)
+                            $app['has_deprecated_application'] = true;
+                        else
+                            $app['has_deprecated_application'] = false;
+
+                        if(Offer::hasActivePublishedFullOffer($applicant->personid))
+                            $app['has_offer'] = true;
+                        else
+                            $app['has_offer'] = false;
+
+                        if(Application::hasActiveApplications($applicant->personid))
+                            $app['has_active_applications'] = true;
+                        else
+                            $app['has_active_applications'] = false;
+
+                        if(Application::hasInactiveApplications($applicant->personid))
+                            $app['has_inactive_applications'] = true;
+                        else
+                            $app['has_inactive_applications'] = false;
+
+                        $data[] = $app;
+                    }
+                    elseif($status =="successful")
+                    {
+                        $offers = Offer::hasOffer($applicant->personid);
+
+                        if($offers == true)
+                        {
+                            foreach ($offers as $offer) 
+                            {
+                                $has_enrolled = StudentRegistration::find()
+                                        ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+
+                                if($has_enrolled == false)
                                 {
-                                    $has_enrolled = StudentRegistration::find()
-                                            ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
+                                    $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
+
+                                    $programme = "N/A";
+                                    $target_application = Application::find()
+                                            ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                                             ->one();
-
-                                    if($has_enrolled == false)
+                                    if ($target_application) 
                                     {
-                                        $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
-
-                                        $programme = "N/A";
-                                        $target_application = Application::find()
-                                                ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
+                                        $programme_record = ProgrammeCatalog::find()
+                                                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                                                ->where(['academicofferingid' => $target_application->academicofferingid])
                                                 ->one();
-                                        if ($target_application) 
+                                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $target_application->applicationid]);
+                                        foreach ($cape_subjects as $cs) 
                                         {
-                                            $programme_record = ProgrammeCatalog::find()
-                                                    ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-                                                    ->where(['academicofferingid' => $target_application->academicofferingid])
-                                                    ->one();
-                                            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $target_application->applicationid]);
-                                            foreach ($cape_subjects as $cs) 
-                                            {
-                                                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
-                                            }
-                                            $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+                                            $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                                         }
-                                        
-                                        $app = array();
-                                        $app['personid'] = $applicant->personid;
-                                        $app['applicantid'] = $applicant->applicantid;
-                                        $app['username'] = $username;
-                                        $app['title'] = $applicant->title;
-                                        $app['firstname'] = $applicant->firstname;
-                                        $app['middlename'] = $applicant->middlename;
-                                        $app['lastname'] = $applicant->lastname;
-                                        $app['offerid'] = $offer->offerid;
-                                        $app['applicationid'] = $offer->applicationid;
-                                        $app['programme_name'] = $programme;
-
-                                        $data[] = $app;
-
-                                        $cape_subjects = NULL;
-                                        $cape_subjects_names = NULL;
+                                        $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                                     }
+
+                                    $app = array();
+                                    $app['status'] = $status;
+                                    $app['personid'] = $applicant->personid;
+                                    $app['applicantid'] = $applicant->applicantid;
+                                    $app['username'] = $username;
+                                    $app['title'] = $applicant->title;
+                                    $app['firstname'] = $applicant->firstname;
+                                    $app['middlename'] = $applicant->middlename;
+                                    $app['lastname'] = $applicant->lastname;
+                                    $app['offerid'] = $offer->offerid;
+                                    $app['applicationid'] = $offer->applicationid;
+                                    $app['programme_name'] = $programme;
+
+                                    $data[] = $app;
+
+                                    $cape_subjects = NULL;
+                                    $cape_subjects_names = NULL;
                                 }
                             }
                         }
                     }
-                    $dataProvider = new ArrayDataProvider([
-                        'allModels' => $data,
-                        'pagination' => [
-                            'pageSize' => 25,
-                        ],
-                        'sort' => [
-                            'attributes' => ['applicantid', 'firstname', 'lastname'],
-                            ],
-                    ]);
                 }
+                $dataProvider = new ArrayDataProvider([
+                    'allModels' => $data,
+                    'pagination' => [
+                        'pageSize' => 25,
+                    ],
+                    'sort' => [
+                        'attributes' => ['applicantid', 'firstname', 'lastname'],
+                        ],
+                ]);
             }
         }
+        //}removed to rescope post block
         
+        $search_status = $status;
         
         return $this->render('find_current_applicant', 
             [
             'dataProvider' => $dataProvider,
-            'status' => $status,
+//            'status' => $status,
             'info_string' => $info_string,
+            'search_status' => $search_status,
         ]);
     }
     

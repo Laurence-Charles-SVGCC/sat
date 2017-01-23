@@ -1,106 +1,95 @@
 <?php
-
-/* 
- * 'edit_addresses' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 29/12/2015
- */
-
+    use yii\widgets\Breadcrumbs;
+    use dosamigos\datepicker\DatePicker;
     use yii\helpers\Html;
     use yii\helpers\Url;
-    use yii\widgets\ActiveForm;
-    
+     use yii\bootstrap\ActiveForm;
+    use yii\bootstrap\Modal;
+    use yii\bootstrap\ActiveField;
+
     use frontend\models\Address;
     
     $this->title = 'Edit Addresses';
-?>
     
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                    <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                    <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-                </a>   
+    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
+    $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username])];
+    $this->params['breadcrumbs'][] = $this->title;
+?>
+   
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status]);?>" title="Find Applicant">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <h4 class="text-center">Permanent Address</h4>
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="country">Country:</label>
+               <?= $form->field($addresses[0], '[0]country')->label('')->dropDownList(Yii::$app->params['country'], ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
+
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="town">Town:</label>
+               <?= $form->field($addresses[0], '[0]town')->label('')->dropDownList(Yii::$app->params['towns'],["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="addressline">Address-line:</label>
+               <?= $form->field($addresses[0], '[0]addressline')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div><hr>
             
-            <div class="custom_body">
-                <h1 class="custom_h1">Edit Addresses</h1>
+            
+            <h4 class="text-center">Residential Address</h4>
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="country">Country:</label>
+               <?= $form->field($addresses[1], '[1]country')->label('')->dropDownList(Yii::$app->params['country'], ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
 
-                <?php
-                    $form = ActiveForm::begin([
-                                //'action' => Url::to(['gradebook/index']),
-                                'id' => 'edit-addresses',
-                                'options' => [
-                                ],
-                            ]);
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="town">Town:</label>
+               <?= $form->field($addresses[1], '[1]town')->label('')->dropDownList(Yii::$app->params['towns'],["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
 
-                        echo "<br/>";
-                        echo "<table class='table table-hover' style='margin: 0 auto;'>";
-                            echo "<tr>";
-                                echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>Permanent Address</th>";
-                                echo "<th>Country</th>";
-                                echo "<td>{$form->field($addresses[0], '[0]country')->label('')->dropDownList(Yii::$app->params['country'], ['id'=>'country', 'onchange'=>'checkCountry();'])}</td>"; 
-                                echo "<th>Town</th>";
-                                if(Address::checkTown($user->personid,1) == false)
-                                    echo "<td>{$form->field($addresses[0], '[0]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine();' , 'style'=>'display:none', 'id'=>'permLocalTown'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[0], '[0]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine();' , 'style'=>'display:block', 'id'=>'permLocalTown'])}</td>";                         
-                            echo "</tr>";
-                            echo "<tr>";
-                                echo "<th>Address Line</th>";
-                                if(Address::checkAddressline($user->personid,1) == false)
-                                    echo "<td>{$form->field($addresses[0], '[0]addressline')->label('')->textInput(['maxlength' => true, 'style'=>"display:none", 'id'=>'permAddressLine'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[0], '[0]addressline')->label('')->textInput(['maxlength' => true, 'style'=>"display:block", 'id'=>'permAddressLine'])}</td>";                                            
-                            echo "</tr>";                                      
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="addressline">Address-line:</label>
+               <?= $form->field($addresses[1], '[1]addressline')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div><hr>
+            
+            
+            <h4 class="text-center">Postal Address</h4>
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="country">Country:</label>
+               <?= $form->field($addresses[2], '[2]country')->label('')->dropDownList(Yii::$app->params['country'], ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
 
-                            echo "<tr>";
-                                echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>Residential Address</th>";
-                                echo "<th>Country</th>";
-                                echo "<td>{$form->field($addresses[1], '[1]country')->label('')->dropDownList(Yii::$app->params['country'], ['id'=>'country2', 'onchange'=>'checkCountry2();'])}</td>";
-                                echo "<th>Town</th>";
-                                if(Address::checkTown($user->personid,2) == false)
-                                    echo "<td>{$form->field($addresses[1], '[1]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine2();' , 'style'=>'display:none', 'id'=>'resdLocalTown'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[1], '[1]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine2();' , 'style'=>'display:block', 'id'=>'resdLocalTown'])}</td> ";                                          
-                            echo "</tr>";
-                            echo "<tr>";
-                                echo "<td></td>";
-                                echo "<th>Address Line</th>";
-                                if(Address::checkAddressline($user->personid,2) == false)
-                                    echo "<td>{$form->field($addresses[1], '[1]addressline')->label('')->textInput(['maxlength' => true, 'style'=>'display:none', 'id'=>'resdAddressLine'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[1], '[1]addressline')->label('')->textInput(['maxlength' => true, 'style'=>'display:block', 'id'=>'resdAddressLine'])}</td>";                                           
-                            echo "</tr>";
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="town">Town:</label>
+               <?= $form->field($addresses[2], '[2]town')->label('')->dropDownList(Yii::$app->params['towns'],["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
 
-                            echo "<tr>";
-                                echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>Postal Address</th>";
-                                echo "<th>Country</th>";
-                                echo "<td>{$form->field($addresses[2], '[2]country')->label('')->dropDownList(Yii::$app->params['country'], ['id'=>'country3', 'onchange'=>'checkCountry3();'])}</td>"; 
-                                echo "<th>Town</th>";
-                                if(Address::checkTown($user->personid,3) == false)
-                                    echo "<td>{$form->field($addresses[2], '[2]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine3();' , 'style'=>'display:none', 'id'=>'postLocalTown'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[2], '[2]town')->label('')->dropDownList(Yii::$app->params['towns'], ['onchange'=> 'showAddressLine3();' , 'style'=>'display:block', 'id'=>'postLocalTown'])}</td>";                                             
-                            echo "</tr>";
-                            echo "<tr>";
-                                echo "<td></td>";
-                                echo "<th>Address Line</th>";
-                                if(Address::checkAddressline($user->personid,3) == false)
-                                    echo "<td>{$form->field($addresses[2], '[2]addressline')->label('')->textInput(['maxlength' => true, 'style'=>'display:none', 'id'=>'postAddressLine'])}</td>";
-                                else
-                                    echo "<td>{$form->field($addresses[2], '[2]addressline')->label('')->textInput(['maxlength' => true, 'style'=>'display:none', 'id'=>'postAddressLine'])}</td>";                                   
-                            echo "</tr>";                          
-                        echo "</table>";
-
-                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-
-                    ActiveForm::end();    
-                ?>
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="addressline">Address-line:</label>
+               <?= $form->field($addresses[2], '[2]addressline')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
         </div>
-    </div>
-                    
+
+         <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['view-applicant/applicant-profile',  'search_status' => $search_status,  'applicantusername' => $user->username], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

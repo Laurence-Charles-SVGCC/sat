@@ -1101,7 +1101,7 @@ function showCape()
     var offering_id = document.getElementsByName("cape-id")[0].value;
     
     //Needs to be changed yearly or implementation made more flexible
-    if (offering_id === true  && academicofferingid == offering_id  && divisionid == 4){    //if CAPE program isselected
+    if (academicofferingid == offering_id  && divisionid == 4){    //if CAPE program isselected
         document.getElementById("cape-choice").style.display = "block";
     }
     else {
