@@ -2,15 +2,13 @@
     use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
-    use yii\widgets\ActiveForm;
-    use dosamigos\datepicker\DatePicker;
+     use yii\bootstrap\ActiveForm;
+     use dosamigos\datepicker\DatePicker;
     
-    use frontend\models\PostSecondaryQualification;
-    
-    if(PostSecondaryQualification::getPostSecondaryQualifications($user->personid) == true)
-        $this->title = 'Edit External Qualification';
+    if ($action == "create")
+        $this->title = 'Enter Criminal Record';
     else
-        $this->title = 'Add External Qualification';
+        $this->title = 'Update Criminal Record';
     
     $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
     $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username])];
@@ -30,18 +28,28 @@
     <?php $form = ActiveForm::begin();?>
         <div class="box-body">
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="awardinginstitution">Awarding Institution:</label>
-               <?= $form->field($qualification, 'awardinginstitution')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
-            </div>
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="natureofcharge">Nature Of Charge:</label>
+               <?= $form->field($criminalrecord, 'natureofcharge')->label('')->textArea(['rows' => '5', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
             
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Name of Degree*:</label>
-               <?= $form->field($qualification, 'name')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
-            </div>
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="outcome">Outcome</label>
+               <?= $form->field($criminalrecord, 'outcome')->label('')->textArea(['rows' => '5', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
             
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="yearawarded">Year Degree Awarded:</label>
-               <?= $form->field($qualification, 'yearawarded')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="dateofconviction">Date of Conviction:</label>
+               <?= $form->field($criminalrecord, 'dateofconviction')->label(false)->widget(
+                        DatePicker::className(), [
+                            'inline' => false,
+                            'template' => '{addon}{input}',
+                            'clientOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"
+                            ]
+                        ]); 
+               ?>
             </div>
         </div>
 

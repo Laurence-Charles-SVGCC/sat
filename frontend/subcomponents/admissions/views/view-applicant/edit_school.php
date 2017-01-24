@@ -1,20 +1,12 @@
 <?php
-
-/* 
- * 'edit_school' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 28/02/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
-    use yii\widgets\ActiveForm;
-    use dosamigos\datepicker\DatePicker;
-    
+     use yii\bootstrap\ActiveForm;
+     use dosamigos\datepicker\DatePicker;
+
     use frontend\models\Institution;
-    
-    $this->title = 'Edit School';
-    
+
     $graduated = [
                 '' => 'Select..',
                 1 => 'Yes',
@@ -30,80 +22,78 @@
         $level = "Secondary School";
     elseif($levelid == 4)
         $level = "Tertiary School";
+    
+    $this->title = 'Edit School';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
+    $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                    <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                    <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-                </a>   
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status]);?>" title="Find Applicant">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="institutionid">Name:</label>
+               <?= $form->field($school, 'institutionid')->label('')->dropDownList(Institution::initializeSchoolList($levelid), ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9", "disabled" => true]) ?>
             </div>
             
-            <div class="custom_body">
-                <h1 class="custom_h1">Edit <?=$level?> Details</h1>
-
-                <?php
-                    $form = ActiveForm::begin([
-                                //'action' => Url::to(['gradebook/index']),
-                                'id' => 'edit-school-form',
-                                'options' => [
-                                ],
-                            ]);
-
-                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Name</th>";
-                                echo "<td>$school_name</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Start Date</th>";
-                                echo "<td>{$form->field($school, 'startdate')->label('')->widget(
-                                                        DatePicker::className(), [
-                                                        // inline too, not bad
-                                                            'inline' => false,
-    //                                                      modify template for custom rendering
-                                                            'template' => '{addon}{input}',
-                                                            'clientOptions' => [
-                                                                'autoclose' => true,
-                                                                'format' => 'yyyy-mm-dd',                    
-                                                            ]
-                                                        ]
-                                                    )}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>End Date</th>";
-                                echo "<td>{$form->field($school, 'enddate')->label('')->widget(
-                                                        DatePicker::className(), [
-                                                        // inline too, not bad
-                                                            'inline' => false,
-    //                                                      modify template for custom rendering
-                                                            'template' => '{addon}{input}',
-                                                            'clientOptions' => [
-                                                                'autoclose' => true,
-                                                                'format' => 'yyyy-mm-dd',                    
-                                                            ]
-                                                        ]
-                                                    )}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle; min-width:400px;'>Has student graduated from this institution?</th>";
-                                echo "<td>{$form->field($school, 'hasgraduated')->label('')->dropDownList($graduated)}</td>";
-                            echo "</tr>";                     
-                        echo "</table>";
-
-                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-
-                    ActiveForm::end();    
-                ?>
-            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="startdate">Start Date:</label>
+               <?= $form->field($school, 'startdate')->label(false)->widget(
+                        DatePicker::className(), [
+                            'inline' => false,
+                            'template' => '{addon}{input}',
+                            'clientOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"
+                            ]
+                        ]); 
+               ?>
+            </div><br/>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="enddate">End Date:</label>
+               <?= $form->field($school, 'enddate')->label(false)->widget(
+                        DatePicker::className(), [
+                            'inline' => false,
+                            'template' => '{addon}{input}',
+                            'clientOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"
+                            ]
+                        ]); 
+               ?>
+            </div><br/>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="employer">Has student graduated from this institution?</label>
+               <?= $form->field($school, 'hasgraduated')->label('')->dropDownList($graduated, ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
         </div>
-    </div>
 
-
+         <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['view-applicant/applicant-profile',  'search_status' => $search_status,  'applicantusername' => $user->username], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

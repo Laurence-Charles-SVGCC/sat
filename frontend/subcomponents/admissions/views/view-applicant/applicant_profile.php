@@ -18,6 +18,7 @@
     use frontend\models\ConcurrentApplicant;
     use frontend\models\Applicant;
     use common\models\User;
+    use frontend\models\Reference;
     
     
     $relation_count = [
@@ -1161,7 +1162,7 @@
                     <?php if(Yii::$app->user->can('viewMedicalDetailsData') || Yii::$app->user->can('viewMedicalCondition')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Medical Conditions
                             <?php if(Yii::$app->user->can('addMedicalCondition')):?>   
-                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-medical-condition', 'personid' => $applicant->personid]);?> role="button"> Add</a>
+                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-medical-condition', 'personid' => $applicant->personid, 'search_status' => $search_status]);?> role="button"> Add</a>
                             <?php endif;?>
                         </div>
                         <?php 
@@ -1176,8 +1177,8 @@
                                 echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                     foreach ($medicalConditions as $medicalCondition) 
                                     {
-                                        $delete_hyperlink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid]);
-                                        $edit_hyperlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid]);
+                                        $delete_hyperlink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid, 'search_status' => $search_status]);
+                                        $edit_hyperlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid, 'search_status' => $search_status]);
 
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:top; text-align:center; font-size:1.2em;'>$medicalCondition->medicalcondition";
@@ -1185,7 +1186,7 @@
                                                     if(Yii::$app->user->can('deleteMedicalCondition'))
                                                     {
                                                         echo Html::a(' Delete', 
-                                                                            ['view-applicant/delete-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid], 
+                                                                            ['view-applicant/delete-medical-condition', 'personid' => $applicant->personid, 'recordid' => $medicalCondition->medicalconditionid, 'search_status' => $search_status], 
                                                                             ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                                 'data' => [
                                                                                     'confirm' => 'Are you sure you want to delete this item?',
@@ -1233,35 +1234,30 @@
                             if ($general_work_experience == false)
                             {
                                 $val = "Applicant has not indicated that they have prior general work experience";
-                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                         echo "<tr>";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'search_status' => $search_status,  'personid' => $applicant->personid]);
                                                 echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Job Role</a></td>";
                                             }
                                         echo "</tr>";
                                     echo "</table>"; 
                             }
-//                                        if ($general_work_experience==false)
-//                                        {
-//                                            echo "</br><p><strong>No work experience information has been entered.</strong></p></br>";
-//                                        }
                             else
                             {
                                 for($i = 0 ; $i < count($general_work_experience) ; $i++) 
                                 {
                                     $val = $i+1;
                                     $generalworkexperienceid = $general_work_experience[$i]->generalworkexperienceid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
 
                                     echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em'>#$val ";
                                         if(Yii::$app->user->can('verifyApplicants'))
                                         {
                                             echo Html::a(' Delete', 
-                                                            ['delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid], 
+                                                            ['delete-general-work-experience', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid], 
                                                             ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                                                 'data' => [
                                                                     'confirm' => 'Are you sure you want to delete this item?',
@@ -1324,10 +1320,19 @@
                         if(Yii::$app->user->can('verifyApplicants')  || Yii::$app->user->can('viewAdditionalDetailsData'))
                         {
                             echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>References</h3>";
-
-                            if ($references==false)
+                            if ($references == false)
                             {
-                                echo "</br><p><strong>User has not submitted any references.</strong></p></br>";
+                                $val = "Applicant has not entered any references";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
+                                    echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
+                                        echo "<tr>";
+                                            if(Yii::$app->user->can('verifyApplicants'))
+                                            {
+                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-reference', 'search_status' => $search_status,  'personid' => $applicant->personid]);
+                                                echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Reference</a></td>";
+                                            }
+                                        echo "</tr>";
+                                    echo "</table>"; 
                             }
                             else
                             {
@@ -1335,22 +1340,24 @@
                                 {
                                     $val = $i+1;
                                     $referenceid = $references[$i]->referenceid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
-//                                                $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
-
+//                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
+//                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
+                                    
+                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create_update-reference', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $referenceid]);
+                                    
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                         if(Yii::$app->user->can('verifyApplicants'))
-//                                                    {
-//                                                        echo Html::a(' Delete', 
-//                                                                        ['delete-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid], 
-//                                                                        ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
-//                                                                            'data' => [
-//                                                                                'confirm' => 'Are you sure you want to delete this item?',
-//                                                                                'method' => 'post',
-//                                                                            ],
-//                                                                         'style' => 'margin-left:10px',
-//                                                                        ]);
-//                                                    }
+                                        {
+                                            echo Html::a(' Delete', 
+                                                            ['delete-reference', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $referenceid], 
+                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                                'data' => [
+                                                                    'confirm' => 'Are you sure you want to delete this item?',
+                                                                    'method' => 'post',
+                                                                ],
+                                                             'style' => 'margin-left:10px',
+                                                            ]);
+                                        }
                                         if(Yii::$app->user->can('verifyApplicants'))
                                         {
                                                 echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
@@ -1857,12 +1864,12 @@
                             if ($criminalrecord==false)
                             {
                                 $val = "Applicant has not indicated that they have criminal record";
-                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                         echo "<tr>";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-criminal-record', 'search_status' => $search_status,  'personid' => $applicant->personid]);
                                                 echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
                                             }
                                         echo "</tr>";
@@ -1872,14 +1879,14 @@
                             {
                                 $val = "";
                                 $criminalrecordid = $criminalrecord->criminalrecordid;
-                                $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
-                                $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-criminal-record', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-criminal-record', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
 
                                 echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Details";
                                     if(Yii::$app->user->can('verifyApplicants'))
                                     {
                                         echo Html::a(' Delete', 
-                                                        ['delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid], 
+                                                        ['delete-criminal-record','search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $criminalrecordid], 
                                                         ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                                             'data' => [
                                                                 'confirm' => 'Are you sure you want to delete this item?',
@@ -1934,7 +1941,7 @@
                     <?php if(Yii::$app->user->can('viewInstitutionsData')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Pre-School Attendance
                             <?php if(Yii::$app->user->can('addSchool')):?>
-                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'personid' => $applicant->personid, 'levelid' => 1]);?> role="button"> Add</a>
+                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'levelid' => 1]);?> role="button"> Add</a>
                             <?php endif;?>
                         </div>
                         <?php 
@@ -1960,14 +1967,14 @@
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->enddate}</td>";
                                             else
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
-                                            $pre_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid]);
-                                            $pre_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid, 'levelid' => 1]);
+                                            $pre_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid]);
+                                            $pre_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid, 'levelid' => 1]);
 
                                             if(Yii::$app->user->can('deleteSchool'))
                                             {
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>";
                                                     echo Html::a(' Delete', 
-                                                                    ['view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid], 
+                                                                    ['view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2001,7 +2008,7 @@
                     <?php if(Yii::$app->user->can('viewInstitutionsData')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Primary School Attendance
                             <?php if(Yii::$app->user->can('addSchool')):?>
-                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'personid' => $applicant->personid, 'levelid' => 2]);?> role="button"> Add</a>
+                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'levelid' => 2]);?> role="button"> Add</a>
                             <?php endif?>
                         </div>
                         <?php 
@@ -2027,14 +2034,14 @@
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->enddate}</td>";
                                             else
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
-                                            $pri_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid]);
-                                            $pri_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid, 'levelid' => 2]);
+                                            $pri_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid]);
+                                            $pri_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid, 'levelid' => 2]);
 
                                             if(Yii::$app->user->can('deleteSchool'))
                                             {
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>";
                                                     echo Html::a(' Delete', 
-                                                                    ['view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid], 
+                                                                    ['view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2067,7 +2074,7 @@
                     <?php if(Yii::$app->user->can('viewInstitutionsData')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Secondary School Attendance
                             <?php if(Yii::$app->user->can('addSchool')):?>
-                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'personid' => $applicant->personid,  'levelid' => 3]);?> role="button"> Add</a>
+                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'search_status' => $search_status, 'personid' => $applicant->personid,  'levelid' => 3]);?> role="button"> Add</a>
                             <?php endif;?>
                         </div>
                         <?php 
@@ -2093,14 +2100,14 @@
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->enddate}</td>";
                                             else
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
-                                            $sec_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid]);
-                                            $sec_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid, 'levelid' => 3]);
+                                            $sec_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid]);
+                                            $sec_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid, 'levelid' => 3]);
 
                                             if(Yii::$app->user->can('deleteSchool'))
                                             {
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>";
                                                     echo Html::a(' Delete', 
-                                                                    ['view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid], 
+                                                                    ['view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2133,7 +2140,7 @@
                     <?php if(Yii::$app->user->can('viewInstitutionsData')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Tertiary School Attendance
                             <?php if(Yii::$app->user->can('addSchool')):?>
-                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'personid' => $applicant->personid, 'levelid' => 4]);?> role="button"> Add</a>
+                                <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'levelid' => 4]);?> role="button"> Add</a>
                             <?php endif;?>
                         </div>
                         <?php 
@@ -2159,14 +2166,14 @@
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->enddate}</td>";
                                             else
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
-                                            $ter_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid]);
-                                            $ter_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid, 'levelid' => 4]);
+                                            $ter_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid]);
+                                            $ter_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid, 'levelid' => 4]);
 
                                             if(Yii::$app->user->can('deleteSchool'))
                                             {
                                                 echo "<td style='vertical-align:middle; text-align:center; height:75px'>";
                                                     echo Html::a(' Delete', 
-                                                                    ['view-applicant/delete-school', 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid], 
+                                                                    ['view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2217,11 +2224,11 @@
                                 {
                                     $val = $i+1;
                                     $qualificationid = $qualifications[$i]->csecqualificationid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-qualification', 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-qualification', 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
+                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
+                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
 
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
-                                        if(Yii::$app->user->can('deleteQualification')  /*&& $applicant_status=="Unverified"*/)
+                                        if(Yii::$app->user->can('deleteQualification'))
                                         {
                                             echo Html::a(' Delete', 
                                                             ['delete-qualification', 'personid' => $applicant->personid, 'recordid' => $qualificationid], 
@@ -2233,7 +2240,7 @@
                                                              'style' => 'margin-left:10px',
                                                             ]);
                                         }
-                                        if(Yii::$app->user->can('editQualification') /*&& $applicant_status=="Unverified"*/)
+                                        if(Yii::$app->user->can('editQualification'))
                                         {
                                                 echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
                                         }
@@ -2267,7 +2274,7 @@
                         }
                     ?>
                     <?php if(Yii::$app->user->can('addQualification')):?>
-                        <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification', 'personid' => $applicant->personid]);?> role='button' style='margin-top:30px;'> Add Qualification</a>
+                        <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid]);?> role='button' style='margin-top:30px;'> Add Qualification</a>
                     <?php endif;?>
                 </div>
 
@@ -2275,8 +2282,12 @@
                     <br/><br/><br/><br/>
                     <div class="panel panel-default" style="width:95%; margin: 0 auto;">
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Technical/Vocational Qualifications
-                            <?php if(Yii::$app->user->can('addQualification')):?>        
-                                <a class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/edit-technical-qualifications', 'personid' => $applicant->personid]);?> role="button"> Edit</a>                                    
+                            <?php if(Yii::$app->user->can('addQualification')):?>   
+                                <?php if ($applicant->otheracademics == NULL || $applicant->otheracademics == " "):?>
+                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/edit-technical-qualifications', 'search_status' => $search_status,  'personid' => $applicant->personid]);?> role="button"> Add</a>     
+                                <?php else:?>
+                                    <a class="btn btn-info glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/edit-technical-qualifications', 'search_status' => $search_status,  'personid' => $applicant->personid]);?> role="button"> Edit</a>                                    
+                                <?php endif;?>
                             <?php endif;?>
                         </div>
 
@@ -2300,12 +2311,12 @@
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Post Secondary Degree
                             <?php if(Yii::$app->user->can('addQualification')):?>
                                 <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true) :?>
-                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/post-secondary-qualification', 'personid' => $applicant->personid, 'action' => 'edit']);?> role="button"> Edit</a>                           
+                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/post-secondary-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'edit']);?> role="button"> Edit</a>                           
                                     <?php
                                         if(Yii::$app->user->can('deleteQualification'))
                                                 {
                                                     echo Html::a(' Delete', 
-                                                                    ['post-secondary-qualification', 'personid' => $applicant->personid, 'action' => 'delete'], 
+                                                                    ['post-secondary-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'delete'], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2316,7 +2327,7 @@
                                                 }
                                     ?>
                                 <?php else:?>
-                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/post-secondary-qualification', 'personid' => $applicant->personid, 'action' => 'add']);?> role="button"> Add</a> 
+                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/post-secondary-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'add']);?> role="button"> Add</a> 
                                  <?php endif;?>
                             <?php endif;?>
                         </div>
@@ -2349,12 +2360,12 @@
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">External Qualifications
                             <?php if(Yii::$app->user->can('addQualification')):?>
                                 <?php if(ExternalQualification::getExternalQualifications($applicant->personid) == true) :?>
-                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/external-qualification', 'personid' => $applicant->personid, 'action' => 'edit']);?> role="button"> Edit</a>                           
+                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/external-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'edit']);?> role="button"> Edit</a>                           
                                     <?php
                                         if(Yii::$app->user->can('deleteQualification'))
                                                 {
                                                     echo Html::a(' Delete', 
-                                                                    ['external-qualification', 'personid' => $applicant->personid, 'action' => 'delete'], 
+                                                                    ['external-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'delete'], 
                                                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                                                         'data' => [
                                                                             'confirm' => 'Are you sure you want to delete this item?',
@@ -2365,7 +2376,7 @@
                                                 }
                                     ?>
                                 <?php else:?>
-                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/external-qualification', 'personid' => $applicant->personid, 'action' => 'add']);?> role="button"> Add</a> 
+                                    <a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/external-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'action' => 'add']);?> role="button"> Add</a> 
                                  <?php endif;?>
                             <?php endif;?>
                         </div>
@@ -2613,9 +2624,9 @@
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Application/Registration Documents
                             <?php if(Yii::$app->user->can('updateDocuments')):?>
                                 <?php if(empty($document_details)):?>
-                                    <a style="margin-left:10px;" class="btn btn-info glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/update-documents', 'personid' => $applicant->personid]);?> role="button"> Add</a>
+                                    <a style="margin-left:10px;" class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/update-documents', 'search_status' => $search_status, 'personid' => $applicant->personid]);?> role="button"> Add</a>
                                 <?php else:?>
-                                    <a style="margin-left:10px;" class="btn btn-success glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/update-documents', 'personid' => $applicant->personid]);?> role="button"> Update</a>
+                                    <a style="margin-left:10px;" class="btn btn-success glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/update-documents', 'search_status' => $search_status, 'personid' => $applicant->personid]);?> role="button"> Update</a>
                                 <?php endif;?>
                             <?php endif;?>
                         </div>

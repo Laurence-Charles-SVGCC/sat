@@ -847,6 +847,9 @@
          */
         public function actionEditContactDetails($personid, $studentregistrationid)
         {
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
             $phone = Phone::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
@@ -875,10 +878,12 @@
                     $phone_save_flag = false;
                     $email_save_flag = false;
                     $student_save_flag = false;
+                    $user_save_flag = false;
                     
                     $phone_load_flag = $phone->load($post_data);
                     $email_load_flag = $email->load($post_data);
-                    $student_load_flag = $student->load($post_data); 
+                    $student_load_flag = $student->load($post_data);
+                    $user->email = $email->email;
                     
                     if ($phone_load_flag == true && $email_load_flag == true  && $student_load_flag == true)
                     {
@@ -894,8 +899,9 @@
                                 $phone_save_flag = $phone->save();
                                 $email_save_flag = $email->save();
                                 $student_save_flag = $student->save();
+                                $user_save_flag = $email->save();
                                 
-                                if ($phone_save_flag == true && $email_save_flag == true  && $student_save_flag == true)
+                                if ($phone_save_flag == true && $email_save_flag == true  && $student_save_flag == true && $user_save_flag == true)
                                 {
                                     $transaction->commit();
                                     return $this->redirect(['student-profile',

@@ -1,11 +1,5 @@
 <?php
-
-/* 
- * 'add_qualification' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 28/02/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -17,72 +11,71 @@
     use frontend\models\Subject;
     
     $this->title = 'Edit Qualification';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
+    $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                    <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                    <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-                </a>   
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status]);?>" title="Find Applicant">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="cseccentreid">Examination Centre:</label>
+               <?= $form->field($qualification, 'cseccentreid')->label('')->dropDownList(CsecCentre::processCentres(), ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
             
-            <div class="custom_body">
-                <h1 class="custom_h1">Edit Qualification Details</h1>
-
-                <?php
-                    $form = ActiveForm::begin([
-                                //'action' => Url::to(['gradebook/index']),
-                                'id' => 'edit-csec-qualification-form',
-                                'options' => [
-                                ],
-                            ]);
-
-                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Examination Centre</th>";
-                                echo "<td>{$form->field($qualification, 'cseccentreid')->label('')->dropDownList(CsecCentre::processCentres(), ['style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Candidtate Number</th>";
-                                echo "<td>{$form->field($qualification, 'candidatenumber')->label('')->textInput(['maxlength' => true, 'style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Examination Body</th>";
-                                echo "<td>{$form->field($qualification, 'examinationbodyid')->label('')->dropDownList(ExaminationBody::processExaminationBodies(), ['onchange' => 'EditCsecQualificationAjaxFunction(event);', 'style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Subject</th>";
-                                echo "<td>{$form->field($qualification, 'subjectid')->label('')->dropDownList(Subject::initializeSubjectDropdown($qualification->csecqualificationid), ['style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Proficiency</th>";
-                                echo "<td>{$form->field($qualification, 'examinationproficiencytypeid')->label('')->dropDownList(ExaminationProficiencyType::initializeProficiencyDropdown($qualification->csecqualificationid), ['style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Grade</th>";
-                                echo "<td>{$form->field($qualification, 'examinationgradeid')->label('')->dropDownList(ExaminationGrade::initializeGradesDropdown($qualification->csecqualificationid), ['style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle'>Examination Year</th>";
-                                echo "<td>{$form->field($qualification, 'year')->label('')->dropDownList(Yii::$app->params['years'], ['style'=> 'font-size:14px;'])}</td>";
-                            echo "</tr>";                     
-                        echo "</table>";
-
-                        echo Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-
-                    ActiveForm::end();    
-                ?>
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="candidatenumber">Candidate Number:</label>
+               <?= $form->field($qualification, 'candidatenumber')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="examinationbodyid">Examination Body:</label>
+               <?= $form->field($qualification, 'examinationbodyid')->label('')->dropDownList(ExaminationBody::processExaminationBodies(), ['onchange' => 'AddCsecQualificationAjaxFunction(event);', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="subjectid">Subject:</label>
+               <?= $form->field($qualification, 'subjectid')->label('')->dropDownList(Subject::initializeSubjectDropdown($qualification->csecqualificationid), ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="examinationproficiencytypeid">Proficiency:</label>
+               <?= $form->field($qualification, 'examinationproficiencytypeid')->label('')->dropDownList(ExaminationProficiencyType::initializeProficiencyDropdown($qualification->csecqualificationid), ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="examinationgradeid">Grade:</label>
+               <?= $form->field($qualification, 'examinationgradeid')->label('')->dropDownList(ExaminationGrade::initializeGradesDropdown($qualification->csecqualificationid), ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="year">Examination Year:</label>
+               <?= $form->field($qualification, 'year')->label('')->dropDownList(Yii::$app->params['years'], ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
         </div>
-    </div>
 
+         <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['view-applicant/applicant-profile',  'search_status' => $search_status,  'applicantusername' => $user->username], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>
