@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </p>
 
                     <div id="profile-button" style="display:none">
-                        <a target="_blank" class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
+                        <a target="_blank" class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => 'pending-unlimited', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
                     </div>
 
                     <br/>
