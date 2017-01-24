@@ -1169,7 +1169,7 @@
 
                             if($medicalConditions == false)
                             {
-                                echo "<h3>Student has not indicated any medical conditions</h3>";
+                                echo "<p><strong>Student has not indicated any medical conditions</strong></p>";
                             }
                             else
                             {
@@ -1299,7 +1299,7 @@
                                 echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                     if(Yii::$app->user->can('verifyApplicants'))
                                     {
-                                        $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                        $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'search_status' => $search_status, 'personid' => $applicant->personid]);
                                         echo "<tr>";
                                             echo "<td></td>";
                                             echo "<td></td>";
@@ -1343,7 +1343,7 @@
 //                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
 //                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
                                     
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create_update-reference', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $referenceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-reference', 'search_status' => $search_status,  'personid' => $applicant->personid, 'recordid' => $referenceid]);
                                     
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                         if(Yii::$app->user->can('verifyApplicants'))
@@ -1396,12 +1396,12 @@
                                 if ($nursing==false)
                                 {
                                     $val = "Applicant has not indicated that they have prior nursing experience";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-nurse-work-experience', 'search_status' => $search_status, 'personid' => $applicant->personid]);
                                                     echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                                 }
                                             echo "</tr>";
@@ -1411,8 +1411,8 @@
                                 {
                                     $val = "";
                                     $nurseworkexperienceid = $nursing->nurseworkexperienceid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-nurse-work-experience', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-work-experience', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
 
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Experience Details";
                                         if(Yii::$app->user->can('verifyApplicants'))
@@ -1453,7 +1453,7 @@
                                         echo "<tr>";
                                             if(NurseWorkExperience::getNurseWorkExperience($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-nurse-work-experience', 'personid' => $applicant->personid]);
                                                 echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                             }
                                         echo "</tr>";
@@ -1472,13 +1472,13 @@
                                 if ($nursing_certification==false)
                                 {
                                     $val = "Applicant has not indicated that they have prior nursing cetificates";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid]);
-                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-nurse-certification', 'search_status' => $search_status, 'personid' => $applicant->personid]);
+                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Certification</a></td>";
                                                 }
                                             echo "</tr>";
                                         echo "</table>"; 
@@ -1489,14 +1489,14 @@
                                     {
                                         $val = $i+1;
                                         $nursecertificationid = $nursing_certification[$i]->nursepriorcertificationid;
-                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
-                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-nurse-certification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-certification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
 
                                         echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
                                                 echo Html::a(' Delete', 
-                                                                ['delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid], 
+                                                                ['delete-nurse-certification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $nursecertificationid], 
                                                                 ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
                                                                     'data' => [
                                                                         'confirm' => 'Are you sure you want to delete this item?',
@@ -2631,7 +2631,7 @@
                             <?php endif;?>
                         </div>
                         <?php if(empty($document_details)):?>
-                            <h3>No documents have been submitted for this applicant.</h3>
+                        <strong><p>No documents have been submitted for this applicant.</p></strong>
                         <?php else:?>
                             <table class='table table-hover' style='margin: 0 auto;'>
                                 <tr>

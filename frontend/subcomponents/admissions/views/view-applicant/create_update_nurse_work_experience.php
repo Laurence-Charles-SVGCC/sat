@@ -3,14 +3,18 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
-    use dosamigos\datepicker\DatePicker;
     
-    use frontend\models\PostSecondaryQualification;
+    $titles = [
+            '' => 'Title', 
+            'Mr' => 'Mr',
+            'Ms' => 'Ms', 
+            'Mrs' => 'Mrs'
+        ];
     
-    if(PostSecondaryQualification::getPostSecondaryQualifications($user->personid) == true)
-        $this->title = 'Edit External Qualification';
+    if ($action == "create")
+        $this->title = 'Create Nurse Work Experience';
     else
-        $this->title = 'Add External Qualification';
+        $this->title = 'Update Nurse Work Experience';
     
     $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
     $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username])];
@@ -35,19 +39,24 @@
     <?php $form = ActiveForm::begin();?>
         <div class="box-body">
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="awardinginstitution">Awarding Institution:</label>
-               <?= $form->field($qualification, 'awardinginstitution')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="natureoftraining">Describe Post(s) and Responsibilities *:</label>
+               <?= $form->field($nurseExperience, 'natureoftraining')->label('')->textArea(['rows' => '5', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="location">Address *:</label>
+               <?= $form->field($nurseExperience, 'location')->label('')->textArea(['rows' => '5', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="tenureperiod">Length Of Time *:</label>
+               <?= $form->field($nurseExperience, 'tenureperiod')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
             
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Name of Degree*:</label>
-               <?= $form->field($qualification, 'name')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
-            </div>
-            
-            <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="yearawarded">Year Degree Awarded:</label>
-               <?= $form->field($qualification, 'yearawarded')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
-            </div>
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="departreason">Reason for leaving (if applicable)*:</label>
+               <?= $form->field($nurseExperience, 'departreason')->label('')->textArea(['rows' => '5', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
         </div>
 
          <div class="box-footer">

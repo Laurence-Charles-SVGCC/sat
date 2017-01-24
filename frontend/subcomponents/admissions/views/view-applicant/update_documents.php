@@ -21,6 +21,11 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status]);?>" title="Find Applicant">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
 
 <section class="content-header">
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
@@ -36,8 +41,6 @@
             <h3><strong>Enrollment Documents Checklist</strong></h3>
             
             <div class="form-group">
-<!--            <div class="row">-->
-                 <!--<div class="col-lg-3">-->
                  <div class = "no-padding col-xs-3 col-sm-3 col-md-3 col-lg-2">
                     <?= Html::checkboxList('documents', 
                                             $selections, 
