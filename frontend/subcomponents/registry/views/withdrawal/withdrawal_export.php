@@ -62,15 +62,4 @@
                     'label' => 'Email'
                 ],
             ],
-//            'columns' => [
-//                ['class' => 'yii\grid\SerialColumn'],
-//                'username',
-//                'firstname',
-//                'lastname',
-//                'programme',
-//                'issuedby',
-//                'issuedate',
-//                'revokedby',
-//                'ispublished',
-//            ],
         ]);
