@@ -1,4 +1,5 @@
 <?php
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
     use yii\helpers\Url;
@@ -8,44 +9,38 @@
     
     $this->title = 'Unregistered Dashboard';
     
+    $this->params['breadcrumbs'][] = ['label' => 'Find A Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="report-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        <div class="custom_body">
-            <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>
-            
-            <?php
-                $form = ActiveForm::begin(
-                    [
-                        'action' => Url::to(['reports/get-unregistered-applicants']),
-                    ]); 
-            ?>
-            
-                <div style="margin-left:2.5%"><br/>
-                    <div id="unregistered-applicant-application-period">
-                        <?= Html::label('Please select the application period you wish to investigate: ', 'unregistered_period_label'); ?>
-                        <?= Html::dropDownList('applicationperiod',  "Select...", $periods, ['id' => 'unregistered_period_field', 'onchange' => 'toggleUnregisteredSearchButton();']) ; ?>
-                    </div></br>
-                    
-                    <div id="unregistered-applicant-submit-button"  style="display:none">
-                        <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: left']) ?>
-                    </div>
-                
-                </div>
 
-            <?php ActiveForm::end(); ?>
-        </div>
-    </div>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
 </div>
 
-    
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin(['action' => Url::to(['reports/get-unregistered-applicants'])]);?>
+        <div class="box-body">
+            <div class="form-group">
+               <?= Html::label('Please select the application period you wish to investigate: ', 'unregistered_period_label'); ?>
+               <?= Html::dropDownList('applicationperiod',  "Select...", $periods, ['id' => 'unregistered_period_field', 'onchange' => 'toggleUnregisteredSearchButton();']) ; ?>                              
+           </div>
+         </div>
+   
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton('Generate', ['class' => 'btn btn-md btn-success', "id" => "unregistered-applicant-submit-button",  "style" => "display:none"]) ?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

@@ -389,7 +389,16 @@ function PrepareListing(e)
 
 function toggleUnregisteredSearchButton()
 {
-    document.getElementById('unregistered-applicant-submit-button').style.display = "block"; 
+    var period = document.getElementById('unregistered_period_field');
+    var index = period.selectedIndex;
+    if (index != 0)
+    {
+        document.getElementById('unregistered-applicant-submit-button').style.display = "block"; 
+    }
+    else
+    {
+        document.getElementById('unregistered-applicant-submit-button').style.display = "none"; 
+    }
 }
 
 /*********************************Intake Report Functions **********************************/
