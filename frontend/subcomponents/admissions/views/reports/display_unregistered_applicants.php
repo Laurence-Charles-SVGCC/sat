@@ -9,13 +9,13 @@
     
     $this->title = $header;
     
-    $this->params['breadcrumbs'][] = ['label' => 'Find Unregistered', 'url' => Url::toRoute(['/subcomponents/admissions/reports/find-programme-intake'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Find Unregistered', 'url' => Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants'])];
     $this->params['breadcrumbs'][] = ['label' => 'Find A Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds']);?>" title="Academic Holds">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants']);?>" title="Unregister Students">
         <h1>Welcome to the Student Management System</h1>
     </a>
 </div>

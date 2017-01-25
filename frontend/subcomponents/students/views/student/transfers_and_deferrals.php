@@ -12,7 +12,7 @@
     
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/students/student/view-active-academic-holds']);?>" title="Academic Holds">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/view-transfers-and-deferrals']);?>" title="Transfers and Deferrals">
         <h1>Welcome to the Student Management System</h1>
     </a>
 </div>

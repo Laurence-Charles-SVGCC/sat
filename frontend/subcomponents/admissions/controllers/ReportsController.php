@@ -1746,10 +1746,10 @@ class ReportsController extends Controller {
                 ->where(['academicyearid' => $application_period->academicyearid])
                 ->one();
         
-        $progression_header = "Second Year Enrollment Report";
+        $progression_header = "Second Year Enrollment Report - " . $accepted_criteria;
         $progression_title = "Title: " . $periodname . " " . $progression_header;
         
-        $summary_header = "Intake Overview";
+        $summary_header = "Intake Overview - "  . $accepted_criteria;;
         $summary_title = "Title: " . $periodname . " " . $summary_header;
         
         $accepted_header = "Accepted Applicants Report - " . $accepted_criteria;

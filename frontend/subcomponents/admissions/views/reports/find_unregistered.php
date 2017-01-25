@@ -15,7 +15,7 @@
 
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants']);?>" title="Unregistered Students">
         <h1>Welcome to the Student Management System</h1>
     </a>
 </div>
