@@ -3098,9 +3098,9 @@ class ViewApplicantController extends \yii\web\Controller
      * 
      * Author: Laurence Charles
      * Date Created: 09/03/2016
-     * Date Last Modified: 09/03/2016
+     * Date Last Modified: 09/03/2016 | 24/01/2017
      */
-    public function actionTeacherExperience($personid, $recordid = Null)
+    public function actionCreateUpdateTeacherExperience($search_status, $personid, $recordid = Null)
     {
         $user = User::find()
                 ->where(['personid' => $personid])
@@ -3139,7 +3139,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $experience->save();
                     if($save_flag == true)
                     {
-                        return self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($search_status, $user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save record. Please try again.');
@@ -3152,11 +3152,12 @@ class ViewApplicantController extends \yii\web\Controller
         }
        
         
-        return $this->render('teacher_experience', [
+        return $this->render('create_update_teacher_experience', [
             'user' => $user,
             'personid' => $personid,
             'experience' => $experience,
             'action' => $action,
+            'search_status' => $search_status, 
         ]);
     }
     
@@ -3172,7 +3173,7 @@ class ViewApplicantController extends \yii\web\Controller
      * Date Created: 10/03/2016
      * Date Last Modified: 10/03/2016
      */
-    public function actionDeleteTeacherExperience($personid, $recordid)
+    public function actionDeleteTeacherExperience($search_status, $personid, $recordid)
     {
         $user = User::find()
                 ->where(['personid' => $personid])
@@ -3189,7 +3190,7 @@ class ViewApplicantController extends \yii\web\Controller
             $save_flag = $experience->save();
             if($save_flag == true)
             {
-                return self::actionApplicantProfile($user->username);
+                return self::actionApplicantProfile($search_status, $user->username);
             }
             else
                 Yii::$app->getSession()->setFlash('error', 'Error occured deleting record. Please try again.');              
@@ -3198,7 +3199,7 @@ class ViewApplicantController extends \yii\web\Controller
             Yii::$app->getSession()->setFlash('error', 'Error occured retrieving record. Please try again.');
             
         
-        return self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($search_status, $user->username);
     }
     
     

@@ -1690,24 +1690,20 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
-                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
+                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-teacher-experience', 'search_status' => $search_status, 'personid' => $applicant->personid]);
+                                                    echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Teaching Role</a></td>";
                                                 }
                                             echo "</tr>";
                                         echo "</table>"; 
                                 }
-//                                            if ($teaching==false)
-//                                            {
-//                                                echo "</br><p style='margin: 0 auto;'><strong>No teaching experience information has been entered.</strong></p></br>";
-//                                            }
                                 else
                                 {
                                     for($i = 0 ; $i < count($teaching) ; $i++) 
                                     {
                                         $val = $i+1;
                                         $teacherexperienceid = $teaching[$i]->teachingexperienceid;
-                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
-                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-teacher-experience', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-teacher-experience', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
 
                                         echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                             if(Yii::$app->user->can('verifyApplicants'))
@@ -1756,7 +1752,7 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/create-update-teacher-experience', 'search_status' => $search_status, 'personid' => $applicant->personid]);
                                                     echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button' > Add Teaching Role</a></td>";
                                                 }
                                             echo "</tr>";
