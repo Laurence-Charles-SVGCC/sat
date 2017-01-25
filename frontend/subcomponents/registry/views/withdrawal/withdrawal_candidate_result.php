@@ -25,7 +25,7 @@
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
 </section><br/><br/>
 
-<div class="box box-primary" style="font-size:1.1em">
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
     <div class="box-header with-border">
         <span class="box-title">Generate New Listing</span>
      </div>
@@ -44,7 +44,7 @@
 
 
 
-<div class="box box-primary" style="font-size:1.1em">
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
     <div class="box-header with-border">
         <span class="box-title"><?= $this->title?></span>
      </div>
@@ -57,7 +57,7 @@
             </div><br/>
         <?php endif;?>
         
-        <table class="table table-hover">
+        <table class="table table-hover  ">
             <?= GridView::widget([
                     'dataProvider' => $dataProvider,
                     'options' => [],
@@ -152,5 +152,5 @@
                 <a class="btn btn-warning" style="width: 40%;font-size:3 em;" href=<?=Url::toRoute(['/subcomponents/registry/withdrawal/undo-promotions', 'applicationperiodid' => $application_periodid]);?> role="button">  Undo Promotions</a>
             </div>
         <?php endif; ?>
-    </div>
+    </div><br/>
 </div>
