@@ -83,6 +83,7 @@
         {
             $load_flag = false;
             $save_flag = false;
+            $academicyears =  AcademicYear::getYearListing(); 
             
             if ($action == "create")
             {
@@ -113,6 +114,7 @@
                     [
                         'award' => $award,
                         'action' => $action,
+                        'academicyears' => $academicyears,
                     ]);
         }
         

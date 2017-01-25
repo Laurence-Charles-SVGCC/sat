@@ -9,14 +9,14 @@
     use frontend\models\Division;
     
     $this->title = $action . " Club";
-    $this->params['breadcrumbs'][] = ['label' => 'Find A Student', 'url' => Url::toRoute(['/subcomponents/registry/clubs/manage-clubs'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Club Listing', 'url' => Url::toRoute(['/subcomponents/registry/clubs/manage-clubs'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/registry/clubs/manage-clubs']);?>" title="Manage Clubs">
-        <h1>Club Management System</h1>
+        <h1>Welcome To The Club Management System</h1>
     </a>
 </div>
 

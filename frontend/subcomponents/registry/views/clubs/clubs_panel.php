@@ -13,7 +13,7 @@
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/registry/clubs/manage-clubs']);?>" title="Manage Clubs">
-        <h1>Club Management System</h1>
+        <h1>Welcome To The Club Management System</h1>
     </a>
 </div>
 
@@ -26,8 +26,7 @@
         <span class="box-title"><?= $this->title?></span>
      </div>
     
-    <div class="box-body">
-        </br>                              
+    <div class="box-body">  
         <div class="panel panel-default">
             <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Clubs Listing
                 <?php if(Yii::$app->user->can('createClub')):?>
