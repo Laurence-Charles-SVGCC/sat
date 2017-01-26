@@ -1,110 +1,92 @@
 <?php
-
-/* 
- * 'edit_associate_transcript' view 
- * Author: Laurence Charles
- * Date Created: 16/12/2015
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
     use frontend\models\BatchStudent;
     use frontend\models\StudentRegistration;
+    
+     $this->title = 'Edit Course Totals';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::to(['gradebook/transcript', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Gradebook Home">     
-                    <img class="custom_logo" src ="css/dist/img/header_images/grade_a+.png" alt="A+">
-                    <span class="custom_module_label">Welcome to the SVGCC Grade Management System</span> 
-                    <img src ="css/dist/img/header_images/grade_a+.png" alt="A+">
-                </a>        
-            </div>
-            
-            <div class="custom_body">
-                <h1 class="custom_h1">Edit Course Totals</h1>
 
-                <?php 
-                    if ($course_record == NULL || $course_record == false || $course_summary == NULL || $course_summary == false )
-                    {
-                        echo "<h1 class='custom_h2'>Course can not be editted at this time</h1>";
-                    }
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Grade Management Home">
+        <h1>Welcome to the SVGCC Grade Management System</h1>
+    </a>
+</div>
 
-                    else
-                    {
-                        $form = ActiveForm::begin([
-                            //'action' => Url::to(['gradebook/index']),
-                            'id' => 'edit-associate-transcript-form',
-                            'options' => [
-//                                    'class' => 'form-layout form-inline'
-//                                    'class' => 'form-inline',
-                            ],
-                        ]);
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                            echo "<table class='table table-hover table-bordered' style='width:95%; margin: 0 auto;'>";
-                                echo "<tr>";
-                                    echo "<th>Course Code</th>";
-                                        echo "<td>{$course_summary['code']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Course Name</th>";
-                                        echo "<td>{$course_summary['name']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Credits Atempted</th>";
-                                        echo "<td>{$course_summary['credits_attempted']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Credits Awarded</th>";
-                                        echo "<td>{$course_summary['credits_awarded']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Coursework ({$course_summary['courseworkweight']}%)</th>";
-                                         echo "<td>{$form->field($course_record, 'courseworktotal')->label('')->textInput(['maxlength' => true])}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Exam ({$course_summary['examweight']}%)</th>";
-                                         echo "<td>{$form->field($course_record, 'examtotal')->label('')->textInput(['maxlength' => true])}</td>";
-
-                                echo "<tr>";
-                                    echo "<th>Final</th>";
-                                        echo "<td>{$course_summary['final']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Grade</th>";
-                                       echo "<td>{$course_summary['grade']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Grade Points</th>";
-                                        echo "<td>{$course_summary['gradepoints']}</td>";
-                                echo "</tr>";
-
-                                echo "<tr>";
-                                    echo "<th>Status</th>";
-                                        echo "<td>{$course_summary['course_status']}</td>";
-                                echo "</tr>";
-
-                            echo "</table>";
-
-                            echo "<br/>";
-
-                            echo Html::a(' Cancel',['edit-transcript-cancel', 'batchid' => $course_summary['batchid'], 'studentregistrationid' => $course_summary['studentregistrationid']], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                            echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-
-                        ActiveForm::end();      
-                    }                    
-                ?>
-            </div>
-        </div>
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
     </div>
-                        
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="course-code">Course Code</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['code']?></p>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="course-name">Course Name</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['name']?></p>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="credits-unit">Credits Attempted</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['credits_attempted']?></p>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="credits-unit">Credits Awarded</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['credits_awarded']?></p>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="coursework-weight">Coursework (<?=$course_summary['courseworkweight'];?>)</label>
+               <?= $form->field($course_record, 'courseworktotal')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="exam-weight">Exam (<?=$course_summary['examweight']?>)</label>
+               <?= $form->field($course_record, 'examtotal')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="final">Final</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?=$course_summary['final']?></p>
+           </div>
+        </div>
+        
+        <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="grade">Grade</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['grade']?></p>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="cgrade-points">Grade Points</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['gradepoints']?></p>
+           </div>
+            
+           <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="status">Status</label>
+               <p class = "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"><?= $course_summary['course_status']?></p>
+           </div>
+    
+         <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['edit-transcript-cancel', 'batchid' => $course_summary['batchid'], 'studentregistrationid' => $course_summary['studentregistrationid']], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

@@ -161,4 +161,82 @@ class Batch extends \yii\db\ActiveRecord
             return $course_record;
         return false;
     }
+    
+    
+    /**
+     * Returns gradepoints and grade given a final mark
+     * 
+     * @param type $total
+     * @return int
+     * 
+     * Author: Laurence Charles
+     * Date Created: 26/01/2017
+     * Date LAst Modified: 26/01/2017
+     */
+    public static function getCourseStats($total)
+    {
+        $stats = array();
+        $grade = NULL;
+        $gradepoints = NULL;
+            
+        if($total>=90 && $total <=100)
+        {
+            $grade = "A+";
+            $gradepoints = 4.0;
+        }
+        elseif($total>=85 && $total <=89)
+        {
+            $grade = "A";
+            $gradepoints = 3.75;
+        }
+        elseif($total>=80 && $total <=84)
+        {
+            $grade = "A-";
+            $gradepoints = 3.5;
+        }
+        elseif($total>=75 && $total <=79)
+        {
+            $grade = "B+";
+            $gradepoints = 3.25;
+        }
+        elseif($total>=70 && $total <=74)
+        {
+            $grade = "B";
+            $gradepoints = 3.0;
+        }
+        elseif($total>=65 && $total <=69)
+        {
+            $grade = "B-";
+            $gradepoints = 2.75;
+        }
+        elseif($total>=60 && $total <=64)
+        {
+            $grade = "C+";
+            $gradepoints = 2.5;
+        }
+        elseif($total>=55 && $total <=59)
+        {
+            $grade = "C";
+            $gradepoints = 2.25;
+        }
+        elseif($total>=50 && $total <=54)
+        {
+            $grade = "C-";
+            $gradepoints = 2.0;
+        }
+        elseif($total>=40 && $total <=49)
+        {
+            $grade = "D";
+            $gradepoints = 1.0;
+        }
+        elseif($total>=0 && $total <=39)
+        {
+            $grade = "F";
+            $gradepoints = 0;
+        }
+        
+        $stats['grade'] = $grade;
+        $stats['gradepoints'] = $gradepoints;
+        return $stats;
+    }
 }

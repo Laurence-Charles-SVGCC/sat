@@ -1072,12 +1072,14 @@
                 if ($iscape == 1)   //if student is doing CAPE programme
                 {
                     $assessment_results = AssessmentCape::getAssessmentReport($batchid, $studentregistrationid);
-
+                    $course_details = Batch::getCourseDetails($batchid);
+                     
                     return $this->render('course_detail', [
                         'iscape' => $iscape,
 
                         'code' => $code,
                         'name' => $name,
+                        'course_details' => $course_details,
 
                         'person' => $person,
                         'student' => $student,
@@ -1302,10 +1304,14 @@
          * 
          * Author: Laurence Charles
          * Date Created: 15/12/2015
-         * Date Last Modified: 16/12/2015
+         * Date Last Modified: 16/12/2015 | 26/01/2017
          */
         public function actionEditTranscript($batchid, $studentregistrationid)
         {
+            $studentregistration = StudentRegistration::find()
+                        ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
+                        ->one();
+            
             //Coursework flags
             $course_load_flag = false;
             $course_validation_flag = false;
@@ -1330,6 +1336,7 @@
                             ->one();
             
                 $course_summary = BatchStudent::getCourseRecord($studentregistrationid, $batchid);
+                $course_summary['gradepoints'] = Batch::getCourseStats($course_summary['final'])['gradepoints'];
             }
             
            
@@ -1349,7 +1356,7 @@
                             {
                                 //Ensures change in cw or exam mark add up to 100%
                                 $total = $course_record->courseworktotal + $course_record->examtotal; 
-                                if($total < 100)
+                                if($total <= 100)
                                 {
                                     $course_record->final = $total;         //recalculates grade total
                                     
@@ -1416,6 +1423,8 @@
                                         if (strcmp($course_record->grade,"F") != 0 && $course_summary["passfailtypeid"] != 1)
                                             $course_record->grade = "P";
 
+//                                        $course_summary["gradepoints"] =  $course_record->gradepoints;
+//                                        $course_summary["gradepoints"] =  "Z";
                                         $coursework_pass_mark = ($course_summary["passmark"]/100)* $course_summary["courseworkweight"];
                                         $exam_pass_mark = ($course_summary["passmark"]/100)* $course_summary["examweight"];
 
@@ -1507,16 +1516,10 @@
                                     $course_save_flag = $course_record->save();
                                     if ($course_save_flag == true)
                                     {
-                                        $studentregistration = StudentRegistration::find()
-                                                            ->where(['studentregistrationid' => $studentregistrationid, 'isdeleted' => 0])
-                                                            ->one();
-                                        if ($studentregistration)
-                                        {
-                                            return $this->redirect(['transcript',
-                                                                'personid' => $studentregistration->personid, 
-                                                                'studentregistrationid' => $studentregistrationid,                     
-                                                        ]);
-                                        }
+                                        return $this->redirect(['transcript',
+                                                            'personid' => $studentregistration->personid, 
+                                                            'studentregistrationid' => $studentregistrationid,                     
+                                                    ]);
                                     }
                                 }
                                 else
@@ -1537,6 +1540,8 @@
                 return $this->render('edit_cape_transcript', [
                         'course_record' => $course_record,
                         'course_summary' => $course_summary,
+                        'personid' => $studentregistration->personid, 
+                        'studentregistrationid' => $studentregistrationid,                     
                 ]);
             }
             if ($is_cape == false  && $course_record == true && $course_summary == true)
@@ -1544,6 +1549,8 @@
                 return $this->render('edit_associate_transcript', [
                         'course_record' => $course_record,
                         'course_summary' => $course_summary,
+                        'personid' => $studentregistration->personid, 
+                        'studentregistrationid' => $studentregistrationid,                     
                 ]);
             }            
         }
