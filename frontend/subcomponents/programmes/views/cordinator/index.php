@@ -1,5 +1,5 @@
 <?php
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
@@ -10,28 +10,34 @@
 ?>
 
 
-<div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/programmes/cordinators/index']);?>" title="Manage Co-ordinators">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/cordinator.png" alt="scroll avatar">
-                    <span class="custom_module_label" > Welcome to the Co-ordinator Management System</span> 
-                    <img src ="css/dist/img/header_images/cordinator.png" alt="scroll avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">  
-                <h1 class="custom_h1"><?=$this->title?></h1>
-                
-                 <p>
-                    <?php if (Yii::$app->user->can('powerCordinator')): ?>
-                        <?= Html::a(' Assign Co-ordinator', ['create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
-                    <?php endif; ?>
-                </p>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/programmes/cordinator/index']);?>" title="Transaction Item Home">
+        <h1>Welcome to the Co-ordinator Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
+     <div class="box-header with-border">
+         <span class="box-title"><?= $this->title?></span>
+         <?php if (Yii::$app->user->can('powerCordinator')): ?>
+            <?= Html::a(' Assign Co-ordinator', ['create'], ['class' => 'btn btn-info pull-right']) ?>
+        <?php endif;?>
+    </div>
+    
+    <div class=""box-body>
+        <table class="table table-hover">
+            <?php if($dataProvider == false):?>
+                <tr>
+                    <td>No co-ordinators have been assigned</td>
+                </tr>
+            <?php else:?>
                 <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'columns' => [
-//                            ['class' => 'yii\grid\SerialColumn'],
                             [
                                 'attribute' => 'title',
                                 'format' => 'text',
@@ -108,6 +114,7 @@
                         ],
                     ]); 
                ?>
-            </div>
-        </div>
+            <?php endif;?>    
+        </table>
+    </div>
 </div>

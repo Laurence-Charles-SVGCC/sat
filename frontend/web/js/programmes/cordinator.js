@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-
 function toggleCordinatorType()
 {
     //resets all dropdownlist selection to 0
@@ -15,23 +14,21 @@ function toggleCordinatorType()
     document.getElementById('cape_subject_field').selectedIndex=0;
     
     //hide all fields dependant of the election of 'cordinator-cordinatortypeid' field
-    document.getElementById("cordinator-department").style.display = "none"; 
-    document.getElementById("cordinator-programme").style.display = "none"; 
-    document.getElementById("cordinator-course").style.display = "none"; 
-    document.getElementById("cordinator-subject").style.display = "none"; 
+    document.getElementById("department_field").style.display = "none"; 
+    document.getElementById("academic_offering_field").style.display = "none"; 
+    document.getElementById("course_offering_field").style.display = "none"; 
+    document.getElementById("cape_subject_field").style.display = "none"; 
     
     var academic_year_index = document.getElementById("cordinator-academicyearid").selectedIndex
     if (academic_year_index==0)
     {
-        document.getElementById("cordinator-cordinatortype").style.display = "none"; 
+        document.getElementById("cordinator-cordinatortypeid").style.display = "none"; 
     }
     else
     {
-         document.getElementById("cordinator-cordinatortype").style.display = "block"; 
+         document.getElementById("cordinator-cordinatortypeid").style.display = "block"; 
     }
-    
 }
-
 
 
 function toggleDetails()
@@ -39,38 +36,38 @@ function toggleDetails()
     var cordinator_type_index = document.getElementById("cordinator-cordinatortypeid").selectedIndex
     if (cordinator_type_index==1)
     {
-        document.getElementById("cordinator-department").style.display = "block"; 
-        document.getElementById("cordinator-programme").style.display = "none"; 
-        document.getElementById("cordinator-course").style.display = "none"; 
-        document.getElementById("cordinator-subject").style.display = "none"; 
+        document.getElementById("department_field").style.display = "block"; 
+        document.getElementById("academic_offering_field").style.display = "none"; 
+        document.getElementById("course_offering_field").style.display = "none"; 
+        document.getElementById("cape_subject_field").style.display = "none"; 
     }
     else if(cordinator_type_index==2)
     {
-        document.getElementById("cordinator-department").style.display = "none"; 
-        document.getElementById("cordinator-programme").style.display = "block"; 
-        document.getElementById("cordinator-course").style.display = "none"; 
-        document.getElementById("cordinator-subject").style.display = "none";
+        document.getElementById("department_field").style.display = "none"; 
+        document.getElementById("academic_offering_field").style.display = "block"; 
+        document.getElementById("course_offering_field").style.display = "none"; 
+        document.getElementById("cape_subject_field").style.display = "none";
     }
     else if(cordinator_type_index==3)
     {
-        document.getElementById("cordinator-department").style.display = "none"; 
-        document.getElementById("cordinator-programme").style.display = "none"; 
-        document.getElementById("cordinator-course").style.display = "block"; 
-        document.getElementById("cordinator-subject").style.display = "none";
+        document.getElementById("department_field").style.display = "none"; 
+        document.getElementById("academic_offering_field").style.display = "none"; 
+        document.getElementById("course_offering_field").style.display = "block"; 
+        document.getElementById("cape_subject_field").style.display = "none";
     }
     else if(cordinator_type_index==4)
     {
-        document.getElementById("cordinator-department").style.display = "none"; 
-        document.getElementById("cordinator-programme").style.display = "none"; 
-        document.getElementById("cordinator-course").style.display = "none"; 
-        document.getElementById("cordinator-subject").style.display = "block";
+        document.getElementById("department_field").style.display = "none"; 
+        document.getElementById("academic_offering_field").style.display = "none"; 
+        document.getElementById("course_offering_field").style.display = "none"; 
+        document.getElementById("cape_subject_field").style.display = "block";
     }
     else
     {
-        document.getElementById("cordinator-department").style.display = "none"; 
-        document.getElementById("cordinator-programme").style.display = "none"; 
-        document.getElementById("cordinator-course").style.display = "none"; 
-        document.getElementById("cordinator-subject").style.display = "none"; 
+        document.getElementById("department_field").style.display = "none"; 
+        document.getElementById("academic_offering_field").style.display = "none"; 
+        document.getElementById("course_offering_field").style.display = "none"; 
+        document.getElementById("cape_subject_field").style.display = "none"; 
     }
 }
 
@@ -128,7 +125,11 @@ function respondToAcademicYearSelection(e)
             {
                 var listingtype = myarray.listingtype;
 
-               if (listingtype == 'academic_offering')
+                if (listingtype == 'department')
+                {
+                    var menu = document.getElementById('department_field');
+                }
+               else if (listingtype == 'academic_offering')
                 {
                     var menu = document.getElementById('academic_offering_field');
                 }

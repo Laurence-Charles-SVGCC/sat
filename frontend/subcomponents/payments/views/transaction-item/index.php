@@ -1,14 +1,14 @@
 <?php
-        use yii\widgets\Breadcrumbs;
-        use yii\helpers\Html;
-        use yii\grid\GridView;
-        use yii\helpers\Url;
+    use yii\widgets\Breadcrumbs;
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-        use frontend\models\TransactionItem;
-        use frontend\models\TransactionPurpose;
+    use frontend\models\TransactionItem;
+    use frontend\models\TransactionPurpose;
 
-        $this->title = 'Transaction Items';
-        $this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Transaction Items';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
