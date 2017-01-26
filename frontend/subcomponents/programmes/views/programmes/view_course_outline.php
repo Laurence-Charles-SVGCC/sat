@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 20/06/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
@@ -27,126 +22,113 @@
     ];
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Programmes">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/programme.png" alt="scroll avatar">
-                <span class="custom_module_label" > Welcome to the Programme Management System</span> 
-                <img src ="css/dist/img/header_images/programme.png" alt="scroll avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title?></h1>
-            
-            <br/>
-            <div style="width:90%; margin: 0 auto; font-size: 20px;">
-                
-                <?php 
-                    $form = ActiveForm::begin([
-                        'id' => 'add-course-outline',
-                        'options' => [
-                             'class' => 'form-layout',
-                        ]
-                    ]) 
-                ?>
-             
-                    <br/>
-                    <table class='table table-hover' style='width:100%; margin: 0 auto;'>
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Course Code</th>
-                            <td><?=$form->field($outline, 'code')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
 
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Course Name</th>
-                            <td><?=$form->field($outline, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Credits</th>
-                            <td><?=$form->field($outline, 'credits')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Level</th>
-                            <td><?=$form->field($outline, 'level')->label('')->dropDownList(($levels), ['prompt'=>'Select Course Level', 'disabled' => true]);?></td>
-                        </tr>
-                        
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Pre-requisites</th>
-                            <td><?=$form->field($outline, 'prerequisites')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Co-requisities</th>
-                            <td><?=$form->field($outline, 'corequisites')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-                       
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Semesters Delivered</th>
-                            <td><?=$form->field($outline, 'deliveryperiod')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Course Provider</th>
-                            <td><?=$form->field($outline, 'courseprovider')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Total Study Hours</th>
-                            <td><?=$form->field($outline, 'totalstudyhours')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 5, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Course Description</th>
-                            <td><?=$form->field($outline, 'description')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 7, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Course Rationale</th>
-                            <td><?=$form->field($outline, 'rational')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 7, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Learning Outcomes</th>
-                            <td><?=$form->field($outline, 'outcomes')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 10, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Content</th>
-                            <td><?=$form->field($outline, 'content')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 10, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Teaching Methodology</th>
-                            <td><?=$form->field($outline, 'teachingmethod')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 3, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Assessment Method</th>
-                            <td><?=$form->field($outline, 'assessmentmethod')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 12, 'disabled' => true]);?></td>
-                       </tr>
-
-                       <tr>
-                            <th style='width:30%; vertical-align:middle'>Learning Resources</th>
-                            <td><?=$form->field($outline, 'resources')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'rows' => 12, 'disabled' => true]);?></td>
-                       </tr>
-                    </table>
-                     
-                     <br/>
-                    <?= Html::a(' Back',
-                                ['programmes/programme-overview', 'programmecatalogid' => $programmecatalogid],
-                                ['class' => 'btn btn-danger glyphicon glyphicon-remove-circle', 'style' => 'width:20%; margin-left:80%']
-                                );
-                    ?>
-                <?php ActiveForm::end() ?>
-            </div>
-        </div>
-    </div>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
+        <h1>Welcome to the Withdrawal Management</h1>
+    </a>
 </div>
 
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Code:</label>
+                <?=$form->field($outline, 'code')->label('')->textInput(['disabled' => true, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+            </div>
+            
+             <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Name:</label>
+                 <?=$form->field($outline, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Credits:</label>
+                 <?=$form->field($outline, 'credits')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?>
+             </div>
+            
+             <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Level</label>
+                 <?=$form->field($outline, 'level')->label('')->dropDownList(($levels), ['prompt'=>'Select Course Level', 'disabled' => true, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+             </div>
 
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Pre-requisites:</label>
+                 <?=$form->field($outline, 'prerequisites')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?>
+             </div>, 
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Co-requisities:</label>
+                 <?=$form->field($outline, 'corequisites')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Semesters Delivered:</label>
+                 <td><?=$form->field($outline, 'deliveryperiod')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?></td>
+            </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Provider:</label>
+                 <?=$form->field($outline, 'courseprovider')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Total Study Hours:</label>
+                 <?=$form->field($outline, 'totalstudyhours')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 5, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Description:</label>
+                 <?=$form->field($outline, 'description')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 7, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Rationale:</label>
+                 <?=$form->field($outline, 'rational')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 7, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Learning Outcomes:</label>
+                 <?=$form->field($outline, 'outcomes')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 10, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Content:</label>
+                 <?=$form->field($outline, 'content')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 10, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Teaching Methodology:</label>
+                <?=$form->field($outline, 'teachingmethod')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 3, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Assessment Method:</label>
+                 <?=$form->field($outline, 'assessmentmethod')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 12, 'disabled' => true]);?>
+             </div>
+            
+            <div class="form-group">
+                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Learning Resources:</label>
+                 <?=$form->field($outline, 'resources')->label('')->textArea(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9', 'rows' => 12, 'disabled' => true]);?>
+             </div>
+        </div>
+   
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::a(' Back',
+                            ['programmes/programme-overview', 'programmecatalogid' => $programmecatalogid],
+                            ['class' => 'btn btn-danger']
+                            );
+                ?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

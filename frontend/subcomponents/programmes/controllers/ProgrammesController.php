@@ -99,7 +99,16 @@ class ProgrammesController extends Controller
                                 ->one()->abbreviation;
                         $programme_info['qualificationtype'] = $qualificationtype;
                         
-                        $programme_info['name'] = $programme->name;
+                        $p_name = $programme->name;
+                        if ($programme->programmetypeid == 1)
+                        {
+                            $programme_info['name'] = $programme->name . " (FT)";
+                        }
+                        if ($programme->programmetypeid == 2)
+                        {
+                            $programme_info['name'] = $programme->name . " (PT)";
+                        }
+                        
                         $programme_info['specialisation'] = $programme->specialisation;
                         
                         $department = Department::find()
@@ -174,7 +183,16 @@ class ProgrammesController extends Controller
                                 ->one()->abbreviation;
                         $programme_info['qualificationtype'] = $qualificationtype;
                         
-                        $programme_info['name'] = $programme->name;
+//                        $programme_info['name'] = $programme->name;
+                        $p_name = $programme->name;
+                        if ($programme->programmetypeid == 1)
+                        {
+                            $programme_info['name'] = $programme->name . " (FT)";
+                        }
+                        if ($programme->programmetypeid == 2)
+                        {
+                            $programme_info['name'] = $programme->name . " (PT)";
+                        }
                         $programme_info['specialisation'] = $programme->specialisation;
                         
                         $department = Department::find()

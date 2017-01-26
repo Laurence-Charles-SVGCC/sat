@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 17/06/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
@@ -16,7 +11,7 @@
     use frontend\models\PassFailType;
     use frontend\models\Semester;
     
-    $this->title = 'Update Course Information';
+    $this->title = 'Update Course';
     $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
     $this->params['breadcrumbs'][] = ['label' => 'Programme Overview', 'url' => Url::to(['programmes/programme-overview',
                                                             'programmecatalogid' => $programmecatalogid
@@ -31,101 +26,86 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Programmes">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/programme.png" alt="scroll avatar">
-                <span class="custom_module_label" > Welcome to the Programme Management System</span> 
-                <img src ="css/dist/img/header_images/programme.png" alt="scroll avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title?></h1>
-            
-            <br/>
-            <div style="width:80%; margin: 0 auto; font-size: 20px;">
-                
-                <?php 
-                    $form = ActiveForm::begin([
-                        'id' => 'edit-course',
-                        'options' => [
-                             'class' => 'form-layout',
-                        ]
-                    ]) 
-                ?>
-                    
-                    <?php if($iscape):?>
-                        <br/>
-                        <table class='table table-hover' style='width:100%; margin: 0 auto;'>
-                           <tr>
-                                <th style='width:30%; vertical-align:middle'>Course Code</th>
-                                    <td><?=$form->field($course, 'coursecode')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                           
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Course Name</th>
-                                    <td><?=$form->field($course, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                            
-                             <tr>
-                                <th style='width:30%; vertical-align:middle'>Coursework Weight</th>
-                                    <td><?=$form->field($course, 'courseworkweight')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                            
-                             <tr>
-                                <th style='width:30%; vertical-align:middle'>Exam Weight</th>
-                                    <td><?=$form->field($course, 'examweight')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                        </table> 
-                    <?php else:?>
-                        <br/>
-                        <table class='table table-hover' style='width:100%; margin: 0 auto;'>
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Course Type</th>
-                                <td><?=$form->field($course, 'coursetypeid')->label('')->dropDownList(ArrayHelper::map(CourseType::find()->all(), 'coursetypeid', 'name'), ['prompt'=>'Select Course Type']);?></td>
-                            </tr>
-                            
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Pass Criteria</th>
-                                <td><?=$form->field($course, 'passcriteriaid')->label('')->dropDownList(ArrayHelper::map(PassCriteria::find()->all(), 'passcriteriaid', 'description'), ['prompt'=>'Select Pass Criteria']);?></td>
-                            </tr>
-                            
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>GPA Consideration</th>
-                                <td><?=$form->field($course, 'passfailtypeid')->label('')->dropDownList(ArrayHelper::map(PassFailType::find()->all(), 'passfailtypeid', 'description'), ['prompt'=>'Select GPA Consideration']);?></td>
-                            </tr>
-                           
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Credits</th>
-                                    <td><?=$form->field($course, 'credits')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                            
-                             <tr>
-                                <th style='width:30%; vertical-align:middle'>Coursework Weight</th>
-                                    <td><?=$form->field($course, 'courseworkweight')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                            
-                             <tr>
-                                <th style='width:30%; vertical-align:middle'>Exam Weight</th>
-                                    <td><?=$form->field($course, 'examweight')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true]);?></td>
-                            </tr>
-                        </table> 
-                    <?php endif;?>
-                
-                     <br/>
-                    <?= Html::a(' Cancel',
-                                ['programmes/course-management','iscape' => $iscape,  'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid, 'code' => $code],
-                                ['class' => 'btn btn-danger glyphicon glyphicon-remove-circle', 'style' => 'width:20%; margin-left:55%;margin-right:2.5%']
-                                );
-                    ?>
-                    <?= Html::submitButton(' Save', ['class' => 'btn btn-success glyphicon glyphicon-ok', 'style' => 'width:20%;']);?>
-                    
-                <?php ActiveForm::end() ?>
-            </div>
-        </div>
-    </div>
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">
+        <h1>Welcome to the Programme Management System</h1>
+    </a>
 </div>
 
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body"> 
+            <?php if($iscape):?>
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Code:</label>
+                    <?=$form->field($course, 'coursecode')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Name:</label>
+                    <?=$form->field($course, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Coursework Weight:</label>
+                    <?=$form->field($course, 'courseworkweight')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Exam Weight:</label>
+                    <?=$form->field($course, 'examweight')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             
+            <?php else:?>
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Course Type:</label>
+                    <?=$form->field($course, 'coursetypeid')->label('')->dropDownList(ArrayHelper::map(CourseType::find()->all(), 'coursetypeid', 'name'), ['prompt'=>'Select Course Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+            
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Pass Criteria:</label>
+                    <?=$form->field($course, 'passcriteriaid')->label('')->dropDownList(ArrayHelper::map(PassCriteria::find()->all(), 'passcriteriaid', 'description'), ['prompt'=>'Select Pass Criteria', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+            
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">GPA Consideration</label>
+                    <?=$form->field($course, 'passfailtypeid')->label('')->dropDownList(ArrayHelper::map(PassFailType::find()->all(), 'passfailtypeid', 'description'), ['prompt'=>'Select GPA Consideration', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+            
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Credits:</label>
+                    <?=$form->field($course, 'credits')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Coursework Weight:</label>
+                    <?=$form->field($course, 'courseworkweight')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             
+                <div class="form-group">
+                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Exam Weight:</label>
+                    <?=$form->field($course, 'examweight')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                </div>
+             <?php endif;?>
+        </div>
+   
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel',['programmes/course-management','iscape' => $iscape,  'programmecatalogid' => $programmecatalogid, 'academicofferingid' => $academicofferingid, 'code' => $code],
+                                ['class' => 'btn btn-danger']);
+                    ?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

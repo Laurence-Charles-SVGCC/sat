@@ -1,5 +1,5 @@
 <?php
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -26,308 +26,305 @@
 ?>
 
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Manage Programmes">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/programme.png" alt="scroll avatar">
-                    <span class="custom_module_label" > Welcome to the Programme Management System</span> 
-                    <img src ="css/dist/img/header_images/programme.png" alt="scroll avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">  
-                <h1 class="custom_h1"><?=$programme_name?></h1>
-                <br/>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">
+        <h1>Welcome to the Programme Management System</h1>
+    </a>
+</div>
 
-                <div style = 'margin-left: 2.5%;'>
-                    <?php if($summary_dataProvider):?>
-                        <div id="summary-listing">
-                            <h2 class="custom_h2" style="margin-left:2.5%"><?= $summary_header?></h2>
-                            <div id="summary-export">
-                                <?= ExportMenu::widget([
-                                        'dataProvider' => $summary_dataProvider,
-                                        'columns' => [
-                                                [
-                                                    'attribute' => 'name',
-                                                    'format' => 'text',
-                                                    'label' => 'Programme/Subject'
-                                                ],
-                                                [
-                                                    'attribute' => 'accepted_males',
-                                                    'format' => 'text',
-                                                    'label' => 'Accepted Males'
-                                                ],
-                                                [
-                                                    'attribute' => 'accepted_females',
-                                                    'format' => 'text',
-                                                    'label' => 'Accepted Females'
-                                                ],
-                                                [
-                                                    'attribute' => 'accepted',
-                                                    'format' => 'text',
-                                                    'label' => 'Number of Students Accepted'
-                                                ],
-                                                [
-                                                    'attribute' => 'enrolled_males',
-                                                    'format' => 'text',
-                                                    'label' => 'Enrolled Males'
-                                                ],
-                                                [
-                                                    'attribute' => 'enrolled_females',
-                                                    'format' => 'text',
-                                                    'label' => 'Enrolled Females'
-                                                ],
-                                                [
-                                                    'attribute' => 'enrolled',
-                                                    'format' => 'text',
-                                                    'label' => 'Number of Students Enrolled'
-                                                ],
-                                            ],
-                                        'fontAwesome' => true,
-                                        'dropdownOptions' => [
-                                            'label' => 'Select Export Type',
-                                            'class' => 'btn btn-default'
-                                        ],
-                                        'asDropdown' => false,
-                                        'showColumnSelector' => false,
-                                        'filename' => $accepted_filename,
-                                        'exportConfig' => [
-                                            ExportMenu::FORMAT_TEXT => false,
-                                            ExportMenu::FORMAT_HTML => false,
-                                            ExportMenu::FORMAT_EXCEL => false,
-                                            ExportMenu::FORMAT_EXCEL_X => false
-                                        ],
-                                    ]);
-                                ?>
-                            </div>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/>
 
-                            <div id="summary-details">
-                                <?= GridView::widget([
-                                        'dataProvider' => $summary_dataProvider,
-                                        'options' => ['style' => 'width: 100%; margin: 0 auto;'],
-                                        'columns' => [
-                                            [
-                                                'attribute' => 'name',
-                                                'format' => 'text',
-                                                'label' => 'Programme/Subject'
-                                            ],
-                                            [
-                                                'attribute' => 'accepted_males',
-                                                'format' => 'text',
-                                                'label' => 'Accepted Males'
-                                            ],
-                                            [
-                                                'attribute' => 'accepted_females',
-                                                'format' => 'text',
-                                                'label' => 'Accepted Females'
-                                            ],
-                                            [
-                                                'attribute' => 'accepted',
-                                                'format' => 'text',
-                                                'label' => 'Number of Students Accepted'
-                                            ],
-                                            [
-                                                'attribute' => 'enrolled_males',
-                                                'format' => 'text',
-                                                'label' => 'Enrolled Males'
-                                            ],
-                                            [
-                                                'attribute' => 'enrolled_females',
-                                                'format' => 'text',
-                                                'label' => 'Enrolled Females'
-                                            ],
-                                            [
-                                                'attribute' => 'enrolled',
-                                                'format' => 'text',
-                                                'label' => 'Number of Students Enrolled'
-                                            ],
-                                        ],
-                                    ]); 
-                                ?>
-                            </div>
-                        </div>
-                    <?php endif;?>
+<h2 class="text-center"><?=$programme_name?></h2>
 
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div style="width:98%; margin: 0 auto;">
+        <?php if($summary_dataProvider):?>
+            <div id="summary-listing">
+                <h2><?= $summary_header?></h2>
+                <div id="summary-export">
+                    <?= ExportMenu::widget([
+                            'dataProvider' => $summary_dataProvider,
+                            'columns' => [
+                                    [
+                                        'attribute' => 'name',
+                                        'format' => 'text',
+                                        'label' => 'Programme/Subject'
+                                    ],
+                                    [
+                                        'attribute' => 'accepted_males',
+                                        'format' => 'text',
+                                        'label' => 'Accepted Males'
+                                    ],
+                                    [
+                                        'attribute' => 'accepted_females',
+                                        'format' => 'text',
+                                        'label' => 'Accepted Females'
+                                    ],
+                                    [
+                                        'attribute' => 'accepted',
+                                        'format' => 'text',
+                                        'label' => 'Number of Students Accepted'
+                                    ],
+                                    [
+                                        'attribute' => 'enrolled_males',
+                                        'format' => 'text',
+                                        'label' => 'Enrolled Males'
+                                    ],
+                                    [
+                                        'attribute' => 'enrolled_females',
+                                        'format' => 'text',
+                                        'label' => 'Enrolled Females'
+                                    ],
+                                    [
+                                        'attribute' => 'enrolled',
+                                        'format' => 'text',
+                                        'label' => 'Number of Students Enrolled'
+                                    ],
+                                ],
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+                            'filename' => $accepted_filename,
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false
+                            ],
+                        ]);
+                    ?>
+                </div>
 
-                    <?php if($accepted_dataProvider):?>
-                        <div id="accepted-listing">
-                            <h2 class="custom_h2" style="margin-left:2.5%"><?= $accepted_header?></h2>
-                            <div id="accepted-export">
-                                <?= ExportMenu::widget([
-                                        'dataProvider' => $accepted_dataProvider,
-                                        'columns' => [
-                                                [
-                                                    'attribute' => 'username',
-                                                    'format' => 'text',
-                                                    'label' => 'Applicant ID'
-                                                ],
-                                                [
-                                                    'attribute' => 'title',
-                                                    'format' => 'text',
-                                                    'label' => 'Title'
-                                                ],
-                                                [
-                                                    'attribute' => 'firstname',
-                                                    'format' => 'text',
-                                                    'label' => 'First Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'middlename',
-                                                    'format' => 'text',
-                                                    'label' => 'Middle Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'lastname',
-                                                    'format' => 'text',
-                                                    'label' => 'Last Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'programme',
-                                                    'format' => 'text',
-                                                    'label' => 'Programme'
-                                                ],
-                                            ],
-                                        'fontAwesome' => true,
-                                        'dropdownOptions' => [
-                                            'label' => 'Select Export Type',
-                                            'class' => 'btn btn-default'
-                                        ],
-                                        'asDropdown' => false,
-                                        'showColumnSelector' => false,
-                                        'filename' => $accepted_filename,
-                                        'exportConfig' => [
-                                            ExportMenu::FORMAT_TEXT => false,
-                                            ExportMenu::FORMAT_HTML => false,
-                                            ExportMenu::FORMAT_EXCEL => false,
-                                            ExportMenu::FORMAT_EXCEL_X => false
-                                        ],
-                                    ]);
-                                ?>
-                            </div>
-
-                            <div id="accepted-details">
-                                <?= GridView::widget([
-                                        'dataProvider' => $accepted_dataProvider,
-                                        'options' => ['style' => 'width: 100%; margin: 0 auto;'],
-                                        'columns' => [
-                                            [
-                                                'attribute' => 'username',
-                                                'format' => 'text',
-                                                'label' => 'Username'
-                                            ],
-                                            [
-                                                'attribute' => 'firstname',
-                                                'format' => 'text',
-                                                'label' => 'First Name'
-                                            ],
-                                            [
-                                                'attribute' => 'lastname',
-                                                'format' => 'text',
-                                                'label' => 'Last Name'
-                                            ],
-                                            [
-                                                'attribute' => 'programme',
-                                                'format' => 'text',
-                                                'label' => 'Programme'
-                                            ],
-                                        ],
-                                    ]); 
-                                ?>
-                            </div>
-                        </div>
-                    <?php endif;?>
-
-
-
-                    <?php if($enrolled_dataProvider):?>
-                        <div id="accepted-listing">
-                            <h2 class="custom_h2" style="margin-left:2.5%"><?= $enrolled_header?></h2>
-                            <div id="accepted-export">
-                                <?= ExportMenu::widget([
-                                        'dataProvider' => $enrolled_dataProvider,
-                                        'columns' => [
-                                                [
-                                                    'attribute' => 'username',
-                                                    'format' => 'text',
-                                                    'label' => 'Applicant ID'
-                                                ],
-                                                [
-                                                    'attribute' => 'title',
-                                                    'format' => 'text',
-                                                    'label' => 'Title'
-                                                ],
-                                                [
-                                                    'attribute' => 'firstname',
-                                                    'format' => 'text',
-                                                    'label' => 'First Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'middlename',
-                                                    'format' => 'text',
-                                                    'label' => 'Middle Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'lastname',
-                                                    'format' => 'text',
-                                                    'label' => 'Last Name'
-                                                ],
-                                                [
-                                                    'attribute' => 'programme',
-                                                    'format' => 'text',
-                                                    'label' => 'Programme'
-                                                ],
-                                            ],
-                                        'fontAwesome' => true,
-                                        'dropdownOptions' => [
-                                            'label' => 'Select Export Type',
-                                            'class' => 'btn btn-default'
-                                        ],
-                                        'asDropdown' => false,
-                                        'showColumnSelector' => false,
-                                        'filename' => $enrolled_filename,
-                                        'exportConfig' => [
-                                            ExportMenu::FORMAT_TEXT => false,
-                                            ExportMenu::FORMAT_HTML => false,
-                                            ExportMenu::FORMAT_EXCEL => false,
-                                            ExportMenu::FORMAT_EXCEL_X => false
-                                        ],
-                                    ]);
-                                ?>
-                            </div>
-
-                            <div id="enrolled-details">
-                                <?= GridView::widget([
-                                        'dataProvider' => $enrolled_dataProvider,
-                                        'options' => ['style' => 'width: 100%; margin: 0 auto;'],
-                                        'columns' => [
-                                            [
-                                                'attribute' => 'username',
-                                                'format' => 'text',
-                                                'label' => 'Username'
-                                            ],
-                                            [
-                                                'attribute' => 'firstname',
-                                                'format' => 'text',
-                                                'label' => 'First Name'
-                                            ],
-                                            [
-                                                'attribute' => 'lastname',
-                                                'format' => 'text',
-                                                'label' => 'Last Name'
-                                            ],
-                                            [
-                                                'attribute' => 'programme',
-                                                'format' => 'text',
-                                                'label' => 'Programme'
-                                            ],
-                                        ],
-                                    ]); 
-                                ?>
-                            </div>
-                        </div>
-                    <?php endif;?>
+                <div id="summary-details">
+                    <?= GridView::widget([
+                            'dataProvider' => $summary_dataProvider,
+                            'options' => [],
+                            'columns' => [
+                                [
+                                    'attribute' => 'name',
+                                    'format' => 'text',
+                                    'label' => 'Programme/Subject'
+                                ],
+                                [
+                                    'attribute' => 'accepted_males',
+                                    'format' => 'text',
+                                    'label' => 'Accepted Males'
+                                ],
+                                [
+                                    'attribute' => 'accepted_females',
+                                    'format' => 'text',
+                                    'label' => 'Accepted Females'
+                                ],
+                                [
+                                    'attribute' => 'accepted',
+                                    'format' => 'text',
+                                    'label' => 'Number of Students Accepted'
+                                ],
+                                [
+                                    'attribute' => 'enrolled_males',
+                                    'format' => 'text',
+                                    'label' => 'Enrolled Males'
+                                ],
+                                [
+                                    'attribute' => 'enrolled_females',
+                                    'format' => 'text',
+                                    'label' => 'Enrolled Females'
+                                ],
+                                [
+                                    'attribute' => 'enrolled',
+                                    'format' => 'text',
+                                    'label' => 'Number of Students Enrolled'
+                                ],
+                            ],
+                        ]); 
+                    ?>
                 </div>
             </div>
-        </div>
+        <?php endif;?>
+
+
+        <?php if($accepted_dataProvider):?>
+            <div id="accepted-listing">
+                <h2><?= $accepted_header?></h2>
+                <div id="accepted-export">
+                    <?= ExportMenu::widget([
+                            'dataProvider' => $accepted_dataProvider,
+                            'columns' => [
+                                    [
+                                        'attribute' => 'username',
+                                        'format' => 'text',
+                                        'label' => 'Applicant ID'
+                                    ],
+                                    [
+                                        'attribute' => 'title',
+                                        'format' => 'text',
+                                        'label' => 'Title'
+                                    ],
+                                    [
+                                        'attribute' => 'firstname',
+                                        'format' => 'text',
+                                        'label' => 'First Name'
+                                    ],
+                                    [
+                                        'attribute' => 'middlename',
+                                        'format' => 'text',
+                                        'label' => 'Middle Name'
+                                    ],
+                                    [
+                                        'attribute' => 'lastname',
+                                        'format' => 'text',
+                                        'label' => 'Last Name'
+                                    ],
+                                    [
+                                        'attribute' => 'programme',
+                                        'format' => 'text',
+                                        'label' => 'Programme'
+                                    ],
+                                ],
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+                            'filename' => $accepted_filename,
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false
+                            ],
+                        ]);
+                    ?>
+                </div>
+
+                <div id="accepted-details">
+                    <?= GridView::widget([
+                            'dataProvider' => $accepted_dataProvider,
+                            'options' => ['style' => 'width: 100%; margin: 0 auto;'],
+                            'columns' => [
+                                [
+                                    'attribute' => 'username',
+                                    'format' => 'text',
+                                    'label' => 'Username'
+                                ],
+                                [
+                                    'attribute' => 'firstname',
+                                    'format' => 'text',
+                                    'label' => 'First Name'
+                                ],
+                                [
+                                    'attribute' => 'lastname',
+                                    'format' => 'text',
+                                    'label' => 'Last Name'
+                                ],
+                                [
+                                    'attribute' => 'programme',
+                                    'format' => 'text',
+                                    'label' => 'Programme'
+                                ],
+                            ],
+                        ]); 
+                    ?>
+                </div>
+            </div>
+        <?php endif;?>
+
+
+
+        <?php if($enrolled_dataProvider):?>
+            <div id="accepted-listing">
+                <h2><?= $enrolled_header?></h2>
+                <div id="accepted-export">
+                    <?= ExportMenu::widget([
+                            'dataProvider' => $enrolled_dataProvider,
+                            'columns' => [
+                                    [
+                                        'attribute' => 'username',
+                                        'format' => 'text',
+                                        'label' => 'Applicant ID'
+                                    ],
+                                    [
+                                        'attribute' => 'title',
+                                        'format' => 'text',
+                                        'label' => 'Title'
+                                    ],
+                                    [
+                                        'attribute' => 'firstname',
+                                        'format' => 'text',
+                                        'label' => 'First Name'
+                                    ],
+                                    [
+                                        'attribute' => 'middlename',
+                                        'format' => 'text',
+                                        'label' => 'Middle Name'
+                                    ],
+                                    [
+                                        'attribute' => 'lastname',
+                                        'format' => 'text',
+                                        'label' => 'Last Name'
+                                    ],
+                                    [
+                                        'attribute' => 'programme',
+                                        'format' => 'text',
+                                        'label' => 'Programme'
+                                    ],
+                                ],
+                            'fontAwesome' => true,
+                            'dropdownOptions' => [
+                                'label' => 'Select Export Type',
+                                'class' => 'btn btn-default'
+                            ],
+                            'asDropdown' => false,
+                            'showColumnSelector' => false,
+                            'filename' => $enrolled_filename,
+                            'exportConfig' => [
+                                ExportMenu::FORMAT_TEXT => false,
+                                ExportMenu::FORMAT_HTML => false,
+                                ExportMenu::FORMAT_EXCEL => false,
+                                ExportMenu::FORMAT_EXCEL_X => false
+                            ],
+                        ]);
+                    ?>
+                </div>
+
+                <div id="enrolled-details">
+                    <?= GridView::widget([
+                            'dataProvider' => $enrolled_dataProvider,
+                            'options' => [],
+                            'columns' => [
+                                [
+                                    'attribute' => 'username',
+                                    'format' => 'text',
+                                    'label' => 'Username'
+                                ],
+                                [
+                                    'attribute' => 'firstname',
+                                    'format' => 'text',
+                                    'label' => 'First Name'
+                                ],
+                                [
+                                    'attribute' => 'lastname',
+                                    'format' => 'text',
+                                    'label' => 'Last Name'
+                                ],
+                                [
+                                    'attribute' => 'programme',
+                                    'format' => 'text',
+                                    'label' => 'Programme'
+                                ],
+                            ],
+                        ]); 
+                    ?>
+                </div>
+            </div>
+        <?php endif;?>
     </div>
+</div>
