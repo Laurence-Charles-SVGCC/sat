@@ -1,49 +1,59 @@
 <?php
+    use yii\widgets\Breadcrumbs;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
+    use yii\helpers\ArrayHelper;
 
-use yii\widgets\ActiveForm;
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
-use yii\helpers\ArrayHelper;
+    use frontend\models\ExaminationBody;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\Subject;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\ApplicationStatus;
+    use frontend\models\EmployeeDepartment;
+    use frontend\models\DocumentType;
 
-use frontend\models\ExaminationBody;
-use frontend\models\ExaminationProficiencyType;
-use frontend\models\Subject;
-use frontend\models\ExaminationGrade;
-use frontend\models\ApplicationStatus;
-use frontend\models\EmployeeDepartment;
-use frontend\models\DocumentType;
-
-
-$this->title = 'Successful Applicant  Review Dashboard';
-//$this->params['breadcrumbs'][] = ['label' => 'Manage Payments', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Successful Applicant  Review Dashboard';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Enroll Students', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="verify-applicants-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        <div class="custom_body">
-            <h2 class="custom_h1"><?= Html::encode($this->title) ?></h2><br/>
-            
-            <div style="margin-left:2.5%">
-                <p style="font-size:20px"><strong>Applicant ID:</strong><?= $username; ?></p><br/>
 
-                <p style="font-size:20px"><strong>Applicant Name:</strong><?= $applicant->title . ". " .  $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></p><br/>
 
-                <p style="font-size:20px"><strong>Programme Under Offer:</strong><?= $programme; ?></p><br/>
+<div class="page-header text-center no-padding">
+    <a href="<?=  Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful']);?>" title="Enroll Students">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title;?></span>
+    </div>
+
+    <?php $form = ActiveForm::begin(
+               ['action' => Url::to(['register-student/enroll-student', 'personid' => $personid, 'programme' => $programme]),]); 
+    ?>
+    
+        <?= Html::hiddenInput('applicantid', $applicant->applicantid); ?>
+        <?= Html::hiddenInput('offerid', $offerid); ?>
+        <?= Html::hiddenInput('applicationid', $applicationid); ?>
+    
+        <div class="box-body" style = "width:98%; margin: 0 auto;">
+            <div>
+                <p><strong>Applicant ID:</strong><?= $username; ?></p>
+                <p><strong>Applicant Name:</strong><?= $applicant->title . ". " .  $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></p>
+                <p><strong>Programme Under Offer:</strong><?= $programme; ?></p><br/>
             </div>
             
-            
             <fieldset>
-                <legend class="custom_h2" style="margin-left: 2.5%;">Submitted Applications</legend>
-                <table class='table table-condensed' style="width: 95%; margin: 0 auto;">
+                <legend><strong>Submitted Applications<strong></legend>
+                <table class='table table-condensed'>
                     <tr>
                         <th>Priority</th>
                         <th>Division</th>
@@ -65,57 +75,42 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>
                     <?php endfor; ?> 
                 </table>
-            </fieldset><br/><br/>
-            
+            </fieldset><br/>
             
             <fieldset>
-                <legend class="custom_h2" style="margin-left: 2.5%;">Registration Panel</legend>
-                <div style="margin-left: 2.5%;">
-                    <p class="general_text">
-                        Would you like to review the applicant's profile?
-                        <?= Html::radioList('review-applicant', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleProfileButton();']);?>
-                    </p>
+                <legend><strong>Review Information</strong></legend>
+                <p>
+                    Would you like to review the applicant's profile?
+                    <?= Html::radioList('review-applicant', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleProfileButton();']);?>
+                </p>
 
-                    <div id="profile-button" style="display:none">
-                        <a target="_blank" class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => 'pending-unlimited', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
-                    </div>
-
-                    <br/>
-                    <div>
-                        <?php 
-                            $form = ActiveForm::begin(
-                                [
-                                    'action' => Url::to(['register-student/enroll-student', 'personid' => $personid, 'programme' => $programme]),
-                                ]); 
+                <div id="profile-button" style="display:none">
+                    <a target="_blank" class="btn btn-info" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => 'pending-unlimited', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
+                </div>
+            </fieldset><br/>
+            
+            <fieldset>
+                <legend><strong>Enrollment Documents Checklist</strong></legend>
+                <p>Select from the following list which documents the applicant presented on enrollment.</p>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <?= Html::checkboxList('documents', 
+                                                $selections, 
+                                                ArrayHelper::map(DocumentType::findAll(['isdeleted' => 0]),
+                                                'documenttypeid', 
+                                                'name'));
                         ?>
-                        
-                            <?= Html::hiddenInput('applicantid', $applicant->applicantid); ?>
-                            <?= Html::hiddenInput('offerid', $offerid); ?>
-                            <?= Html::hiddenInput('applicationid', $applicationid); ?>
-                        
-                            <p class="general_text">Select from the following list which documents the applicant presented on enrollment.</p>
-                            <h3><strong>Enrollment Documents Checklist</strong></h3>
-                            <div class="row">
-                                <div class="col-lg-3">
-                                    <?= Html::checkboxList('documents', 
-                                                            $selections, 
-                                                            ArrayHelper::map(DocumentType::findAll(['isdeleted' => 0]),
-                                                            'documenttypeid', 
-                                                            'name'));
-                                    ?>
-                                </div>
-                            </div>
-
-                            <div class="form-group"><br/>
-                                <?php if (Yii::$app->user->can('registerStudent')): ?>
-                                    <?= Html::submitButton(' Enroll Student', ['class' => 'btn btn-lg btn-success pull-left', 'style' => 'width: 30%;']) ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
-            </fieldset><br/><br/>
+            </fieldset>
         </div>
-    </div>
+
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?php if (Yii::$app->user->can('registerStudent')): ?>
+                    <?= Html::submitButton(' Enroll Student', ['class' => 'btn  btn-success']) ?>
+                <?php endif; ?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
 </div>
-            
