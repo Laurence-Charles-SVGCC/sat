@@ -463,15 +463,14 @@
                         <?= $content ?>
                     </section>
                 </div>
-
-                
-                <footer class="footer">
-                    <div class="container">
+            </div>
+        
+            <footer class="footer">
+                <div class="container">
                     <p class="pull-left">&copy; SVGCC <?= date('Y') ?></p>
                     <p class="pull-right"><?= Yii::powered() ?></p>
-                    </div>
-                </footer>
-            </div>
+                </div>
+            </footer>
         <?php $this->endBody() ?>
     </body>
     </html>
