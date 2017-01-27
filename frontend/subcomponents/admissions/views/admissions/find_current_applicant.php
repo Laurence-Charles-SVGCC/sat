@@ -22,7 +22,6 @@
     </a>
 </div>
 
-
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:60%; margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>
     

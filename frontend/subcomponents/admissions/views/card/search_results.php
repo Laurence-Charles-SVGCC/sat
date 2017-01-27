@@ -6,12 +6,7 @@
 ?>
 
 <div class="card_search_results">
-    <?php 
-        ActiveForm::begin(
-            [
-                'action' => Url::to(['card/update-applicants'])
-            ]); 
-    ?>
+    <?php ActiveForm::begin(['action' => Url::to(['card/update-applicants'])]);?>
     
         <?= 
             GridView::widget([
@@ -67,8 +62,8 @@
         ?>
     
         <?php if (Yii::$app->user->can('updateStudentCard')): ?>
-            <?= Html::submitButton('Update Card Data', ['class' => 'btn btn-success pull-right', 'name' => 'register', 'style' => 'margin-right: 5%']); ?>
-        <?php endif; ?>    
+            <?= Html::submitButton('Update Card Data', ['class' => 'btn btn-success pull-right', 'name' => 'register', 'style' => 'margin-right: 5%']); ?><br/><br/><br/>  
+        <?php endif; ?>  
    <?php ActiveForm::end(); ?>
 </div>
 
