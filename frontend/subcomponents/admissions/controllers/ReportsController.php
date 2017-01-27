@@ -394,7 +394,7 @@ class ReportsController extends Controller {
      * 
      * Author: Laurence Charles
      * Date Created: 13/05/2016
-     * Date Last Modified: 13/05/2016
+     * Date Last Modified: 13/05/2016 | 26/01/2017
      */
     public function actionGenerateApplicantListing() 
     {
@@ -522,6 +522,12 @@ class ReportsController extends Controller {
                         ->groupby('applicant.personid')
                         ->orderBy('applicant.lastname ASC')
                         ->all();
+            }
+            else
+            {
+                Yii::$app->session->remove('programmeid');
+                Yii::$app->session->remove('criteria');
+                $applicants = array();
             }
 
 
