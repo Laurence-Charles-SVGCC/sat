@@ -41,9 +41,15 @@
 
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2]);?>" title="Rejection Management">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
+    <?php if ($rejectiontype == 1):?>
+        <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1]);?>" title="Rejection Management">
+            <h1>Welcome to the Admissions Management System</h1>
+        </a>
+    <?php elseif ($rejectiontype == 2):?>
+        <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2]);?>" title="Rejection Management">
+            <h1>Welcome to the Admissions Management System</h1>
+        </a>
+    <?php endif;?>
 </div>
 
 <section class="content-header">
@@ -160,7 +166,7 @@
             <?php endif;?>
         </div>
     <?php ActiveForm::end(); ?>
-</div>
+</div><br/>
 
 
 

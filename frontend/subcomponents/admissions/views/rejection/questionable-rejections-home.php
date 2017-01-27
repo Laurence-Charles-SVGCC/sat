@@ -5,17 +5,25 @@
     use kartik\grid\GridView;
     use kartik\export\ExportMenu;
 
-    $this->title = 'Questionable Rejection Dashboard';
+    $this->title = 'Questionable Rejections';
     
-    $this->params['breadcrumbs'][] = ['label' => 'Rejection Listing', 'url' => Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])];
+    if ($rejectiontype == 1)
+        $this->params['breadcrumbs'][] = ['label' => 'Rejection Listing', 'url' => Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1])];
+    elseif ($rejectiontype == 2)
+        $this->params['breadcrumbs'][] = ['label' => 'Rejection Listing', 'url' => Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2]);?>" title="Rejection Management">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
+    <?php if ($rejectiontype == 1):?>
+        <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1]);?>" title="Rejection Management">
+            <h1>Welcome to the Admissions Management System</h1>
+        </a>
+    <?php elseif ($rejectiontype == 2):?>
+        <a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2]);?>" title="Rejection Management">
+            <h1>Welcome to the Admissions Management System</h1>
+        </a>
+    <?php endif;?>
 </div>
 
 <section class="content-header">
