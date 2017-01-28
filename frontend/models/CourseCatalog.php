@@ -14,7 +14,10 @@ use Yii;
  * @property string $datelastupdated
  * @property integer $isactive
  * @property integer $isdeleted
- *
+ * @property integer $coursetypeid
+ * @property integer $passfailtypeid
+ *@property integer $credits
+ * 
  * @property CourseOffering[] $courseOfferings
  */
 class CourseCatalog extends \yii\db\ActiveRecord
@@ -35,7 +38,7 @@ class CourseCatalog extends \yii\db\ActiveRecord
         return [
             [['coursecode', 'name', 'datecreated', 'datelastupdated'], 'required'],
             [['datecreated', 'datelastupdated'], 'safe'],
-            [['isactive', 'isdeleted'], 'integer'],
+            [['isactive', 'isdeleted', 'coursetypeid', 'passfailtypeid', 'credits'], 'integer'],
             [['coursecode'], 'string', 'max' => 10],
             [['name'], 'string', 'max' => 100]
         ];
