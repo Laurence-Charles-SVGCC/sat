@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 11/04/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
@@ -33,128 +28,128 @@
     ];
     
     $this->title = 'Configure Package';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Packages', 'url' => Url::toRoute(['/subcomponents/admissions/package'])];
+    if ($recordid == true)
+        $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/admissions/package/initiate-package', 'recordid' => $recordid])];
+    else
+        $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/admissions/package'])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title?></h1>
-            
-            <br/>
-            <div style="width:95%; margin: 0 auto; font-size: 20px;">
-                <?php
-                    $form = ActiveForm::begin([
-                        'id' => 'configure-package',
-                        'options' => [
-//                                            'class' => 'form-layout'
-                        ],
-                    ]);
 
-                        echo "<br/>";
-                        echo "<table class='table table-hover' style='width:100%; margin: 0 auto;'>";   
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'> Package Name</th>";
-                                if ($name_changeable == true)
-                                    echo "<td>{$form->field($package, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                                else
-                                    echo "<td>{$form->field($package, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'readonly' => true])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Application Period</th>";
-                                echo "<td>{$form->field($package, 'applicationperiodid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period'])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Package Type</th>";
-                                echo "<td>{$form->field($package, 'packagetypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(PackageType::find()->all(), 'packagetypeid', 'description'), ['onchange' => 'showCommencementDate();', 'prompt'=>'Select Package Type'])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Commencement Date (if package is for full offers)</th>";
-                                echo "<td>{$form->field($package, 'commencementdate')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true, 'style'=>'display:none'])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Number of Attachments</th>";
-                                echo "<td>{$form->field($package, 'documentcount')->label('', ['class'=> 'form-label'])->dropDownList($document_count)}</td>";
-                            echo "</tr>"; 
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Email Title</th>";
-                                echo "<td>{$form->field($package, 'emailtitle')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Email Introductory Statements</th>";
-                                if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
-                                {
-                                    $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
-                                    echo "<td>";
-                                        echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
-                                    echo "</td>";
-                                }
-                                elseif ($package->packageid  && $package->packagetypeid==3)
-                                {
-                                    $text= date("l F j, Y") . "                                                                                                 "
-                                            . "                                                                                     Dear [firstname] [lastname],"
-                                            . "                                                                                                                 "
-                                            . "                                                                                      "  
-                                            . "We are pleased to inform you that you have been invited to interview for a place in the  "
-                                            . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
-                                    echo "<td>";
-                                        echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
-                                    echo "</td>";
-                                }        
-                                elseif ($package->packageid  && $package->packagetypeid==4)
-                                {
-                                    $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
-                                            . "                                                                                     Dear [firstname] [lastname],"
-                                            . "                                                                                                                 "
-                                            . "                                                                                      "  
-                                            . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
-                                            . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
-                                            . "Your Student Number is: [student number]";
-                                    echo "<td>";
-                                        echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px;  width:100%']);
-                                    echo "</td>";
-                                }
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Email Content</th>";
-                                echo "<td>{$form->field($package, 'emailcontent')->label('', ['class'=> 'form-label'])->textArea(['rows' => 50, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
-                            echo "</tr>"; 
-                            
-                             echo "<tr>";
-                                echo "<th style='width:25%; vertical-align:middle'>Disclaimer</th>";
-                                echo "<td>{$form->field($package, 'disclaimer')->label('', ['class'=> 'form-label'])->textArea(['rows' => 5, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
-                            echo "</tr>";
-                        echo "</table>"; 
-
-                        echo "<br/>";
-                        
-                        if ($recordid == true)
-                            echo Html::a(' Cancel',['package/initiate-package', 'recordid' => $recordid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-right', 'style' => 'width:20%; margin-left:5%;']);
-                        else      
-                            echo Html::a(' Cancel',['package/initiate-package'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-right', 'style' => 'width:20%; margin-left:5%;']);
-                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:20%;']);        
-                    ActiveForm::end();    
-                ?>
-                
-            </div>
-            
-            
-        </div>
-    </div>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/package']);?>" title="Manage Packages">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
 </div>
 
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Name:</label>
+               <?php if ($name_changeable == true):?>
+                    <?= $form->field($package, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+               <?php else:?>
+                    <?= $form->field($package, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+               <?php endif;?>
+               
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="applicationperiodid">Application Period:</label>
+               <?= $form->field($package, 'applicationperiodid')->label('')->dropDownList(ArrayHelper::map(ApplicationPeriod::periodIncomplete(), 'applicationperiodid', 'name'), ['prompt'=>'Select Application Period', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="packagetypeid">Package Type:</label>
+               <?= $form->field($package, 'packagetypeid')->label('')->dropDownList(ArrayHelper::map(PackageType::find()->all(), 'packagetypeid', 'description'), ['onchange' => 'showCommencementDate();', 'prompt'=>'Select Package Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="commencementdate">Commencement Date:</label>
+               <?= $form->field($package, 'commencementdate')->label('')->textInput(['style'=>'display:none', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="documentcount">Document Count:</label>
+               <?= $form->field($package, 'documentcount')->label('')->dropDownList($document_count, ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="emailtitle">Email Title:</label>
+               <?=$form->field($package, 'emailtitle')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email-intro">Email Introductory Statements:</label>
+               <?php 
+                    if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
+                    {
+                        $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
+                        echo "<span>";
+                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+                        echo "</span>";
+                    }
+                    elseif ($package->packageid  && $package->packagetypeid==3)
+                    {
+                        $text= date("l F j, Y") . "                                                                                                 "
+                                . "                                                                                     Dear [firstname] [lastname],"
+                                . "                                                                                                                 "
+                                . "                                                                                      "  
+                                . "We are pleased to inform you that you have been invited to interview for a place in the  "
+                                . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
+                        echo "<span>";
+                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+                        echo "</span>";
+                    }        
+                     elseif ($package->packageid  && $package->packagetypeid==4)
+                    {
+                        $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
+                                . "                                                                                     Dear [firstname] [lastname],"
+                                . "                                                                                                                 "
+                                . "                                                                                      "  
+                                . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
+                                . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
+                                . "Your Student Number is: [student number]";
+                        echo "<span>";
+                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+                        echo "</span>";
+                    }
+                ?>
+            </div><br/><br/><br/><br/>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="emailcontent">Email Content:</label>
+               <?= $form->field($package, 'emailcontent')->label('')->textArea(['rows' => 50, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="disclaimer">Disclaimer:</label>
+               <?= $form->field($package, 'disclaimer')->label('')->textArea(['rows' => 5, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                
+                <?php if ($recordid == true):?>
+                    <?= Html::a(' Cancel', ['package/initiate-package', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>
+                <?php else:?>
+                    <?= Html::a(' Cancel', ['package/initiate-package'], ['class' => 'btn  btn-danger']);?>
+                <?php endif;?>
+               
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

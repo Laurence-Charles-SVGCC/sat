@@ -14,6 +14,7 @@
     use yii\base\Model;
     use yii\helpers\FileHelper;
     use yii\web\UploadedFile;
+    use yii\data\ArrayDataProvider;
     
     use common\models\User;
     use frontend\models\Employee;
@@ -30,7 +31,9 @@
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\StudentRegistration;
-    
+    use frontend\models\AcademicYear;
+    use frontend\models\PackageType;
+    use frontend\models\PackageProgress;
     
     
     class PackageController extends Controller
@@ -44,62 +47,63 @@
          * 
          * Author: Laurence Charles
          * Date Created: 11/04/2016
-         * Date Last Modified: 11/04/2016
+         * Date Last Modified: 11/04/2016 | 27/01/2017
          */
         public function actionIndex()
         {
-            $packages = Package::getPackages();
+            $packages = Package::find()
+                    ->where(['packageprogressid' => 4 , 'isdeleted' => 0])
+                    ->all();
         
-            if (count($packages) == 0)
-                $container = false;
-            else
+            $dataProvider = array();
+            $container = array();
+            
+            if ($packages == true)
             {
-                $container = array();
-
-                $keys = array();
-                array_push($keys, 'id');
-                array_push($keys, 'package_name');
-                array_push($keys, 'period_name');
-                array_push($keys, 'division');
-                array_push($keys, 'year');
-                array_push($keys, 'type');
-                array_push($keys, 'progress');
-                array_push($keys, 'created_by');
-                array_push($keys, 'last_modified_by');
-                array_push($keys, 'start_date');
-                array_push($keys, 'completion_date');
-                array_push($keys, 'document_count');
-
-
                 foreach ($packages as $package)
                 {
-                    $values = array();
-                    $row = array();
-                    array_push($values, $package["id"]);
-                    array_push($values, $package["package_name"]);
-                    array_push($values, $package["period_name"]);
-                    array_push($values, $package["division"]);
-                    array_push($values, $package["year"]);
-                    array_push($values, $package["type"]);
-                    array_push($values, $package["progress"]);
-                    $created_by = Employee::getEmployeeName($package["created_by"]);
-                    array_push($values, $created_by);
-                    $modified_by = Employee::getEmployeeName($package["last_modified_by"]);
-                    array_push($values, $modified_by);
-                    array_push($values, $package["start_date"]);
-                    array_push($values, $package["completion_date"]);
-                    array_push($values, $package["document_count"]);
-                    $row = array_combine($keys, $values);
-                    array_push($container, $row);
+                    $data = array();
+                    $data['id'] = $package->packageid;
+                    $data['package_name'] = $package->name;
+                    $data['period_name'] = ApplicationPeriod::find()->where(['applicationperiodid' => $package->applicationperiodid])->one()->name;
+                    $division = Division::find()
+                            ->innerJoin('application_period', '`division`.`divisionid` = `application_period`.`divisionid`')
+                            ->where(['application_period.applicationperiodid' => $package->applicationperiodid])
+                            ->one()
+                            ->name;
+                    $data['division'] = $division;
+                    $year = AcademicYear::find()
+                            ->innerJoin('application_period', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+                            ->where(['application_period.applicationperiodid' => $package->applicationperiodid])
+                            ->one()
+                            ->title;
+                    $data['year'] = $year;
+                    $data['type'] = PackageType::find()->where(['packagetypeid' => $package->packagetypeid])->one()->name;
+                    $data['progress'] = PackageProgress::find()->where(['packageprogressid' => $package->packageprogressid])->one()->name;
+                    $data['created_by'] = Employee::getEmployeeName($package->createdby);
+                    $data['last_modified_by'] = Employee::getEmployeeName($package->lastmodifiedby);
+                    $data['start_date'] = $package->datestarted;
+                    $data['completion_date'] = $package->datecompleted;
+                    $data['document_count'] = $package->documentcount;
 
-                    $values = NULL;
-                    $row = NULL;
+                    $container[] = $data;
                 }
+                
+                $dataProvider = new ArrayDataProvider([
+                            'allModels' => $container,
+                            'pagination' => [
+                                'pageSize' => 15,
+                            ],
+                            'sort' => [
+                                'defaultOrder' => ['id' =>SORT_ASC],
+                                'attributes' => ['id', 'division'],
+                            ]
+                    ]); 
             }
-            
+         
             return $this->render('packages_summary', 
             [
-                'packages' => $container,
+                'dataProvider' => $dataProvider,
             ]);
         }
         
