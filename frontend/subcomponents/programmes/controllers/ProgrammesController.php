@@ -574,11 +574,11 @@ class ProgrammesController extends Controller
         else
         {
             $programme = ProgrammeCatalog::find()
-                    ->where(['programmecatalogid' => $programecatalogid])
+                    ->where(['programmecatalogid' => $programmecatalogid, 'isdeleted' => 0])
                     ->one();
             if(!$programme) //if programme catalog record was not found
             {
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrive programme record.');
+                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retreive programme record.');
                  return self::actionIndex();
             }
         }

@@ -53,27 +53,32 @@
     <?php $form = ActiveForm::begin();?>
         <div class="box-body"> 
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Name:</label>
-                <?= $form->field($programme, 'name')->label('', ['class'=> 'form-label'])->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='name'>Name:</label>
+                <?= $form->field($programme, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Specialisation:</label>
-                <?= $form->field($programme, 'specialisation')->label('', ['class'=> 'form-label'])->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='specialisation'>Specialisation:</label>
+                <?= $form->field($programme, 'specialisation')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Programme Type:</label>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='programmetypeid'>Programme Type:</label>
                 <?= $form->field($programme, 'programmetypeid')->label('')->dropDownList(ArrayHelper::map(IntentType::find()->all(), 'intenttypeid', 'description'), ['prompt'=>'Select Programme Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Qualification Type:</label>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='qualificationtypeid'>Qualification Type:</label>
                 <?= $form->field($programme, 'qualificationtypeid')->label('')->dropDownList(ArrayHelper::map(QualificationType::find()->all(), 'qualificationtypeid', 'name'), ['prompt'=>'Select Qualification Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
+             <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='examinationbodyid'>Examination Body:</label>
+                <?= $form->field($programme, 'examinationbodyid')->label('')->dropDownList(ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'), ['prompt'=>'Select Examination Body', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Examination Body:</label>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='departmentid'>Department:</label>
                 <?= $form->field($programme, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()
                                                                                                                                                                     ->where(['divisionid' => $divisionid])
                                                                                                                                                                     ->andWhere(['not', ['like', 'name', 'Administrative']])
@@ -88,7 +93,7 @@
             </div>
             
             <div class="form-group">
-                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">Duration:</label>
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='duration'>Duration:</label>
                 <?= $form->field($programme, 'duration')->label('', ['class'=> 'form-label'])->dropDownList($duration, ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
         </div>
