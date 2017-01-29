@@ -197,7 +197,8 @@ class AdmissionsController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-                    if($new_year->title == true   && $new_year->startdate == true  && $new_year->enddate == true)    //if new year record creation was necessary
+//                    if($new_year->title == true  &&  $new_year->title!= "default" && $new_year->startdate == true  && $new_year->enddate == true)    //if new year record creation was necessary
+                    if($new_year->title!= "default")    //if new year record creation was necessary
                     {
                         $applicantintentid = ApplicantIntent::getApplicantIntent($period->divisionid, $period->applicationperiodtypeid);
                         $new_year->applicantintentid =  $applicantintentid; 
@@ -325,7 +326,7 @@ class AdmissionsController extends Controller
         $cape_check = false;
         $none_cape_check = false;
         
-        $period = ApplicationPeriod::getIncompletePeriod();+
+        $period = ApplicationPeriod::getIncompletePeriod();
         $year = $period->academicyearid;
             
         $programmes = NULL;

@@ -20,20 +20,11 @@
         1 => '1 Year',
         2 => '2 Years',
     ];
-    
-    $divisions = [
-        '' => 'Select Division',
-        4 => 'DASGS',
-        5 => 'DTVE',
-        6 => 'DTE',
-        7 => 'DNE',
-    ];
 
     $this->title = 'Add New Programme';
     $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
-
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">

@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 11/02/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
@@ -18,84 +13,76 @@
     use frontend\models\ApplicationPeriodType;
   
     $this->title = 'Application Period Setup Step-2';
+   
+    $this->params['breadcrumbs'][] = ['label' => 'Period Listing', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Setup Dashboard', 'url' => Url::toRoute(['admissions/initiate-period', 'recordid' => $period->applicationperiodid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1">Configure Application Period</h1>
-            
-            <br/>
-            <div style="width:70%; margin: 0 auto; font-size: 20px;">
-                <?php
-                    $form = ActiveForm::begin([
-                        'id' => 'create-application-period-form',
-                        'options' => [
-//                                            'class' => 'form-layout'
-                        ],
-                    ]);
 
-                        echo "<br/>";
-                        echo "<table class='table table-hover' style='width:100%; margin: 0 auto;'>";
-                            echo "<tr>";
-                                echo "<th style='width:30%; vertical-align:middle'>Name</th>";
-                                    echo "<td>{$form->field($template_period, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                            echo "</tr>";
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/package']);?>" title="Manage Packages">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
 
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Division</th>";
-                                    echo "<td>{$form->field($template_period, 'divisionid')->label('')->dropDownList(ArrayHelper::map(Division::find()->where(['abbreviation' => ["DASGS", "DTVE", "DTE", "DNE"]])->all(), 'divisionid', 'abbreviation')/*, ['disabled' => true]*/)}</td>";
-                                echo "</tr>";
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Academic Year</th>";
-                                    echo "<td>{$form->field($template_period, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()->all(), 'academicyearid', 'title')/*, ['disabled' => true]*/)}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>On-Campus Start Date</th>";
-                                    echo "<td>{$form->field($template_period, 'onsitestartdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>On-Campus End Date</th>";
-                                    echo "<td>{$form->field($template_period, 'onsiteenddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Off-Campus Start Date</th>";
-                                    echo "<td>{$form->field($template_period, 'offsitestartdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Off-Campus End Date</th>";
-                                    echo "<td>{$form->field($template_period, 'offsiteenddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th>Type</th>";
-                                echo "<td>{$form->field($template_period, 'applicationperiodtypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(ApplicationPeriodType::find()->all(), 'applicationperiodtypeid', 'name')/*, ['disabled' => true]*/)}</td>";
-                            echo "</tr>";
-                        echo "</table>"; 
-
-                        echo "<br/>";
-                        echo Html::a(' Cancel',['admissions/initiate-period', 'recordid' => $period->applicationperiodid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);        
-                    ActiveForm::end();    
-                ?>
-                
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title">Configure Application Period</span>
+    </div>
+     
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+             <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Name:</label>
+                <?= $form->field($template_period, 'name')->label('', ['class'=> 'form-label'])->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="divisionid">Division:</label>
+                <?= $form->field($template_period, 'divisionid')->label('')->dropDownList(ArrayHelper::map(Division::find()->where(['abbreviation' => ["DASGS", "DTVE", "DTE", "DNE"]])->all(), 'divisionid', 'abbreviation'), ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
             
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="academicyearid">Academic Year:</label>
+                <?= $form->field($template_period, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::getAllAcademicYears(), 'academicyearid', 'title'), ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="onsitestartdate">On-campus Start Date:</label>
+                <?= $form->field($template_period, 'onsitestartdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="onsiteenddate">On-campus End Date:</label>
+                <?= $form->field($template_period, 'onsiteenddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="offsitestartdate">Off-campus Start Date:</label>
+                <?= $form->field($template_period, 'offsitestartdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="offsiteenddate">Off-campus End Date:</label>
+                <?= $form->field($template_period, 'offsiteenddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="applicationperiodtypeid">Full/PArt Time:</label>
+                <?= $form->field($template_period, 'applicationperiodtypeid')->label('')->dropDownList(ArrayHelper::map(ApplicationPeriodType::find()->all(), 'applicationperiodtypeid', 'name'), ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
         </div>
-    </div>
+        
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Update', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['admissions/initiate-period', 'recordid' => $period->applicationperiodid], ['class' => 'btn  btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
 </div>

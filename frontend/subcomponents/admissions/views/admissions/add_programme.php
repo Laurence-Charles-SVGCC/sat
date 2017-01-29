@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 11/02/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
@@ -26,91 +21,81 @@
         2 => '2 Years',
     ];
     
-    $divisions = [
-        '' => 'Select Division',
-        4 => 'DASGS',
-        5 => 'DTVE',
-        6 => 'DTE',
-        7 => 'DNE',
-    ];
-
-    $this->title = 'Add Programme to Insitution Catalog';
-    $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
+    $this->title = 'Add Programme to Institution Catalog';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Period Listing', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Setup Dashboard', 'url' => Url::toRoute(['admissions/initiate-period', 'recordid' => $period->applicationperiodid])];
+    $this->params['breadcrumbs'][] = ['label' => 'Assign Programmes', 'url' => Url::toRoute(['admissions/period-setup-step-three'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1">Add New Programme</h1>
-            
-            <br/>
-            <div style="width:80%; margin: 0 auto; font-size: 20px;">
-                <?php
-                    $form = ActiveForm::begin([
-                        'id' => 'add-programme-catalog-form',
-                        'options' => [
-                                            'class' => 'form-layout'
-                        ],
-                    ]);
-
-                        echo "<br/>";
-                        echo "<table class='table table-hover' style='width:100%; margin: 0 auto;'>";
-                            echo "<tr>";
-                                echo "<th style='width:30%; vertical-align:middle'>Name</th>";
-                                    echo "<td>{$form->field($programme, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='width:30%; vertical-align:middle'>Specialisation</th>";
-                                    echo "<td>{$form->field($programme, 'specialisation')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Programme Type</th>";
-                                echo "<td>{$form->field($programme, 'programmetypeid')->label('')->dropDownList(ArrayHelper::map(IntentType::find()->all(), 'intenttypeid', 'description'), ['prompt'=>'Select Programme Type'])}</td>";
-                            echo "</tr>";
-
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Qualification Type</th>";
-                                echo "<td>{$form->field($programme, 'qualificationtypeid')->label('')->dropDownList(ArrayHelper::map(QualificationType::find()->all(), 'qualificationtypeid', 'name'), ['prompt'=>'Select Qualification Type'])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Examination Body</th>";
-                                echo "<td>{$form->field($programme, 'examinationbodyid')->label('')->dropDownList(ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'abbreviation'), ['prompt'=>'Select Examination Body'])}</td>";
-                            echo "</tr>";
-                            
-                            echo "<tr>";
-                                echo "<th style='vertical-align:middle;'>Department</th>";
-                                echo "<td>{$form->field($programme, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()->where(['divisionid' => $period->divisionid])->andWhere(['not', ['like', 'name', 'Administrative']])->andWhere(['not', ['like', 'name', 'Library']])->andWhere(['not', ['like', 'name', 'Senior']])->andWhere(['not', ['like', 'name', 'CAPE']])->all(), 'departmentid', 'name'), ['prompt'=>'Select Department'])}</td>";
-                            echo "</tr>";
-                                
-                            echo "<tr>";
-                                echo "<th style='width:30%; vertical-align:middle'>Duration</th>";
-                                    echo "<td>{$form->field($programme, 'duration')->label('', ['class'=> 'form-label'])->dropDownList($duration)}</td>";
-                            echo "</tr>"; 
-                        echo "</table>"; 
-
-                        echo "<br/>";
-                        echo Html::a(' Cancel',['admissions/period-setup-step-three'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);        
-                    ActiveForm::end();    
-                ?>
-                
-            </div>
-            
-            
-        </div>
-    </div>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">
+        <h1>Welcome to the Programme Management System</h1>
+    </a>
 </div>
 
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body"> 
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='name'>Name:</label>
+                <?= $form->field($programme, 'name')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='specialisation'>Specialisation:</label>
+                <?= $form->field($programme, 'specialisation')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='programmetypeid'>Programme Type:</label>
+                <?= $form->field($programme, 'programmetypeid')->label('')->dropDownList(ArrayHelper::map(IntentType::find()->all(), 'intenttypeid', 'description'), ['prompt'=>'Select Programme Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='qualificationtypeid'>Qualification Type:</label>
+                <?= $form->field($programme, 'qualificationtypeid')->label('')->dropDownList(ArrayHelper::map(QualificationType::find()->all(), 'qualificationtypeid', 'name'), ['prompt'=>'Select Qualification Type', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+             <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='examinationbodyid'>Examination Body:</label>
+                <?= $form->field($programme, 'examinationbodyid')->label('')->dropDownList(ArrayHelper::map(ExaminationBody::find()->all(), 'examinationbodyid', 'name'), ['prompt'=>'Select Examination Body', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='departmentid'>Department:</label>
+                <?= $form->field($programme, 'departmentid')->label('')->dropDownList(ArrayHelper::map(Department::find()
+                                                                                                                                                                    ->where(['not', ['like', 'name', 'Administrative']])
+                                                                                                                                                                    ->andWhere(['not', ['like', 'name', 'Library']])
+                                                                                                                                                                    ->andWhere(['not', ['like', 'name', 'Senior']])
+                                                                                                                                                                    ->andWhere(['not', ['like', 'name', 'CAPE']])
+                                                                                                                                                                    ->all(), 'departmentid', 'name'),       
+                                                                                                                                                                    ['prompt'=>'Select Department',
+                                                                                                                                                                        'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9'
+                                                                                                                                                                    ]);
+                ?>
+            </div>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='duration'>Duration:</label>
+                <?= $form->field($programme, 'duration')->label('', ['class'=> 'form-label'])->dropDownList($duration, ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+        </div>
+   
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel',['admissions/period-setup-step-three'], ['class' => 'btn btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

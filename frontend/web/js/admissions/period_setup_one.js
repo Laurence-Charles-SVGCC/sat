@@ -181,8 +181,12 @@ function calculateApplicantIntent(e)
 
 function generateAcademicYearBlanks()
 {
-    document.getElementById("academicyear-title").value = "default";
-    document.getElementById("academicyear-startdate").value = "1990-01-01";
+    var title = document.getElementById("academicyear-title").value;
+    if (title == null || title == false || title == " ")
+    {
+        document.getElementById("academicyear-title").value = "default";
+        document.getElementById("academicyear-startdate").value = "1990-01-01";
+    }
 }
     
 

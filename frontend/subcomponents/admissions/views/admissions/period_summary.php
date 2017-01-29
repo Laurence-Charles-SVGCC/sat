@@ -23,7 +23,7 @@
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
-         <span class="box-title">Packages Summary</span>
+         <span class="box-title">Application Periods Listing</span>
          <?php if (ApplicationPeriod::hasIncompletePeriod() == true):?>
             <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/admissions/initiate-period', 'recordid' => ApplicationPeriod::getIncompletePeriodID()]);?> role="button"> Complete-Period-Setup</a>
         <?php else:?>
@@ -104,7 +104,7 @@
                          {
                                 if(Yii::$app->user->can('admissions')  && ApplicationPeriod::canSafeToDelete($row['id']) == true)
                                 {
-                                    echo Html::a(' Delete', 
+                                    return Html::a(' Delete', 
                                 ['application-period/delete-application-period', 'recordid' => $row["id"]], 
                                                         ['class' => 'btn btn-danger',
                                                             'data' => [

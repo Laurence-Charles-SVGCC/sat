@@ -261,4 +261,51 @@ class AcademicYear extends \yii\db\ActiveRecord
     }
     
     
+    
+    /**
+     * Returns an associative array is ['academicyearid'=>'title']
+     * that has students enrolled
+     * 
+     * @param type $employeetitle
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 29/01/2017
+     * Date Last Modified: 29/01/2017
+     */
+    public static function getAllAcademicYears()
+    {
+         $years = AcademicYear::find()
+                    ->where(['isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+         
+        $listing = array();
+         
+        foreach ($years as $year) 
+        {
+            $combined = array();
+            $keys = array();
+            $values = array();
+            array_push($keys, "academicyearid");
+            array_push($keys, "title");
+            $year_id = strval($year->academicyearid);
+            
+            $year_title = $year->title;
+            $year_division = ApplicantIntent::find()
+                    ->where(['applicantintentid' => $year->applicantintentid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()->name;
+            $year_label = strval($year_title . " (" . $year_division . ")");
+            
+            array_push($values, $year_id);
+            array_push($values, $year_label);
+            $combined = array_combine($keys, $values);
+            array_push($listing, $combined);
+            $combined = NULL;
+            $keys = NULL;
+            $values = NULL;
+        }
+        return $listing;
+    }
+    
+    
 }
