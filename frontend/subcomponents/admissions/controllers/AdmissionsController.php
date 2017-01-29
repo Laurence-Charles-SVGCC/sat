@@ -25,8 +25,10 @@
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\ApplicationPeriodType;
+    use frontend\models\ApplicationPeriodStatus;
     use frontend\models\Division;
     use frontend\models\ApplicantIntent;
+    use frontend\models\Employee;
 
 class AdmissionsController extends Controller
 {
@@ -44,62 +46,67 @@ class AdmissionsController extends Controller
      * 
      * Author: Laurence Charles
      * Date Created: 08/02/2016
-     * Date Last Modified: 08/02/2016 | 23/02/2016
+     * Date Last Modified: 08/02/2016 | 23/02/2016 | 28/01/2017
      */
     public function actionManageApplicationPeriod()
     {
-        $periods = ApplicationPeriod::getAllApplicationPeriods();
+        $application_periods = ApplicationPeriod::find()
+                ->where(['isactive' => 1,  'isdeleted' => 0])
+                ->all();
         
-        if (count($periods) == 0)
-            $container = false;
-        else
+        $dataProvider = array();
+        $records = array();
+
+        if ($application_periods  == true)
         {
-            $container = array();
-
-            $keys = array();
-            array_push($keys, 'id');
-            array_push($keys, 'name');
-            array_push($keys, 'division');
-            array_push($keys, 'year');
-            array_push($keys, 'onsitestartdate');
-            array_push($keys, 'onsiteenddate');
-            array_push($keys, 'offsitestartdate');
-            array_push($keys, 'offsiteenddate');
-            array_push($keys, 'type');
-            array_push($keys, 'status');
-            array_push($keys, 'creator');
-            array_push($keys, 'iscomplete');
-            
-
-            foreach ($periods as $period)
+            foreach ($application_periods  as $application_period)
             {
-                $values = array();
-                $row = array();
-                
-                array_push($values, $period["id"]);
-                array_push($values, $period["name"]);
-                array_push($values, $period["division"]);
-                array_push($values, $period["year"]);
-                array_push($values, $period["onsitestartdate"]);
-                array_push($values, $period["onsiteenddate"]);
-                array_push($values, $period["offsitestartdate"]);
-                array_push($values, $period["offsiteenddate"]);
-                array_push($values, $period["type"]);
-                array_push($values, $period["status"]);
-                $creator = $period["emptitle"] . ". " . $period["firstname"] . " " . $period["lastname"];       
-                array_push($values, $creator);
-                array_push($values, $period["iscomplete"]);
-                $row = array_combine($keys, $values);
-                array_push($container, $row);
-
-                $values = NULL;
-                $row = NULL;
+                $data = array();
+                $data['id'] = $application_period->applicationperiodid;
+                $data['status'] = ApplicationPeriodStatus::find()
+                        ->where(['applicationperiodstatusid' =>$application_period->applicationperiodstatusid, 'isdeleted' => 0])
+                        ->one()
+                        ->name;
+                $data['type'] = ApplicationPeriodType::find()
+                        ->where(['applicationperiodtypeid' =>$application_period->applicationperiodtypeid, 'isdeleted' => 0])
+                        ->one()
+                        ->name;
+                $division = Division::find()
+                        ->where(['divisionid' =>  $application_period->divisionid])
+                        ->one()
+                        ->abbreviation;
+                $data['division'] = $division;
+                $data['created_by'] = Employee::getEmployeeName($application_period->personid);
+                $year = AcademicYear::find()
+                        ->where(['academicyearid' => $application_period->academicyearid])
+                        ->one()
+                        ->title;
+                $data['year'] = $year;
+                $data['name'] =  $application_period->name;
+                $data['onsitestartdate'] =  $application_period->onsitestartdate;
+                $data['onsiteenddate'] =  $application_period->onsiteenddate;
+                $data['offsitestartdate'] =  $application_period->offsitestartdate;
+                $data['offsiteenddate'] =  $application_period->offsiteenddate;
+                $data['iscomplete'] =  $application_period->iscomplete == 1 ? "Excluded" : "Selectable";
+               
+                $records[] = $data;
             }
+
+            $dataProvider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => 15,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['id' =>SORT_ASC],
+                            'attributes' => ['id', 'division'],
+                        ]
+                ]); 
         }
-        
+              
         return $this->render('period_summary', 
             [
-                'periods' => $container,
+                'dataProvider' => $dataProvider,
             ]);
     }
     

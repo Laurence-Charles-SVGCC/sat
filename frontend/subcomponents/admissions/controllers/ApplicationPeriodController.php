@@ -154,7 +154,6 @@ class ApplicationPeriodController extends Controller
                             ]);
         }
 
-
         if ($post_data = Yii::$app->request->post())
         {
             $load_flag = false;

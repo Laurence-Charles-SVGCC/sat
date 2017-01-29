@@ -34,7 +34,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/admissions/package']);?>" title="Manage Packages">
         <h1>Welcome to the Admissions Management System</h1>
