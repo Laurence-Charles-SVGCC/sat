@@ -25,7 +25,7 @@
     use frontend\models\Application;
     use frontend\models\ApplicationCapesubject;
     use frontend\models\ApplicationPeriodType;
-    use frontend\models\ApplicationPeriodStatus;
+    use frontend\models\ApplicationperiodStatus;
     use frontend\models\Division;
     use frontend\models\ApplicantIntent;
     use frontend\models\Employee;
@@ -63,7 +63,7 @@ class AdmissionsController extends Controller
             {
                 $data = array();
                 $data['id'] = $application_period->applicationperiodid;
-                $data['status'] = ApplicationPeriodStatus::find()
+                $data['status'] = ApplicationperiodStatus::find()
                         ->where(['applicationperiodstatusid' =>$application_period->applicationperiodstatusid, 'isdeleted' => 0])
                         ->one()
                         ->name;
