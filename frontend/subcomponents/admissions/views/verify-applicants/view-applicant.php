@@ -1,22 +1,38 @@
 <?php
+    use yii\widgets\Breadcrumbs;
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
+    use common\models\User;
+    use frontend\models\Applicant;
 
-use common\models\User;
-use frontend\models\Applicant;
-
-/* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = $type . ' Applicants';
-$this->params['breadcrumbs'][] = ['label' => $centrename, 
-    'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
-$this->params['breadcrumbs'][] = $this->title;
-
+    $this->title = $type . ' Applicants';
+    $this->params['breadcrumbs'][] = ['label' => $centrename, 
+        'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants']);?>" title="Process Applications">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/>
+
+<h2 class="text-center"><?= $this->title;?></h2>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
+    <div class="box-body">
+        
+    </div>
+</div>
+
+
+
 <div class="verify-applicants-index">
     <div class = "custom_wrapper">
         <div class="custom_header">
