@@ -1606,7 +1606,8 @@ class Applicant extends \yii\db\ActiveRecord
                 
                 else
                 {
-                    $exceptions[] = $apps[$key];
+//                    $exceptions[] = $apps[$key];
+                    $exceptions++;
                 }
             }
             

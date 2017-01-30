@@ -1685,7 +1685,7 @@
                                 if ($teaching == false)
                                 {
                                     $val = "Applicant has not indicated that they have prior teaching experience";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
