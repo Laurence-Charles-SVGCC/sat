@@ -329,7 +329,8 @@ class PaymentsController extends Controller
      */
     public function actionViewUserTransactions($id, $status)
     {
-        $dataProvider = NULL;
+        $data = array();
+        $dataProvider = array();
         $heading = NULL;
         
         $transactions = Transaction::find()
@@ -339,7 +340,7 @@ class PaymentsController extends Controller
         
         if ($transactions)
         {
-            $data = array();
+            
             foreach ($transactions as $transaction)
             {
                 $trans = array();
@@ -402,13 +403,13 @@ class PaymentsController extends Controller
                 $trans['can_delete'] = Transaction::canDelete($transaction->transactionid);
                 $data[] = $trans;
             }
-            
-            $dataProvider = new ArrayDataProvider([
+        }
+        
+        $dataProvider = new ArrayDataProvider([
                 'allModels' => $data,
                 'pagination' => ['pageSize' => 10],
                 'sort' => [ 'attributes' => ['academic_year', 'purpose', 'transaction_item'],],
             ]);
-        }
         
         return $this->render('view_transactions', 
             [

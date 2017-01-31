@@ -113,7 +113,9 @@
          */
         public function actionStudentProfile($personid, $studentregistrationid)
         {
-            $finances_dataProvider = NULL;
+            $finances_dataProvider = array();
+            $finances_data = array();
+            
             $applicant= Applicant::findByPersonID($personid);
             $student = Student::getStudent($personid);
             $user = User::getUser($personid);
@@ -125,7 +127,6 @@
         
             if ($transactions)
             {
-                $finances_data = array();
                 foreach ($transactions as $transaction)
                 {
                     $trans = array();
@@ -175,13 +176,12 @@
                     $trans['balance'] = $transaction->totaldue - $transaction->paymentamount;
                     $finances_data[] = $trans;
                 }
-
-                $finances_dataProvider = new ArrayDataProvider([
+            }
+            $finances_dataProvider = new ArrayDataProvider([
                     'allModels' => $finances_data,
                     'pagination' => ['pageSize' => 10],
                     'sort' => [ 'attributes' => ['academic_year', 'purpose', 'transaction_item'],],
                 ]);
-            }
             
             
             $phone = Phone::find()
