@@ -108,7 +108,7 @@
     
     $this->title = 'Student Profile';
     
-    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
