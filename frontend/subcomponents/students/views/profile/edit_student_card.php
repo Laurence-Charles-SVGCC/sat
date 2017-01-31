@@ -1,34 +1,36 @@
 <?php
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
-    $this->title = 'Update Student Card Information';
+    $this->title = 'Update IDCard Status';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $reg->studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                <span class="custom_module_label">Welcome to the Student Management System</span> 
-                <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
-            </a>    
-        </div>
 
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title?></h1>
-            <br/>
-            <?php 
-                ActiveForm::begin(
-                    [
-                        'options' => [
-                            'style' => 'margin: 0 auto; width: 80%'
-                        ],
-                    ]); 
-            ?>
-                <table class='table table-hover' style='margin: 0 auto;'>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?=$this->title?></span>
+    </div>
+    
+    <?php $form = ActiveForm::begin(); ?>
+        <div class="box-body">
+            <table class='table table-hover' style='margin: 0 auto;'>
                     <tr>
                         <th>Institution ID Criteria</th>
                         <th>Status</th>
@@ -36,39 +38,24 @@
 
                     <tr>
                         <td>Picture Received</td>
-                        <td>
-                            <?=Html::Checkbox('receivedpicture',
-                                            $reg->receivedpicture,
-                                            ['label' => NULL]);
-                            ?>
-                        </td>
+                        <td><?=Html::Checkbox('receivedpicture', $reg->receivedpicture,  ['label' => NULL]);?></td>
                     </tr>
 
                     <tr>
                         <td>Card Ready</td>
-                        <td>
-                            <?=Html::Checkbox('cardready',
-                                            $reg->cardready,
-                                            ['label' => NULL]);
-                            ?>
-                        </td>
+                        <td><?=Html::Checkbox('cardready', $reg->cardready, ['label' => NULL]);?></td>
                     </tr>
 
                     <tr>
                         <td>Card Delivered</td>
-                        <td>
-                            <?=Html::Checkbox('cardcollected',
-                                            $reg->cardcollected,
-                                            ['label' => NULL]);
-                            ?>
-                        </td>
+                        <td><?=Html::Checkbox('cardcollected',$reg->cardcollected, ['label' => NULL]);?></td>
                     </tr>
-                </table><br/>
-                
-                <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $reg->studentregistrationid], ['class' => 'btn btn-block btn-danger glyphicon glyphicon-remove-circle pull-right', 'style' => 'width:15%; margin-left:5%;'])?>
-                <?= Html::submitButton(' Update', ['class' => 'btn btn-success glyphicon glyphicon-ok pull-right', 'style' => 'margin-right: 5%; width:15%; ']); ?>
-           <?php ActiveForm::end(); ?>
+                </table>
         </div>
-    </div>
-</div>
 
+        <div class="box-footer pull-right">
+            <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+            <?= Html::a(' Cancel', ['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $reg->studentregistrationid], ['class' => 'btn  btn-danger']);?>
+        </div>
+    <?php ActiveForm::end(); ?>   
+</div>
