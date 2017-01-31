@@ -1,10 +1,5 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 05/01/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -13,63 +8,54 @@
     use frontend\models\Event;
     use frontend\models\EventType;
     
-    $this->title = "Create" . $event_type . "Record"
+    $this->title = "Create" . $event_type . "Record";
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/event.png" alt="Find A Student">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/event.png" alt="student avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">  
-                <h1 class="custom_h1"><?=$this->title?></h1>
-                
-                </br>
-                <?php
-                    $form = ActiveForm::begin([
-                                'id' => 'edit-event',
-                                'options' => [
-                                    'style' => 'width:90%; margin: 0 auto;',
-                                ],
-                            ]);
-                ?>
-                    <fieldset>
-                        <legend class="custom_h2">Configure Record</legend>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
 
-                        <table class='table table-hover'>
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Summary</th>
-                                <td><?=$form->field($event_details, 'summary')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5])?></td>
-                            </tr>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Description</th>
-                                <td><?=$form->field($event_details, 'description')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 15])?></td>
-                            </tr>
-
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>Start Date</th>
-                                <td><?=$form->field($event_details, 'startdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
-                            </tr>
-
-                            <tr>
-                                <th style='width:30%; vertical-align:middle'>End Date</th>
-                                <td><?=$form->field($event_details, 'enddate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
-                            </tr>
-                        </table><br/>
-                    </fieldset>
-
-                   
-                    <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                    <?= Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
-
-                <?php Activeform::end()?>
-               
-            </div>
-        </div>
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?=$this->title?></span>
     </div>
+    
+    <?php $form = ActiveForm::begin(); ?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="summary">Summary:</label>
+               <?=$form->field($event_details, 'summary')->label('')->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"])?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="description">Description:</label>
+               <?=$form->field($event_details, 'description')->label('')->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 15, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"])?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="startdate">Start Date:</label>
+               <?=$form->field($event_details, 'startdate')->label(false)->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]])?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="enddate">End Date:</label>
+               <?=$form->field($event_details, 'enddate')->label(false)->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]])?>
+           </div>
+        </div>
+
+        <div class="box-footer pull-right">
+            <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+            <?= Html::a(' Cancel', ['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn  btn-danger']);?>
+        </div>
+    <?php ActiveForm::end(); ?>   
+</div>
