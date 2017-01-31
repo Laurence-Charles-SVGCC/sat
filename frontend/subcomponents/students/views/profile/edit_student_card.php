@@ -31,26 +31,26 @@
     <?php $form = ActiveForm::begin(); ?>
         <div class="box-body">
             <table class='table table-hover' style='margin: 0 auto;'>
-                    <tr>
-                        <th>Institution ID Criteria</th>
-                        <th>Status</th>
-                    </tr>
+                <tr>
+                    <th>Institution ID Criteria</th>
+                    <th>Status</th>
+                </tr>
 
-                    <tr>
-                        <td>Picture Received</td>
-                        <td><?=Html::Checkbox('receivedpicture', $reg->receivedpicture,  ['label' => NULL]);?></td>
-                    </tr>
+                <tr>
+                    <td>Picture Received</td>
+                    <td><?=Html::Checkbox('receivedpicture', $reg->receivedpicture,  ['label' => NULL]);?></td>
+                </tr>
 
-                    <tr>
-                        <td>Card Ready</td>
-                        <td><?=Html::Checkbox('cardready', $reg->cardready, ['label' => NULL]);?></td>
-                    </tr>
+                <tr>
+                    <td>Card Ready</td>
+                    <td><?=Html::Checkbox('cardready', $reg->cardready, ['label' => NULL]);?></td>
+                </tr>
 
-                    <tr>
-                        <td>Card Delivered</td>
-                        <td><?=Html::Checkbox('cardcollected',$reg->cardcollected, ['label' => NULL]);?></td>
-                    </tr>
-                </table>
+                <tr>
+                    <td>Card Delivered</td>
+                    <td><?=Html::Checkbox('cardcollected',$reg->cardcollected, ['label' => NULL]);?></td>
+                </tr>
+            </table>
         </div>
 
         <div class="box-footer pull-right">
