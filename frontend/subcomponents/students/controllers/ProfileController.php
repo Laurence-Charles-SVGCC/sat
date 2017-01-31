@@ -88,11 +88,14 @@
     use frontend\models\DocumentType;
     use frontend\models\Employee;
     use frontend\models\ApplicantDeferral;
+    use frontend\models\TransactionType;
+    use frontend\models\PaymentMethod;
+    use frontend\models\TransactionItem;
+    use frontend\models\Transaction;
     
     
     class ProfileController extends Controller
     {
-
         public function actionIndex()
         {
             return $this->render('index');
@@ -110,9 +113,76 @@
          */
         public function actionStudentProfile($personid, $studentregistrationid)
         {
+            $finances_dataProvider = NULL;
             $applicant= Applicant::findByPersonID($personid);
             $student = Student::getStudent($personid);
             $user = User::getUser($personid);
+            
+            $transactions = Transaction::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->orderBy('transactionsummaryid')
+                ->all();
+        
+            if ($transactions)
+            {
+                $finances_data = array();
+                foreach ($transactions as $transaction)
+                {
+                    $trans = array();
+                    $semester = $transaction->getSemester()->one();
+                    if ($semester == false)
+                        continue;
+
+                    $summary = $transaction->getTransactionsummary()->one();
+                     if ($summary == false)
+                        continue;
+
+                    $payment_method = PaymentMethod::find()
+                            ->where(['paymentmethodid' => $transaction->paymentmethodid, 'isdeleted' => 0])
+                            ->one();
+                    if ($payment_method == false)
+                        continue;
+
+                    $transaction_type = TransactionType::find()
+                            ->where(['transactiontypeid' => $transaction->transactiontypeid, 'isdeleted' => 0])
+                            ->one();
+                    if ($transaction_type == false)
+                        continue;
+
+                    $transaction_item = TransactionItem::find()
+                            ->where(['transactionitemid' => $transaction->transactionitemid, 'isdeleted' => 0])
+                            ->one();
+                    if ($transaction_item == false)
+                        continue;
+
+                    $trans['id'] = $user->personid;
+                    $trans['username'] = $user->username;
+                    $trans['fullname'] = $student->firstname . " " . $student->lastname;
+                    $trans['transactionid'] = $transaction->transactionid;
+                    $trans['summaryid'] = $summary->transactionsummaryid;
+                    $trans['payment_method'] = $payment_method->name;
+                    $trans['type'] = $transaction_type->name;
+                    $trans['date_paid'] = $transaction->paydate;
+                    $trans['transaction_item'] = $transaction_item->name;
+                    $trans['receiptnumber'] =  $transaction->receiptnumber;
+                    $trans['comments'] =  $transaction->comments ?  $transaction->comments: "N/A";
+                    $trans['transaction_group_id'] = $transaction->transactionsummaryid;
+                    $trans['academic_year'] = $semester->getAcademicyear()->one()->title;
+                    $trans['academic_semester'] = $semester->title;
+                    $trans['purpose'] = $transaction->getTransactionpurpose()->one()->name;
+                    $trans['total_due'] =  $transaction->totaldue;
+                    $trans['total_paid'] =  $transaction->paymentamount;
+                    $trans['balance'] = $transaction->totaldue - $transaction->paymentamount;
+                    $finances_data[] = $trans;
+                }
+
+                $finances_dataProvider = new ArrayDataProvider([
+                    'allModels' => $finances_data,
+                    'pagination' => ['pageSize' => 10],
+                    'sort' => [ 'attributes' => ['academic_year', 'purpose', 'transaction_item'],],
+                ]);
+            }
+            
             
             $phone = Phone::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -572,6 +642,9 @@
             
             return $this->render('student_profile',[
                 'studentregistrationid' => $studentregistrationid,
+                
+                //finances tab
+                'finances_dataProvider' => $finances_dataProvider,
                 
                 //models for profile tab
                 'user' =>  $user,

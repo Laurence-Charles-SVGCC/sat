@@ -3221,15 +3221,83 @@
                 </div>
             </div>
 
-            <div role="tabpanel" class="tab-pane fade" id="finances"> 
-                <h2 class="custom_h2">Finances</h2>
-                </br>
-                <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
+                    
+            <div role="tabpanel" class="tab-pane fade" id="finances">
+                <br/>
+                <div class="panel panel-default" style="width:100%; margin: 0 auto;">
+                    <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Transaction History</div>
+                        <?= GridView::widget([
+                                'dataProvider' => $finances_dataProvider,
+                                'columns' => [
+                                    [
+                                        'attribute' => 'receiptnumber',
+                                        'format' => 'text',
+                                        'label' => 'Receipt#'
+                                    ],
+                                    [
+                                        'attribute' => 'date_paid',
+                                        'format' => 'text',
+                                        'label' => 'Date'
+                                    ],
+                                    [
+                                        'attribute' => 'transaction_item',
+                                        'format' => 'text',
+                                        'label' => 'Item'
+                                    ],
+                                    [
+                                        'attribute' => 'purpose',
+                                        'format' => 'text',
+                                        'label' => 'Purpose'
+                                    ],
+                                    [
+                                        'attribute' => 'payment_method',
+                                        'format' => 'text',
+                                        'label' => 'Method'
+                                    ],
+                                    [
+                                        'attribute' => 'type',
+                                        'format' => 'text',
+                                        'label' => 'Full/Part'
+                                    ],
+                                    [
+                                        'attribute' => 'academic_year',
+                                        'format' => 'text',
+                                        'label' => 'Year'
+                                    ],
+                                    [
+                                        'attribute' => 'academic_semester',
+                                        'format' => 'text',
+                                        'label' => 'Sem.'
+                                    ],
+                                    [
+                                        'attribute' => 'comments',
+                                        'format' => 'text',
+                                        'label' => 'Notes'
+                                    ],
+                                    [
+                                        'attribute' => 'total_due',
+                                        'format' => 'text',
+                                        'label' => 'Due'
+                                    ],        
+                                    [
+                                        'attribute' => 'total_paid',
+                                        'format' => 'text',
+                                        'label' => 'Paid'
+                                    ],
+                                    [
+                                        'attribute' => 'balance',
+                                        'format' => 'text',
+                                        'label' => 'Balance'
+                                    ],
+                                ],
+                            ]); 
+                    ?>
+                </div>
             </div>
 
             <?php if(Yii::$app->user->can('viewLibraryData')):?>
+                <br/>
                 <div role="tabpanel" class="tab-pane fade" id="library"> 
-                    <h2 class="custom_h2">Librarian Notes</h2>
                     <div class="panel panel-default" style="width:100%; margin: 0 auto;">
                         <?php if(Yii::$app->user->can('studentCard')):?>
                             <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Student Card Information
@@ -3277,7 +3345,6 @@
              <?php endif;?>       
 
             <div role="tabpanel" class="tab-pane fade" id="student_log"> 
-
                 </br>
                 <div class="panel panel-default" style="width:100%; margin: 0 auto;">
                     <?php if(Yii::$app->user->can('manageEvents')):?>
@@ -3340,9 +3407,9 @@
 
                     <?php endif;?>
                 </div>
-
             </div>
 
+             
             <div role="tabpanel" class="tab-pane fade" id="attendance"> 
                 <h2 class="custom_h2">Attendance</h2>
                 </br>

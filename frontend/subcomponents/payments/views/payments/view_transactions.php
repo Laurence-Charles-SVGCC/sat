@@ -66,7 +66,7 @@
     <div class =" box-body">
         <table class="table table-hover">
             <?= GridView::widget([
-                    'dataProvider' => $dataProvider,
+                    'dataProvider' => $finances_dataProvider,
                     'columns' => [
                         [
                             'format' => 'html',
