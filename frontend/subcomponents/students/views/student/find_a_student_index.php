@@ -15,7 +15,7 @@
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find  A Student">
-        <h1>Welcome to the Admissions Management System</h1>
+        <h1>Welcome to the Student Management System</h1>
     </a>
 </div>
 

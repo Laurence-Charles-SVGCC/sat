@@ -115,7 +115,7 @@
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find  A Student">
-        <h1>Welcome to the Admissions Management System</h1>
+        <h1>Welcome to the Student Management System</h1>
     </a>
 </div>
 
@@ -3485,7 +3485,7 @@
 
                         <table class='table table-hover' style='margin: 0 auto;'>
                             <?php if (!$awards):?>
-                                <h3>Student is not a member of any club</h3>
+                            <p><strong>Student is not a member of any club</strong></p>
                             <?php else:?>
                                 <?php foreach ($clubDetails as $detail):?>
                                     <tr>

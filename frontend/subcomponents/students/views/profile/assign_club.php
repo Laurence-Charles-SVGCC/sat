@@ -1,9 +1,5 @@
 <?php
-
-/* 
- * Date Created: 28/04/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -13,69 +9,63 @@
     use frontend\models\Club;
     use frontend\models\ClubRole;
     
-    $this->title = $action .' Club Membership';
+    $this->title = ucwords($action) .' Club Membership';
+    
+     $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+     $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">  
-                <h1 class="custom_h1"><?=$this->title?></h1>
 
-                <?php
-                    $form = ActiveForm::begin([
-                                'id' => 'assign_club',
-                                'options' => [
-                                    'style' => 'width:90%; margin: 0 auto;',
-                                ],
-                            ]);
-                ?>
-                    <table class='table table-hover' style='margin: 0 auto;'>
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Club Name</th>
-                            <?php if ($action == "create"):?>
-                                <td><?=$form->field($club_assignment, 'clubid')->label('')->dropDownList(ArrayHelper::map(Club::find()->all(), 'clubid', 'name'), ['prompt'=>'Select Club']) ?></td>
-                            <?php else:?>
-                                <td><?=$form->field($club_assignment, 'clubid')->label('')->dropDownList(ArrayHelper::map(Club::find()->all(), 'clubid', 'name'), ['prompt'=>'Select Club', 'readonly' => true, 'disabled' => true]) ?></td>
-                            <?php endif;?>
-                        </tr>
-                        
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Club Role</th>
-                            <?php if ($action == "create"):?>
-                                <td><?=$form->field($club_assignment, 'clubroleid')->label('')->dropDownList(ArrayHelper::map(ClubRole::find()->all(), 'clubroleid', 'name'), ['prompt'=>'Select Member Role']) ?></td>
-                            <?php else:?>
-                                <td><?=$form->field($club_assignment, 'clubroleid')->label('')->dropDownList(ArrayHelper::map(ClubRole::find()->all(), 'clubroleid', 'name'), ['prompt'=>'Select Member Role', 'readonly' => true, 'disabled' => true]) ?></td>
-                            <?php endif;?>
-                        </tr>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find  A Student">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
 
-                        
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Comments</th>
-                            <td><?=$form->field($club_assignment, 'comments')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5])?></td>
-                        </tr>
-                        
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Date Joined</th>
-                            <td><?=$form->field($club_assignment, 'appointmentdate')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
-                        </tr>
-                    </table><br/>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                    <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                    <?= Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
-
-                <?php ActiveForm::end(); ?>   
-            </div>
-        </div>
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?=$this->title?></span>
     </div>
+    
+     <?php $form = ActiveForm::begin(); ?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="clubid">Club Name:</label>
+               <?php if ($action == "create"):?>
+                    <?=$form->field($club_assignment, 'clubid')->label('')->dropDownList(ArrayHelper::map(Club::find()->all(), 'clubid', 'name'), ['prompt'=>'Select Club', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               <?php else:?>
+                    <?=$form->field($club_assignment, 'clubid')->label('')->dropDownList(ArrayHelper::map(Club::find()->all(), 'clubid', 'name'), ['prompt'=>'Select Club', 'readonly' => true, 'disabled' => true, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               <?php endif;?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="clubroleid">Club Role:</label>
+               <?php if ($action == "create"):?>
+                    <?=$form->field($club_assignment, 'clubroleid')->label('')->dropDownList(ArrayHelper::map(ClubRole::find()->all(), 'clubroleid', 'name'), ['prompt'=>'Select Member Role', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+              <?php else:?>
+                    <?=$form->field($club_assignment, 'clubroleid')->label('')->dropDownList(ArrayHelper::map(ClubRole::find()->all(), 'clubroleid', 'name'), ['prompt'=>'Select Member Role', 'readonly' => true, 'disabled' => true, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+              <?php endif;?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="comments">Comments:</label>
+               <?=$form->field($club_assignment, 'comments')->label('')->textArea(['maxlength' => true, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9", 'rows' => 5])?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="appointmentdate">Date Joined:</label>
+               <?=$form->field($club_assignment, 'appointmentdate')->label(false)->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]])?>
+           </div>
+        </div>
 
-
-
-
+        <div class="box-footer pull-right">
+            <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+            <?= Html::a(' Cancel', ['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn  btn-danger']);?>
+        </div>
+    <?php ActiveForm::end(); ?>   
+</div>
