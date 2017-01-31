@@ -1,9 +1,5 @@
 <?php
-
-/* 
- * Date Created: 28/04/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -13,53 +9,49 @@
     use frontend\models\Award;
     use frontend\models\PersonAward;
     
-    $this->title = $action .' Award';
+    $this->title = ucwords($action) .' Award';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">  
-                <h1 class="custom_h1"><?=$this->title?></h1>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
 
-                <?php
-                    $form = ActiveForm::begin([
-                                'id' => 'assign_award',
-                                'options' => [
-                                    'style' => 'width:90%; margin: 0 auto;',
-                                ],
-                            ]);
-                ?>
-                    <table class='table table-hover' style='margin: 0 auto;'>
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Award</th>
-                            <td><?=$form->field($award_assignment, 'awardid')->label('')->dropDownList(ArrayHelper::map(Award::find()->all(), 'awardid', 'name'), ['prompt'=>'Select Award']) ?></td>
-                        </tr>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Comments</th>
-                            <td><?=$form->field($award_assignment, 'comments')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5])?></td>
-                        </tr>
-                        
-                        <tr>
-                            <th style='width:30%; vertical-align:middle'>Date Awarded</th>
-                            <td><?=$form->field($award_assignment, 'dateawarded')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])?></td>
-                        </tr>
-                    </table><br/>
-
-                    <?= Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                    <?= Html::submitButton(' Save', ['class' => 'glyphicon glyphicon-ok btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
-
-                <?php ActiveForm::end(); ?>   
-            </div>
-        </div>
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?=$this->title?></span>
     </div>
+    
+    <?php $form = ActiveForm::begin(); ?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="awardid">Award:</label>
+               <?=$form->field($award_assignment, 'awardid')->label('')->dropDownList(ArrayHelper::map(Award::find()->all(), 'awardid', 'name'), ['prompt'=>'Select Award', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="comments">Comments:</label>
+               <?=$form->field($award_assignment, 'comments')->label('', ['class'=> 'form-label'])->textArea(['maxlength' => true, 'style' => 'vertical-align:middle', 'rows' => 5, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"])?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="dateawarded">Date Awarded:</label>
+               <?=$form->field($award_assignment, 'dateawarded')->label('')->widget(DatePicker::className(), ['inline' => false, 'template' => '{addon}{input}', 'clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]])?>
+           </div>
+        </div>
 
-
+        <div class="box-footer pull-right">
+            <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+            <?= Html::a(' Cancel', ['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn  btn-danger']);?>
+        </div>
+    <?php ActiveForm::end(); ?>   
+</div>

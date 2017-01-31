@@ -1048,7 +1048,7 @@
 
                             if($medicalConditions == false)
                             {
-                                echo "<h3>Student has not indicated any medical conditions</h3>";
+                                echo "<p><strong>Student has not indicated any medical conditions</strong></p>";
                             }
                             else
                             {
@@ -3428,7 +3428,7 @@
 
                         <table class='table table-hover' style='margin: 0 auto;'>
                             <?php if (!$awards):?>
-                                <h3>Student has not been a recipient of any awards</h3>
+                            <p><strong>Student has not been a recipient of any awards.</strong></p>
                             <?php else:?>
                                 <?php foreach ($awardDetails as $detail):?>
                                     <tr>

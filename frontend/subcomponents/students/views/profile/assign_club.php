@@ -11,8 +11,8 @@
     
     $this->title = ucwords($action) .' Club Membership';
     
-     $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
-     $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -52,7 +52,7 @@
               <?php endif;?>
            </div>
             
-            <div class="form-group">
+           <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="comments">Comments:</label>
                <?=$form->field($club_assignment, 'comments')->label('')->textArea(['maxlength' => true, "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9", 'rows' => 5])?>
            </div>
