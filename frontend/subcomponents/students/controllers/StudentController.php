@@ -47,11 +47,20 @@ use frontend\models\ApplicantDeferral;
 class StudentController extends Controller
 {
     
+    /**
+     * Redirect to Find-A-Student page
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: ??
+     * Date LAst Modified: 31/01/2017
+     */
     public function actionIndex()
     {
-//        return $this->render('index');
         return $this->redirect(['student/find-a-student']);
     }
+    
+    
     
     public function actionManageStudents()
     {
