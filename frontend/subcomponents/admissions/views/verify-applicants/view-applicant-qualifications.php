@@ -37,7 +37,10 @@
 
 <section class="content-header">
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
+</section><br/><br/>
+
+
+<a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => 'pending-unlimited', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
 
 <h2 class="text-center"><?= $this->title;?></h2>
 
@@ -72,7 +75,7 @@
                      <?= Html::radioList('verify-documents-choice', 'No', ['Yes' => 'Yes' , 'No' => 'No'], ['class'=> 'form_field', 'onclick'=> 'checkVerifyDocuments();']);?>
                     <?=Html::a(' Verify Documents', 
                             ['verify-applicants/view-documents', 'applicantid' => $applicantid,  'centrename' => $centrename, 'cseccentreid' => $centreid, 'type' => $type, 'personid' => $applicant->personid], 
-                            ['class' => 'btn btn-info glyphicon glyphicon-plus pull-left',
+                            ['class' => 'btn btn-info pull-left',
                                 'style' => 'display: none;',
                                 'id' => 'go-to-verify-documents'
                             ]);?> 
@@ -239,24 +242,16 @@
                     </table><br/>
                 </fieldset> 
 
-                <div style="margin-left:2.5%;" class="form-group">
-                    <a class="btn btn-success glyphicon glyphicon-user" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => 'pending-unlimited', 'applicantusername' => $username]);?> role="button">  View Applicant Profile</a>
-
+                <div class="form-group pull-right">
                     <!--<a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>-->
 
                     <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0): ?>
-                        <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();']) ?>
+                        <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();', 'style' => 'margin-right: 20px']) ?>
                     <?php endif; ?>
 
                     <?php if (PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == false):?>
                         <?= Html::submitButton('Save All As Verified', ['class' => 'btn btn-primary', 'name'=>'verified', 'onclick'=>'generateQualificationBlanks();']) ?>
                     <?php endif; ?>
-
-                    <!--<?php if (Yii::$app->user->can('addCertificate')): ?>
-                        <?= Html::submitButton('Add Related Certificates', ['class' => 'btn btn-primary', 'name'=>'add_more']) ?>
-                        <?= Html::dropDownList('add_more_value', 1, 
-                                array(1=>'1', 2=>'2', 3=>'3', 4=>'4', 5=>'5', 6=>'6', 7=>'7', 8=>'8', 9=>'9', 10=>'10')) ?>
-                    <?php endif; ?>-->
                 </div> 
 
 
@@ -324,7 +319,7 @@
                                 <?php
                                     $add_role = Url::toRoute(['/subcomponents/admissions/verify-applicants/external-qualifications', 'personid' => $applicant->personid, 'action' => 'add', 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' => $type]);
                                 ?>
-                                <td><a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=$add_role?> role="button"> Add External Qualifications</a></td>
+                                <td><a class="btn btn-success pull-right" href=<?=$add_role?> role="button"> Add External Qualifications</a></td>
                              </tr>
                         </table> 
                     </fieldset>
@@ -333,9 +328,9 @@
 
 
                 <?php if(PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid) == true) :?>
-                    <br/><fieldset style="margin-left:2.5%; width:95%">
+                    <br/><fieldset>
                         <legend><strong>Post Secondary Degree</strong></legend>
-                        <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
+                        <table id="post_secondary_qualification_table" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Name of Degree</th>
@@ -382,7 +377,7 @@
                         </table><br/>
                     </fieldset>
                 <?php else:?>
-                    <br/><fieldset style="margin-left:2.5%; width:95%">
+                    <br/><fieldset style="width:100%">
                         <legend><strong>Post Secondary Degree</strong></legend>
                         <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
                             <tr>
@@ -393,7 +388,7 @@
                                 <?php
                                     $add_role = Url::toRoute(['/subcomponents/admissions/verify-applicants/add-post-secondary-qualification', 'personid' => $applicant->personid, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' => $type]);
                                 ?>
-                                <td><a class="btn btn-success glyphicon glyphicon-plus pull-right" href=<?=$add_role?> role="button"> Add Post Secondary Qualification</a></td>
+                                <td><a class="btn btn-success pull-right" href=<?=$add_role?> role="button"> Add Post Secondary Qualification</a></td>
                              </tr>
                         </table> 
                     </fieldset>
@@ -411,7 +406,7 @@
 
 
         <br/><br/>
-        <fieldset style="margin-left:2.5%; width:95%">
+        <fieldset style="width:100%">
             <legend><strong>Certification Additions</strong></legend>
             <p style="font-size:18px;"><strong>If you wish to add additional certificates; use the dynamic form found below.</strong></p>
             <?php 

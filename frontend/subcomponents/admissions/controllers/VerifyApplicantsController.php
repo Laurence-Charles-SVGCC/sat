@@ -1345,6 +1345,10 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
         
+        $applicant = Applicant::find()
+                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
         $qualification = new PostSecondaryQualification();
 
         if ($post_data = Yii::$app->request->post())
@@ -1397,6 +1401,10 @@ class VerifyApplicantsController extends \yii\web\Controller
         return $this->render('add_post_secondary_qualificiation', [
             'user' => $user,
             'qualification' => $qualification,
+            'applicant' => $applicant,
+            'centrename' => $centrename,
+            'centreid' => $cseccentreid,  
+            'type' => $type
         ]); 
     }
     
@@ -1523,12 +1531,16 @@ class VerifyApplicantsController extends \yii\web\Controller
      * 
      * Author: Laurence Charles
      * Date Created: 03/04/2016
-     * Date Last Modified: 03/04/2016
+     * Date Last Modified: 03/04/2016 | 30/01/2017
      */
     public function actionExternalQualifications($personid, $action, $cseccentreid, $centrename, $type)
     {
         $user = User::find()
                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $applicant = Applicant::find()
+                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
         
         if ($action == "delete")
@@ -1603,6 +1615,10 @@ class VerifyApplicantsController extends \yii\web\Controller
         return $this->render('external_qualification', [
             'user' => $user,
             'qualification' => $qualification,
+            'applicant' => $applicant,
+            'centrename' => $centrename,
+            'centreid' => $cseccentreid,  
+            'type' => $type
         ]); 
     }
     
