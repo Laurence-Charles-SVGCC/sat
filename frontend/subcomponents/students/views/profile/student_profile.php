@@ -1179,7 +1179,7 @@
                                 echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                     if(Yii::$app->user->can('verifyApplicants'))
                                     {
-                                        $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                        $add_role = Url::toRoute(['/subcomponents/students/profile/general-work-experience', 'personid' => $applicant->personid]);
                                         echo "<tr>";
                                             echo "<td></td>";
                                             echo "<td></td>";
@@ -1269,7 +1269,7 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/students/profile/nurse-work-experience', 'personid' => $applicant->personid]);
                                                     echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                                 }
                                             echo "</tr>";
@@ -1279,8 +1279,8 @@
                                 {
                                     $val = "";
                                     $nurseworkexperienceid = $nursing->nurseworkexperienceid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/students/profile/nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
+                                    $deletelink = Url::toRoute(['/subcomponents/students/profile/delete-nurse-work-experience', 'personid' => $applicant->personid, 'recordid' => $nurseworkexperienceid]);
 
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Experience Details";
                                         if(Yii::$app->user->can('verifyApplicants'))
@@ -1321,7 +1321,7 @@
                                         echo "<tr>";
                                             if(NurseWorkExperience::getNurseWorkExperience($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-work-experience', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/students/profile/nurse-work-experience', 'personid' => $applicant->personid]);
                                                 echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                             }
                                         echo "</tr>";
@@ -1345,7 +1345,7 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/students/profile/nurse-certification', 'personid' => $applicant->personid]);
                                                     echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                                 }
                                             echo "</tr>";
@@ -1357,8 +1357,8 @@
                                     {
                                         $val = $i+1;
                                         $nursecertificationid = $nursing_certification[$i]->nursepriorcertificationid;
-                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
-                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+                                        $editlink = Url::toRoute(['/subcomponents/students/profile/nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
+                                        $deletelink = Url::toRoute(['/subcomponents/students/profile/delete-nurse-certification', 'personid' => $applicant->personid, 'recordid' => $nursecertificationid]);
 
                                         echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val";
                                             if(Yii::$app->user->can('verifyApplicants'))
@@ -1401,7 +1401,7 @@
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>";
                                         if(Yii::$app->user->can('verifyApplicants'))
                                         {
-                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/nurse-certification', 'personid' => $applicant->personid]);
+                                            $add_role = Url::toRoute(['/subcomponents/students/profile/nurse-certification', 'personid' => $applicant->personid]);
                                             echo "<tr>";
 
                                                 echo "<td colspan='3'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Certificate</a></td>";
@@ -1558,7 +1558,7 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/students/profile/teacher-experience', 'personid' => $applicant->personid]);
                                                     echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Nursing Role</a></td>";
                                                 }
                                             echo "</tr>";
@@ -1570,8 +1570,8 @@
                                     {
                                         $val = $i+1;
                                         $teacherexperienceid = $teaching[$i]->teachingexperienceid;
-                                        $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
-                                        $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+                                        $editlink = Url::toRoute(['/subcomponents/students/profile/teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
+                                        $deletelink = Url::toRoute(['/subcomponents/students/profile/delete-teacher-experience', 'personid' => $applicant->personid, 'recordid' => $teacherexperienceid]);
 
                                         echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                             if(Yii::$app->user->can('verifyApplicants'))
@@ -1620,7 +1620,7 @@
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
                                                 {
-                                                    $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/teacher-experience', 'personid' => $applicant->personid]);
+                                                    $add_role = Url::toRoute(['/subcomponents/students/profile/teacher-experience', 'personid' => $applicant->personid]);
                                                     echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button' > Add Teaching Role</a></td>";
                                                 }
                                             echo "</tr>";
@@ -1784,7 +1784,7 @@
                                     echo "<tr>";
                                        if(CriminalRecord::getCriminalRecord($applicant->personid)==false && Yii::$app->user->can('verifyApplicants'))
                                         {
-                                            $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                            $add_role = Url::toRoute(['/subcomponents/students/profile/criminal-record', 'personid' => $applicant->personid]);
                                             echo "<td colspan='4'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
                                         }
                                     echo "</tr>";
