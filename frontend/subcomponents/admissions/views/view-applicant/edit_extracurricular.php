@@ -33,22 +33,22 @@
         <div class="box-body">
             <div class="form-group">
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="nationalsports">National Sports:</label>
-                <?= $form->field($applicant, 'nationalsports')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+                <?= $form->field($applicant, 'nationalsports')->label('')->textArea(['rows' => '5', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
             </div><br/>
             
             <div class="form-group">
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="othersports">Recreational Sports:</label>
-                <?= $form->field($applicant, 'othersports')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+                <?= $form->field($applicant, 'othersports')->label('')->textArea(['rows' => '5', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
             </div><br/>
             
             <div class="form-group">
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="clubs">Club Participation:</label>
-                <?= $form->field($applicant, 'clubs')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+                <?= $form->field($applicant, 'clubs')->label('')->textArea(['rows' => '5', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
             </div><br/>
             
             <div class="form-group">
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="otherinterests">Other Interests:</label>
-                <?= $form->field($applicant, 'otherinterests')->label('')->textArea(['rows' => '5'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
+                <?= $form->field($applicant, 'otherinterests')->label('')->textArea(['rows' => '5', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
             </div>
         </div>
 

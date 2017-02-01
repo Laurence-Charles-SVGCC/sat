@@ -904,7 +904,8 @@
 
             return $this->render('edit_extracurricular', [
                 'studentregistration' => $studentregistration,
-                'applicant' => $applicant
+                'applicant' => $applicant,
+                'personid' => $personid,
             ]);
         }
         

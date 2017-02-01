@@ -85,7 +85,7 @@
             <div class="form-group"  id='email_field' style='display:none'>
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="receivemail">Relative Email:</label>
                 <?= $form->field($relative, 'email')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
-            </div><br/><br/>
+            </div>
         </div>
 
          <div class="box-footer">
