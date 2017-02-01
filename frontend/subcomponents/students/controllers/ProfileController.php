@@ -847,7 +847,9 @@
             }
             
             return $this->render('edit_general', [
-                        'general' => $student_profile
+                        'general' => $student_profile,
+                        'personid' => $personid,
+                        'studentregistrationid' => $personid, $studentregistrationid,
             ]);
         }
         
@@ -1014,6 +1016,7 @@
                         'email' => $email,
                         'student' => $student,
                         'studentregistrationid' => $studentregistrationid,
+                        'personid' => $personid,
             ]);
         }
         
@@ -1103,6 +1106,7 @@
                         'applicant' => $applicant,
                         'addresses' => $addresses,
                         'studentregistrationid' => $studentregistrationid,
+                        'personid' => $personid,
             ]);        
         }      
         
