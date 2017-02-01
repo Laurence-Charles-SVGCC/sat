@@ -1,58 +1,52 @@
 <?php
-
-/* 
- * 'edit_medical_condition' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 04/01/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
     $this->title = 'Edit Medical Condition Details';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find An Student', 'url' => Url::toRoute(['/subcomponents/students/student/find-a-student'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Student Profile', 'url' => Url::toRoute(['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
-                </a>    
-            </div>
-            
-            <div class="custom_body">
-                <h1 class="custom_h1">Edit Medical Condition Details</h1>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">
+        <h1>Welcome to the Student Management System</h1>
+    </a>
+</div>
 
-                <?php
-                    $form = ActiveForm::begin([
-                                //'action' => Url::to(['gradebook/index']),
-                                'id' => 'edit-medical-condition-form',
-                                'options' => [
-//                                    'class' => 'form-layout form-inline'
-//                                    'class' => 'form-inline',
-                                ],
-                            ]);
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                        echo "<table class='table table-hover' style='margin: 0 auto;'>";                                        
-                            echo "<tr>";
-                                echo "<th rowspan='2' style='vertical-align:top; text-align:center; font-size:1.2em;'>$condition->medicalcondition</th>";
-                                echo "<th>Description</th>";
-                                echo "<td>{$form->field($condition, 'description')->label('')->textArea(['rows' => '4'])}</td>";
-                            echo "</tr>";
-                            echo "<tr>";
-                                echo "<th>Emergency Action</th>";
-                                echo "<td>{$form->field($condition, 'emergencyaction')->label('')->textArea(['rows' => '4'])}</td>";
-                            echo "</tr>";
-                        echo "</table>"; 
-
-                        echo Html::a(' Cancel',['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);
-
-                        ActiveForm::end();    
-                ?>
-            </div>
-        </div>
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
     </div>
+    
+    <?php $form = ActiveForm::begin(); ?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="medicalcondition">Name:</label>
+               <?= $form->field($condition, 'medicalcondition')->label('')->textArea(['rows' => '4', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="description">Description:</label>
+               <?= $form->field($condition, 'description')->label('')->textArea(['rows' => '4', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+           </div>
+            
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="emergencyaction">Emergency Action:</label>
+               <?= $form->field($condition, 'emergencyaction')->label('')->textArea(['rows' => '4', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
+           </div>
+        </div>
+
+        <div class="box-footer pull-right">
+            <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+            <?= Html::a(' Cancel', ['profile/student-profile', 'personid' => $personid, 'studentregistrationid' => $studentregistrationid], ['class' => 'btn  btn-danger']);?>
+        </div>
+    <?php ActiveForm::end(); ?>   
+</div>

@@ -44,7 +44,7 @@
            </div>
             
             <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="details'">Details:</label>
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="details">Details:</label>
                <?= $form->field($hold, 'details')->label('')->textInput(["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"])?>
            </div>
         </div>

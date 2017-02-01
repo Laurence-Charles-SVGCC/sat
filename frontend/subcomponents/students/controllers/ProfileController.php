@@ -2958,7 +2958,7 @@
                    ->one();
 
            $student_registration = StudentRegistration::find()
-                            ->where(['personid' => $personid,'isactive' => 0, 'isdeleted' => 0])
+                            ->where(['personid' => $personid, 'isdeleted' => 0])
                             ->one();
            $studentregistrationid = $student_registration->studentregistrationid;
            
@@ -3013,7 +3013,7 @@
                'personid' => $personid,
                'experience' => $experience,
                'action' => $action,
-               
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 
@@ -3074,7 +3074,7 @@
         * Date Created: 09/03/2016
         * Date Last Modified: 09/03/2016
         */
-       public function actionReference($personid, $action, $recordid = NULL)
+       public function actionReference($personid, $recordid = NULL)
        {
            $user = User::find()
                    ->where(['personid' => $personid])
@@ -3085,16 +3085,8 @@
                             ->one();
            $studentregistrationid = $student_registration->studentregistrationid;
            
-           if($action == "add")
-           {
-               $reference = new Reference();
-           }
-           elseif($action == "edit")
-           {
-            $reference = Reference::find()
-                        ->where(['referenceid' => $recordid])
-                        ->one();
-           }
+           $action = $recordid == NULL? "add" : "edit";
+           $reference = $recordid == NULL? new Reference() : Reference::find()->where(['referenceid' => $recordid])->one();
 
            if ($post_data = Yii::$app->request->post())
            {
@@ -3202,11 +3194,12 @@
            }
 
 
-           return $this->render('edit_nurse_work_experience', [
+           return $this->render('nurse_work_experience', [
                'user' => $user,
                'personid' => $personid,
                'nurseExperience' => $nurseExperience,
                'action' => $action,
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 
@@ -3328,6 +3321,7 @@
                'personid' => $personid,
                'experience' => $experience,
                'action' => $action,
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 
@@ -3505,6 +3499,7 @@
                'personid' => $personid,
                'experience' => $experience,
                'action' => $action,
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 
@@ -3625,6 +3620,11 @@
            $user = User::find()
                    ->where(['personid' => $personid])
                    ->one();
+           
+           $student_registration = StudentRegistration::find()
+                            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+           $studentregistrationid = $student_registration->studentregistrationid;
 
            if ($recordid == Null)
            {
@@ -3669,11 +3669,12 @@
            }
 
 
-           return $this->render('edit_criminal_record', [
+           return $this->render('criminal_record', [
                'user' => $user,
                'personid' => $personid,
                'criminalrecord' => $criminalrecord,
                'action' => $action,
+               'studentregistrationid' => $studentregistrationid,
            ]);
        }
 

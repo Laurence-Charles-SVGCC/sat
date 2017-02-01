@@ -1113,12 +1113,12 @@
                             if ($general_work_experience == false)
                             {
                                 $val = "Applicant has not indicated that they have prior general work experience";
-                                echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                         echo "<tr>";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/students/profile/general-work-experience', 'personid' => $applicant->personid]);
                                                 echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Job Role</a></td>";
                                             }
                                         echo "</tr>";
@@ -1130,8 +1130,8 @@
                                 {
                                     $val = $i+1;
                                     $generalworkexperienceid = $general_work_experience[$i]->generalworkexperienceid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/students/profile/general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
+                                    $deletelink = Url::toRoute(['/subcomponents/students/profile/delete-general-work-experience', 'personid' => $applicant->personid, 'recordid' => $generalworkexperienceid]);
 
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                         if(Yii::$app->user->can('verifyApplicants'))
@@ -1204,12 +1204,12 @@
                             if ($references==false)
                             {
                                 $val = "Student has not indicated any Reference information.";
-                                echo "<div class='panel-heading' style='color:grey; font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                         echo "<tr>";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_reference = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid, 'action' => 'add']);
+                                                $add_reference = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid]);
                                                 echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_reference role='button'> Add Reference</a></td>";
                                             }
                                         echo "</tr>";
@@ -1222,7 +1222,7 @@
                                 {
                                     $val = $i+1;
                                     $referenceid = $references[$i]->referenceid;
-                                    $editlink = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid,'action' => 'edit', 'recordid' => $referenceid]);
+                                    $editlink = Url::toRoute(['/subcomponents/students/profile/reference', 'personid' => $applicant->personid, 'recordid' => $referenceid]);
 
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
 
@@ -1264,7 +1264,7 @@
                                 if ($nursing==false)
                                 {
                                     $val = "Applicant has not indicated that they have prior nursing experience";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
@@ -1340,7 +1340,7 @@
                                 if ($nursing_certification==false)
                                 {
                                     $val = "Applicant has not indicated that they have prior nursing cetificates";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
@@ -1553,7 +1553,7 @@
                                 if ($teaching == false)
                                 {
                                     $val = "Applicant has not indicated that they have prior teaching experience";
-                                    echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                    echo "<div class='panel-heading'><strong>$val</strong></div>";
                                         echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                             echo "<tr>";
                                                 if(Yii::$app->user->can('verifyApplicants'))
@@ -1728,12 +1728,12 @@
                             if ($criminalrecord==false)
                             {
                                 $val = "Applicant has not indicated that they have criminal record";
-                                echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em; margin:0 auto'>$val</div>";
+                                echo "<div class='panel-heading'><strong>$val</strong></div>";
                                     echo "<table class='table table-hover' style='margin: 0 auto;'>"; 
                                         echo "<tr>";
                                             if(Yii::$app->user->can('verifyApplicants'))
                                             {
-                                                $add_role = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid]);
+                                                $add_role = Url::toRoute(['/subcomponents/students/profile/criminal-record', 'personid' => $applicant->personid]);
                                                 echo "<td colspan='5'><a class='btn btn-success glyphicon glyphicon-plus pull-right' href=$add_role role='button'> Add Criminal Record</a></td>";
                                             }
                                         echo "</tr>";
@@ -1743,8 +1743,8 @@
                             {
                                 $val = "";
                                 $criminalrecordid = $criminalrecord->criminalrecordid;
-                                $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
-                                $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                $editlink = Url::toRoute(['/subcomponents/students/profile/criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
+                                $deletelink = Url::toRoute(['/subcomponents/students/profile/delete-criminal-record', 'personid' => $applicant->personid, 'recordid' => $criminalrecordid]);
 
                                 echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>Details";
                                     if(Yii::$app->user->can('verifyApplicants'))
@@ -3417,7 +3417,6 @@
             </div>
 
             <div role="tabpanel" class="tab-pane fade" id="awards"> 
-                </br>
                 <div class="panel panel-default" style="width:100%; margin: 0 auto;">
                     <?php if(Yii::$app->user->can('manageAwards')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Award Listing
@@ -3474,7 +3473,6 @@
 
 
             <div role="tabpanel" class="tab-pane fade" id="clubs"> 
-                </br>
                 <div class="panel panel-default" style="width:100%; margin: 0 auto;">
                     <?php if(Yii::$app->user->can('manageClubs')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Club Membership
