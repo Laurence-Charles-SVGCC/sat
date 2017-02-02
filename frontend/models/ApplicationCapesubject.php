@@ -113,7 +113,7 @@ class ApplicationCapesubject extends \yii\db\ActiveRecord
             $application = Application::find()
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['application.academicofferingid' => $registration->academicofferingid, 'application.personid' => $registration->personid, 'application.isdeleted' => 0,
-                                    'offer.isdeleted' => 0,  'offer.isdeleted' => 0
+                                    'offer.isactive' => 1,  'offer.isdeleted' => 0
                                 ])
                     ->one();
             if($application)
