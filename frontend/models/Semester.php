@@ -126,7 +126,7 @@ class Semester extends \yii\db\ActiveRecord
             array_push($keys, "title");
             $k1 = strval($semester->semesterid);
             $division = ApplicantIntent::find()
-                     ->innerJoin('academic_year' , '`applicant_intent`.`applicantintentid` = `applicant_intent`.`applicantintentid`')
+                     ->innerJoin('academic_year' , '`applicant_intent`.`applicantintentid` = `academic_year`.`applicantintentid`')
                      ->innerJoin('semester' , '`academic_year`.`academicyearid` = `semester`.`academicyearid`')
                     ->where(['applicant_intent.isdeleted' => 0,
                                     'academic_year.isdeleted' => 0,
