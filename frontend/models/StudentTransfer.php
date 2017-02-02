@@ -287,7 +287,7 @@ class StudentTransfer extends \yii\db\ActiveRecord
                 $previous_cape_subjects = array();
                 $previous_application = $offer_from->getApplication()->one();
                 $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
-                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
+                $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid, 'isdeleted' => 0]);
                 foreach ($previous_cape_subjects as $cs)
                 { 
                     $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
@@ -305,7 +305,7 @@ class StudentTransfer extends \yii\db\ActiveRecord
                 $current_cape_subjects = array();
                 $current_application = $offer_to->getApplication()->one();
                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
-                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid, 'isdeleted' => 0]);
                 foreach ($current_cape_subjects as $cs)
                 { 
                     $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
