@@ -1789,11 +1789,13 @@ class VerifyApplicantsController extends \yii\web\Controller
                         {
                             $transaction->rollBack();
                             Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
-                            return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                            return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
                         }
                     }
                     $transaction->commit();
-                    return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+//                    return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+                    Yii::$app->session->setFlash('success', 'Document update was successful.  You can now return to Applicant Certificate using Breadcrumbs or Back button.');
+                    return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
                 }
                 
                 
@@ -1846,7 +1848,9 @@ class VerifyApplicantsController extends \yii\web\Controller
                     }
                 }
                 $transaction->commit();
-                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+//                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
+                Yii::$app->session->setFlash('success', 'Document update was successful.  You can now return to Applicant Certificate using Breadcrumbs or Back button.');
+                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);                
                 
             } catch (Exception $e) {
                 $transaction->rollBack();
