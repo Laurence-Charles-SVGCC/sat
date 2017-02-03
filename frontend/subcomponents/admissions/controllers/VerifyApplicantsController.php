@@ -1793,7 +1793,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         }
                     }
                     $transaction->commit();
-                    return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type, $personid);
+                    return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
                 }
                 
                 
@@ -1846,12 +1846,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                     }
                 }
                 $transaction->commit();
-                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type, $personid);
+                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
                 
             } catch (Exception $e) {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing request.');   
-                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
+                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
             }
         }
     }

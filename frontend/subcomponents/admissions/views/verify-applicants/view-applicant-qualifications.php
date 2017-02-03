@@ -256,7 +256,7 @@
 
 
                 <?php if($isexternal == 1 && $external_qualification == true) :?>
-                    <br/><fieldset>
+                    <br/><fieldset  style="width:100%">
                         <legend><strong>External Qualifications</strong></legend>
                         <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
                             <thead>
@@ -308,9 +308,9 @@
                     </fieldset>
 
                 <?php elseif($isexternal == 1 && $external_qualification == false) :?>
-                    <br/><fieldset>
+                    <br/><fieldset  style="width:100%">
                         <legend><strong>External Qualifications</strong></legend>
-                        <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
+                        <table id="post_secondary_qualification_table" class="table table-hover table-striped">
                             <tr>
                                 <td>Applicant has not indicated the type of external qualification they possess.</td>
                             </tr>
