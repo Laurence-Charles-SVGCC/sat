@@ -256,7 +256,7 @@
 
 
                 <?php if($isexternal == 1 && $external_qualification == true) :?>
-                    <br/><fieldset style="margin-left:2.5%; width:95%">
+                    <br/><fieldset>
                         <legend><strong>External Qualifications</strong></legend>
                         <table id="post_secondary_qualification_table" class="table table-bordered table-striped" style="width:100%; margin: 0 auto;">
                             <thead>
