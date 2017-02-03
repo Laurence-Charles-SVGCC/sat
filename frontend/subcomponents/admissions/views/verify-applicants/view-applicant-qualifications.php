@@ -308,7 +308,7 @@
                     </fieldset>
 
                 <?php elseif($isexternal == 1 && $external_qualification == false) :?>
-                    <br/><fieldset style="margin-left:2.5%; width:95%">
+                    <br/><fieldset>
                         <legend><strong>External Qualifications</strong></legend>
                         <table id="post_secondary_qualification_table" class="table table-hover table-striped" style="width:100%; margin: 0 auto;">
                             <tr>
