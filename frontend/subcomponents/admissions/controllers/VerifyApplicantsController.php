@@ -402,14 +402,15 @@ class VerifyApplicantsController extends \yii\web\Controller
                  }
                  else
                  {
-                     if (!$applicant->verifier)
-                     {
-                         $verifier = "Unknown";
-                     }
-                     else
-                     {
-                         $verifier = Employee::getEmployeeName($applicant->verifier);
-                     }
+//                     if (!$applicant->verifier)
+//                     {
+//                         $verifier = "Unknown";
+//                     }
+//                     else
+//                     {
+//                         $verifier = Employee::getEmployeeName($applicant->verifier);
+//                     }
+                     $verifier = Employee::getEmployeeName($applicant->verifier);
                  }
                  $container["verifier"] = $verifier;
                     

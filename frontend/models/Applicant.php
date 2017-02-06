@@ -2064,6 +2064,13 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function isVerified($personid)
     {
+        $applicant = Applicant::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        if ($applicant == true & $applicant->isexternal == 1 && $applicant->verifier == NULL)
+            return false;
+        
         $qualifications = CsecQualification::find()
                     ->innerJoin('application', '`csec_qualification`.`personid` = `application`.`personid`')
                     ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
