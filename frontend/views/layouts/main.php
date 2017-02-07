@@ -165,9 +165,17 @@
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/snapshot'])?>"><i class="fa fa-circle-o"></i>Current Applicants Snapshot</a></li>
                         <?php endif; ?>
 
-
                         <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
+                        <?php endif; ?>
+                            
+                        <?php if (Yii::$app->user->can('System Administrator')): ?>    
+                            <li class="treeview">
+                                <a href=""><i class="fa fa-circle-o"></i><span>Utilities</span><i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/applicant-registration/index'])?>"><i class="fa fa-circle-o"></i>Deactivate Email</a></li>
+                                </ul>
+                            </li>
                         <?php endif; ?>
                       </ul>
                     </li>
