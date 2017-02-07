@@ -97,6 +97,11 @@
                 <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="sponsorname">If sponsored please name the organisation(s):</label>
                 <?= $form->field($applicant, 'sponsorname')->label(false)->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']) ?>
             </div><br/><br/>
+            
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="sponsorname">Has no GCE/CSEC/CAPE but has other qualifications:</label>
+                 <?= $form->field($applicant, 'isexternal')->label(false)->inline()->radioList(Yii::$app->params['external'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9'] );?>
+            </div><br/><br/>
         </div>
 
          <div class="box-footer">
