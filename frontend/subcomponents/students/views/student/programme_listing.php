@@ -75,7 +75,7 @@
                                     echo "<td>";                                  
                                         echo "<div class='dropdown'>
                                             <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                              echo "Select Cohort...";
+                                              echo "Select Academic Year...";
                                               echo "<span class='caret'></span>";
                                             echo "</button>";
                                             echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
@@ -154,7 +154,7 @@
                                             echo "<td>";                                  
                                                 echo "<div class='dropdown'>
                                                     <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
-                                                      echo "Select Cohort...";
+                                                      echo "Select Academic Year...";
                                                       echo "<span class='caret'></span>";
                                                     echo "</button>";
                                                     echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
