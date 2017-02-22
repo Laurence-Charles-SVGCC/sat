@@ -156,10 +156,10 @@
         {
             $model = new InitializeAccountModel();
             
-            $recordid = PersonAccountProgress::find()
-                        ->where(['personid' => $applicant->personid,  'isdeleted' => 0])
-                        ->one()
-                        ->personaccountprogressid;
+//            $recordid = PersonAccountProgress::find()
+//                        ->where(['personid' => $applicant->personid,  'isdeleted' => 0])
+//                        ->one()
+//                        ->personaccountprogressid;
             
             if ($post_data = Yii::$app->request->post())
             { 
@@ -250,7 +250,7 @@
             
             return $this->render('initialize_account',[
                                 'model' => $model,
-                                'recordid' => $recordid,
+//                                'recordid' => $recordid,
                                 ]);
         }
         

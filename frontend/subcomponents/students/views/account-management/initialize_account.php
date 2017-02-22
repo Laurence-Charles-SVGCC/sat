@@ -8,7 +8,7 @@
     
     $this->title = 'Initialize Account';
      $this->params['breadcrumbs'][] = ['label' => 'Student Listing', 'url' => Url::toRoute(['/subcomponents/students/account-management'])];
-     $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/students/account-management/account-dashboard', 'recordid' => $recordid])];
+     $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => Url::toRoute(['/subcomponents/students/account-management/account-dashboard'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -69,7 +69,7 @@
         <div class="box-footer">
             <span class = "pull-right">
                 <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
-                <?= Html::a(' Cancel', ['account-management/account-dashboard', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>
+                <?= Html::a(' Cancel', ['account-management/account-dashboard'], ['class' => 'btn  btn-danger']);?>
             </span>
         </div>
     <?php ActiveForm::end(); ?>
