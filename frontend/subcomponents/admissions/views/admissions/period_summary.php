@@ -33,7 +33,7 @@
     
     <div class="box-body">
         <?= GridView::widget([
-                'dataProvider' => $dataProvider,
+                'dataProvider' => $period_details_data_provider,
                 'columns' => [
                     [
                         'attribute' => 'name',
@@ -118,6 +118,62 @@
                                     return "N/A";
                                 }
                          }
+                    ],
+                ],
+            ]); 
+        ?>
+    </div>
+</div><br/><br/>
+
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
+     <div class="box-header with-border">
+         <span class="box-title">Application Period Statistics</span>
+     </div>
+    
+    <div class="box-body">
+        <?= GridView::widget([
+                'dataProvider' => $period_stats_data_provider,
+                'columns' => [
+                    [
+                        'attribute' => 'title',
+                        'format' => 'text',
+                        'label' => 'Title'
+                    ],
+                    [
+                        'attribute' => 'applicantintent_name',
+                        'format' => 'text',
+                        'label' => 'Type'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_started',
+                        'format' => 'text',
+                        'label' => 'Total Applications'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_completed',
+                        'format' => 'text',
+                        'label' => 'Completed Applications'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_removed',
+                        'format' => 'text',
+                        'label' => 'Removed Applications'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_incomplete',
+                        'format' => 'text',
+                        'label' => 'Incomplete Applications'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_verified',
+                        'format' => 'text',
+                        'label' => 'Verified Applications'
+                    ],
+                    [
+                        'attribute' => 'total_number_of_applications_unverified',
+                        'format' => 'text',
+                        'label' =>'Unverified Applications'
                     ],
                 ],
             ]); 
