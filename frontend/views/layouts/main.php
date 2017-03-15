@@ -454,6 +454,11 @@
                     -->
 
                   </ul>
+                  <div style="position: fixed; z-index: 1000; width: 164px; height: 98px; bottom: 30px; left: 15px;">
+                      <a href="#" onclick="window.open('https://www.sitelock.com/verify.php?site=svgcc.net','SiteLock','width=600,height=600,left=160,top=170');" >
+                          <img class="img-responsive" alt="SiteLock" title="SiteLock" src="//shield.sitelock.com/shield/svgcc.net" />
+                      </a>
+                  </div>
                 </section>
                 <!-- /.sidebar -->
                 </aside>
