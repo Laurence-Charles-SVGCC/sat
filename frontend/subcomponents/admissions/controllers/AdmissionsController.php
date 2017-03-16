@@ -124,17 +124,16 @@ class AdmissionsController extends Controller
                         ->one();
                 $stats_data['applicantintent_name'] = $intent->name;
 
-                $applicants = Applicant::find()
+                $total_number_of_applications_started = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'application.applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'application.isactive' => 1, 'application.isdeleted' => 0,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                          'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                                     ])
-                        ->all();
-                $total_number_of_applications_started =  count($applicants);
+                        ->count();
                 $stats_data['total_number_of_applications_started'] = $total_number_of_applications_started;
 
                 $total_number_of_applications_completed = Applicant::find()
