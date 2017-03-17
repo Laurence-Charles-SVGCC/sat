@@ -173,7 +173,10 @@
             <?php endif;?> 
             <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('manageClubs')):?>    
                 <li role="presentation"><a href="#clubs" aria-controls="clubs" role="tab" data-toggle="tab">Clubs</a></li>
-            <?php endif;?> 
+            <?php endif;?>
+            <?php if(Yii::$app->user->can('ViewAllTabs') || Yii::$app->user->can('viewGeneral')):?>    
+                <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+            <?php endif;?>
         </ul>
 
         <!-- Tab panes -->
@@ -3533,6 +3536,67 @@
                             <?php endif;?>
                         </table>
                     <?php endif;?>
+                </div>
+            </div>
+                
+            <div role="tabpanel" class="tab-pane fade in" id="messages"> 
+                <div class="panel panel-default" style="width:100%; margin: 0 auto;">
+                    <?php if(Yii::$app->user->can('ViewProfileData') || Yii::$app->user->can('viewGeneral')):?>    
+                        <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Messages
+                            <?php if(Yii::$app->user->can('editGeneral')):?>        
+                                <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/students/profile/new-message', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role="button"> New</a>                                    
+                            <?php endif;?>
+                        </div>
+
+                        <?= GridView::widget([
+                            'dataProvider' => $messages_dataprovider,
+                            'columns' => 
+                                [
+                                    ['class' => 'yii\grid\SerialColumn'],
+                                    [
+                                        'attribute' => 'date_sent',
+                                        'format' => 'text',
+                                        'label' => 'Date Sent'
+                                    ],
+                                    [
+                                        'attribute' => 'sender',
+                                        'format' => 'text',
+                                        'label' => 'From'
+                                    ],
+                                    [
+                                        'attribute' => 'topic',
+                                        'format' => 'text',
+                                        'label' => 'Topic'
+                                    ],
+                                    [
+                                        'attribute' => 'content',
+                                        'format' => 'text',
+                                        'label' => 'Content'
+                                    ],
+                                    [
+                                        'attribute' => 'priority',
+                                        'format' => 'text',
+                                        'label' => 'Priority'
+                                    ],
+                                    [
+                                        'attribute' => 'date_read',
+                                        'format' => 'text',
+                                        'label' => 'Date Read',
+                                        'value' => function($row)
+                                        {
+                                            if ($row["date_read"] == NULL)
+                                            {
+                                                return "Unread";
+                                            }
+                                            else
+                                                return $row["date_read"];
+                                        }
+                                    ],
+                                ],
+                            ]); 
+                        ?> 
+
+                    <?php endif;?>   
                 </div>
             </div>
         </div>

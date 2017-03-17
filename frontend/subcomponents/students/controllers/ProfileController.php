@@ -1,11 +1,4 @@
 <?php
-
-/* 
- * Contoller for Student Profile views.
- * Author: Laurence Charles
- * Date Created: 20/12/2015
- */
-
     namespace app\subcomponents\students\controllers;
 
     use Yii;
@@ -92,6 +85,8 @@
     use frontend\models\PaymentMethod;
     use frontend\models\TransactionItem;
     use frontend\models\Transaction;
+    use frontend\models\Message;
+    use frontend\models\MessagePriority;
     
     
     class ProfileController extends Controller
@@ -638,6 +633,60 @@
                     'attributes' => ['date'],
                   ]
             ]);
+            
+            /*********************************  Messages  ********************************/
+            $messages_data = array();
+            
+            $messages = Message::find()
+                    ->where(['isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+            
+            foreach($messages as $message)
+            {
+                $record = array();
+                $record['messageid'] = $message->messageid;
+                
+                $senderid = $message->senderid;
+                $record['senderid'] =  $senderid;
+                $sender_record = Employee::find()
+                        ->where(['personid' => $message->senderid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                $record['sender_name'] = $sender_record->title .  ". " . $sender_record->firstname . " " . $sender_record->lastname;
+                  
+                $recipientid = $message->receipientid;
+                $record['recipientid'] =  $recipientid;
+                $recipient_record = Student::find()
+                        ->where(['personid' => $message->receipientid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                $record['recipient_name'] = $recipient_record->title .  ". " . $recipient_record->firstname .  " " .  $recipient_record->lastname;
+                
+                $priority = MessagePriority::find()
+                        ->where(['messagepriorityid' => $message->messagepriorityid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one()
+                        ->name;
+                $record['priority'] = $priority;
+                $record['date_sent'] = $message->date_sent;
+                $record['date_read'] = $message->date_read;
+                
+                $record['sender'] = $message->sender;
+                $record['topic'] = $message->topic;
+                $record['content'] = $message->content;
+                $record['isread'] = $message->isread;
+
+                $messages_data[] = $record;
+            }
+            
+            $messages_dataprovider = new ArrayDataProvider([
+                'allModels' => $messages_data,
+                'pagination' => [
+                    'pageSize' => 25,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['date_sent' => SORT_DESC],
+                    'attributes' => ['date_sent'],
+                  ]
+            ]);
+            
             /***************************************************************************/
             
             return $this->render('student_profile',[
@@ -740,6 +789,10 @@
                 //models for event
                 'events' => $events,
                 'dataProvider' => $dataProvider,
+                
+                //models for event
+//                'messages' => $messages,
+                'messages_dataprovider' => $messages_dataprovider,
                 
             ]);
         }
@@ -4645,5 +4698,54 @@
             ]); 
         }
         
+        
+        /**
+         * Sends message to student
+         * 
+         * @param type $personid
+         * @param type $studentregistrationid
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: 16/03/2017
+         * Date Last Modified
+         */
+        public function actionNewMessage($personid, $studentregistrationid)
+        {
+            $message = new Message();
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = $message->load($post_data);
+                
+                if ($load_flag == true)
+                {
+                    $message->date_sent =  date('Y-m-d');
+                    $message->senderid = Yii::$app->user->identity->personid;
+                    $message->receipientid = $personid;
+
+                    if ($message->save() == true)
+                    {
+                        Yii::$app->getSession()->setFlash('success', 'Message successfully sent.');
+                        return self::actionStudentProfile($personid, $studentregistrationid);     
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured sendiong message.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                }
+            }
+            
+            
+            return $this->render('send_message', [
+                        'personid' => $personid, 
+                        'studentregistrationid' => $studentregistrationid,
+                        'message' => $message
+            ]); 
+        }
         
     }
