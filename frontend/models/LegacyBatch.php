@@ -10,7 +10,6 @@ use Yii;
  * @property string $legacybatchid
  * @property string $legacytermid
  * @property string $legacysubjectid
- * @property string $legacybatchtypeid
  * @property string $legacylevelid
  * @property string $name
  * @property string $createdby
@@ -22,10 +21,9 @@ use Yii;
  *
  * @property LegacyTerm $legacyterm
  * @property LegacySubject $legacysubject
- * @property LegacyBatchType $legacybatchtype
  * @property LegacyLevel $legacylevel
- * @property Person $createdby0
- * @property Person $lastmodifiedby0
+ * @property Person $createdby
+ * @property Person $lastmodifiedby
  * @property LegacyMarksheet[] $legacyMarksheets
  */
 class LegacyBatch extends \yii\db\ActiveRecord
@@ -44,8 +42,8 @@ class LegacyBatch extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['legacytermid', 'legacysubjectid', 'legacybatchtypeid', 'legacylevelid', 'name', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
-            [['legacytermid', 'legacysubjectid', 'legacybatchtypeid', 'legacylevelid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
+            [['legacytermid', 'legacysubjectid', 'legacylevelid', 'name', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
+            [['legacytermid', 'legacysubjectid', 'legacylevelid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
             [['datecreated', 'datemodified'], 'safe'],
             [['name'], 'string', 'max' => 100]
         ];
@@ -60,7 +58,6 @@ class LegacyBatch extends \yii\db\ActiveRecord
             'legacybatchid' => 'Legacybatchid',
             'legacytermid' => 'Legacytermid',
             'legacysubjectid' => 'Legacysubjectid',
-            'legacybatchtypeid' => 'Legacybatchtypeid',
             'legacylevelid' => 'Legacylevelid',
             'name' => 'Name',
             'createdby' => 'Createdby',
@@ -91,14 +88,6 @@ class LegacyBatch extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLegacybatchtype()
-    {
-        return $this->hasOne(LegacyBatchType::className(), ['legacybatchtypeid' => 'legacybatchtypeid']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getLegacylevel()
     {
         return $this->hasOne(LegacyLevel::className(), ['legacylevelid' => 'legacylevelid']);
@@ -107,7 +96,7 @@ class LegacyBatch extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedby0()
+    public function getCreatedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'createdby']);
     }
@@ -115,7 +104,7 @@ class LegacyBatch extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLastmodifiedby0()
+    public function getLastmodifiedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'lastmodifiedby']);
     }
@@ -126,5 +115,40 @@ class LegacyBatch extends \yii\db\ActiveRecord
     public function getLegacyMarksheets()
     {
         return $this->hasMany(LegacyMarksheet::className(), ['legacybatchid' => 'legacybatchid']);
+    }
+    
+    
+    /**
+     * Returns LEgacyBatch records with
+     * 
+     * @param type $termid
+     * @param type $levelid
+     * @param type $subjectid
+     * 
+     * Author: Laurence Charles
+     * Date Created: 23/03/2017
+     * Date Last Modified: 23/03/2017
+     */
+    public static function getBatchesWithGrades($termid = null , $levelid = null, $subjectid = null)
+    {
+        $cond_arr['legacy_batch.isactive'] = 1;
+        $cond_arr['legacy_batch.isdeleted'] = 0;
+        $cond_arr['legacy_marksheet.isactive'] = 1;
+        $cond_arr['legacy_marksheet.isdeleted'] = 0;
+        
+        if ($termid != null)
+            $cond_arr['legacy_batch.legacytermid'] = $termid;
+        
+        if ($levelid != null)
+            $cond_arr['legacy_batch.legacylevelid'] = $levelid;
+        
+        if ($subjectid != null)
+            $cond_arr['legacy_batch.subjectid'] = $subjectid;
+        
+         $batches = LegacyBatch::find()
+                    ->innerJoin('legacy_marksheet', '`legacy_batch`.`legacybatchid` = `legacy_marksheet`.`legacybatchid`')
+                    ->where($cond_arr)
+                    ->all();
+         return $batches;
     }
 }

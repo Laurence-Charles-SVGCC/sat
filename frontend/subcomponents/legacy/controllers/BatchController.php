@@ -1,12 +1,4 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
     namespace app\subcomponents\legacy\controllers;
     
     use Yii;
@@ -14,13 +6,13 @@
     use yii\web\Controller;
     use yii\data\ArrayDataProvider;
     
-    
     use frontend\models\LegacySubject;
     use frontend\models\LegacySubjectType;
     use frontend\models\LegacyYear;
     use frontend\models\LegacyTerm;
     use frontend\models\LegacyBatch;
     use frontend\models\LegacyLevel;
+    use frontend\models\LegacyMarksheet;
     use frontend\models\Employee;
 
 
@@ -40,7 +32,8 @@
         {
             if (false/*Yii::$app->user->can('manageLegacyBatches') == false*/)
             {
-                 return $this->render('unauthorized');
+                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                 return $this->redirect(['/site/index']);
             }
            
             $dataProvider = NULL;
@@ -50,19 +43,34 @@
             $batches = LegacyBatch::find()
                     ->innerJoin(['legacy_subject', '`legacy_batch`.`legacysubjectid` = `legacy_subject`.`legacysubjectid`'])
                     ->where(['legacy_subject.isactive' => 1, 'legacy_subject.isdeleted' => 0,
-                                    'legacy_batch.isactive' => 1, 'legacy_batch.isdeleted' => 0
-                                ])
-                    ->groupby('legacy_subject.legacysubjectid')
+                                    'legacy_batch.isactive' => 1, 'legacy_batch.isdeleted' => 0])
+//                    ->groupby('legacy_subject.legacysubjectid')
                     ->all();
             
             foreach ($batches as $batch)
             {
                 $batch_info['subjectid'] = $batch->legacysubjectid;
+                $batch_info['batchid'] = $batch->legacybatchid;
+                
+                $term = LegacyTerm::find()
+                        ->where(['legacytermid' => $batch->legacytermid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $batch_info['term'] = $term->name;
+                
+                $year = LegacyYear::find()
+                        ->where(['legacyyearid' => $term->legacyyearid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $batch_info['year'] = $year->name;
                 
                 $subject = LegacySubject::find()
                         ->where(['legacysubjectid' => $batch->legacysubjectid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
                 $batch_info['name'] = $subject->name;
+                
+                 $level = LegacyLevel::find()
+                        ->where(['legacylevelid' => $batch->legacylevelid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $batch_info['level'] = $level->name;
                 
                 $type = LegacySubjectType::find()
                         ->where(['legacysubjecttypeid' => $subject->legacysubjecttypeid, 'isactive' => 1, 'isdeleted' => 0])
@@ -70,13 +78,10 @@
                         ->name;
                 $batch_info['type'] = $type;
                 
-                $batch_count = LegacyBatch::find()
-                    ->innerJoin(['legacy_subject', '`legacy_batch`.`legacysubjectid` = `legacy_subject`.`legacysubjectid`'])
-                    ->where(['legacy_subject.legacysubjectid' => $subject->legacysubjectid,  'legacy_subject.isactive' => 1, 'legacy_subject.isdeleted' => 0,
-                                    'legacy_batch.isactive' => 1, 'legacy_batch.isdeleted' => 0
-                                ])
+                $student_count = LegacyMarksheet::find()
+                    ->where(['legacybatchid' => $batch->legacybatchid,  'isactive' => 1, 'isdeleted' => 0])
                     ->count();
-                $batch_info['count'] = $batch_count;
+                $batch_info['student_count'] = $student_count;
                 
                 $batch_container[] = $batch_info;
             }
@@ -88,7 +93,7 @@
                         ],
                         'sort' => [
                             'defaultOrder' => ['type' => SORT_ASC, 'name' =>SORT_ASC],
-                            'attributes' => ['type', 'name'],
+                            'attributes' => ['name', 'type', 'year', 'term', 'level'],
                         ]
                 ]);
 
@@ -105,31 +110,30 @@
          * 
          * Author: Laurence Charles
          * Date Created: 12/07/2016
-         * Date Last Modified: 12/07/2016
+         * Date Last Modified: 12/07/2016 | 27/03/2017
          */
         public function actionCreate()
         {
             if (false/*Yii::$app->user->can('createLegacyBatch') == false*/)
             {
-                 return $this->render('unauthorized');
+                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                 return $this->redirect(['/site/index']);
             }
             
             if (Yii::$app->request->post()) 
             {
                 $request = Yii::$app->request;
-                $batchtypeid = $request->post('batch_type_field');
                 $levelid = $request->post('level_field');
                 $subjecttypeid = $request->post('subject_type_field');
                 $subjectid = $request->post('subject_field');
                 $yearid = $request->post('year_field');
                 $termid = $request->post('term_field');
                 
-                if ($batchtypeid && $levelid  &&  $subjecttypeid  && $subjectid  && $yearid  && $termid)
+                if ($levelid  &&  $subjecttypeid  && $subjectid  && $yearid  && $termid)
                 {
                     $batch = new LegacyBatch();
                     $batch->legacytermid = $termid;
                     $batch->legacysubjectid = $subjectid;
-                    $batch->legacybatchtypeid = $batchtypeid;
                     $batch->legacylevelid = $levelid;
                     
                     $term = LegacyTerm::find()
@@ -141,8 +145,17 @@
                     $level = LegacyLevel::find()
                             ->where(['legacylevelid' =>  $levelid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
-                    $batch->name = $term->name . "-" . $subject->name . "-" . $level->name . " Batch";
                     
+                    $existing_batch = LegacyBatch::find()
+                            ->where(['legacytermid' =>  $termid, 'legacysubjectid' =>  $subjectid, 'legacylevelid' =>  $levelid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($existing_batch == true)
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'A batch with this configuration already exists.');
+                         return $this->render('create');
+                    }
+                    
+                    $batch->name = $term->name . "-" . $subject->name . "-" . $level->name . " Batch";
                     $employeeid = Yii::$app->user->identity->personid;
                     $date = date('Y-m-d');
                     $batch->createdby = $employeeid;
@@ -160,8 +173,7 @@
                     }
                 }
             }
-            
-            return $this->render('create_batch');
+            return $this->render('create');
         }
         
         

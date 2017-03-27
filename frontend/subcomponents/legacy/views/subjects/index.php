@@ -1,60 +1,74 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\grid\GridView;
+    
+    use frontend\models\LegacyBatch;
 
      $this->title = 'Subject Listing';
      $this->params['breadcrumbs'][] = $this->title;
-     
 ?>
 
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/legacy/legacy/index']);?>" title="Manage Legacy Records">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/legacy.png" alt="legacy avatar">
-                <span class="custom_module_label" > Welcome to the Legacy Management System</span> 
-                <img src ="css/dist/img/header_images/legacy.png" alt="legacy avatar" class="pull-right">
-            </a>  
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/legacy/subjects/index']);?>" title="Legacy Subjects">
+        <h1>Welcome to the Legacy Management System</h1>
+    </a>
+</div>
+
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:99%; margin: 0 auto;">
+    <h2 class="text-center"><?= $this->title?></h2>
+     
+    <?php if (true/*Yii::$app->user->can('createLegacySubject')*/): ?>
+        <div class="box-header with-border">
+            <?= Html::a('Create Subject', ['subjects/create'], ['class' => 'btn btn-info pull-right']) ?>
         </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title;?></h1>
-            
-            <p>
-                <?php if (true/*Yii::$app->user->can('createLegacySubject')*/): ?>
-                    <?= Html::a(' Create Subject', ['subjects/create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
-                <?php endif; ?>
-            </p>
-            
-             <br/>
-            <div style="width:98%; margin: 0 auto;">
-                <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
-                            [
-                                'attribute' => 'name',
-                                'format' => 'text',
-                                'label' => 'Subject Name'
-                            ],
-                            [
-                                'attribute' => 'type',
-                                'format' => 'text',
-                                'label' => 'Subject Type'
-                            ],
+    <?php endif; ?>
+    
+    <div class="box-body">
+         <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => [
+                        ['class' => 'yii\grid\SerialColumn'],
+                        [
+                            'attribute' => 'name',
+                            'format' => 'text',
+                            'label' => 'Subject Name'
                         ],
-                    ]); 
-               ?>
-            </div>
-        </div>
+                        [
+                            'attribute' => 'type',
+                            'format' => 'text',
+                            'label' => 'Subject Type'
+                        ],
+                        [
+                            'format' => 'html',
+                            'label' => 'Delete',
+                            'value' => function($row)
+                            {
+                                if (LegacyBatch::find()->where(['legacysubjectid' => $row['subjectid'], 'isactive' => 1, 'isdeleted' => 0])->one() == true)
+                                {
+                                    return "N/A";
+                                }
+                                else
+                                {
+                                    return Html::a(' ', 
+                                                            Url::toRoute(['/subcomponents/legacys/subjects/delete-subjects', 'id' => $row['subjectid']]),
+                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                                'data' => [
+                                                                    'confirm' => 'Are you sure you delete this record?',
+                                                                    'method' => 'post',
+                                                                ]
+                                                            ]);
+                                }
+                            }
+                        ],
+                    ],
+                ]); 
+           ?>
     </div>
 </div>

@@ -1,14 +1,10 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-   
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
+    
+    use frontend\models\LegacyMarksheet;
 ?>
 
 <div class="legacy_student_listing">
@@ -66,6 +62,28 @@
                 'attribute' => 'faculty',
                 'format' => 'text',
                 'label' => 'Faculty'
+            ],
+            [
+                'format' => 'html',
+                'label' => 'Delete',
+                'value' => function($row)
+                {
+                    if (LegacyMarksheet::find()->where(['legacystudentid' => $row['studentid'], 'isactive' => 1, 'isdeleted' => 0])->one() == true)
+                    {
+                        return "N/A";
+                    }
+                    else
+                    {
+                        return Html::a(' ', 
+                                                Url::toRoute(['/subcomponents/legacys/subjects/delete-student', 'id' => $row['studentid']]),
+                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                    'data' => [
+                                                        'confirm' => 'Are you sure you want to delete this record?',
+                                                        'method' => 'post',
+                                                    ]
+                                                ]);
+                    }
+                }
             ],
         ],
     ]); ?>     

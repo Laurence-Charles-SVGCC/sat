@@ -8,7 +8,6 @@
     use frontend\models\EmployeeDepartment;
 
     $this->title = 'Find A Student';
-    
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 

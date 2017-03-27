@@ -1,11 +1,4 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
     namespace app\subcomponents\legacy\controllers;
   
     use Yii;
@@ -33,13 +26,14 @@
          * 
          * Author: Laurence Charles
          * Date Created: 10/07/2016
-         * Date LAst Modified: 10/07/2016
+         * Date LAst Modified: 10/07/2016 | 22/0/2017
          */
         public function actionIndex()
         {
             if (false/*Yii::$app->user->can('manageLegacyYears') == false*/)
             {
-                 return $this->render('unauthorized');
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
            
             $dataProvider = NULL;
@@ -82,19 +76,20 @@
         
         
         /**
-         * Creates a 'Legacy_Year" record and the associated "Legacy_Batch" records
+         * Creates a 'LegacyYear" record and the associated "LegacyBatch" records
          * 
          * @return type
          * 
          * Author: Laurence Charles
          * Date Created: 10/07/2016
-         * Date LAst Modified: 10/07/2016
+         * Date LAst Modified: 10/07/2016 | 22/03/2017
          */
         public function actionCreate()
         {
             if (false/*Yii::$app->user->can('createLegacyYear') == false*/)
             {
-                 return $this->render('unauthorized');
+                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
             
             $years = LegacyYear::find()
@@ -133,15 +128,14 @@
                         
                         if($save_flag == true)
                         {
-                            $term_save_load = false;
                             $terms = array();
                             
                             $term1  = new LegacyTerm();
                             $term1->legacyyearid = $year->legacyyearid;
                             $term1->name = "Term1"; 
                             $term1->ordering = 1;
-                            $term_save_load = $term1->save();
-                            if($term_save_load == false)
+                            $term1_save_flag = $term1->save();
+                            if($term1_save_flag == false)
                             {
                                 $operation_success = false;
                                 $transaction->rollback();
@@ -154,8 +148,8 @@
                                 $term2->legacyyearid = $year->legacyyearid;
                                 $term2->name = "Term2"; 
                                 $term2->ordering = 2;
-                                $term_save_load = $term2->save();
-                                if($term_save_load == false)
+                                $term2_save_flag = $term2->save();
+                                if($term2_save_flag == false)
                                 {
                                     $operation_success = false;
                                     $transaction->rollback();
@@ -168,8 +162,8 @@
                                     $term3->legacyyearid = $year->legacyyearid;
                                     $term3->name = "Term3"; 
                                     $term3->ordering = 3;
-                                    $term_save_load = $term3->save();
-                                    if($term_save_load == false)
+                                    $term3_save_flag = $term3->save();
+                                    if($term3_save_flag == false)
                                     {
                                         $operation_success = false;
                                         $transaction->rollback();
@@ -191,44 +185,22 @@
                                                         ->all();
                                                 foreach($levels as $level)
                                                 {
-                                                    $term_batch = new LegacyBatch();
-                                                    $term_batch->legacytermid = $term->legacytermid;
-                                                    $term_batch->legacysubjectid = $subject->legacysubjectid;
-                                                    $term_batch->legacybatchtypeid = 1;
-                                                    $term_batch->legacylevelid = $level->legacylevelid;
-                                                    $term_batch->name = $term->name . "-" . $subject->name . "-" . $level->name . " Batch";
-                                                    $term_batch->createdby = $employeeid;
-                                                    $term_batch->datecreated = $date;
-                                                    $term_batch->lastmodifiedby =$employeeid ;
-                                                    $term_batch->datemodified = $date;
-                                                    $batch_save_flag = $term_batch->save();
-                                                    if($term_batch_save_flag == false)
+                                                    $batch = new LegacyBatch();
+                                                    $batch->legacytermid = $term->legacytermid;
+                                                    $batch->legacysubjectid = $subject->legacysubjectid;
+                                                    $batch->legacylevelid = $level->legacylevelid;
+                                                    $batch->name = $term->name . "-" . $subject->name . "-" . $level->name . " Batch";
+                                                    $batch->createdby = $employeeid;
+                                                    $batch->datecreated = $date;
+                                                    $batch->lastmodifiedby =$employeeid ;
+                                                    $batch->datemodified = $date;
+                                                    $batch_save_flag = $batch->save();
+                                                    if($batch_save_flag == false)
                                                     {
                                                         $operation_success = false;
                                                         break;
                                                         $transaction->rollback();
                                                         Yii::$app->getSession()->setFlash('error', 'Error occured saving term batch record.');
-                                                    }
-                                                    else
-                                                    {
-                                                        $exam_batch = new LegacyBatch();
-                                                        $exam_batch->legacytermid = $term->legacytermid;
-                                                        $exam_batch->legacysubjectid = $subject->legacysubjectid;
-                                                        $exam_batch->legacybatchtypeid = 2;
-                                                        $exam_batch->legacylevelid = $level->legacylevelid;
-                                                        $exam_batch->name = $term->name . "-" . $subject->name . "-" . $level->name . " Batch";
-                                                        $exam_batch->createdby = $employeeid;
-                                                        $exam_batch->datecreated = $date;
-                                                        $exam_batch->lastmodifiedby =$employeeid ;
-                                                        $exam_batch->datemodified = $date;
-                                                        $exam_batch_save_flag = $term_batch->save();
-                                                        if($exam_batch_save_flag == false)
-                                                        {
-                                                            $operation_success = false;
-                                                            break;
-                                                            $transaction->rollback();
-                                                            Yii::$app->getSession()->setFlash('error', 'Error occured saving exam batch record.');
-                                                        }
                                                     }
                                                 }
                                             }
@@ -267,33 +239,37 @@
         }
         
         
+        /**
+         * 'Soft' deletes LegacyBatch record
+         * 
+         * @return type
+         * 
+         * Author: Laurence Chrles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 10/07/2016 | 22/03/2017
+         */
         public function actionDeleteYear($id)
         {
-            if (false/*Yii::$app->user->can('deleteLegacyYear') == false*/)
+            if (false/*Yii::$app->user->can('deleteLegacySubjects') == false*/)
             {
-                 return $this->render('unauthorized');
-            }
-            
-           
-        }
-        
-        
-        public function actionViewYear()
-        {
-            if (true/*Yii::$app->user->can('viewLegacyYear') == false*/)
-            {
-                 return $this->render('unauthorized');
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
             
             if ($post_data = Yii::$app->request->post())
             {
-                
+                $year = LegacyYear::find()
+                        ->where(['legacyyearid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                $year->isactive = 0;
+                $year->isdeleted = 1;
+                $save_flag = $year->save();
+                if($save_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when deleting year.');
+                }
             }
-            
-            return $this->render('view_year',
-                    [
-                        
-                    ]);
+            return self::actionIndex();  
         }
         
         

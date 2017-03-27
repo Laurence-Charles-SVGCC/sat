@@ -1,75 +1,88 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
      use yii\grid\GridView;
     
-     $this->title = 'Academic Year Listing';
-     $this->params['breadcrumbs'][] = $this->title;
+     use frontend\models\LegacyTerm;
      
+     $this->title = 'Legacy Year Listing';
+     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/legacy/year/index']);?>" title="Legacy Years">
+        <h1>Welcome to the Legacy Management System</h1>
+    </a>
+</div>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/legacy/legacy/index']);?>" title="Manage Legacy Records">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/legacy.png" alt="legacy avatar">
-                <span class="custom_module_label" > Welcome to the Legacy Management System</span> 
-                <img src ="css/dist/img/header_images/legacy.png" alt="legacy avatar" class="pull-right">
-            </a>  
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:99%; margin: 0 auto;">
+    <h2 class="text-center"><?= $this->title?></h2>
+    
+    <?php if (true/*Yii::$app->user->can('createLegacyYear')*/): ?>
+        <div class="box-header with-border">
+            <?= Html::a(' Create Year', ['year/create'], ['class' => 'btn btn-info pull-right']) ?>
         </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1"><?=$this->title;?></h1>
-            
-            <p>
-                <?php if (true/*Yii::$app->user->can('createLegacyYear')*/): ?>
-                    <?= Html::a(' Create Academic Year', ['year/create'], ['class' => 'btn btn-info pull-right glyphicon glyphicon-plus', 'style' => 'margin-right:5%;']) ?>
-                <?php endif; ?>
-            </p>
-            
-             <br/>
-            <div style="width:98%; margin: 0 auto;">
-                <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
-                            [
-                                'attribute' => 'name',
-                                'format' => 'text',
-                                'label' => 'Name'
-                            ],
-                            [
-                                'attribute' => 'createdby',
-                                'format' => 'text',
-                                'label' => 'Created By'
-                            ],
-                            [
-                                'attribute' => 'datecreated',
-                                'format' => 'text',
-                                'label' => 'Date Created'
-                            ],
-                            [
-                                'attribute' => 'lastmodifiedby',
-                                'format' => 'text',
-                                'label' => 'Last Modified By'
-                            ],
-                            [
-                                'attribute' => 'datemodified',
-                                'format' => 'text',
-                                'label' => 'Last Modification By'
-                            ],
-                        ],
-                    ]); 
-               ?>
-            </div>
-        </div>
+    <?php endif; ?>
+    
+    <div class="box-body">
+        <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'name',
+                        'format' => 'text',
+                        'label' => 'Name'
+                    ],
+                    [
+                        'attribute' => 'createdby',
+                        'format' => 'text',
+                        'label' => 'Created By'
+                    ],
+                    [
+                        'attribute' => 'datecreated',
+                        'format' => 'text',
+                        'label' => 'Date Created'
+                    ],
+                    [
+                        'attribute' => 'lastmodifiedby',
+                        'format' => 'text',
+                        'label' => 'Last Modified By'
+                    ],
+                    [
+                        'attribute' => 'datemodified',
+                        'format' => 'text',
+                        'label' => 'Date Modified'
+                    ],
+                    [
+                        'format' => 'html',
+                        'label' => 'Delete',
+                        'value' => function($row)
+                        {
+                            if (LegacyTerm::find()->where(['legacyyearid' => $row['yearid'], 'isactive' => 1, 'isdeleted' => 0])->one() == true)
+                            {
+                                return "N/A";
+                            }
+                            else
+                            {
+                                return Html::a(' ', 
+                                                        Url::toRoute(['/subcomponents/legacys/subjects/delete-year', 'id' => $row['yearid']]),
+                                                        ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                            'data' => [
+                                                                'confirm' => 'Are you sure you want to delete this record?',
+                                                                'method' => 'post',
+                                                            ]
+                                                        ]);
+                            }
+                        }
+                    ],
+                ],
+            ]); 
+       ?>
     </div>
 </div>

@@ -1,11 +1,4 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
     namespace app\subcomponents\legacy\controllers;
     
     use Yii;
@@ -28,13 +21,14 @@
          * 
          * Author: Laurence Chrles
          * Date Created: 09/07/2016
-         * Date Last Modified: 09/07/2016
+         * Date Last Modified: 09/07/2016 | 22/03/2017
          */
         public function actionIndex()
         {
             if (false/*Yii::$app->user->can('manageLegacySubjects') == false*/)
             {
-                 return $this->render('unauthorized');
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
             
             $dataProvider = NULL;
@@ -83,13 +77,14 @@
          * 
          * Author: Laurence Chrles
          * Date Created: 09/07/2016
-         * Date Last Modified: 09/07/2016
+         * Date Last Modified: 09/07/2016 | 22/03/2017
          */
         public function actionCreate()
         {
             if (false/*Yii::$app->user->can('createLegacySubjects') == false*/)
             {
-                 return $this->render('unauthorized');
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
             
             $subject = new LegacySubject();
@@ -125,11 +120,21 @@
         }
         
         
+        /**
+         * 'Soft' deletes LegacyBatch record
+         * 
+         * @return type
+         * 
+         * Author: Laurence Chrles
+         * Date Created: 09/07/2016
+         * Date Last Modified: 09/07/2016 | 22/03/2017
+         */
         public function actionDeleteSubject($id)
         {
             if (false/*Yii::$app->user->can('deleteLegacySubjects') == false*/)
             {
-                 return $this->render('unauthorized');
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
             }
             
             if ($post_data = Yii::$app->request->post())
@@ -172,7 +177,7 @@
                 $values = array();
                 array_push($keys, "id");
                 array_push($keys, "name");
-                $k1 = strval($subject->legacysubjecttypeid);
+                $k1 = strval($subject->legacysubjectid);
                 $k2 = strval($subject->name);
                 array_push($values, $k1);
                 array_push($values, $k2);

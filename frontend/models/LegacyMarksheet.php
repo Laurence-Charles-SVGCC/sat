@@ -10,7 +10,9 @@ use Yii;
  * @property string $legacymarksheetid
  * @property string $legacystudentid
  * @property string $legacybatchid
- * @property string $mark
+ * @property string $term
+ * @property string $exam
+ * @property string $final
  * @property string $createdby
  * @property string $datecreated
  * @property string $lastmodifiedby
@@ -20,8 +22,8 @@ use Yii;
  *
  * @property LegacyStudent $legacystudent
  * @property LegacyBatch $legacybatch
- * @property Person $createdby0
- * @property Person $lastmodifiedby0
+ * @property Person $createdby
+ * @property Person $lastmodifiedby
  */
 class LegacyMarksheet extends \yii\db\ActiveRecord
 {
@@ -39,9 +41,9 @@ class LegacyMarksheet extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['legacystudentid', 'legacybatchid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'],
+            [['legacystudentid', 'legacybatchid', 'createdby', 'datecreated', 'lastmodifiedby', 'datemodified'], 'required'], 
             [['legacystudentid', 'legacybatchid', 'createdby', 'lastmodifiedby', 'isactive', 'isdeleted'], 'integer'],
-            [['mark'], 'number'],
+            [['term', 'exam', 'final'], 'number'],
             [['datecreated', 'datemodified'], 'safe']
         ];
     }
@@ -55,7 +57,9 @@ class LegacyMarksheet extends \yii\db\ActiveRecord
             'legacymarksheetid' => 'Legacymarksheetid',
             'legacystudentid' => 'Legacystudentid',
             'legacybatchid' => 'Legacybatchid',
-            'mark' => 'Mark',
+            'term' => 'Term',
+            'exam' => 'Exam',
+            'final' => 'Final',
             'createdby' => 'Createdby',
             'datecreated' => 'Datecreated',
             'lastmodifiedby' => 'Lastmodifiedby',
@@ -84,7 +88,7 @@ class LegacyMarksheet extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedby0()
+    public function getCreatedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'createdby']);
     }
@@ -92,8 +96,9 @@ class LegacyMarksheet extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLastmodifiedby0()
+    public function getLastmodifiedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'lastmodifiedby']);
     }
+    
 }

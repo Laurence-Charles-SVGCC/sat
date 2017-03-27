@@ -2,6 +2,9 @@
 
 namespace frontend\models;
 
+use frontend\models\LegacyTerm;
+use frontend\models\LegacyBatch;
+
 use Yii;
 
 /**
@@ -17,8 +20,8 @@ use Yii;
  * @property integer $isdeleted
  *
  * @property LegacyStudent[] $legacyStudents
- * @property Person $createdby0
- * @property Person $lastmodifiedby0
+ * @property Person $createdby
+ * @property Person $lastmodifiedby
  */
 class LegacyYear extends \yii\db\ActiveRecord
 {
@@ -71,7 +74,7 @@ class LegacyYear extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedby0()
+    public function getCreatedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'createdby']);
     }
@@ -79,8 +82,31 @@ class LegacyYear extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLastmodifiedby0()
+    public function getLastmodifiedby()
     {
         return $this->hasOne(Person::className(), ['personid' => 'lastmodifiedby']);
     }
+    
+    
+    public static function yearHasRecordedGrade($yearid)
+    {
+        $terms = LegacyTerm::find()
+                ->where(['legacyyearid' => $yearid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if ($terms == false)
+            return false;
+        else
+        {
+            foreach ($terms as $term)
+            {
+                if (LegacyBatch::getBatchesWithGrades($term->legacytermid))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    
 }
