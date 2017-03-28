@@ -25,7 +25,7 @@
          */
         public function actionIndex()
         {
-            if (false/*Yii::$app->user->can('manageLegacySubjects') == false*/)
+            if (Yii::$app->user->can('manageLegacySubjects') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -81,7 +81,7 @@
          */
         public function actionCreate()
         {
-            if (false/*Yii::$app->user->can('createLegacySubjects') == false*/)
+            if (Yii::$app->user->can('createLegacySubjects') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -131,7 +131,7 @@
          */
         public function actionDeleteSubject($id)
         {
-            if (false/*Yii::$app->user->can('deleteLegacySubjects') == false*/)
+            if (Yii::$app->user->can('manageLegacySubjects') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);

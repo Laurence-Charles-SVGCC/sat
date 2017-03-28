@@ -348,34 +348,34 @@
 
                     
                     <!--Legacy-->
-                    <?php if (false/*Yii::$app->user->can('legacy')*/): ?>
+                    <?php if (Yii::$app->user->can('accessLegacy')): ?>
                         <li class="treeview">
                             <a href="">
                                 <i class="glyphicon glyphicon-hourglass"></i> <span>Legacy</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
 
                             <ul class="treeview-menu">
-                                <?php if (true/*Yii::$app->user->can('viewLegacyStudents')*/): ?>
+                                <?php if (Yii::$app->user->can('viewLegacyStudents')): ?>
                                     <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                         <li><a href="<?= Url::toRoute(['/subcomponents/legacy/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find/Create Student</a></li>
                                     <?php endif;?>
                                 <?php endif;?>
                                 
-                                <?php if (true/*Yii::$app->user->can('manageLegacyGrades')*/): ?>
+                                <?php if (Yii::$app->user->can('manageLegacyGrades')): ?>
                                     <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                         <li><a href="<?= Url::toRoute(['/subcomponents/legacy/grades/find-batches'])?>"><i class="fa fa-circle-o"></i>Grades</a></li>
                                     <?php endif;?>
                                 <?php endif;?>
 
-                                <?php if (true/*Yii::$app->user->can('manageLegacyYears')*/): ?>
+                                <?php if (Yii::$app->user->can('manageLegacyYears')): ?>
                                     <li><a href="<?= Url::toRoute(['/subcomponents/legacy/year/index'])?>"><i class="fa fa-circle-o"></i>Manage Academic Year</a></li>
                                 <?php endif;?>
 
-                                <?php if (true/*Yii::$app->user->can('manageLegacySubjects')*/): ?>
+                                <?php if (Yii::$app->user->can('manageLegacySubjects')): ?>
                                     <li><a href="<?= Url::toRoute(['/subcomponents/legacy/subjects/index'])?>"><i class="fa fa-circle-o"></i>Subject Catalog</a></li>
                                 <?php endif;?>
                                     
-                                <?php if (true/*Yii::$app->user->can('manageLegacyBatches')*/): ?>
+                                <?php if (Yii::$app->user->can('manageLegacyBatches')): ?>
                                     <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                         <li><a href="<?= Url::toRoute(['/subcomponents/legacy/batch/index'])?>"><i class="fa fa-circle-o"></i>Manage Batches</a></li>
                                     <?php endif;?>

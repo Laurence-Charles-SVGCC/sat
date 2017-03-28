@@ -127,7 +127,7 @@
                                     'label' => 'Subject',
                                     'value' => function($row)
                                     {
-                                        return Html::a($row['subject_name'], Url::to(['grades/add-marksheets', 'batchid' => $row['batchid']]));
+                                        return Html::a($row['subject'], Url::to(['grades/add-marksheets', 'batchid' => $row['batchid']]));
                                     }
                                 ],
                                 [

@@ -30,7 +30,7 @@
          */
         public function actionIndex()
         {
-            if (false/*Yii::$app->user->can('manageLegacyBatches') == false*/)
+            if (Yii::$app->user->can('manageLegacyBatches') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -114,7 +114,7 @@
          */
         public function actionCreate()
         {
-            if (false/*Yii::$app->user->can('createLegacyBatch') == false*/)
+            if (Yii::$app->user->can('manageLegacyBatches') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -177,13 +177,33 @@
         }
         
         
-        public function actionDeleteBatch()
+        public function actionDeleteBatch($id)
         {
-            if (true/*Yii::$app->user->can('deleteLegacyBatch') == false*/)
+            if (Yii::$app->user->can('manageLegacyBatches') == false)
             {
-                 return $this->render('unauthorized');
+                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                 return $this->redirect(['/site/index']);
             }
             
-           
+            $batch = LegacyBatch::find()
+                     ->where(['legacybatchid' =>  $id, 'isactive' => 1, 'isdeleted' => 0])
+                     ->one();
+            if ($batch == true)
+            {
+                $date = date('Y-m-d');
+                $employeeid = Yii::$app->user->identity->personid;
+                $batch->isactive = 0;
+                $batch->isdeleted = 1;
+                $batch->lastmodifiedby =$employeeid ;
+                $batch->datemodified = $date;
+                $save_flag = $batch->save();
+                if($save_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting batch.');
+                }
+            }
+            return self::actionIndex();
         }
+        
+        
     }

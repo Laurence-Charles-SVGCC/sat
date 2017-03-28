@@ -31,7 +31,7 @@
          */
         public function actionFindAStudent()
         {
-            if (false/*Yii::$app->user->can('viewLegacyStudents') == false*/)
+            if (Yii::$app->user->can('viewLegacyStudents') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -138,7 +138,7 @@
          */
         public function actionChooseCreate()
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -159,7 +159,7 @@
          */
         public function actionCreateSingleStudent()
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -216,7 +216,7 @@
          */
         public function actionGenerateBatchForm()
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -253,7 +253,7 @@
          */
         public function actionCreateMultipleStudents($record_count)
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
@@ -326,7 +326,7 @@
          */
         public function actionUpdateStudent($id)
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -380,7 +380,7 @@
          */
         public function actionDeleteStudent($id)
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyStudents') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -415,7 +415,7 @@
          */
         public function actionView($id)
         {
-            if (false/*Yii::$app->user->can('manageLegacyStudents') == false*/)
+            if (Yii::$app->user->can('viewLegacyStudents') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);

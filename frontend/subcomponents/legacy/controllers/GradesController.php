@@ -34,7 +34,7 @@
          */
         public function actionFindBatches($yearid = null, $termid = null, $levelid = null)
         {
-             if (false/*Yii::$app->user->can('manageLegacyMarksheet') == false*/)
+             if (false/*Yii::$app->user->can('manageLegacyGrades) == false*/)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -188,7 +188,7 @@
          */
         public function actionUpdateGrades($record_count, $batchid)
         {
-            if (false/*Yii::$app->user->can('enrollLegacyStudents') == false*/)
+            if (Yii::$app->user->can('manageLegacyGrades') == false)
             {
                  return $this->render('unauthorized');
             }
@@ -256,7 +256,7 @@
          */
         public function actionEditGrade($studentid, $batchid)
         {
-            if (false/*Yii::$app->user->can('editLEgacyMarksheet') == false*/)
+            if (Yii::$app->user->can('manageLegacyGrades') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -336,7 +336,7 @@
         
         public function actionUpdateBatchMarksheet($batchid)
         {
-            if (false/*Yii::$app->user->can('manageLegacyMarksheet') == false*/)
+            if (Yii::$app->user->can('manageLegacyGrades') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -432,7 +432,7 @@
         
         public function actionAddMarksheets($batchid, $count)
         {
-            if (false/*Yii::$app->user->can('manageLegacyMarksheet') == false*/)
+            if (Yii::$app->user->can('manageLegacyGrades') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -565,7 +565,7 @@
          
         public function actionConfigureBatchMarksheets($yearid = null, $termid = null, $levelid = null)
         {
-            if (false/*Yii::$app->user->can('manageLegacyMarksheet') == false*/)
+            if (Yii::$app->user->can('manageLegacyGrades') == false)
             {
                  Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                  return $this->redirect(['/site/index']);
@@ -743,7 +743,6 @@
                 }
             }
 
-            
              return $this->render('configure_batch_marksheets',
                      [  'dataProvider' => $dataProvider,
                          'info_string' => $info_string,
