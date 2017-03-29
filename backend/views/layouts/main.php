@@ -109,23 +109,10 @@
                         <li class="treeview">
                             <a href=""><i class="fa fa-dashboard"></i> <span>User Management</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
-                                <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create New User</a></li>
                                 <li><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Find A User</a></li>
-                                
-
-                                <li class="treeview">
-                                    <a href="">
-                                        <i class="fa fa-dashboard"></i> <span>Employee Mgmt.</span> <i class="fa fa-angle-left pull-right"></i>
-                                    </a>
-                                    <ul class="treeview-menu">
-                                        <li class="active"><a href="<?= Url::toRoute(['/employee/index'])?>"><i class="fa fa-circle-o"></i>View Employees</a></li>
-                                        <li><a href="<?= Url::toRoute(['/employee/assign-password'])?>"><i class="fa fa-circle-o"></i>Assign Password</a></li>
-                                    </ul>
-                                </li>
-
-                                <li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>View Departments</a></li>
-                                <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
-                              </ul>
+                                <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create New User</a></li>
+                                <li><a href="<?= Url::toRoute(['/employee/assign-password'])?>"><i class="fa fa-circle-o"></i>Assign Employee Password</a></li>
+                           </ul>
                         </li>
                         
                         <li class="treeview">
@@ -145,6 +132,8 @@
                             <a href=""><i class="fa fa-dashboard"></i> <span>CRUD Controllers</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
                                 <li class="active"><a href="#"><i class="fa fa-circle-o"></i>Under... development</a></li>
+                                <!--<li><a href="<?= Url::toRoute(['/department/index'])?>"><i class="fa fa-circle-o"></i>View Departments</a></li>-->
+                                <!--<li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
                               </ul>
                         </li>
                   <?php endif;?>  

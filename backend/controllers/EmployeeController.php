@@ -7,11 +7,14 @@
     use yii\web\Controller;
     use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
+    
+    use backend\models\AssignEmployeePassword;
 
     use common\models\User;
     use frontend\models\Employee;
     use frontend\models\EmployeeTitle;
-    use backend\models\AssignEmployeePassword;
+    use frontend\models\Division;
+    use frontend\models\Department;
 
     /**
      * EmployeeController implements the CRUD actions for Employee model.
@@ -123,16 +126,106 @@
             }
         }
 
+        
+        public function actionEmployeeProfile($personid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $employee_title = "";
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            if($employee == true &&  $employee->employeetitleid != false)
+            {
+                $employee_title = EmployeeTitle::find()
+                    ->where(['employeetitleid' => $employee->employeetitleid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()
+                    ->name;
+            }
+            
+            $employee_division ="N/A";
+            $employee_department = "N/A";
+            
+            $department = Department::find()
+                    ->innerJoin('employee_department' , '`department`.`departmentid` = `employee_department`.`departmentid`')
+                    ->where(['department.isactive' => 1, 'department.isdeleted' => 0,
+                                    'employee_department.personid' => $personid, 'employee_department.isactive' => 1, 'employee_department.isdeleted' => 0])
+                    ->one();
+            if ($department)
+            {
+                $employee_department = $department->name;
 
-        /**
-         * Assign password to employee
-         * 
-         * @return type
-         * 
-         * Author: Laurence Charles
-         * Date Created: 02/11/2016
-         * Date Last Modified: 03/11/2016
-         */
+                $employee_division = Division::find()
+                        ->where(['divisionid' => $department->divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->abbreviation;
+            }
+                    
+                    
+            return $this->render('employee_profile',
+                                            ['user' => $user,
+                                                'employee' => $employee,
+                                                'employee_title' => $employee_title,
+                                                'employee_division' => $employee_division,
+                                                'employee_department' => $employee_department,
+                                            ]);
+        }
+        
+        
+        
+        public function actionEditProfile($personid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $employee->load($post_data); 
+                
+                if ($post_data = Yii::$app->request->post())
+                {
+                    $save_flag = $employee->save();
+                    if ($save_flag == true)
+                    {
+                        return self::actionEmployeeProfile($personid);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured whensaving record. Please try again.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
+                }
+            }
+            return $this->render('edit_profile', 
+                                            ['employee' => $employee,
+                                                'username' => $user->username,
+                                            ]);
+        }
+
+        
         public function actionAssignPassword()
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -189,93 +282,10 @@
                     }
                 }
             }
-            
             return $this->render('assign_password',[
                                     'model' => $model,
                                     'employees' => $employees
                                     ]);
         }
-        
-        
-        
-        
-        public function actionEmployeeProfile($personid)
-        {
-            if (Yii::$app->user->can('System Administrator') == false)
-            {
-                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
-                return $this->redirect(['/site/index']);
-            }
-            
-            $employee_title = "";
-            $user = User::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-            $employee = Employee::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-            if($employee == true &&  $employee->employeetitleid != false)
-            {
-                $employee_title = EmployeeTitle::find()
-                    ->where(['employeetitleid' => $employee->employeetitleid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one()
-                    ->name;
-            }
-            
-            return $this->render('employee_profile',
-                                            ['user' => $user,
-                                                'employee' => $employee,
-                                                'employee_title' => $employee_title
-                                            ]);
-        }
-        
-        
-        
-        public function actionEditProfile($personid)
-        {
-            if (Yii::$app->user->can('System Administrator') == false)
-            {
-                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
-                return $this->redirect(['/site/index']);
-            }
-            
-            $user = User::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-            
-            $employee = Employee::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-            
-            if ($post_data = Yii::$app->request->post())
-            {
-                $load_flag = false;
-                $save_flag = false;
-                $load_flag = $employee->load($post_data); 
-                
-                if ($post_data = Yii::$app->request->post())
-                {
-                    $save_flag = $employee->save();
-                    if ($save_flag == true)
-                    {
-                        return self::actionEmployeeProfile($personid);
-                    }
-                    else
-                    {
-                        Yii::$app->getSession()->setFlash('error', 'Error occured whensaving record. Please try again.');
-                    }
-                }
-                else
-                {
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
-                }
-            }
-            
-            return $this->render('edit_profile', 
-                                            ['employee' => $employee,
-                                                'username' => $user->username,
-                                            ]);
-        }
-
         
     }

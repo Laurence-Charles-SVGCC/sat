@@ -6,27 +6,6 @@
     use yii\widgets\ActiveForm;
     use yii\data\ArrayDataProvider;
     
-    
-    
-    use frontend\models\CapeSubject;
-    use frontend\models\Application;
-    use frontend\models\ApplicationCapesubject;
-    use frontend\models\Employee;
-    use frontend\models\AcademicStatus;
-    use frontend\models\BatchStudentCape;
-    use frontend\models\BatchStudent;
-    use frontend\models\StudentRegistration;
-    use frontend\models\Hold;
-    use frontend\models\ExternalQualification;
-    use frontend\models\NursingAdditionalInfo;
-    use frontend\models\TeachingAdditionalInfo;
-    use frontend\models\NurseWorkExperience;
-    use frontend\models\CriminalRecord;
-    use frontend\models\PostSecondaryQualification;
-    use frontend\models\Offer;
-    use frontend\models\ProgrammeCatalog;
-    use frontend\models\AcademicYear;
-    
     $this->title = 'Employee Profile';
     
     $this->params['breadcrumbs'][] = ['label' => 'User Listing', 'url' => Url::toRoute(['/user/index'])];
@@ -51,6 +30,7 @@
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
             <li role="presentation"><a href="#academics" aria-controls="academics" role="tab" data-toggle="tab">Academics</a></li>
+            <li role="presentation"><a href="#roles_permissions" aria-controls="roles_permissions" role="tab" data-toggle="tab">Roles & Permissions</a></li>
         </ul>
 
         <!-- Tab panes -->
@@ -67,15 +47,15 @@
                     <table class="table table-hover" style="margin: 0 auto;">
                         <tr>
                             <td rowspan="3"> 
-                                <?php if($employee->gender == NULL): ?>
+                                <?php if($employee->gender == false): ?>
                                     <img src="css/dist/img/avatar_neutral(200_200).png" alt="avatar_neutral" class="img-rounded">
-                                <?php else:?>
-                                    <?php if (strcasecmp($employee->gender, "male") == 0): ?>
+                                <?php else: ?>
+                                    <?php if (strcasecmp($employee->gender, "m") == 0): ?>
                                         <img src="css/dist/img/avatar_male(150_150).png" alt="avatar_male" class="img-rounded">
-                                    <?php elseif (strcasecmp($employee->gender, "female") == 0): ?>
+                                    <?php elseif (strcasecmp($employee->gender, "f") == 0): ?>
                                         <img src="css/dist/img/avatar_female(150_150).png" alt="avatar_female" class="img-rounded">
                                     <?php endif;?>
-                                <?php endif;?>
+                                <?php endif; ?>
                             </td>
                             <th>Username</th>
                             <td><?=$user->username;?></td>
@@ -84,10 +64,10 @@
                         </tr>
 
                         <tr>
-                            <th>Full Name</th>
-                            <td><?=$employee->title . ". " . $employee->firstname . " " . $employee->middlename . " " . $employee->lastname ;?></td>
-                            <th>Gender</th>
-                            <td><?=$employee->gender;?></td>
+                            <th>Division</th>
+                            <td><?=$employee_division;?></td>  
+                            <th>Department</th>
+                            <td><?=$employee_department;?></td>  
                         </tr>
 
                         <tr>
@@ -126,6 +106,12 @@
             
             <div role="tabpanel" class="tab-pane fade" id="academics"> 
                 <h2 class="custom_h2">Academics</h2>
+                </br>
+                <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
+            </div>
+            
+            <div role="tabpanel" class="tab-pane fade" id="roles_permissions"> 
+                <h2 class="custom_h2">Roles and Permissions</h2>
                 </br>
                 <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
             </div>
