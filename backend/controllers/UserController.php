@@ -40,24 +40,128 @@
         
         public function actionIndex()
         {
-//            $persontype = PersonType::findOne(['persontype' => 'employee']);
-//            $query = $persontype ? User::find()->where(['persontypeid' => $persontype->persontypeid]) : User::find();
-//            $dataProvider = new ActiveDataProvider([
-//                'query' => $query,
-//            ]);
             if (Yii::$app->user->can('System Administrator') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
             }
             
-            $info_string = "Unfiltered";
+            $info_string = "All users";
             $dataProvider = NULL;
             $user_container = array();
             
-           $users = User::find()
-                   ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
-                   ->all();
+            if (Yii::$app->request->post())
+            {
+                $request = Yii::$app->request;
+                $firstname = $request->post('fname_field');
+                $lastname = $request->post('lname_field');
+                $username = $request->post('username_field');
+                $personid = $request->post('personid_field');
+                
+                if($firstname == false && $lastname == false && $username == false && $personid == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'No search criteria was entered.');
+                    $users = User::find()
+                        ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                }
+                else
+                {
+                    if($firstname == true || $lastname == true)
+                    {
+                        $users = array();
+                        
+                        if ($firstname)
+                        {
+                            $info_string = $info_string .  " First Name: " . $firstname; 
+                        }
+                        if ($lastname)
+                        {
+                            $info_string = $info_string .  " Last Name: " . $lastname;
+                        }
+                        
+                        /********************   employee search   ************************/
+                        $cond_arr = array();
+                        $cond_arr['person.isactive'] = 1;
+                        $cond_arr['person.isdeleted'] = 0;
+                        if ($firstname)
+                        {
+                            $cond_arr['employee.firstname'] = $firstname;
+                        }
+                        if ($lastname)
+                        {
+                            $cond_arr['employee.lastname'] = $lastname;
+                        }
+                        $employees = User::find()
+                             ->innerJoin('employee' , '`person`.`personid` = `employee`.`personid`')
+                             ->where($cond_arr)
+                             ->all();
+                        if($employees)
+                        {
+                            $users = array_merge($users, $employees);
+                        }
+                        
+                        /********************   student search   ************************/
+                        $cond_arr = array();
+                        $cond_arr['person.isactive'] = 1;
+                        $cond_arr['person.isdeleted'] = 0;
+                        if ($firstname)
+                        {
+                            $cond_arr['student.firstname'] = $firstname;
+                        }
+                        if ($lastname)
+                        {
+                            $cond_arr['student.lastname'] = $lastname;
+                        }
+                        $students = User::find()
+                            ->innerJoin('student' , '`person`.`personid` = `student`.`personid`')
+                            ->where($cond_arr)
+                            ->all();
+                        if($students)
+                        {
+                            $users = array_merge($users, $students);
+                        }
+                    }
+
+                    elseif($username)
+                    {
+                        $cond_arr = array();
+                        $cond_arr['isactive'] = 1;
+                        $cond_arr['isdeleted'] = 0;
+                        $cond_arr['username'] = $username;
+                        $info_string = $info_string .  " Username: " . $username;
+                        
+                        $users = User::find()
+                            ->where($cond_arr)
+                            ->all();
+                    }
+
+                    elseif($personid)
+                    {
+                        $cond_arr = array();
+                        $cond_arr['isactive'] = 1;
+                        $cond_arr['isdeleted'] = 0;
+                        $cond_arr['personid'] = $personid;
+                        $info_string = $info_string .  " Person ID: " . $personid;
+                        
+                        $users = User::find()
+                            ->where($cond_arr)
+                            ->all();
+                    }
+                    
+                    if (empty($users))
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No users found matching this criteria.');
+                    }
+                }
+            }
+            else
+            {
+                $users = User::find()
+               ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+            }
+           
            
            foreach ($users as $user)
            { 
@@ -136,12 +240,6 @@
                 'dataProvider' => $dataProvider,
                 'info_string' => $info_string,
             ]);
-        }
-        
-        
-        public function actionFindUser()
-        {
-            
         }
         
         

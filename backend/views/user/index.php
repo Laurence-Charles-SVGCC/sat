@@ -47,7 +47,7 @@
         <p>
             Please select a method by which to begin your search.
             <?= Html::radioList('search_type', null, ['name' => 'By Employee/Student Name' , 'username' => 'By UserName', 'personid' => 'By PersonID'], ['onclick'=> 'checkUserSearchCriteria();']);?>
-        </p>
+        </p><br/>
         
         <?php $form = ActiveForm::begin();?>
             <div id="by_name" style="display:none">
@@ -69,7 +69,7 @@
             <div id="by_personid" style="display:none">
                 <?= Html::label( 'PersonID',  'personid_label'); ?>
                 <?= Html::input('text', 'personid_field', null, ['style' => 'width:40%']); ?>
-                <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>
+                <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:40%;']) ?>
             </div>
         <?php ActiveForm::end(); ?>
     </div>

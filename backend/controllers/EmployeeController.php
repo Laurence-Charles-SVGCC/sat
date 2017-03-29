@@ -135,6 +135,11 @@
          */
         public function actionAssignPassword()
         {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
 
             $model = new AssignEmployeePassword(); 
             $employees = Employee::getAllEmployees();
@@ -196,6 +201,12 @@
         
         public function actionEmployeeProfile($personid)
         {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $employee_title = "";
             $user = User::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -222,6 +233,12 @@
         
         public function actionEditProfile($personid)
         {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $user = User::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
