@@ -26,7 +26,7 @@
     <h2 class="text-center"><?= $this->title?></h2>
     
     <div class="box-header with-border">
-        <span class="box-title">Welcome. This application facilitates the management of all student grades. </span>
+        <span class="box-title">Welcome. This module facilitates the search for students. </span>
     </div>
     
     <div class="box-body">

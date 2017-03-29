@@ -68,6 +68,8 @@ class AppAsset extends AssetBundle
         'js/legacy/batch.js',
         'js/legacy/grades.js',
         'js/admissions/view-applicant/applicant_profile.js',
+        
+         'js/backend/user/index.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

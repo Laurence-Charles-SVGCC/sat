@@ -19,7 +19,6 @@
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-//            ['class' => 'yii\grid\SerialColumn'],
             [
                 'format' => 'html',
                 'label' => 'Student ID',

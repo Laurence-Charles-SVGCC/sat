@@ -10,6 +10,7 @@
 
     use common\models\User;
     use frontend\models\Employee;
+    use frontend\models\EmployeeTitle;
     use backend\models\AssignEmployeePassword;
 
     /**
@@ -189,4 +190,75 @@
                                     'employees' => $employees
                                     ]);
         }
+        
+        
+        
+        
+        public function actionEmployeeProfile($personid)
+        {
+            $employee_title = "";
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            if($employee == true &&  $employee->employeetitleid != false)
+            {
+                $employee_title = EmployeeTitle::find()
+                    ->where(['employeetitleid' => $employee->employeetitleid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()
+                    ->name;
+            }
+            
+            return $this->render('employee_profile',
+                                            ['user' => $user,
+                                                'employee' => $employee,
+                                                'employee_title' => $employee_title
+                                            ]);
+        }
+        
+        
+        
+        public function actionEditProfile($personid)
+        {
+            $user = User::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $employee->load($post_data); 
+                
+                if ($post_data = Yii::$app->request->post())
+                {
+                    $save_flag = $employee->save();
+                    if ($save_flag == true)
+                    {
+                        return self::actionEmployeeProfile($personid);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured whensaving record. Please try again.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
+                }
+            }
+            
+            return $this->render('edit_profile', 
+                                            ['employee' => $employee,
+                                                'username' => $user->username,
+                                            ]);
+        }
+
+        
     }

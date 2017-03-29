@@ -63,11 +63,10 @@
 
                           <div class="navbar-custom-menu">
                             <ul class="nav navbar-nav">
-
                               <!-- User Account: style can be found in dropdown.less -->
                               <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  <img src="css/dist/img/logo.png" class="user-image" alt="User Image" />
+                                  <img src="css/dist/img/logo.png" class="user-image" alt="Company Logo" />
                                   <span class="hidden-xs"><?= $employee_name ?></span>
                                 </a>
                                   
@@ -85,11 +84,11 @@
                                   <li class="user-footer">
                                     <?php if (Yii::$app->user->can('System Administrator')): ?>
                                         <div class="pull-left" style="margin-left:2.5%">
-                                                <?php if(strstr(Url::home(true), "localhost") == true) :?>
-                                                    <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
-                                                <?php else:?>
-                                                    <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
-                                                <?php endif;?>
+                                            <?php if(strstr(Url::home(true), "localhost") == true) :?>
+                                                <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
+                                            <?php else:?>
+                                                <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
+                                            <?php endif;?>
                                         </div>
                                     <?php endif;?>
                                     <div class="pull-right">
@@ -348,7 +347,7 @@
 
                     
                     <!--Legacy-->
-                    <?php if (Yii::$app->user->can('accessLegacy')): ?>
+                    <?php if (false/*Yii::$app->user->can('accessLegacy')*/): ?>
                         <li class="treeview">
                             <a href="">
                                 <i class="glyphicon glyphicon-hourglass"></i> <span>Legacy</span> <i class="fa fa-angle-left pull-right"></i>
@@ -430,7 +429,6 @@
                         </li>
                     <?php endif; ?>
                     -->
-
                   </ul>
                   <div style="position: fixed; z-index: 1000; width: 164px; height: 98px; bottom: 30px; left: 15px;">
                       <a href="#" onclick="window.open('https://www.sitelock.com/verify.php?site=svgcc.net','SiteLock','width=600,height=600,left=160,top=170');" >
@@ -445,9 +443,7 @@
                 <!-- Content Wrapper. Contains page content -->
                 <div class="content-wrapper">
                     <!-- Content Header (Page header) -->
-                    <div>
-                        <p style="width:90%"><?= Alert::widget() ?></p>
-                    </div>
+                    <div><p style="width:90%"><?= Alert::widget() ?></p></div>
                     
                     <!-- Main Content -->
                     <section class="content">
