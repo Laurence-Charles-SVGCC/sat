@@ -35,7 +35,7 @@
 
         // (laurence_charles) - Generates a listing of all users by default; however it also facilitates filter by,
         // firstname &/ or lastname; username or personid
-        public function actionIndex()
+        public function actionIndex($user_type = NULL)
         {
             if (Yii::$app->user->can('System Administrator') == false)
             {
@@ -43,7 +43,18 @@
                 return $this->redirect(['/site/index']);
             }
             
-            $info_string = "All users";
+            if ($user_type == NULL)
+            {
+                $info_string = "All users";
+            }
+            elseif($user_type == "employees")
+            {
+                $info_string = "All employees";
+            }
+            elseif ($user_type == "students")
+            {
+                $info_string = "All students";
+            }
             $dataProvider = NULL;
             $user_container = array();
             
@@ -154,9 +165,24 @@
             }
             else
             {
-                $users = User::find()
-               ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
-               ->all();
+                if ($user_type == NULL)
+                {
+                    $users = User::find()
+                        ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                }
+                elseif($user_type == "employees")
+                {
+                    $users = User::find()
+                        ->where(['persontypeid' => 3, 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                }
+                elseif ($user_type == "students")
+                {
+                    $users = User::find()
+                    ->where(['persontypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+                }
             }
            
            
