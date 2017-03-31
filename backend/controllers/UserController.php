@@ -9,10 +9,9 @@
     use yii\data\ArrayDataProvider;
     
     use common\models\User;
-    
-    use backend\models\SignupUserForm;
+    use backend\models\SignupFullUserForm;
+    use backend\models\SignupLecturerForm;
     use \backend\models\PersonType;
-    
     use frontend\models\Employee;
     use frontend\models\Student;
     use frontend\models\StudentRegistration;
@@ -20,9 +19,6 @@
     use frontend\models\EmployeeDepartment;
     
 
-    /**
-     * UserController implements the CRUD actions for User model.
-     */
     class UserController extends Controller
     {
         public function behaviors()
@@ -37,7 +33,8 @@
             ];
         }
 
-        
+        // (laurence_charles) - Generates a listing of all users by default; however it also facilitates filter by,
+        // firstname &/ or lastname; username or personid
         public function actionIndex()
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -225,7 +222,7 @@
                $user_container[] = $user_info;
             }
 
-            $dataProvider = new ArrayDataProvider([
+           $dataProvider = new ArrayDataProvider([
                         'allModels' => $user_container,
                         'pagination' => [
                             'pageSize' => 25,
@@ -256,85 +253,176 @@
             ]);
         }
 
-        /**
-         * Creates a new User.
-         * If creation is successful, the browser will be redirected to the 'view' page.
-         * @return mixed
-         * Date Created: 30/07/2015 By Gamal Crichton
-         * Date Last Modified: 20/01/2016 By Laurence Charles
-         */
-        public function actionCreate()
+        
+        // (gamal_crichton & laurence_charles) - Creates a new full user account by creating User and Employee records.
+        public function actionCreateFullUser()
         {
-            $model = new SignupUserForm();
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $model = new SignupFullUserForm();
 
-            if ($model->load(Yii::$app->request->post())) 
-            {   
-                $username = $model->username == '' ? SiteController::createUsername() : $model->username;
-                $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
-
-                if ($user = $model->signup($username, $model->institutional_email)) 
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $model->load($post_data); 
+                
+                if ($load_flag == true)
                 {
-                    $email = new Email();
-                    $email->email = $model->personal_email;
-                    $email->personid = $user->personid;
-                    $email->priority = 1;
-                    if ($email->save())
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
                     {
-                        $employee_model = new Employee();
-                        $employee_model->personid = $user->personid;
-                        $employee_model->firstname = ucfirst($model->firstname);
-                        $employee_model->lastname = ucfirst($model->lastname);
-                        if ($employee_model->save()) 
+                        //(laurence_charles) -  if '$model->username' is not defined by user, the system will generate a username
+                        $username = $model->username == '' ? SignupFullUserForm::createEmployeeUsername() : $model->username;
+
+                        $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
+
+                        if ($user = $model->signup($username, $model->institutional_email)) 
                         {
-                            $department = new EmployeeDepartment();
-                            $department->departmentid = $model->department;
-                            $department->personid = $user->personid;
-                            if ($department->save())
+                            $email = new Email();
+                            $email->email = $model->personal_email;
+                            $email->personid = $user->personid;
+                            $email->priority = 1;   //(laurence_charles) - all employees have an email record with priority of 1
+                            if ($email->save())
                             {
-                                return $this->redirect(Url::to(['employee/update', 'id' => $employee_model->employeeid ])); 
+                                $employee_model = new Employee();
+                                $employee_model->personid = $user->personid;
+                                $employee_model->title = ucfirst($model->title);
+                                $employee_model->firstname = ucfirst($model->firstname);
+                                if($model->middlename == true)
+                                {
+                                    $employee_model->middlename = ucfirst($model->middlename);
+                                }
+                                $employee_model->lastname = ucfirst($model->lastname);
+
+                                $employee_model->employeetitleid = $model->employeetitleid;
+                                $employee_model->maritalstatus = $model->maritalstatus;
+                                $employee_model->religion = $model->religion;
+                                $employee_model->nationality = $model->nationality;
+                                $employee_model->placeofbirth = $model->placeofbirth;
+                                $employee_model->nationalidnumber = $model->nationalidnumber;
+                                $employee_model->nationalinsurancenumber = $model->nationalinsurancenumber;
+                                $employee_model->inlandrevenuenumber = $model->inlandrevenuenumber;
+                                $employee_model->gender = $model->gender;
+                                $employee_model->dateofbirth = $model->dateofbirth;
+
+                                if ($employee_model->save() == true) 
+                                {
+                                    $department = new EmployeeDepartment();
+                                    $department->departmentid = $model->departmentid;
+                                    $department->personid = $user->personid;
+                                    if ($department->save() == true)
+                                    {
+                                        $transaction->commit();
+                                        Yii::$app->session->setFlash('success', 'User account creation was successful.');
+                                        return $this->redirect(Url::to(['employee/employee-profile', 'personid' => $user->personid ])); 
+                                    }
+                                    else
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Department assignment could not be saved.');
+                                    }
+                                }
+                                else
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Employee could not be saved.');
+                                }
+                            }
+                            else
+                            {
+                                $transaction->rollBack();
+                                 Yii::$app->session->setFlash('error', 'Email could not be saved.');
                             }
                         }
-                        Yii::$app->session->setFlash('error', 'Employee could not be saved.');
+                        else
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'Error occured while creating User model.');
+                        }
+                    }catch (Exception $ex) {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
                     }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'Error occured loading data entry.');
+                } 
+            }
+
+            return $this->render('create_full_user', ['model' => $model]);
+        }
+        
+        
+         // (gamal_crichton & laurence_charles) - Creates a lecturer user account by creating User and Employee records.
+        public function actionCreateLecturer()
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $model = new SignupLecturerForm();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $model->load($post_data); 
+                
+                if ($load_flag == true)
+                {
+                    //(laurence_charles) -  if '$model->username' is not defined by user, the system will generate a username
+                    $username = $model->username == '' ? SignupLecturerForm::createEmployeeUsername() : $model->username;
+                    
+                    $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
+
+                    if ($user = $model->signup($username, $model->institutional_email)) 
+                    {
+                        $email = new Email();
+                        $email->email = $model->personal_email;
+                        $email->personid = $user->personid;
+                        $email->priority = 1;   //(laurence_charles) - all employees have an email record with priority of 1
+                        if ($email->save())
+                        {
+                            $employee_model = new Employee();
+                            $employee_model->personid = $user->personid;
+                            $employee_model->firstname = ucfirst($model->firstname);
+                            $employee_model->lastname = ucfirst($model->lastname);
+                            if ($employee_model->save()) 
+                            {
+                                $department = new EmployeeDepartment();
+                                $department->departmentid = $model->department;
+                                $department->personid = $user->personid;
+                                if ($department->save())
+                                {
+                                    return $this->redirect(Url::to(['employee/update', 'id' => $employee_model->employeeid ])); 
+                                }
+                            }
+                            else
+                            {
+                                Yii::$app->session->setFlash('error', 'Employee could not be saved.');
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured while creating User model.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'Error occured loading data entry.');
                 }
             }
 
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-
-        }
-
-        /**
-         * Updates an existing User model.
-         * If update is successful, the browser will be redirected to the 'view' page.
-         * @param string $id
-         * @return mixed
-         */
-        public function actionUpdate($id)
-        {
-            $model = $this->findModel($id);
-
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->personid]);
-            } else {
-                return $this->render('update', [
-                    'model' => $model,
-                ]);
-            }
-        }
-
-        /**
-         * Deletes an existing User model.
-         * If deletion is successful, the browser will be redirected to the 'index' page.
-         * @param string $id
-         * @return mixed
-         */
-        public function actionDelete($id)
-        {
-            $this->findModel($id)->delete();
-
-            return $this->redirect(['index']);
+            return $this->render('create_lecturer', ['model' => $model]);
         }
 
         /**

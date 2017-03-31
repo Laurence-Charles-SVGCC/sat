@@ -15,6 +15,9 @@
     use frontend\models\EmployeeTitle;
     use frontend\models\Division;
     use frontend\models\Department;
+    use backend\models\AuthAssignment;
+     use backend\models\AuthItemChild;
+    
 
     /**
      * EmployeeController implements the CRUD actions for Employee model.
@@ -33,82 +36,6 @@
             ];
         }
 
-        /**
-         * Lists all Employee models.
-         * @return mixed
-         */
-        public function actionIndex()
-        {
-            $dataProvider = new ActiveDataProvider([
-                'query' => Employee::find(),
-            ]);
-
-            return $this->render('index', [
-                'dataProvider' => $dataProvider,
-            ]);
-        }
-
-        /**
-         * Displays a single Employee model.
-         * @param string $id
-         * @return mixed
-         */
-        public function actionView($id)
-        {
-            return $this->render('view', [
-                'model' => $this->findModel($id),
-            ]);
-        }
-
-        /**
-         * Creates a new Employee model.
-         * If creation is successful, the browser will be redirected to the 'view' page.
-         * @return mixed
-         */
-        public function actionCreate()
-        {
-            $model = new Employee();
-
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->employeeid]);
-            } else {
-                return $this->render('create', [
-                    'model' => $model,
-                ]);
-            }
-        }
-
-        /**
-         * Updates an existing Employee model.
-         * If update is successful, the browser will be redirected to the 'view' page.
-         * @param string $id
-         * @return mixed
-         */
-        public function actionUpdate($id)
-        {
-            $model = $this->findModel($id);
-
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->employeeid]);
-            } else {
-                return $this->render('update', [
-                    'model' => $model,
-                ]);
-            }
-        }
-
-        /**
-         * Deletes an existing Employee model.
-         * If deletion is successful, the browser will be redirected to the 'index' page.
-         * @param string $id
-         * @return mixed
-         */
-        public function actionDelete($id)
-        {
-            $this->findModel($id)->delete();
-
-            return $this->redirect(['index']);
-        }
 
         /**
          * Finds the Employee model based on its primary key value.
@@ -126,7 +53,7 @@
             }
         }
 
-        
+        // (laurence_charles) - Renders employee's profile
         public function actionEmployeeProfile($personid)
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -167,19 +94,52 @@
                         ->one()
                         ->abbreviation;
             }
-                    
-                    
+            
+            $descendants = array();
+            $ancestors = array();
+            $roles = AuthAssignment::getUserRoleDetails($personid);
+            
+            if (empty($roles) == false)
+            {
+                foreach ($roles as $role)
+                {
+                    $parents = AuthItemChild::getRoleAncestors($role["name"]);
+                    foreach ($parents as $parent)
+                    {
+                        if(in_array($parent, $ancestors) == false)
+                        {
+                            $ancestors[] = $parent;
+                        }
+                    }
+                }
+                
+                foreach ($roles as $role)
+                {
+                    $children = AuthItemChild::getRoleDescendants($role["name"]);
+                    foreach ($children as $child)
+                    {
+                        if(in_array($child, $descendants) == false)
+                        {
+                            $descendants[] = $child;
+                        }
+                    }
+                }
+            }
+            
             return $this->render('employee_profile',
                                             ['user' => $user,
                                                 'employee' => $employee,
                                                 'employee_title' => $employee_title,
                                                 'employee_division' => $employee_division,
                                                 'employee_department' => $employee_department,
+                                                'roles' => $roles,
+                                                'descendants' => $descendants,
+                                                'ancestors' => $ancestors
                                             ]);
         }
         
         
-        
+        // (laurence_charles) - Update/Edit employee's profile
         public function actionEditProfile($personid)
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -202,7 +162,7 @@
                 $save_flag = false;
                 $load_flag = $employee->load($post_data); 
                 
-                if ($post_data = Yii::$app->request->post())
+                if ($load_flag == true)
                 {
                     $save_flag = $employee->save();
                     if ($save_flag == true)
@@ -226,6 +186,8 @@
         }
 
         
+        // (laurence_charles) - Assign password to employee; will generally be used when upgrading a user from
+        // Lecturuer to FullUser.
         public function actionAssignPassword()
         {
             if (Yii::$app->user->can('System Administrator') == false)

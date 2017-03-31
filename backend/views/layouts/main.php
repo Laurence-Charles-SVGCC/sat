@@ -107,17 +107,27 @@
                   <ul class="sidebar-menu">
                     <?php if (Yii::$app->user->can('System Administrator')): ?>
                         <li class="treeview">
-                            <a href=""><i class="fa fa-dashboard"></i> <span>User Management</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <a href=""><i class="glyphicon glyphicon-user"></i> <span>User Management</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
                                 <li><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Find A User</a></li>
-                                <li><a href="<?= Url::toRoute(['/user/create'])?>"><i class="fa fa-circle-o"></i>Create New User</a></li>
+                                
+                                <li class="treeview">
+                                    <a href="">
+                                        <i class="fa fa-circle-o"></i> <span>User Creation</span> <i class="fa fa-angle-left pull-right"></i>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li><a href="<?= Url::toRoute(['/user/create-full-user'])?>"><i class="fa fa-circle-o"></i>Create Full User</a></li>
+                                        <li><a href="<?= Url::toRoute(['/user/create-lecturer'])?>"><i class="fa fa-circle-o"></i>Create Lecturer Account</a></li>
+                                    </ul>
+                                </li>
+                                
                                 <li><a href="<?= Url::toRoute(['/employee/assign-password'])?>"><i class="fa fa-circle-o"></i>Assign Employee Password</a></li>
                            </ul>
                         </li>
                         
                         <li class="treeview">
                             <a href="">
-                                <i class="fa fa-dashboard"></i> <span>Roles & Permissions</span> <i class="fa fa-angle-left pull-right"></i>
+                                <i class="glyphicon glyphicon-lock"></i> <span>Roles & Permissions</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
                                 <li class="active"><a href="<?= Url::toRoute(['/rbac/index'])?>"><i class="fa fa-circle-o"></i>Home</a></li>
