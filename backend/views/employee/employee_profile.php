@@ -6,6 +6,9 @@
     use yii\widgets\ActiveForm;
     use yii\data\ArrayDataProvider;
     
+    use backend\models\AuthAssignment;
+    
+    
     $this->title = 'Employee Profile';
     
     $this->params['breadcrumbs'][] = ['label' => 'User Listing', 'url' => Url::toRoute(['/user/index'])];
@@ -28,16 +31,16 @@
     <div class="box-body">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
             <?php if($employee_title == "Junior Lecturer"  || $employee_title == "Lecturer"):?>
                 <li role="presentation"><a href="#academics" aria-controls="academics" role="tab" data-toggle="tab">Academics</a></li>
             <?php endif;?>
-            <li role="presentation"><a href="#roles_permissions" aria-controls="roles_permissions" role="tab" data-toggle="tab">Roles & Permissions</a></li>
+            <li class='active' role="presentation"><a href="#roles_permissions" aria-controls="roles_permissions" role="tab" data-toggle="tab">Roles & Permissions</a></li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane fade in active" id="profile"> 
+            <div role="tabpanel" class="tab-pane fade" id="profile"> 
                 <br/>
                 <div class="panel panel-default" style="width:100%; margin: 0 auto;">  
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">
@@ -112,13 +115,17 @@
                 <img style="display: block; margin: auto;" src ="css/dist/img/under_construction.jpg" alt="Under Construction">
             </div>
             
-            <div role="tabpanel" class="tab-pane fade" id="roles_permissions"> 
+            <div role="tabpanel" class="tab-pane fade in active" id="roles_permissions"> 
                 <h2 class="custom_h2">Roles and Permissions</h2>
                 <br/>
                 <div class="panel panel-default" style="width:100%; margin: 0 auto;">  
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">
                         Roles
-                        <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/employee/edit-role', 'personid' => $employee->personid]);?> role="button"> Edit Role</a>
+                        <?php if(AuthAssignment::find()->where(['user_id' => $employee->personid])->count() > 0):?>
+                            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/employee/edit-role', 'personid' => $employee->personid]);?> role="button"> Edit Role</a>
+                        <?php else:?>
+                            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/employee/assign-role', 'personid' => $employee->personid]);?> role="button">Assign Role</a>
+                        <?php endif;?>
                     </div>
                     <!-- Role Table -->
                     <table class="table table-hover" style="margin: 0 auto;">
@@ -162,23 +169,24 @@
                         Permissions
                         <a class="btn btn-info pull-right" href="#" role="button"> Edit Permissions</a>
                     </div>
-                    <!-- Permissions Table -->
-                    <table class="table table-hover" style="margin: 0 auto;">
-<!--                        <thead>
-                            <tr>
-                                <th>Role</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            <tr>
-                                <td>??</td>
-                                <td>??</td>
-                            </tr>
-                        </tbody>-->
-                    </table>
-                    
+                    <div id="permission-details">
+                        <?= GridView::widget([
+                                'dataProvider' => $permission_dataProvider,
+                                'columns' => [
+                                    [
+                                        'attribute' => 'name',
+                                        'format' => 'text',
+                                        'label' => 'Name'
+                                    ],
+                                    [
+                                        'attribute' => 'description',
+                                        'format' => 'text',
+                                        'label' => 'Description'
+                                    ],
+                                ],
+                            ]); 
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>

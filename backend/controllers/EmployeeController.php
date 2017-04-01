@@ -7,9 +7,9 @@
     use yii\web\Controller;
     use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
+    use yii\data\ArrayDataProvider;
     
     use backend\models\AssignEmployeePassword;
-
     use common\models\User;
     use frontend\models\Employee;
     use frontend\models\EmployeeTitle;
@@ -126,6 +126,31 @@
                 }
             }
             
+            $permission_dataProvider = NULL;
+            $permission_container = array();
+            $permissions = AuthItemChild::getEmployeePermissionDetails($personid);
+            if (empty($permissions) == false)
+            {
+                foreach ($permissions as $permission)
+                { 
+                    $permission_info = array();
+                    $permission_info['name'] = $permission["name"];
+                    $permission_info['description'] = $permission["description"];
+                    $permission_container[] = $permission_info;
+                }
+            }
+            
+            $permission_dataProvider = new ArrayDataProvider([
+                        'allModels' => $permission_container,
+                        'pagination' => [
+                            'pageSize' => 25,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['name' => SORT_ASC],
+                            'attributes' => ['name']
+                        ]
+                ]);
+            
             return $this->render('employee_profile',
                                             ['user' => $user,
                                                 'employee' => $employee,
@@ -134,7 +159,9 @@
                                                 'employee_department' => $employee_department,
                                                 'roles' => $roles,
                                                 'descendants' => $descendants,
-                                                'ancestors' => $ancestors
+                                                'ancestors' => $ancestors,
+                                                'permissions' => $permissions,
+                                                'permission_dataProvider' => $permission_dataProvider,
                                             ]);
         }
         
@@ -301,5 +328,55 @@
                                                 'new_role' => $new_role,
                                                 'employee_full_name' => $employee_full_name,
                                             ]);
+        }
+        
+        
+        // (laurence_charles) - Assign role to new user
+        public function actionAssignRole($personid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $new_role = new AuthAssignment();
+            
+            $employee = Employee::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            
+            $employee_full_name = User::getFullName($personid);
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $new_role->load($post_data); 
+                
+                if ($load_flag == true)
+                {
+                    $new_role->user_id = $personid;
+                    $new_role->created_at =  time();
+                    $save_flag = $new_role->save();
+                    if ($save_flag == true)
+                    {
+                        return self::actionEmployeeProfile($personid);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving record. Please try again.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
+                }
+            }
+            
+            return $this->render('new_role', 
+                                                ['employee' => $employee,
+                                                    'new_role' => $new_role,
+                                                    'employee_full_name' => $employee_full_name]);
         }
     }
