@@ -171,7 +171,7 @@
                     }
                     else
                     {
-                        Yii::$app->getSession()->setFlash('error', 'Error occured whensaving record. Please try again.');
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving record. Please try again.');
                     }
                 }
                 else
@@ -250,4 +250,56 @@
                                     ]);
         }
         
+        
+        // (laurence_charles) - Edit user role
+        // A user can only have one role therefor current role is deleted before new role is assigned
+        public function actionEditRole($personid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
+            $current_role = AuthAssignment::find()
+                    ->where(['user_id' => $personid])
+                    ->one();
+                
+            $new_role = new AuthAssignment();
+            
+            $employee_full_name = User::getFullName($personid);
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $new_role->load($post_data); 
+                
+                if ($load_flag == true)
+                {
+                    $new_role->user_id = $personid;
+                    $new_role->created_at =  time();
+                    $save_flag = $new_role->save();
+                    if ($save_flag == true)
+                    {
+                        $current_role->delete();
+                        return self::actionEmployeeProfile($personid);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving record. Please try again.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
+                }
+            }
+            
+            return $this->render('edit_role',
+                                            ['current_role' => $current_role,
+                                                'new_role' => $new_role,
+                                                'employee_full_name' => $employee_full_name,
+                                            ]);
+        }
     }

@@ -239,7 +239,7 @@
             return false;
         }
 
-
+        // (laurence_charles) - Returns full name of user or employee
         public static function getFullName($personid)
         {
             $full_name = false;

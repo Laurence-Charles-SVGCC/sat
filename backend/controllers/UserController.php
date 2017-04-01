@@ -78,14 +78,14 @@
                     if($firstname == true || $lastname == true)
                     {
                         $users = array();
-                        
+                        $info_string = "";
                         if ($firstname)
                         {
-                            $info_string = $info_string .  " First Name: " . $firstname; 
+                            $info_string .= "First Name: " . $firstname; 
                         }
                         if ($lastname)
                         {
-                            $info_string = $info_string .  " Last Name: " . $lastname;
+                            $info_string .= " Last Name: " . $lastname;
                         }
                         
                         /********************   employee search   ************************/
@@ -137,7 +137,7 @@
                         $cond_arr['isactive'] = 1;
                         $cond_arr['isdeleted'] = 0;
                         $cond_arr['username'] = $username;
-                        $info_string = $info_string .  " Username: " . $username;
+                        $info_string = "Username: " . $username;
                         
                         $users = User::find()
                             ->where($cond_arr)
@@ -150,7 +150,7 @@
                         $cond_arr['isactive'] = 1;
                         $cond_arr['isdeleted'] = 0;
                         $cond_arr['personid'] = $personid;
-                        $info_string = $info_string .  " Person ID: " . $personid;
+                        $info_string = "Person ID: " . $personid;
                         
                         $users = User::find()
                             ->where($cond_arr)
