@@ -7,6 +7,7 @@
     use yii\data\ArrayDataProvider;
     
     use backend\models\AuthAssignment;
+    use backend\models\AuthItemChild;
     
     
     $this->title = 'Employee Profile';
@@ -167,7 +168,6 @@
                     <br/>
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">
                         Permissions
-                        <a class="btn btn-info pull-right" href="#" role="button"> Edit Permissions</a>
                     </div>
                     <div id="permission-details">
                         <?= GridView::widget([

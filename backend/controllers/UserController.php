@@ -113,6 +113,7 @@
                         $cond_arr = array();
                         $cond_arr['person.isactive'] = 1;
                         $cond_arr['person.isdeleted'] = 0;
+                        $cond_arr['person.persontypeid'] = 2;
                         if ($firstname)
                         {
                             $cond_arr['student.firstname'] = $firstname;
