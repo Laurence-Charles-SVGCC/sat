@@ -82,6 +82,12 @@
         // (laurence_charles) - Displays a single AuthItem model.
         public function actionView($name, $type)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $permission_dataProvider = NULL;
             $permission_container = array();
             
@@ -163,6 +169,12 @@
         // (laurence_charles) - Creates a new AuthItem model.
         public function actionCreate($type)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $model = new AuthItem();
             $model->type = $type;
 
@@ -197,6 +209,12 @@
         // (laurence_charles) - Updates an existing AuthItem model.
         public function actionUpdate($name, $type)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $model = $this->findModel($name);
 
             if ($post_data = Yii::$app->request->post())
@@ -230,6 +248,12 @@
         // (laurence_charles) - Deletes an existing AuthItem model.
         public function actionDelete($name, $type)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $this->findModel($name)->delete();
             
             if ($type == 1)
@@ -245,6 +269,12 @@
         // (laurence_charles) - Assigns new permission to an existing role
         public function actionAssignNewPermissionToRole($name, $type)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $model = new AuthItemChild();
 
             if ($post_data = Yii::$app->request->post())
@@ -276,6 +306,12 @@
         // (laurence_charles) - Removes permission to an existing role
         public function actionDeletePermissionFromRole($name, $type, $permission_name)
         {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
+                return $this->redirect(['/site/index']);
+            }
+            
             $model = AuthItemChild::find()
                     ->where(['parent' => $name, 'child' => $permission_name])
                     ->one();

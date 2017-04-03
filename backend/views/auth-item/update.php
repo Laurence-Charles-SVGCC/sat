@@ -21,8 +21,8 @@
 ?>
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/auth-item/index', 'type' => $type]);?>" title="User Management Home">
-        <h1>Welcome to the User Management System</h1>
+    <a href="<?= Url::toRoute(['/auth-item/index', 'type' => $type]);?>" title="Access Management Home">
+        <h1>Welcome to the Access Management System</h1>
     </a>
 </div>
 
