@@ -26,10 +26,8 @@
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:99%; margin: 0 auto;">
     <div class="box-header with-border">
-        <span class="box-title">Role Assignments</span>
+        <span class="box-title"><?= $this->title;?></span>
     </div>
-    
-    
     
     <?php $form = ActiveForm::begin(); ?>
         <div class="box-body">

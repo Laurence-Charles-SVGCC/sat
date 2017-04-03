@@ -31,7 +31,7 @@
         // (laurence_charles) - View listing of all role assignments
         public function actionIndex()
         {
-             if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);

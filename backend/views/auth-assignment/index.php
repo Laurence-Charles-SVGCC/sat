@@ -4,8 +4,6 @@
     use yii\grid\GridView;
     use yii\helpers\Url;
 
-    //use frontend\models\Employee;
-
     $this->title = 'Role Assignments';
     $this->params['breadcrumbs'][] = $this->title;
 ?>
