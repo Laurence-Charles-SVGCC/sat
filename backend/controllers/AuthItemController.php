@@ -124,6 +124,7 @@
                     foreach ($permissions as $permission)
                     { 
                         $permission_info = array();
+                        $permission_info['role_name'] = $name;
                         $permission_info['name'] = $permission;
                          $description = AuthItem::find()
                              ->where(['name' => $permission])
@@ -144,12 +145,17 @@
                                 'attributes' => ['name']
                             ]
                     ]);
+                
+                $new_permission = new AuthItemChild();
+                $new_permission->parent = $name;
             }
             
             return $this->render('view', ['model' => $this->findModel($name),
                                                             'name' => $name,
                                                             'type' => $type,
+                                                            'permissions' => $permissions,
                                                             'permission_dataProvider' => $permission_dataProvider,
+                                                            'new_permission' => $new_permission,
                                                         ]);
         }
 
@@ -208,7 +214,7 @@
                     }
                     else
                     {
-                        Yii::$app->session->setFlash('error', var_dump($model));
+                        Yii::$app->session->setFlash('error', 'Error occured saving record.');
                     }
                 }
                 else
@@ -234,6 +240,52 @@
             {
                 return $this->redirect(['index', 'type' => "Permissions"]);
             }
+        }
+        
+        // (laurence_charles) - Assigns new permission to an existing role
+        public function actionAssignNewPermissionToRole($name, $type)
+        {
+            $model = new AuthItemChild();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $load_flag = $model->load($post_data); 
+                
+                if ($load_flag == true)
+                {
+                    $model->parent = $name;
+                    if ($model->save())
+                    {
+                        return $this->redirect(['view', 'name' => $name, 'type' => $type]);
+                    }
+                    else
+                    {
+                        Yii::$app->session->setFlash('error', 'Error occured saving record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('error', 'Error occured loading data entry.');
+                } 
+            } 
+        }
+        
+        
+        // (laurence_charles) - Removes permission to an existing role
+        public function actionDeletePermissionFromRole($name, $type, $permission_name)
+        {
+            $model = AuthItemChild::find()
+                    ->where(['parent' => $name, 'child' => $permission_name])
+                    ->one();
+            
+            if ($model == true)
+            {
+                $model->delete();
+            }
+            
+            return $this->redirect(['view', 'name' => $name, 'type' => $type, $permission_name]);
         }
 
         
@@ -267,6 +319,9 @@
                     'model' => $model,
                 ]);
         }
+        
+        
+        
         
         
         

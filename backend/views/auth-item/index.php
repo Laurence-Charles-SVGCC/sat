@@ -79,7 +79,8 @@
                                         ['title' => 'Delete']
                                        );
                                 }
-                                //if auth_item is role and role is not yet assigned to user and it is not a parent role 
+                                //if auth_item is permission and it has not been assigned to any roles.
+                                //a permission's association with a role must be removed before that permission can be deleted
                                 elseif ($row['type'] == 2  && AuthItemChild::find()->where(['child' => $row['name']])->count() == 0)
                                 {
                                     return Html::a(
