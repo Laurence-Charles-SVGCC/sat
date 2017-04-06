@@ -394,7 +394,6 @@ class BatchStudent extends \yii\db\ActiveRecord
                 $batch_name = $batch_student_records[$i]["name"];
             }
             array_push($values, $batch_name);
-            //array_push($values, $batch_student_records[$i]["name"]);
             
             array_push($values, $batch_student_records[$i]["credits_attempted"]);
             array_push($values, $batch_student_records[$i]["credits_awarded"]);
