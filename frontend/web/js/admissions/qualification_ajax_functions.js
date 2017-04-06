@@ -158,7 +158,11 @@ function ProcessExaminationBody(e)
     }
     else
     {
-        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+        // (laurence_charles) - Removed due to cross site scripting concerns shown below
+        /* "XMLHttpRequest cannot load http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&exam_body_id=3&index=1. 
+        // No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://www.svgcc.vc' is therefore not allowed access.*/
+        //var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";  
+        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&"
     }
     //For live sat_dev implementation
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
