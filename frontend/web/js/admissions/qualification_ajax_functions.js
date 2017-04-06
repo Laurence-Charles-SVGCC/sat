@@ -162,6 +162,10 @@ function ProcessExaminationBody(e)
     {
         var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     }
+    else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
+    {
+        var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+    }
     else if(baseUrl.search("sat.svgcc.vc") >= 0)
     {
         var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
