@@ -164,7 +164,7 @@ function ProcessExaminationBody(e)
     }
     else if(baseUrl.search("sat.svgcc.vc") >= 0)
     {
-        var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     }
     else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
     {
