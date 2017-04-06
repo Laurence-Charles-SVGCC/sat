@@ -380,7 +380,22 @@ class BatchStudent extends \yii\db\ActiveRecord
             array_push($values, $batch_student_records[$i]["examweight"]);
             array_push($values, $batch_student_records[$i]["passfailtypeid"]);
             array_push($values, $batch_student_records[$i]["code"]);
-            array_push($values, $batch_student_records[$i]["name"]);
+            
+            $batch = Batch::find()
+                    ->where(['batchid' => $batch_student_records[$i]["batchid"], 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            // (laurence_charles) - Appends "RESIT" to all courses that are resit batches
+            if ($batch->batchtypeid == 2)
+            {
+                $batch_name = $batch->name . " - RESIT";
+            }
+            else
+            {
+                $batch_name = $batch->name;
+            }
+            array_push($values, $batch_name);
+            //array_push($values, $batch_student_records[$i]["name"]);
+            
             array_push($values, $batch_student_records[$i]["credits_attempted"]);
             array_push($values, $batch_student_records[$i]["credits_awarded"]);
             array_push($values, $batch_student_records[$i]["courseworktotal"]);
