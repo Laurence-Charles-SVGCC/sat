@@ -152,18 +152,43 @@ function ProcessExaminationBody(e)
     }
     /**************************************************************************/
     var baseUrl = document.getElementsByName('viewApplicantQualifications_baseUrl')[0].value;
-    if (baseUrl.search("localhost")!=-1)
+    
+    // (laurence_charles) - Customized URL for ajax call based on user's current URLs
+    // This must be dont to avert cross site scripting block that may occur as user may access feature through 3 different URLs;
+    //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F...
+    //2. http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F....
+    //3. http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F...
+    if (baseUrl.search("localhost") >= 0)
     {
         var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     }
-    else
+    else if(baseUrl.search("sat.svgcc.vc") >= 0)
     {
-        // (laurence_charles) - Removed due to cross site scripting concerns shown below
-        /* "XMLHttpRequest cannot load http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&exam_body_id=3&index=1. 
-        // No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://www.svgcc.vc' is therefore not allowed access.*/
-        //var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";  
+        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+    }
+    else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
+    {
         var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&"
     }
+    
+    
+    
+    
+    
+    
+    
+    
+//    if (baseUrl.search("localhost") != -1)
+//    {
+//        var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
+//    }
+//    else
+//    {
+//        //var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";  
+//        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&"
+//    }
+    
+
     //For live sat_dev implementation
 //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2Fexamination-body-dependants&";
     
