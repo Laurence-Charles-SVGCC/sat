@@ -133,6 +133,7 @@ class AdmissionsController extends Controller
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                          'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                                     ])
+                        ->groupBy('applicant.personid')
                         ->count();
                 $stats_data['total_number_of_applications_started'] = $total_number_of_applications_started;
 
