@@ -148,12 +148,12 @@
                     [
                         'attribute' => 'total_number_of_applications_started',
                         'format' => 'text',
-                        'label' => 'Applications Started'
+                        'label' => ' Applications Commenced'
                     ],
                     [
                         'attribute' => 'total_number_of_applications_completed',
                         'format' => 'text',
-                        'label' => 'Applications Completed'
+                        'label' => 'Completed Applications'
                     ],
                     [
                         'attribute' => 'total_number_of_applications_incomplete',
@@ -163,7 +163,7 @@
                     [
                         'attribute' => 'total_number_of_applications_removed',
                         'format' => 'text',
-                        'label' => 'Removed Applications'
+                        'label' => 'Duplicate Applications'
                     ],
                     [
                         'attribute' => 'total_number_of_applications_verified',
