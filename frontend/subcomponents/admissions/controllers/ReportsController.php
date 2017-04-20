@@ -847,7 +847,7 @@ class ReportsController extends Controller {
                 ->one()
                 ->name;
         
-        $header = $periodname . " UnEnrolled Applicants";
+        $header = $periodname . " Unregistered Applicants";
         $title = "Title: " . $header;
         $date = "Date Generated: " . date('Y-m-d') . "   ";
         $employeeid = Yii::$app->user->identity->personid;

@@ -109,6 +109,7 @@
                                 {
                                     return Html::a($row['username'], 
                                                          Url::to(['view-applicant/applicant-profile',
+                                                                  'search_status' => 'successful',
                                                                   'applicantusername' => $row['username'],
                                                                   'unrestricted' => true
                                                                  ])
