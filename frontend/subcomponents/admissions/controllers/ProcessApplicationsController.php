@@ -58,6 +58,7 @@
     use frontend\models\PostSecondaryQualification;
     use frontend\models\Rejection;
     use frontend\models\RejectionApplications;
+    use frontend\models\ApplicationPeriod;
 
     
     class ProcessApplicationsController extends \yii\web\Controller
@@ -668,8 +669,9 @@
             { 
                 /*
                  * If user is a member of "DTE" of "DNE", many condiseration can be negated such as application spanning multiple divsions
+                 * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  /*|| EmployeeDepartment::getUserDivision() == 1*/)
+                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  ||  ApplicationPeriod::isDteOrDneApplicationPeriodUnderReview() == true )
                 {
                     /*
                      * If an application is pending all subsequent applications
@@ -1358,10 +1360,13 @@
                     }
                     
                 }
+                
+                
                 /*
-                 * If user is a member of "DTE" of "DNE" many additional considerations have to be  accounted for such as application spanning multiple divisions
+                 * If user is a member of "DASGS" of "DTVE" many additional considerations have to be  accounted for such as application spanning multiple divisions
+                 * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5 /*|| EmployeeDepartment::getUserDivision() == 1*/)
+                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5  || ApplicationPeriod::isDasgsOrDtveApplicationPeriodUnderReview() == true )
                 {
                     /*
                      * If an application is pending all subsequent applications

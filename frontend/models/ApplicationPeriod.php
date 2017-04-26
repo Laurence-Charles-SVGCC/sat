@@ -623,7 +623,45 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
         return false;
     }
         
-        
+    
+    /**
+     * Returns true if application period for DNE or DTE is still under review
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     */
+    public static function isDteOrDneApplicationPeriodUnderReview()
+    {
+        $periods_under_review = ApplicationPeriod::find()
+                ->where(['iscomplete' => 0 , 'divisionid' => [6,7],  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if (count($periods_under_review) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Returns true if application period for DNE or DTE is still under review
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     */
+    public static function isDasgsOrDtveApplicationPeriodUnderReview()
+    {
+        $periods_under_review = ApplicationPeriod::find()
+                ->where(['iscomplete' => 0 , 'divisionid' => [4,5],  'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+        if (count($periods_under_review) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
         
         
         
