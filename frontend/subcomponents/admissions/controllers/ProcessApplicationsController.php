@@ -3213,7 +3213,8 @@
                 }
                 
                 $transaction->commit();
-                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+//                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
+                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 3);
                 
             }catch (Exception $e) 
             {
