@@ -256,8 +256,9 @@
                                         ],
                                     ]);?>
                     </div>
-
-                <?php elseif(Applicant::hasBeenIssuedOffer($applicant->personid) == false  && Applicant::isVerified($applicant->personid) == true  && Applicant::getApplicantIntent($applicant->personid)  == 1  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
+                
+                <!--feature need not be restricted to DASGS/DTVE-->
+                <?php elseif(Applicant::hasBeenIssuedOffer($applicant->personid) == false  && Applicant::isVerified($applicant->personid) == true  /*&& Applicant::getApplicantIntent($applicant->personid)  == 1*/  && ($division_id == 1 || ($division_id != 1 && $target_application->divisionid == $division_id))):?>
                     <?php if ( 
                                     (count($applications) == 2  && $target_application->ordering == 1  && $target_application->divisionid == $applications[1]->divisionid )
                                     ||  
