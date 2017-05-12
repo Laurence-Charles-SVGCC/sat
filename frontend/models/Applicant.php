@@ -2113,7 +2113,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: ??
      * Date Last Modified: 06/03/2016 (Laurence Charless)
      */
-    public static function getMultipleOffers($offers, $details = False)
+    public static function getMultipleOffers($offers, $details = false)
     {
         if (empty($offers))
             return false;
@@ -2127,20 +2127,29 @@ class Applicant extends \yii\db\ActiveRecord
                     ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['application.isdeleted' => 0,
-                            'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid
-                            ])
+                                    'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid
+                                    ])
                     ->one();
             
-            /* Identifies duplicates based on multiple offers having the same personid */
-            if ($applicant && in_array($applicant->personid, $personids))
+            /***** Identifies duplicates based on multiple offers having the same personid *********/
+            if ($applicant == true)
             {
-                if ($details)
-                    $offenderids[] = $applicant->personid;
+                if (in_array($applicant->personid, $personids) == true)
+                {
+                    if ($details)
+                    {
+                        $offenderids[] = $applicant->personid;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
                 else
-                    return true;
+                {
+                    $personids[] = $applicant->personid;
+                }
             }
-            else if ($applicant)
-                $personids[] = $applicant->personid;
             /****************************************************************************/
             
             $certificates = CsecQualification::getSubjects($applicant->personid);
@@ -2160,7 +2169,7 @@ class Applicant extends \yii\db\ActiveRecord
                                 'application.personid' => $user->personid);
 
                             if ($division_id && $division_id == 1)
-                                $offer_cond = array(/*'application_period.iscopmlete' => 0,*/ 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
+                                $offer_cond = array('application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'offer.isdeleted' => 0, 'application.personid' => $user->personid);
                            
                             $offers = Offer::find()
                                     ->joinWith('application')
