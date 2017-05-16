@@ -1576,7 +1576,7 @@ class ReportsController extends Controller {
                 $progression_info['current_female_probation_count'] = $current_female_probation_count;
                 $progression_info['current_female_academic_withdrawn_count'] = $current_female_academic_withdrawn_count;
                 $progression_info['current_female_voluntary_withdrawn_count'] = $current_female_voluntary_withdrawn_count;
-                $progression_info['current_female_other_count'] = $enrolled_female_count - ($curent_female_iscurrent_count + $current_female_probation_count);
+                $progression_info['current_female_other_count'] = $enrolled_female_count - ($curent_female_iscurrent_count + $current_female_probation_count + $current_female_academic_withdrawn_count + $current_female_voluntary_withdrawn_count);
                 
                 $progression_data[] = $progression_info;
             }
