@@ -1333,7 +1333,7 @@ class OfferController extends Controller
         
         $division_id = EmployeeDepartment::getUserDivision();
         
-        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 0*/]);
+        $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0,  'iscomplete' => 0]);
         $app_period_name = $app_period ? $app_period->name : 'Undefined Application Period';
         
         $offer_cond['application_period.isactive'] = 1;
@@ -1352,7 +1352,7 @@ class OfferController extends Controller
         
         /*
          * if user's authority is confined to one division division
-         * then only the applocation periods related to that division are considered.
+         * then only the application periods related to that division are considered.
          */
         elseif ($division_id && $division_id != 1)
             $offer_cond['application_period.divisionid'] = $division_id;

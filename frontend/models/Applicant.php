@@ -2115,20 +2115,22 @@ class Applicant extends \yii\db\ActiveRecord
      */
     public static function getMultipleOffers($offers, $details = false)
     {
-        if (empty($offers))
-            return false;
-        
         $offerids = array();
         $personids = array();
         $offenderids = array();
+        
+        if (empty($offers))
+        {
+            return false;
+        }
+        
         foreach($offers as $offer)
         {
             $applicant = Applicant::find()
                     ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
                     ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['application.isdeleted' => 0,
-                                    'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid
-                                    ])
+                                   'offer.isactive' => 1,  'offer.isdeleted' => 0, 'offer.offerid' => $offer->offerid])
                     ->one();
             
             /***** Identifies duplicates based on multiple offers having the same personid *********/
@@ -2186,6 +2188,7 @@ class Applicant extends \yii\db\ActiveRecord
                 }
             }
         }
+        
         foreach($offenderids as $offenderid)
         {
             $offs = Offer::find()

@@ -133,6 +133,64 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <div class="box-header with-border">
         <div class="box-title">
+            <span>Exporting & Publishing</span>
+        </div>
+    </div>
+    
+    <?php if($dataProvider->getTotalCount() > 0):?>
+        <br/><div style="margin-left:0.5%">
+            <p class="general_text">
+                Would you like to export the Offers listing?
+                <?= Html::radioList('export_options', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleExport();']);?>
+            </p>
+
+            <div id="export-buttons" style="display:none">
+                <?= Html::a('Export All Offers', ['export-all-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                <?php if(Offer::hasPendingOffers() == true):?>
+                    <?= Html::a('Export Pending Offers', ['export-unpublished-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                <?php endif;?>
+                <?php if(Offer::hasPublishedOffers() == true):?>
+                    <?= Html::a('Export Published Offers', ['export-published-offers', 'offertype' => $offertype], ['class' => 'btn btn-primary']) ?>
+                <?php endif;?>
+                <?php if(Offer::hasRevokededOffers() == true):?>
+                    <?= Html::a('Export Revoked Offers', ['export-revoked-offers', 'offertype' => $offertype], ['class' => 'btn btn-warning']) ?>
+                <?php endif;?>
+            </div>
+
+            <?php if (Yii::$app->user->can('publishOffer')): ?>
+                <br/>
+                <p class="general_text">
+                    Would you like to publish outstanding offers?
+                    <?= Html::radioList('publish_options', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'togglePublish();']);?>
+                </p>
+
+                <div id="publish-button" style="display:none">
+                    <?php
+                        $periods = ApplicationPeriod::periodIncomplete();
+                        if (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1) == true)
+                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                        else
+                            echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
+
+                        if ($periods == true)
+                        {
+                            foreach ($periods as $period) 
+                            {
+                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
+                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                            }
+                        }
+                   ?>
+                </div>
+            <?php endif; ?>
+        </div><br/>
+    <?php endif; ?>
+</div><br/>
+
+
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+    <div class="box-header with-border">
+        <div class="box-title">
             <span>Offer Listing</span>
         </div>
     </div>

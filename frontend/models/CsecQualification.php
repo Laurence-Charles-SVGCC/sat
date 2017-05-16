@@ -339,18 +339,20 @@ class CsecQualification extends \yii\db\ActiveRecord
         } 
         if ($candidateno == 0 || strlen($origcandidateno) != 10 )
             return false;
+        
         $applicant = Applicant::find()->where(['personid' => $personid])->one();
+        
         $groups = CsecQualification::find()
                 ->innerJoin('application', '`application`.`personid` = `csec_qualification`.`personid`')
                 ->innerJoin('applicant', '`application`.`personid` = `applicant`.`personid`')
                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->where(['csec_qualification.candidatenumber' => $candidateno, 'csec_qualification.isdeleted' => 0,'csec_qualification.year' => $year,
-                        'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                        'academic_offering.isdeleted' => 0,
-                        'applicant.dateofbirth' => $applicant->dateofbirth, //added check that prevent false positive matches for applicants with same candidateno and examyear but diffeenr DOBs
-                        ])
+                                'application.isactive' => 1, 'application.isdeleted' => 0,
+                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                'academic_offering.isdeleted' => 0,
+                                'applicant.dateofbirth' => $applicant->dateofbirth, //added check that prevent false positive matches for applicants with same candidateno and examyear but diffeenr DOBs
+                                ])
                 ->groupBy('csec_qualification.personid')
                 ->all();
         if (count($groups) == 1)
