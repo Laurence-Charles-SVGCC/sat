@@ -196,7 +196,8 @@
                                     foreach( $programme_objects as $prog)
                                     {
                                         $academic_offering = AcademicOffering::find()
-                                                ->where(['programmecatalogid' => $prog->programmecatalogid, 'applicationperiodid' => $period->applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->where(['programmecatalogid' => $prog->programmecatalogid, 'applicationperiodid' => $period->applicationperiodid,
+                                                    'interviewneeded' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                                 ->one();
                                         if ($academic_offering == true)
                                         {

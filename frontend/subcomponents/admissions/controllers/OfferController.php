@@ -214,7 +214,6 @@ class OfferController extends Controller
         if ($division_id && $division_id != 1)
             $prog_cond['application_period.divisionid'] = $division_id;
             
-        $programmes_requiring_interview = array();
         $programmes = ProgrammeCatalog::find()
                 ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
@@ -225,10 +224,7 @@ class OfferController extends Controller
         {
             $progs[$programme->programmecatalogid] = $programme->getFullName();
         }
-        
-        
-        
-        
+      
        
         $cape_cond = array();
         $cape_cond['application_period.iscomplete'] = 0;
@@ -311,8 +307,7 @@ class OfferController extends Controller
             'dne_science_req' => $dne_science_req,
             'offertype' => $offertype,
             'division_id' => $division_id,
-            'incomplete_periods' => $incomplete_periods,
-//            'programmes_requiring_interview' => $progammes_Requiring_interview,
+            'incomplete_periods' => $incomplete_periods
         ]);
     }
     
@@ -2179,8 +2174,6 @@ class OfferController extends Controller
     }
     
     
-    
-    
     // (laurence_charles) - Generates form to enter interview times forapplicants issued offers for interview
     public function actionScheduleInterviewsByLastname($applicationperiod_id, $offertype, $lower_bound, $upper_bound)
     {
@@ -2192,6 +2185,7 @@ class OfferController extends Controller
 
         $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
+        $offer_cond['academic_offering.interviewneeded'] = 1;
         $offer_cond['academic_offering.isactive'] = 1;
         $offer_cond['academic_offering.isdeleted'] = 0;
         $offer_cond['application_period.isactive'] = 1;
@@ -2283,52 +2277,19 @@ class OfferController extends Controller
                 ->one();
          $programme_name = $programme->getFullName();
          
-//        $offers = array();
-
-//        $application_period = ApplicationPeriod::find()
-//                ->where(['applicationperiodid' =>  $applicationperiod_id, 'isactive' => 1, 'isdeleted' => 0])
-//                ->one();
-
-//        $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['academic_offering.academicofferingid'] = $academic_offering_id;
         $offer_cond['academic_offering.isactive'] = 1;
         $offer_cond['academic_offering.isdeleted'] = 0;
-//        $offer_cond['application_period.isactive'] = 1;
-//        $offer_cond['application_period.isdeleted'] = 0;
-//        $offer_cond['application_period.iscomplete'] = 0;
 
          $offers = Offer::find()
                 ->joinWith('application')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-//                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->innerJoin('`applicant`', '`application`.`personid` = `applicant`.`personid`')
                 ->where($offer_cond)
                 ->orderBy("applicant.lastname ASC")
                 ->all();
 
-//        foreach ($all_offers as $offer)
-//        {
-//            $applicant = Applicant::find()
-//                    ->innerJoin('`application`', '`applicant`.`personid` = `application`.`personid`')
-//                    ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-//                                   'application.isactive' => 1, 'application.isdeleted' => 0  ,'application.applicationid' => $offer->applicationid])
-//                    ->one();
-//            if ($applicant)
-//            {
-//                $lastname = ucfirst($applicant->lastname);
-//                $lastname_first_letter = substr($lastname, 0, 1);
-//
-//                #if equal to lower bound OR (greater than lower bound AND less than upper bound) OR equal to upper bound
-//                if (strcmp($lastname_first_letter, $lower_bound) == 0
-//                        || (strcmp($lastname_first_letter, $lower_bound)  > 0 && strcmp($lastname_first_letter, $upper_bound)  < 0)
-//                        || strcmp($lastname_first_letter, $upper_bound) == 0)
-//                {
-//                    $offers[] = $offer;
-//                }
-//            }
-//        }
-        
         if ($post_data = Yii::$app->request->post())
         {
             $transaction = \Yii::$app->db->beginTransaction();
@@ -2368,8 +2329,6 @@ class OfferController extends Controller
               'offers' => $offers,
                'programme_name' => $programme_name]);
      }
-     
-     
      
      
      // (laurence_charles) - Generates form to update a single interview appointment
