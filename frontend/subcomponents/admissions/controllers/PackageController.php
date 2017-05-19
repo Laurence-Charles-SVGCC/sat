@@ -412,7 +412,7 @@
                         
                         $attachments = Package::getDocuments($package->packageid);
                         
-                        $test_result = self::publishPackage($package, $applicantid, $firstname, $lastname, $programme, $divisioname, $email, $studentno, $attachments);
+                        $test_result = self::publishPackage(false, $package, $applicantid, $firstname, $lastname, $programme, $divisioname, $email, $studentno, $attachments);
                         if ($test_result == false)
                         {
                             $final_test_results = false;
@@ -445,7 +445,7 @@
          * Date Created: 29/07/2015
          * Last Modified : 13/04/2016 by [L. Charles]
         */
-        private static function publishPackage($package, $applicantid, $firstname, $lastname, $programme, $divisioname, $email_address, $studentno = NULL, $attachments = NULL)
+        private static function publishPackage($offer, $package, $applicantid, $firstname, $lastname, $programme, $divisioname, $email_address, $studentno = NULL, $attachments = NULL)
         {
             $user = User::find()
                     ->innerJoin('`applicant`', '`applicant`.`personid` = `person`.`personid`')
@@ -458,14 +458,21 @@
             $divisionid = $period->divisionid;
             
             if ($package->packagetypeid == 1 || $package->packagetypeid == 2)
+            {
                 $viewfile = '@common/mail/packages/rejection_email.php';
+            }
             elseif ($package->packagetypeid == 3)
-                $viewfile = '@common/mail/packages/conditional_offer_email.php';
+            {
+                if ($divisionid == 6)
+                   $viewfile = '@common/mail/packages/dte_conditional_offer_email.php';
+                elseif ($divisionid == 7)
+                     $viewfile = '@common/mail/packages/dne_conditional_offer_email.php';
+            }
             elseif ($package->packagetypeid == 4)
             {
                 if ($divisionid == 4)
                     $viewfile = '@common/mail/packages/dasgs_full_offer_email.php';
-                if ($divisionid == 5)
+                elseif ($divisionid == 5)
                     $viewfile = '@common/mail/packages/dtve_full_offer_email.php';
                 elseif ($divisionid == 6  || $divisionid == 7)
                     $viewfile = '@common/mail/packages/full_offer_email.php';
@@ -489,6 +496,7 @@
             $saved_mail->fileTransportPath = $dir . $package->name . "_" . $user->username;
             $saved_status = $saved_mail->compose($viewfile,
                                     [
+                                        'offer' => $offer,
                                         'package' => $package,
                                         'first_name' => $firstname,
                                         'last_name' => $lastname, 
@@ -889,7 +897,14 @@
                     $studentno = $applicant->potentialstudentid;
                     $attachments = Package::getDocuments($package->packageid);
                     
-                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    if ($offer->offertypeid == 2 && $offer->appointment == true)
+                    {
+                        self::publishPackage($offer, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    }
+                    else
+                    {
+                        self::publishPackage(false, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    }
                     
                     if($offer->ispublished == 0)
                     {
@@ -1040,7 +1055,7 @@
                     $studentno = 0;
                     $attachments = Package::getDocuments($package->packageid);
                     
-                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    self::publishPackage(false, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
                 
                     if ($rejection->ispublished == 0)
                     {
@@ -1200,7 +1215,14 @@
                     $studentno = $applicant->potentialstudentid;
                     $attachments = Package::getDocuments($package->packageid);
                     
-                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    if ($offer->offertypeid == 2 && $offer->appointment == true)
+                    {
+                        self::publishPackage($offer, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    }
+                    else
+                    {
+                        self::publishPackage(false, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    }
                     
                     $offer->ispublished = 1;
                     $offer->packageid = $package->packageid;
@@ -1370,7 +1392,7 @@
                     $studentno = 0;
                     $attachments = Package::getDocuments($package->packageid);
                     
-                    self::publishPackage($package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
+                    self::publishPackage(false, $package, $applicant->applicantid, $applicant->firstname, $applicant->lastname, $programme, $divisioname, $email->email, $studentno, $attachments);
                 
                     $rejection->ispublished = 1;
                     $rejection->packageid = $package->packageid;

@@ -133,12 +133,54 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <div class="box-header with-border">
         <div class="box-title">
-            <span>Exporting & Publishing</span>
+            <?php if ($offertype == 2 && $incomplete_periods == true) : ?>
+                 <span>Interview Scheduling , Report Generation & Publishing</span>
+            <?php else: ?>
+                <span> Report Generation & Publishing</span>
+             <?php endif ?>
         </div>
     </div>
     
     <?php if($dataProvider->getTotalCount() > 0):?>
         <br/><div style="margin-left:0.5%">
+             <?php if ($offertype == 2 && $incomplete_periods == true) : ?>
+                <span>Select the application period you wish to prepare interview schedule for?</span>
+                <span class='dropdown' style="margin-left:2%">
+                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                        Select application period...
+                        <span class='caret'></span>
+                    </button>
+                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                        <?php
+                            foreach ($incomplete_periods as $period)
+                            {
+                                $label_a_g = $period->name . " - Surnames (A-G)";
+                                $label_h_n = $period->name . " - Surnames (H-N)";
+                                $label_o_z = $period->name . " - Surnames (O-Z)";
+                                $hyperlink_a_g = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
+                                                                          'applicationperiod_id' => $period->applicationperiodid,
+                                                                          'offertype' => $offertype,
+                                                                          'lower_bound' => 'A',
+                                                                          'upper_bound' => 'G']);
+                                $hyperlink_h_n = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
+                                                                          'applicationperiod_id' => $period->applicationperiodid,
+                                                                          'offertype' => $offertype,
+                                                                          'lower_bound' => 'H',
+                                                                          'upper_bound' => 'N']);
+                                $hyperlink_o_z = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
+                                                                          'applicationperiod_id' => $period->applicationperiodid,
+                                                                          'offertype' => $offertype,
+                                                                          'lower_bound' => 'O',
+                                                                          'upper_bound' => 'Z']);
+                                echo "<li><a href='$hyperlink_a_g'>$label_a_g</a></li>";  
+                                echo "<li><a href='$hyperlink_h_n'>$label_h_n</a></li>";  
+                                echo "<li><a href='$hyperlink_o_z'>$label_o_z</a></li>";  
+                            }
+                        ?>
+                    </ul>
+                </span><br/><br/>
+              <?php endif ?>
+            
             <p class="general_text">
                 Would you like to export the Offers listing?
                 <?= Html::radioList('export_options', null, ["Yes" => "Yes", "No" => "No"], ['class'=> 'form_field', 'onclick'=> 'toggleExport();']);?>
@@ -196,112 +238,241 @@
     </div>
     
     <div class="box-body">
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'options' => [],
-            'columns' => [
-                [
-                    'attribute' => 'username',
-                    'format' => 'html',
-                    'value' => function($row)
-                    {
-                        return Html::a($row['username'], 
-                                       Url::to(['process-applications/view-applicant-certificates',
-                                                'personid' => $row['personid'],
-                                                'programme' => $row['prog'], 
-                                                'application_status' => $row['status'],
-                                               ]));  
-                    }
-                ],
-                'firstname',
-                'lastname',
-                'programme',
-                'issuedby',
-                'issuedate',
-                'revokedby',
-                'revokedate',
-                [
-                    'attribute' => 'ispublished',
-                    'format' => 'boolean',
-                    'label' => 'Sent'
-                ],
-                [
-                    'attribute' => 'offerid',
-                    'label' => 'Revoke',
-                    'format' => 'html',
-                    'value' => function($row) 
-                     {
-                        if (Yii::$app->user->can('deleteOffer'))
+        <?php if ($offertype == 1) :?>
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'options' => [],
+                'columns' => [
+                    [
+                        'attribute' => 'username',
+                        'format' => 'html',
+                        'value' => function($row)
                         {
-                            if(($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)  || $row['ispublished'] == 1)
-                                return "N/A";
+                            return Html::a($row['username'], 
+                                           Url::to(['process-applications/view-applicant-certificates',
+                                                    'personid' => $row['personid'],
+                                                    'programme' => $row['prog'], 
+                                                    'application_status' => $row['status'],
+                                                   ]));  
+                        }
+                    ],
+                    'firstname',
+                    'lastname',
+                    'programme',
+                    'issuedby',
+                    'issuedate',
+                    'revokedby',
+                    'revokedate',
+                    [
+                        'attribute' => 'ispublished',
+                        'format' => 'boolean',
+                        'label' => 'Sent'
+                    ],
+                    [
+                        'attribute' => 'offerid',
+                        'label' => 'Revoke',
+                        'format' => 'html',
+                        'value' => function($row) 
+                         {
+                            if (Yii::$app->user->can('deleteOffer'))
+                            {
+                                if(($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)  || $row['ispublished'] == 1)
+                                    return "N/A";
+                                else
+                                {
+                                    if($row['revokedby'] == "N/A")
+                                    {
+                                        return Html::a(' ', 
+                                                ['revoke', 'id' => $row['offerid'], 'offertype' => $row['offertype']], 
+                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove',
+                                                    'data' => [
+                                                        'confirm' => 'Are you sure you want to revoke this offer?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                    }
+                                    else
+                                        return "N/A";
+                                }
+                            }
                             else
                             {
-                                if($row['revokedby'] == "N/A")
-                                {
-                                    return Html::a(' ', 
-                                            ['revoke', 'id' => $row['offerid'], 'offertype' => $row['offertype']], 
-                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove',
-                                                'data' => [
-                                                    'confirm' => 'Are you sure you want to revoke this offer?',
-                                                    'method' => 'post',
-                                                ],
-                                            ]);
-                                }
-                                else
-                                    return "N/A";
+                                return "N/A";
                             }
-                        }
-                        else
-                        {
-                            return "N/A";
-                        }
-                      }
-                ],
-                [
-                    'label' => 'Publish',
-                    'format' => 'html',
-                    'value' => function($row)
-                     {
-                        if (Yii::$app->user->can('publishOffer'))
-                        {
-                            if (Package::hasCompletePackage($row['divisionid'], 1, $row['offertype'] ) == false)
+                          }
+                    ],
+                    [
+                        'label' => 'Publish',
+                        'format' => 'html',
+                        'value' => function($row)
+                         {
+                            if (Yii::$app->user->can('publishOffer'))
+                            {
+                                if (Package::hasCompletePackage($row['divisionid'], 1, $row['offertype'] ) == false)
+                                {
+                                    return "N/A";
+                                }
+                                else 
+                                {
+                                    if ($row['ispublished'] == 1)
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
+                                                    ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                        'data' => [
+                                                            'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
+                                    else
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
+                                                    ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
+                                }
+                            }
+                            else
                             {
                                 return "N/A";
                             }
-                            else 
+                        }
+                    ],
+                ],
+            ]); ?>
+        
+        <?php elseif ($offertype == 2) :?>
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'options' => [],
+                'columns' => [
+                    [
+                        'attribute' => 'username',
+                        'format' => 'html',
+                        'value' => function($row)
+                        {
+                            return Html::a($row['username'], 
+                                           Url::to(['process-applications/view-applicant-certificates',
+                                                    'personid' => $row['personid'],
+                                                    'programme' => $row['prog'], 
+                                                    'application_status' => $row['status'],
+                                                   ]));  
+                        }
+                    ],
+                    'firstname',
+                    'lastname',
+                    'programme',
+                    'issuedby',
+                    'issuedate',
+                    'revokedby',
+                    'revokedate',
+                    [
+                        'attribute' => 'ispublished',
+                        'format' => 'boolean',
+                        'label' => 'Sent'
+                    ],
+                    [
+                        'attribute' => 'offerid',
+                        'label' => 'Revoke',
+                        'format' => 'html',
+                        'value' => function($row) 
+                         {
+                            if (Yii::$app->user->can('deleteOffer'))
                             {
-                                if ($row['ispublished'] == 1)
-                                {
-                                    return Html::a(' ', 
-                                                ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
-                                                ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
-                                                    'data' => [
-                                                        'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
-                                                        'method' => 'post',
-                                                    ],
-                                                ]);
-                                }
+                                if(($row['offertype'] == 2  &&  Offer::hasActiveFullOffer($row['personid']) == true)  || $row['ispublished'] == 1)
+                                    return "N/A";
                                 else
                                 {
-                                    return Html::a(' ', 
-                                                ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
-                                                ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                    if($row['revokedby'] == "N/A")
+                                    {
+                                        return Html::a(' ', 
+                                                ['revoke', 'id' => $row['offerid'], 'offertype' => $row['offertype']], 
+                                                ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                                     'data' => [
-                                                        'confirm' => 'Are you sure you want to publish this offer?',
+                                                        'confirm' => 'Are you sure you want to revoke this offer?',
                                                         'method' => 'post',
                                                     ],
                                                 ]);
+                                    }
+                                    else
+                                        return "N/A";
                                 }
                             }
+                            else
+                            {
+                                return "N/A";
+                            }
+                          }
+                    ],
+                    [
+                        'label' => 'Publish',
+                        'format' => 'html',
+                        'value' => function($row)
+                         {
+                            if (Yii::$app->user->can('publishOffer'))
+                            {
+                                if (Package::hasCompletePackage($row['divisionid'], 1, $row['offertype'] ) == false)
+                                {
+                                    return "N/A";
+                                }
+                                else 
+                                {
+                                    if ($row['ispublished'] == 1)
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1, 'itemid' => $row['offerid'], 'divisionid' => $row['divisionid']], 
+                                                    ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                        'data' => [
+                                                            'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
+                                    else
+                                    {
+                                        return Html::a(' ', 
+                                                    ['package/publish-single', 'category' => 1,  'itemid' => $row['offerid'], 'divisionid' =>$row['divisionid']], 
+                                                    ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to publish this offer?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                return "N/A";
+                            }
                         }
-                        else
+                    ],
+                    [
+                        'label' => 'Appointment',
+                        'format' => 'html',
+                        'value' => function($row)
                         {
-                            return "N/A";
+                            if ($row['appointment'] == NULL)
+                            {
+                                return Html::a('Set Appointment ', 
+                                                    ['offer/schedule-interview', 'offerid' => $row['offerid'],  'offertype' => $row['offertype']], 
+                                                    ['class' => 'btn btn-default']);
+                            }
+                            else
+                            {
+                                return Html::a($row['appointment'], 
+                                                    ['offer/schedule-interview', 'offerid' => $row['offerid'],  'offertype' => $row['offertype']]);
+                            }
                         }
-                    }
+                    ],
                 ],
-            ],
-        ]); ?>
+            ]); ?>
+        <?php endif;?>
     </div>
 </div>

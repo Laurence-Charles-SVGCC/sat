@@ -8,6 +8,7 @@
     use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
     use yii\helpers\Url;
+    use yii\base\Model;
 
     use common\models\User;
     use frontend\models\Offer;
@@ -57,6 +58,9 @@ class OfferController extends Controller
     public function actionIndex($offertype, $criteria = NULL)
     {
         $division_id = EmployeeDepartment::getUserDivision();
+        $incomplete_periods = ApplicationPeriod::find()
+                                    ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                    ->all();
         
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
@@ -176,6 +180,7 @@ class OfferController extends Controller
             $offer_data['revokedby'] = $revokername;
             $offer_data['revokedate'] = $offer->revokedate ? $offer->revokedate : 'N/A' ;
             $offer_data['ispublished'] = $offer->ispublished;
+            $offer_data['appointment'] = $offer->appointment;
             
             $data[] = $offer_data;
         }
@@ -184,6 +189,10 @@ class OfferController extends Controller
             'allModels' => $data,
             'pagination' => [
                 'pageSize' => 15,
+            ],
+            'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname'],
             ],
         ]);
         
@@ -297,6 +306,7 @@ class OfferController extends Controller
             'dne_science_req' => $dne_science_req,
             'offertype' => $offertype,
             'division_id' => $division_id,
+            'incomplete_periods' => $incomplete_periods
         ]);
     }
     
@@ -2159,10 +2169,152 @@ class OfferController extends Controller
     
     public function actionPreparePackagesDashboard()
     {
-        
         return $this->render('packages_dashboard');
     }
     
+    
+    
+    
+    // (laurence_charles) - Generates form to enter interview times forapplicants issued offers for interview
+    public function actionScheduleInterviews($applicationperiod_id, $offertype, $lower_bound, $upper_bound)
+    {
+        $offers = array();
+
+        $application_period = ApplicationPeriod::find()
+                ->where(['applicationperiodid' =>  $applicationperiod_id, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+
+        $offer_cond['offer.offertypeid'] = $offertype;
+        $offer_cond['offer.isdeleted'] = 0;
+        $offer_cond['academic_offering.isactive'] = 1;
+        $offer_cond['academic_offering.isdeleted'] = 0;
+        $offer_cond['application_period.isactive'] = 1;
+        $offer_cond['application_period.isdeleted'] = 0;
+        $offer_cond['application_period.iscomplete'] = 0;
+
+         $all_offers = Offer::find()
+                ->joinWith('application')
+                ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->innerJoin('`applicant`', '`application`.`personid` = `applicant`.`personid`')
+                ->where($offer_cond)
+                ->orderBy("applicant.lastname ASC")
+                ->all();
+
+        foreach ($all_offers as $offer)
+        {
+            $applicant = Applicant::find()
+                    ->innerJoin('`application`', '`applicant`.`personid` = `application`.`personid`')
+                    ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                                   'application.isactive' => 1, 'application.isdeleted' => 0  ,'application.applicationid' => $offer->applicationid])
+                    ->one();
+            if ($applicant)
+            {
+                $lastname = ucfirst($applicant->lastname);
+                $lastname_first_letter = substr($lastname, 0, 1);
+
+                #if equal to lower bound OR (greater than lower bound AND less than upper bound) OR equal to upper bound
+                if (strcmp($lastname_first_letter, $lower_bound) == 0
+                        || (strcmp($lastname_first_letter, $lower_bound)  > 0 && strcmp($lastname_first_letter, $upper_bound)  < 0)
+                        || strcmp($lastname_first_letter, $upper_bound) == 0)
+                {
+                    $offers[] = $offer;
+                }
+            }
+        }
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $load_flag = Model::loadMultiple($offers, $post_data);
+                if ($load_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occurred loading records.');
+                }
+                else
+                {
+                    foreach ($offers as $offer)
+                    {
+                        if ($offer->appointment == NULL || $offer->appointment == false || $offer->appointment == "" || $offer->appointment == " " )
+                        {
+                            $offer->appointment = NULL;
+                        }
+                        $save_flag = $offer->save();
+                        if (  $save_flag == false)
+                        {
+                             $transaction->rollBack();
+                             Yii::$app->getSession()->setFlash('error', 'Error occuvred saving record');
+                        }
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['index', 'offertype' => $offertype]);
+                }                
+            } catch (Exception $ex) 
+            {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+            }
+        }
+
+        return $this->render('schedule_interviews', ['applicationperiod_id' => $applicationperiod_id, 
+              'offertype' => $offertype,
+              'lower_bound' => $lower_bound,
+              'upper_bound' => $upper_bound,
+              'application_period' => $application_period,
+              'offers' => $offers]);
+     }
+     
+     
+     // (laurence_charles) - Generates form to update a single interview appointment
+    public function actionScheduleInterview($offerid, $offertype)
+    {
+         $offers = Offer::find()
+                 ->where(['offerid' => $offerid])
+                ->all();
+         
+        $no_of_offers = count($offers);
+        
+        if ($post_data = Yii::$app->request->post())
+        {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $load_flag = Model::loadMultiple($offers, $post_data);
+                if ($load_flag == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occurred loading records.');
+                }
+                else
+                {
+                    foreach ($offers as $offer)
+                    {
+                        if ($offer->appointment == NULL || $offer->appointment == false || $offer->appointment == "" || $offer->appointment == " " )
+                        {
+                            $offer->appointment = NULL;
+                        }
+                        $save_flag = $offer->save();
+                        if (  $save_flag == false)
+                        {
+                             $transaction->rollBack();
+                             Yii::$app->getSession()->setFlash('error', 'Error occuvred saving record');
+                        }
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['index', 'offertype' => $offertype]);
+                }                
+            } catch (Exception $ex) 
+            {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
+            }
+        }
+
+        return $this->render('schedule_interview', [ 'offertype' => $offertype,
+              'offers' => $offers,
+              'no_of_offers' => $no_of_offers]);
+     }
     
     
   

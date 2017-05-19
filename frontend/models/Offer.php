@@ -25,6 +25,7 @@ use frontend\models\Applicant;
  * @property interger $isactive
  * @property integer $isdeleted
  * @property integer $packageid
+ * @property integer $appointment
  *
  * @property Application $application
  */
@@ -46,7 +47,7 @@ class Offer extends \yii\db\ActiveRecord
         return [
             [['applicationid', 'issuedby', 'issuedate', ], 'required'],
             [['applicationid', 'offertypeid', 'issuedby', 'revokedby', 'ispublished', 'isactive', 'isdeleted', 'packageid'], 'integer'],
-            [['issuedate', 'revokedate'], 'safe']
+            [['issuedate', 'revokedate', 'appointment'], 'safe']
         ];
     }
 
@@ -66,6 +67,8 @@ class Offer extends \yii\db\ActiveRecord
             'ispublished' => 'Ispublished',
             'isactive' => 'Isactive',
             'isdeleted' => 'Isdeleted',
+            'packageid' => 'Packageid',
+            'appointment' => 'Appointment'
         ];
     }
 
