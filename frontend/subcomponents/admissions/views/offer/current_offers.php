@@ -10,6 +10,7 @@
     use frontend\models\Division;
     use frontend\models\Offer;
     use frontend\models\Package;
+    use frontend\models\AcademicOffering;
 
     $active_periods = ApplicationPeriod::getOpenPeriodIDs();
     if (in_array(4, $active_periods) == true)
@@ -144,41 +145,73 @@
     <?php if($dataProvider->getTotalCount() > 0):?>
         <br/><div style="margin-left:0.5%">
              <?php if ($offertype == 2 && $incomplete_periods == true) : ?>
-                <span>Select the application period you wish to prepare interview schedule for?</span>
-                <span class='dropdown' style="margin-left:2%">
-                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
-                        Select application period...
-                        <span class='caret'></span>
-                    </button>
-                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
-                        <?php
-                            foreach ($incomplete_periods as $period)
-                            {
-                                $label_a_g = $period->name . " - Surnames (A-G)";
-                                $label_h_n = $period->name . " - Surnames (H-N)";
-                                $label_o_z = $period->name . " - Surnames (O-Z)";
-                                $hyperlink_a_g = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
-                                                                          'applicationperiod_id' => $period->applicationperiodid,
-                                                                          'offertype' => $offertype,
-                                                                          'lower_bound' => 'A',
-                                                                          'upper_bound' => 'G']);
-                                $hyperlink_h_n = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
-                                                                          'applicationperiod_id' => $period->applicationperiodid,
-                                                                          'offertype' => $offertype,
-                                                                          'lower_bound' => 'H',
-                                                                          'upper_bound' => 'N']);
-                                $hyperlink_o_z = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews/', 
-                                                                          'applicationperiod_id' => $period->applicationperiodid,
-                                                                          'offertype' => $offertype,
-                                                                          'lower_bound' => 'O',
-                                                                          'upper_bound' => 'Z']);
-                                echo "<li><a href='$hyperlink_a_g'>$label_a_g</a></li>";  
-                                echo "<li><a href='$hyperlink_h_n'>$label_h_n</a></li>";  
-                                echo "<li><a href='$hyperlink_o_z'>$label_o_z</a></li>";  
-                            }
-                        ?>
-                    </ul>
-                </span><br/><br/>
+                <div><strong>Prepare interview schedule by name:</strong><br/>
+                    <span>Select the application period you wish to prepare interview schedule for?</span>
+                    <span class='dropdown' style="margin-left:2%">
+                        <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                            Select application period...
+                            <span class='caret'></span>
+                        </button>
+                        <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                            <?php
+                                foreach ($incomplete_periods as $period)
+                                {
+                                    $label_a_g = $period->name . " - Surnames (A-G)";
+                                    $label_h_n = $period->name . " - Surnames (H-N)";
+                                    $label_o_z = $period->name . " - Surnames (O-Z)";
+                                    $hyperlink_a_g = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews-by-lastname/', 
+                                                                              'applicationperiod_id' => $period->applicationperiodid,
+                                                                              'offertype' => $offertype,
+                                                                              'lower_bound' => 'A',
+                                                                              'upper_bound' => 'G']);
+                                    $hyperlink_h_n = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews-by-lastname/', 
+                                                                              'applicationperiod_id' => $period->applicationperiodid,
+                                                                              'offertype' => $offertype,
+                                                                              'lower_bound' => 'H',
+                                                                              'upper_bound' => 'N']);
+                                    $hyperlink_o_z = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews-by-lastname/', 
+                                                                              'applicationperiod_id' => $period->applicationperiodid,
+                                                                              'offertype' => $offertype,
+                                                                              'lower_bound' => 'O',
+                                                                              'upper_bound' => 'Z']);
+                                    echo "<li><a href='$hyperlink_a_g'>$label_a_g</a></li>";  
+                                    echo "<li><a href='$hyperlink_h_n'>$label_h_n</a></li>";  
+                                    echo "<li><a href='$hyperlink_o_z'>$label_o_z</a></li>";  
+                                }
+                            ?>
+                        </ul>
+                    </span><br/><br/>
+                </div>
+            
+                <div><strong>Prepare interview schedule by prgramme:</strong>
+                    <span class='dropdown' style="margin-left:2%">
+                        <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                            Select application period...
+                            <span class='caret'></span>
+                        </button>
+                        <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                            <?php
+                                foreach ($incomplete_periods as $period)
+                                {
+                                    foreach( $programme_objects as $prog)
+                                    {
+                                        $academic_offering = AcademicOffering::find()
+                                                ->where(['programmecatalogid' => $prog->programmecatalogid, 'applicationperiodid' => $period->applicationperiodid, 'isactive' => 1, 'isdeleted' => 0])
+                                                ->one();
+                                        if ($academic_offering == true)
+                                        {
+                                            $label = $prog->getFullName();
+                                            $hyperlink = Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews-by-programme/', 
+                                                                                      'academic_offering_id' => $academic_offering->academicofferingid,
+                                                                                      'offertype' => $offertype]); 
+                                            echo "<li><a href='$hyperlink'>$label</a></li>";  
+                                        }
+                                    }
+                                }
+                            ?>
+                        </ul>
+                    </span><br/><br/>
+                </div>
               <?php endif ?>
             
             <p class="general_text">
