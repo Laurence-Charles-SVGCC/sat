@@ -7,6 +7,7 @@
     use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
     use yii\data\ArrayDataProvider;
+    use frontend\models\Transaction;
     
     use common\models\User;
     use backend\models\SignupFullUserForm;
@@ -386,6 +387,8 @@
         }
         
         
+        
+        
          // (gamal_crichton & laurence_charles) - Creates a lecturer user account by creating User and Employee records.
         public function actionCreateLecturer()
         {
@@ -405,42 +408,83 @@
                 
                 if ($load_flag == true)
                 {
-                    //(laurence_charles) -  if '$model->username' is not defined by user, the system will generate a username
-                    $username = $model->username == '' ? SignupLecturerForm::createEmployeeUsername() : $model->username;
-                    
-                    $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
-
-                    if ($user = $model->signup($username, $model->institutional_email)) 
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
                     {
-                        $email = new Email();
-                        $email->email = $model->personal_email;
-                        $email->personid = $user->personid;
-                        $email->priority = 1;   //(laurence_charles) - all employees have an email record with priority of 1
-                        if ($email->save())
+                        //(laurence_charles) -  if '$model->username' is not defined by user, the system will generate a username
+                        $username = $model->username == '' ? SignupLecturerForm::createEmployeeUsername() : $model->username;
+
+                        $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
+                        
+                        $user = $model-> signup_user_without_login_credentials($username, $model->institutional_email);
+                        if ($user == false || $user == NULL)
                         {
-                            $employee_model = new Employee();
-                            $employee_model->personid = $user->personid;
-                            $employee_model->firstname = ucfirst($model->firstname);
-                            $employee_model->lastname = ucfirst($model->lastname);
-                            if ($employee_model->save()) 
+                            $transaction->rollBack();
+                            Yii::$app->session->setFlash('error', 'User record could not be saved.');
+                        }
+                        else
+                        {
+                            $email = new Email();
+                            $email->email = $model->personal_email;
+                            $email->personid = $user->personid;
+                            $email->priority = 1;   //(laurence_charles) - all employees have an email record with priority of 1
+                            $email_save_flag = $email->save();
+                            if ($email_save_flag == false)
                             {
-                                $department = new EmployeeDepartment();
-                                $department->departmentid = $model->department;
-                                $department->personid = $user->personid;
-                                if ($department->save())
-                                {
-                                    return $this->redirect(Url::to(['employee/update', 'id' => $employee_model->employeeid ])); 
-                                }
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Email record could not be saved.');
                             }
                             else
                             {
-                                Yii::$app->session->setFlash('error', 'Employee could not be saved.');
-                            }
+                                $employee_model = new Employee();
+                                $employee_model->personid = $user->personid;
+                                $employee_model->title = ucfirst($model->title);
+                                $employee_model->firstname = ucfirst($model->firstname);
+                                if($model->middlename == true)
+                                {
+                                    $employee_model->middlename = ucfirst($model->middlename);
+                                }
+                                $employee_model->lastname = ucfirst($model->lastname);
+
+                                $employee_model->employeetitleid = $model->employeetitleid;
+                                $employee_model->maritalstatus = $model->maritalstatus;
+                                $employee_model->religion = $model->religion;
+                                $employee_model->nationality = $model->nationality;
+                                $employee_model->placeofbirth = $model->placeofbirth;
+                                $employee_model->nationalidnumber = $model->nationalidnumber;
+                                $employee_model->nationalinsurancenumber = $model->nationalinsurancenumber;
+                                $employee_model->inlandrevenuenumber = $model->inlandrevenuenumber;
+                                $employee_model->gender = $model->gender;
+                                $employee_model->dateofbirth = $model->dateofbirth;
+                                $employee_save_flag = $employee_model->save();
+                                if ($employee_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Employee record could not be saved.');
+                                }
+                                else
+                                {
+                                    $department = new EmployeeDepartment();
+                                    $department->departmentid = $model->department;
+                                    $department->personid = $user->personid;
+                                    $department_save_flag = $department->save();
+                                    if ($department_save_flag == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'EmployeeDepartment record could not be saved.');
+                                    }
+                                    else
+                                    {
+                                        $transaction->commit();
+                                        Yii::$app->session->setFlash('success', 'User account creation was successful.');
+                                        return $this->redirect(Url::to(['employee/employee-profile', 'personid' => $user->personid ])); 
+                                    }
+                                }
+                            }  
                         }
-                    }
-                    else
-                    {
-                        Yii::$app->session->setFlash('error', 'Error occured while creating User model.');
+                    }catch (Exception $ex) {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
                     }
                 }
                 else
@@ -451,6 +495,10 @@
 
             return $this->render('create_lecturer', ['model' => $model]);
         }
+                    
+                    
+                    
+                    
 
         /**
          * Finds the User model based on its primary key value.
