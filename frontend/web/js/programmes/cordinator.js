@@ -176,12 +176,44 @@ function respondToAcademicYearSelection(e)
     
     
     var baseUrl = document.getElementsByName('cordinator_assignment_baseUrl')[0].value;
-    if (baseUrl.search("localhost")!=-1)
-        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
-    else
-//        url = "http://www.sat.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
-//        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
-        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+//    if (baseUrl.search("localhost")!=-1)
+//        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+//    else
+////        url = "http://www.sat.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+////        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+//        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+    
+    
+    
+    // (laurence_charles) - Customized URL for ajax call based on user's current URLs
+    // This must be dont to avert cross site scripting block that may occur as user may access feature through 3 different URLs;
+    //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F...
+    //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F....
+    //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F....
+    //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fverify-applicants%2F...
+    if (baseUrl.search("localhost") >= 0)
+    {
+        var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+    }
+    else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
+    {
+        var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammess%2Fcordinator%2Fget-academic-year-listings&";
+    }
+    else if(baseUrl.search("sat.svgcc.vc") >= 0)
+    {
+        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&";
+    }
+    else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
+    {
+        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fprogrammes%2Fcordinator%2Fget-academic-year-listings&"
+    }
+    
+    
+    
+    
+    
+    
+    
     
     url+= "listingtype=" + listing_type;
     

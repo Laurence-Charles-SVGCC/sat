@@ -145,7 +145,7 @@ class CordinatorController extends Controller
                         'pageSize' => 25,
                     ],
                     'sort' => [
-                        'defaultOrder' => ['isserving' => SORT_ASC],
+                        'defaultOrder' => ['isserving' => SORT_ASC, 'lastname' =>  SORT_ASC, 'firstname' =>  SORT_ASC],
                         'attributes' => ['isserving', 'firstname' , 'lastname', 'cordinatortype', 'details'],
                     ]
             ]);
