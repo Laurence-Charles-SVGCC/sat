@@ -77,7 +77,7 @@
             
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="commencementdate">Commencement Date:</label>
-               <?= $form->field($package, 'commencementdate')->label('')->textInput(['style'=>'display:none', 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+               <?= $form->field($package, 'commencementdate')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
@@ -90,49 +90,53 @@
                <?=$form->field($package, 'emailtitle')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
-            <div class="form-group">
-               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email-intro">Email Introductory Statements:</label>
-               <?php 
-                    if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
-                    {
-                        $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
-                        echo "<span>";
-                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
-                        echo "</span>";
-                    }
-                    elseif ($package->packageid  && $package->packagetypeid==3)
-                    {
-                        $text= date("l F j, Y") . "                                                                                                 "
-                                . "                                                                                     Dear [firstname] [lastname],"
-                                . "                                                                                                                 "
-                                . "                                                                                      "  
-                                . "We are pleased to inform you that you have been invited to interview for a place in the  "
-                                . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
-                        echo "<span>";
-                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
-                        echo "</span>";
-                    }        
-                     elseif ($package->packageid  && $package->packagetypeid==4)
-                    {
-                        $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
-                                . "                                                                                     Dear [firstname] [lastname],"
-                                . "                                                                                                                 "
-                                . "                                                                                      "  
-                                . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
-                                . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
-                                . "Your Student Number is: [student number]";
-                        echo "<span>";
-                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
-                        echo "</span>";
-                    }
-                ?>
-            </div><br/><br/><br/><br/>
+             <?php if ($package->packageid  && $package->packagetypeid != 3) :?>
+                <div class="form-group">
+                   <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email-intro">Email Introductory Statements:</label>
+                   <?php 
+                        if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
+                        {
+                            $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
+                            echo "<span>";
+                                echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+                            echo "</span>";
+                        }
+    //                    elseif ($package->packageid  && $package->packagetypeid==3)
+    //                    {
+    //                        $text= date("l F j, Y") . "                                                                                                 "
+    //                                . "                                                                                     Dear [firstname] [lastname],"
+    //                                . "                                                                                                                 "
+    //                                . "                                                                                      "  
+    //                                . "We are pleased to inform you that you have been invited to interview for a place in the  "
+    //                                . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
+    //                        echo "<span>";
+    //                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+    //                        echo "</span>";
+    //                    }        
+                         elseif ($package->packageid  && $package->packagetypeid==4)
+                        {
+                            $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
+                                    . "                                                                                     Dear [firstname] [lastname],"
+                                    . "                                                                                                                 "
+                                    . "                                                                                      "  
+                                    . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
+                                    . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
+                                    . "Your Student Number is: [student number]";
+                            echo "<span>";
+                                echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+                            echo "</span>";
+                        }
+                    ?>
+                </div><br/><br/><br/><br/>
+             <?php endif;?>
             
+
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="emailcontent">Email Content:</label>
                <?= $form->field($package, 'emailcontent')->label('')->textArea(['rows' => 50, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
-            
+
+         
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="disclaimer">Disclaimer:</label>
                <?= $form->field($package, 'disclaimer')->label('')->textArea(['rows' => 5, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>

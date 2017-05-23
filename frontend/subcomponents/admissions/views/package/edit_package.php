@@ -74,12 +74,15 @@
                             echo "<th style='width:25%; vertical-align:middle'>Package Type</th>";
                             echo "<td>{$form->field($package, 'packagetypeid')->label('', ['class'=> 'form-label'])->dropDownList(ArrayHelper::map(PackageType::find()->all(), 'packagetypeid', 'description'), ['onchange' => 'showCommencementDate();', 'prompt'=>'Select Package Type'])}</td>";
                         echo "</tr>";
-
-                        echo "<tr>";
-                            echo "<th style='width:25%; vertical-align:middle'>Commencement Date (if package is for full offers)</th>";
-                            echo "<td>{$form->field($package, 'commencementdate')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true,])}</td>";
-                        echo "</tr>";
-
+                        
+                        if ($package->packageid  && $package->packagetypeid != 3)
+                        {
+                            echo "<tr>";
+                                echo "<th style='width:25%; vertical-align:middle'>Commencement Date (if package is for full offers)</th>";
+                                echo "<td>{$form->field($package, 'commencementdate')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true,])}</td>";
+                            echo "</tr>";
+                        }
+                        
                         echo "<tr>";
                             echo "<th style='width:25%; vertical-align:middle'>Number of Attachments</th>";
                             echo "<td>{$form->field($package, 'documentcount')->label('', ['class'=> 'form-label'])->dropDownList($document_count)}</td>";
@@ -90,45 +93,55 @@
                             echo "<td>{$form->field($package, 'emailtitle')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
                         echo "</tr>"; 
 
-                        echo "<tr>";
-                            echo "<th style='width:25%; vertical-align:middle'>Email Introductory Statements</th>";
-                            if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
-                            {
-                                $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
-                                echo "<td>";
-                                    echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
-                                echo "</td>";
-                            }
-                            elseif ($package->packageid  && $package->packagetypeid==3)
-                            {
-                                $text= date("l F j, Y") . "                                                                                                 "
-                                        . "                                                                                     Dear [firstname] [lastname],"
-                                        . "                                                                                                                 "
-                                        . "                                                                                      "  
-                                        . "We are pleased to inform you that you have been invited to interview for a place in the  "
-                                        . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
-                                echo "<td>";
-                                    echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
-                                echo "</td>";
-                            }        
-                            elseif ($package->packageid  && $package->packagetypeid==4)
-                            {
-                                $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
-                                        . "                                                                                     Dear [firstname] [lastname],"
-                                        . "                                                                                                                 "
-                                        . "                                                                                      "  
-                                        . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
-                                        . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
-                                        . "Your Student Number is: [student number]";
-                                echo "<td>";
-                                    echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px;  width:100%']);
-                                echo "</td>";
-                            }
-                        echo "</tr>";
+                        if ($package->packageid  && $package->packagetypeid != 3)
+                        {
+                            echo "<tr>";
+                                echo "<th style='width:25%; vertical-align:middle'>Email Introductory Statements</th>";
+                                if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
+                                {
+                                    $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
+                                    echo "<td>";
+                                        echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
+                                    echo "</td>";
+                                }
+    //                            elseif ($package->packageid  && $package->packagetypeid==3)
+    //                            {
+    //                                $text= date("l F j, Y") . "                                                                                                 "
+    //                                        . "                                                                                     Dear [firstname] [lastname],"
+    //                                        . "                                                                                                                 "
+    //                                        . "                                                                                      "  
+    //                                        . "We are pleased to inform you that you have been invited to interview for a place in the  "
+    //                                        . "[programme name] at the [division_name] commencing on " . $package->commencementdate .  ".";
+    //                                echo "<td>";
+    //                                    echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px; width:100%']);
+    //                                echo "</td>";
+    //                            }        
+                                elseif ($package->packageid  && $package->packagetypeid==4)
+                                {
+                                    $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
+                                            . "                                                                                     Dear [firstname] [lastname],"
+                                            . "                                                                                                                 "
+                                            . "                                                                                      "  
+                                            . "We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful." 
+                                            . "  You are offered a place in the [programme name] at the [division_name] commencing on " . $package->commencementdate .  ".      "
+                                            . "Your Student Number is: [student number]";
+                                    echo "<td>";
+                                        echo Html::textarea('email-intro', $text, ['rows' => 10, 'maxlength' => true, 'style' => 'font-size:14px;  width:100%']);
+                                    echo "</td>";
+                                }
+                            echo "</tr>";
+                        }
 
                         echo "<tr>";
                             echo "<th style='width:25%; vertical-align:middle'>Email Content</th>";
-                            echo "<td>{$form->field($package, 'emailcontent')->label('', ['class'=> 'form-label'])->textArea(['rows' => 50, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
+                            if ($package->packageid  && $package->packagetypeid != 3)
+                            {
+                                echo "<td>{$form->field($package, 'emailcontent')->label('', ['class'=> 'form-label'])->textArea(['rows' => 50, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
+                            }
+                            else
+                            {
+                                echo "<td>{$form->field($package, 'emailcontent')->label('', ['class'=> 'form-label'])->textArea(['rows' => 20, 'maxlength' => true, 'style' => 'font-size:14px;'])}</td>";
+                            }
                         echo "</tr>"; 
                     echo "</table>"; 
 

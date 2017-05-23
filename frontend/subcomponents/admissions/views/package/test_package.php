@@ -72,14 +72,11 @@
             </div>
         </div>
     
-        <span class = "pull-right">
-            <?=Html::submitButton(' Test', ['id'=>'submit-button',  'class' => 'btn btn-success', 'style' => 'margin-right:10px; display:none']);?>
-        </span><br/><br/>
+        <div class="box-footer">
+            <span class = "pull-right" id ="submit-button" style="display:none">
+                <?=Html::submitButton(' Test', ['class' => 'btn btn-success', 'style' => 'margin-right:20px;']);?>
+                <?= Html::a(' Back', ['package/initiate-package', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>   
+            </span>
+        </div>
     <?=Html::endForm();?>
-    
-    <div class="box-footer">
-        <span class = "pull-right">
-            <?= Html::a(' Back', ['package/initiate-package', 'recordid' => $recordid], ['class' => 'btn  btn-danger']);?>      
-        </span>
-    </div>
 </div>

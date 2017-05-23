@@ -466,7 +466,7 @@
                 if ($divisionid == 6)
                    $viewfile = '@common/mail/packages/dte_conditional_offer_email.php';
                 elseif ($divisionid == 7)
-                     $viewfile = '@common/mail/packages/dne_conditional_offer_email.php';
+                    $viewfile = '@common/mail/packages/dne_conditional_offer_email.php';
             }
             elseif ($package->packagetypeid == 4)
             {
@@ -517,6 +517,7 @@
              */
             $mail = Yii::$app->mailer->compose($viewfile,
                                                 [
+                                                    'offer' => $offer,
                                                     'package' => $package,
                                                     'first_name' => $firstname,
                                                     'last_name' => $lastname, 
