@@ -828,9 +828,9 @@
                     }
                     
                    /*
-                    * If $sub_category/offertypeid = conditional;
-                    * -> use conditional offer package
-                    * ->else use full offer rejection package
+                    * If $sub_category/offertypeid == 1
+                    * * -> use full offer  package
+                    * -> else use conditional offer package
                     */
                     if ($offer->offertypeid == 1)
                         $packagetypeid = 4;

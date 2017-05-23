@@ -3,7 +3,7 @@
 ?>
 
 <div class="dte_conditional_offer_email">
-    <?php if (true/*stripos(Url::home(true), "localhost") == false*/) :?>
+    <?php if (stripos(Url::home(true), "localhost") == false) :?>
         <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:175px;">
     <?php else: ?>
         <img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:175px;">
@@ -19,13 +19,14 @@
 
         <?php if ($offer != false && $offer->appointment == true):?>
             <br/>
-            <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong.</p>
+            <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p>
+            <br/>
         <?php endif; ?>
     </div>
 
     <div id="salutations">
         <p>With warm wishes and kind regards,</p>
-        <?php if (true/*stripos(Url::home(true), "localhost") == false*/) :?>
+        <?php if (stripos(Url::home(true), "localhost") == false) :?>
            <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.png" alt="mrs-rouse-signature"></p>
         <?php else: ?>
              <p><img src="http://localhost/sat_dev/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>
