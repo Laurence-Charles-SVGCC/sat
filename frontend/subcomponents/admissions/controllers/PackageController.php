@@ -1091,7 +1091,7 @@
          * Date Created: 16/04/2016
          * Date Last Modified: 16/04/2016
          */
-        public function actionBulkPublish($category, $sub_category, $divisionid, $academicofferingid = NULL)
+        public function actionBulkPublish($category, $sub_category, $divisionid = NULL, $academicofferingid = NULL)
         {
             //if publishing offer
             if ($category == 1)
@@ -1104,8 +1104,11 @@
                 $offer_cond['application.isdeleted'] = 0;
                 $offer_cond['application_period.isactive'] = 1;
                 $offer_cond['application_period.iscomplete'] = 0;
-                $offer_cond['application_period.divisionid'] = $divisionid;
                 
+                if ($divisionid != NULL)
+                {
+                     $offer_cond['application_period.divisionid'] = $divisionid;
+                }
                 
                 if ($academicofferingid != NULL)
                 {
