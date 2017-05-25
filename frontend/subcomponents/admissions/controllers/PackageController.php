@@ -1264,7 +1264,12 @@
                 $rejection_cond['academic_offering.isdeleted'] = 0;
                 $rejection_cond['application_period.isactive'] = 1;
                 $rejection_cond['application_period.iscomplete'] = 0;
-                $rejection_cond['application_period.divisionid'] = $divisionid;
+                
+                
+                if ($divisionid != NULL)
+                {
+                     $rejection_cond['application_period.divisionid'] = $divisionid;
+                }
                 
                 
                 $rejections = Rejection::find()
