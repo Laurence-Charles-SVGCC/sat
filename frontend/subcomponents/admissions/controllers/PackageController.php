@@ -85,6 +85,7 @@
                     $data['start_date'] = $package->datestarted;
                     $data['completion_date'] = $package->datecompleted;
                     $data['document_count'] = $package->documentcount;
+                    $data['publishcount'] = $package->publishcount;
 
                     $container[] = $data;
                 }
@@ -457,9 +458,13 @@
                     ->one();
             $divisionid = $period->divisionid;
             
-            if ($package->packagetypeid == 1 || $package->packagetypeid == 2)
+            if ($package->packagetypeid == 1)
             {
                 $viewfile = '@common/mail/packages/rejection_email.php';
+            }
+            elseif ($package->packagetypeid == 2)
+            {
+                $viewfile = '@common/mail/packages/post_interview_rejection_email.php';
             }
             elseif ($package->packagetypeid == 3)
             {
@@ -1007,7 +1012,7 @@
                             $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
                             $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
                             
-                            if($application_count - $key > 1)
+                            if(count($applications) - $key > 1)
                                 $programme .= " and " . $name; 
                             else
                                 $programme .= " " . $name; 
@@ -1346,7 +1351,7 @@
                             $prog = ProgrammeCatalog::getApplicantProgramme($record->applicationid);
                             $name = empty($cape_subjects) ? $prog->getFullName() : $prog->name . ": " . implode(' ,', $cape_subjects_names);
                             
-                            if($application_count - $key > 1)
+                            if(count($applications) - $key > 1)
                                 $programme .= " and " . $name; 
                             else
                                 $programme .= " " . $name; 

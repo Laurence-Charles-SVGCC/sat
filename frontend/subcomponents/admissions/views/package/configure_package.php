@@ -94,13 +94,13 @@
                 <div class="form-group">
                    <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email-intro">Email Introductory Statements:</label>
                    <?php 
-                        if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
-                        {
-                            $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
-                            echo "<span>";
-                                echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
-                            echo "</span>";
-                        }
+//                        if ($package->packageid  && ($package->packagetypeid==1 || $package->packagetypeid==2))
+//                        {
+//                            $text= date("l F j, Y") . "<br/>" . "Dear [firstname] [lastname]";
+//                            echo "<span>";
+//                                echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
+//                            echo "</span>";
+//                        }
     //                    elseif ($package->packageid  && $package->packagetypeid==3)
     //                    {
     //                        $text= date("l F j, Y") . "                                                                                                 "
@@ -113,7 +113,7 @@
     //                            echo Html::textarea('email-intro', $text, ['rows' => 10, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);
     //                        echo "</span>";
     //                    }        
-                         elseif ($package->packageid  && $package->packagetypeid==4)
+                        if ($package->packageid  && $package->packagetypeid==4)
                         {
                             $text= date("l F j, Y") . "                                                                                                  "                                                                                                  
                                     . "                                                                                     Dear [firstname] [lastname],"
@@ -130,7 +130,6 @@
                 </div><br/><br/><br/><br/>
              <?php endif;?>
             
-
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="emailcontent">Email Content:</label>
                <?= $form->field($package, 'emailcontent')->label('')->textArea(['rows' => 50, 'class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>

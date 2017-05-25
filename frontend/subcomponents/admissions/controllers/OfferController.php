@@ -188,11 +188,11 @@ class OfferController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 15,
+                'pageSize' => 25,
             ],
             'sort' => [
                     'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-                    'attributes' => ['lastname', 'firstname'],
+                    'attributes' => ['lastname', 'firstname', 'programme'],
             ],
         ]);
         

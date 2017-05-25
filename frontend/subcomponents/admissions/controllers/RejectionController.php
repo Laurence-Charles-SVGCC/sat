@@ -210,7 +210,11 @@ class RejectionController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
-                'pageSize' => 15,
+                'pageSize' => 50,
+            ],
+            'sort' => [
+                    'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
+                    'attributes' => ['lastname', 'firstname',  'programme'],
             ],
         ]);
         

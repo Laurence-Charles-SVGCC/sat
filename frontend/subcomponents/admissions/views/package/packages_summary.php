@@ -70,10 +70,15 @@
                         'format' => 'text',
                         'label' => 'Docs'
                     ],
+//                    [
+//                        'attribute' => 'last_modified_by',
+//                        'format' => 'text',
+//                        'label' => 'Modified By'
+//                    ],
                     [
-                        'attribute' => 'last_modified_by',
+                        'attribute' => 'publishcount',
                         'format' => 'text',
-                        'label' => 'Modified By'
+                        'label' => 'Packages Published'
                     ],
                     [
                         'label' => 'View/Edit',

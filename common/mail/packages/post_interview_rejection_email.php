@@ -2,13 +2,12 @@
     use yii\helpers\Url;
 ?>
 
-<div class="rejection_email">
-    <?php if (stripos(Url::home(true), "localhost") == false) :?>
+<div class="post_interview_rejection_email">
+   <?php if (stripos(Url::home(true), "localhost") == false) :?>
         <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:180px;">
     <?php else: ?>
         <img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:180px;">
     <?php endif; ?>
-
 
     <div id="introduction">
         <p><?= date("l F j, Y"); ?></p>
@@ -21,7 +20,7 @@
 
     <div id="salutations">
         <p>With warm wishes and kind regards,</p>
-        
+
         <?php if (stripos(Url::home(true), "localhost") == false) :?>
            <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.png" alt="mrs-rouse-signature"></p>
         <?php else: ?>

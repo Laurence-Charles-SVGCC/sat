@@ -150,6 +150,8 @@
                                 $periods = ApplicationPeriod::periodIncomplete();
                                 if (Rejection::anyRejectionExists($periods, $rejectiontype) == false  ||  Package::hasCompletePackage(1, 0) == false)
                                    echo "<p><strong>No rejections can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
+                                else
+                                     echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 2,  'sub_category' => $rejectiontype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
 
                                 if ($periods == true)
                                 {
@@ -240,27 +242,34 @@
                      {
                         if (Yii::$app->user->can('publishOffer'))
                         {
-                            if ($row['ispublished'] == 1)
+                            if (Package::hasCompletePackage($row['divisionid'], 0, $row['rejectiontype'] ) == false)
                             {
-                                return Html::a(' ', 
-                                            ['package/publish-single', 'category' => 2, 'itemid' => $row['rejectionid'], 'divisionid' => $row['divisionid']], 
-                                            ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
-                                                'data' => [
-                                                    'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this rejection?',
-                                                    'method' => 'post',
-                                                ],
-                                            ]);
+                                return "N/A";
                             }
                             else
                             {
-                                return Html::a(' ', 
-                                            ['package/publish-single', 'category' => 2,  'itemid' => $row['rejectionid'], 'divisionid' =>$row['divisionid']], 
-                                            ['class' => 'btn btn-success glyphicon glyphicon-send',
-                                                'data' => [
-                                                    'confirm' => 'Are you sure you want to publish this rejection?',
-                                                    'method' => 'post',
-                                                ],
-                                            ]);
+                                if ($row['ispublished'] == 1)
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 2, 'itemid' => $row['rejectionid'], 'divisionid' => $row['divisionid']], 
+                                                ['class' => 'btn btn-warning glyphicon glyphicon-repeat',
+                                                    'data' => [
+                                                        'confirm' => 'This offer has been issued before. Are you sure you want to re-publish this rejection?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                }
+                                else
+                                {
+                                    return Html::a(' ', 
+                                                ['package/publish-single', 'category' => 2,  'itemid' => $row['rejectionid'], 'divisionid' =>$row['divisionid']], 
+                                                ['class' => 'btn btn-success glyphicon glyphicon-send',
+                                                    'data' => [
+                                                        'confirm' => 'Are you sure you want to publish this rejection?',
+                                                        'method' => 'post',
+                                                    ],
+                                                ]);
+                                }
                             }
                         }
                         else
