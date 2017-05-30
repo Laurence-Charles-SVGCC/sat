@@ -279,16 +279,18 @@
                     <?php endif;?>
 
                     <div class="pull-right" style="margin-right:5%">
-                        <?=Html::a(' Create Custom Offer', 
-                                    ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
-                                    ['class' => 'btn btn-warning',
-                                        'style' => '',
-                                        'data' => [
-                                            'confirm' => 'Are you sure you want to create a customized offer for student?',
-//                                                'method' => 'post',
-                                        ],
-                                    ]);?>
-                    </div>
+                        <?php if ( Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') ):?>
+                            <?=Html::a(' Create Custom Offer', 
+                                        ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
+                                        ['class' => 'btn btn-warning',
+                                            'style' => '',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to create a customized offer for student?',
+    //                                                'method' => 'post',
+                                            ],
+                                        ]);?>
+                        </div>
+                    <?php endif;?>
                 <?php endif;?>
             </h2>
 
