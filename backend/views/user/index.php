@@ -4,7 +4,7 @@
     use yii\widgets\ActiveForm;
     use yii\helpers\Html;
     
-    $this->title = $info_string;
+    $this->title = "Find A User";
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 

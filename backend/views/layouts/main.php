@@ -110,8 +110,8 @@
                             <a href=""><i class="glyphicon glyphicon-user"></i> <span>User Management</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
                                 <li><a href="<?= Url::toRoute(['/user/index'])?>"><i class="fa fa-circle-o"></i>Find A User</a></li>
-                                <li><a href="<?= Url::toRoute(['/user/index', 'user_type' => 'employees'])?>"><i class="fa fa-circle-o"></i>Find Employee</a></li>
-                                <li><a href="<?= Url::toRoute(['/user/index', 'user_type' => 'students'])?>"><i class="fa fa-circle-o"></i>Find Student</a></li>
+                                <li><a href="<?= Url::toRoute(['/user/index', 'user_type' =>3])?>"><i class="fa fa-circle-o"></i>Find Employee</a></li>
+                                <li><a href="<?= Url::toRoute(['/user/index', 'user_type' => 2])?>"><i class="fa fa-circle-o"></i>Find Student</a></li>
                                 
                                 <li class="treeview">
                                     <a href="">

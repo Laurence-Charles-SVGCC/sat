@@ -289,6 +289,29 @@
         }
         
         
-        
+        // (laurence_charles) - Return collection or user records based on $user_type
+        public static function getUsers($user_type = NULL)
+        {
+            if ($user_type == NULL)
+            {
+                $users = User::find()
+                ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            }
+            elseif ($user_type == 2)
+            {
+                $users = User::find()
+                ->where(['persontypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            }
+            elseif($user_type == 3)
+            {
+                $users = User::find()
+                ->where(['persontypeid' => 3, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
+            }
+            
+            return $users;
+        }
         
     }
