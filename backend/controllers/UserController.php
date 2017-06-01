@@ -12,7 +12,6 @@
     use common\models\User;
     use backend\models\SignupFullUserForm;
     use backend\models\SignupLecturerForm;
-    use \backend\models\PersonType;
     use frontend\models\Employee;
     use frontend\models\Student;
     use frontend\models\StudentRegistration;
@@ -34,8 +33,9 @@
             ];
         }
 
-        // (laurence_charles) - Generates a listing of all users by default; however it also facilitates filter by,
-        // firstname &/ or lastname; username or personid
+        
+        // (laurence_charles) - Generates a listing of all users (default); employees or student dependant on value of $user_type
+        //  Facilitates filtering of each of the above mentioned listing by name, username or personid 
         public function actionIndex($user_type = NULL)
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -56,6 +56,7 @@
             {
                 $info_string = "All students";
             }
+            
             $dataProvider = NULL;
             $user_container = array();
             
@@ -67,12 +68,29 @@
                 $username = $request->post('username_field');
                 $personid = $request->post('personid_field');
                 
+                // if user submit empty search criteria all users matching initial search scope (all || employees || students) are returned
                 if($firstname == false && $lastname == false && $username == false && $personid == false)
                 {
                     Yii::$app->getSession()->setFlash('error', 'No search criteria was entered.');
-                    $users = User::find()
+                    
+                    if ($user_type == NULL)
+                    {
+                        $users = User::find()
                         ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
                         ->all();
+                    }
+                    elseif($user_type == "employees")
+                    {
+                        $users = User::find()
+                        ->where(['persontypeid' => 3, 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                    }
+                    elseif ($user_type == "students")
+                    {
+                        $users = User::find()
+                        ->where(['persontypeid' => 2], 'isactive' => 1, 'isdeleted' => 0])
+                        ->all();
+                    }
                 }
                 else
                 {
@@ -283,6 +301,7 @@
 
         
         // (gamal_crichton & laurence_charles) - Creates a new full user account by creating User and Employee records.
+        // Assigns login credentials to employee account
         public function actionCreateFullUser()
         {
             if (Yii::$app->user->can('System Administrator') == false)
@@ -390,6 +409,7 @@
         
         
          // (gamal_crichton & laurence_charles) - Creates a lecturer user account by creating User and Employee records.
+          // Does not assign login credentials to employee account
         public function actionCreateLecturer()
         {
             if (Yii::$app->user->can('System Administrator') == false)

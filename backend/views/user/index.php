@@ -3,11 +3,8 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     use yii\helpers\Html;
-    use yii\grid\GridView;
-
-    use backend\models\PersonType;
-
-    $this->title = 'Users';
+    
+    $this->title = $info_string;
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
