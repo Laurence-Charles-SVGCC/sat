@@ -384,14 +384,22 @@ class BatchStudent extends \yii\db\ActiveRecord
             $batch = Batch::find()
                     ->where(['batchid' => $batch_student_records[$i]["batchid"], 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            // (laurence_charles) - Appends "RESIT" to all courses that are resit batches
-            if ($batch->batchtypeid == 2)
+            
+            if ($batch->batchtypeid == 1)
+            {
+                $batch_name = $batch_student_records[$i]["name"];
+            }
+            elseif ($batch->batchtypeid == 2)
             {
                 $batch_name = $batch_student_records[$i]["name"] . " - RESIT";
             }
-            else
+            elseif ($batch->batchtypeid == 3)
             {
-                $batch_name = $batch_student_records[$i]["name"];
+                $batch_name = $batch_student_records[$i]["name"] . " - SUPPLEMENTAL";
+            }
+            elseif($batch->batchtypeid == 4)
+            {
+                $batch_name = $batch_student_records[$i]["name"] . " - EXEMPTION";
             }
             array_push($values, $batch_name);
             

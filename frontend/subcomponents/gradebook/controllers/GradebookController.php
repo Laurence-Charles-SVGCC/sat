@@ -1,10 +1,4 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 04/12/2015
- */
-
     namespace app\subcomponents\gradebook\controllers;
 
     use Yii;

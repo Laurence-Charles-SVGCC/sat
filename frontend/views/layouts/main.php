@@ -186,7 +186,7 @@
                     <?php if (Yii::$app->user->can('registry')): ?>
                         <li class="treeview">
                             <a href="">
-                                <i class="fa fa-graduation-cap"></i> <span>Registry</span> <i class="fa fa-angle-left pull-right"></i>
+                                <i class="glyphicon glyphicon-book"></i> <span>Registry</span> <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
                                 <?php if (Yii::$app->user->can('viewProgramme')): ?>
@@ -260,8 +260,8 @@
                                 <?php if (Yii::$app->user->can('manageStudentEmails')): ?>
                                     <li><a href="<?= Url::toRoute(['/subcomponents/students/email-upload'])?>"><i class="fa fa-circle-o"></i>Email Management</a></li>
                                 <?php endif; ?>
-
-
+                                    
+                                
 
                                 <!--
                                 <?php if (Yii::$app->user->can('searchApplicant')): ?>
@@ -271,11 +271,24 @@
                                     <li><a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant'])?>"><i class="fa fa-circle-o"></i>Late Registration</a></li>
                                 <?php endif; ?>
                                 -->
+                                
 
                             </ul>
                         </li>
                     <?php endif; ?>
-
+                        
+                   <!--     
+                   <?php if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Registrar')): ?>
+                        <li class="treeview">
+                            <a href=""><span><i class="fa fa-graduation-cap"></i> Graduation</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <li><a href="<?= Url::toRoute(['/subcomponents/graduation/graduation/programme-graduation-requirements'])?>"><i class="fa fa-circle-o"></i> Programme Requirements</a></li>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/graduation/graduation/generate-graduation-reports'])?>"><i class="fa fa-circle-o"></i> Review Students</a></li>
+                                <li><a href=""><i class="fa fa-circle-o"></i> Graduation Listing</a></li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                   -->
 
 
                     <?php if (Yii::$app->user->can('gradebook')): ?>

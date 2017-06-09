@@ -61,6 +61,9 @@ return [
                  'legacy' => [
                     'class' => 'app\subcomponents\legacy\LegacyModule',
                 ],
+                'graduation' => [
+                    'class' => 'app\subcomponents\graduation\GraduationModule',
+                ],
               ]
           ]
     ]
