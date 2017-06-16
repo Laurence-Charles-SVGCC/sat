@@ -266,7 +266,7 @@
                          else
                          {
                              Yii::$app->getSession()->setFlash('success', 'Password assignment to '. $name . ' was successful.');
-                             return self::actionIndex();
+                             return self::actionEmployeeProfile($employee->personid);
                          }
                     }
                 }
