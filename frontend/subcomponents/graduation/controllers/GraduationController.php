@@ -20,9 +20,8 @@
     use frontend\models\AcademicYear;
     use frontend\models\GraduationReport;
     use frontend\models\GraduationReportItem;
-    use frontend\models\Employee;
+    use frontend\models\Student;
     use frontend\models\AcademicOffering;
-    use frontend\models\CourseOffering;
     use frontend\models\BatchStudent;
     
     class GraduationController extends Controller
@@ -240,8 +239,9 @@
         
    
          // (laurence_charles) - Facilitates generation of graduation_reports for a particular programme
-        public function actionGenerateGraduationReports($division_id = NULL, $academic_year_id = NULL, $programmecatalog_id = NULL)
+        public function actionGenerateGraduationReports($division_id = NULL, $academic_year_id = NULL, $programme_catalog_id = NULL)
         {
+            $current_year = "";
             $academic_years = array();
             $programmes = array();
             $programme_name = NULL;
@@ -291,17 +291,26 @@
                 }
             } 
             
-            if ($programmecatalog_id != NULL)
+            if ($programme_catalog_id != NULL)
             {
                 $reports_container = array();
                 $reports_info = array();
-                $programme_name = ProgrammeCatalog::find()->where(['programmecatalogid' => $programmecatalogid])->one()->name;
+                $current_programme_record = ProgrammeCatalog::find()->where(['programmecatalogid' => $programme_catalog_id])->one();
+                $current_programme= ProgrammeCatalog::getProgrammeFullName($programme_catalog_id);
+                if ($current_programme_record->programmetypeid == 1)
+                {
+                     $current_programme .=  " - (Full Time)";
+                }
+                if ($current_programme_record->programmetypeid == 2)
+                {
+                    $current_programme .=  " - (Part Time)";
+                }
                 
                 // retreive all registrations belonging to students who have not graduated that are not graduated (i.e. student_status = 'current')
                 $possible_registrations = StudentRegistration::find()
                         ->innerJoin('academic_offering', '`student_registration`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->where(['student_registration.studentstatusid' => 1, 'student_registration.isactive' => $academic_year_ids, 'student_registration.isdeleted' => 0,
-                                        'academic_offering.programmecatalogid' => $programmecatalogid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
+                        ->where(['student_registration.studentstatusid' => 1, 'student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'academic_offering.programmecatalogid' => $programme_catalog_id, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
                         ->all();
                 
                 // filter for students who were enrolled at minimum two year before current year
@@ -309,9 +318,9 @@
                 $current_year = (int) substr($academic_year_title, -4 , 4);
                 foreach ($possible_registrations as $key => $possible_registration)
                 {
-                    $academic_year_entry = AcademicYear()
-                         ->innerJoin('academic_offering', '`academic_year`.`academiyearid` = `academic_offering`.`academicyearid`')
-                        ->where(['academic_year.isactive' => $academic_year_ids, 'academic_year.isdeleted' => 0,
+                    $academic_year_entry = AcademicYear::find()
+                         ->innerJoin('academic_offering', '`academic_year`.`academicyearid` = `academic_offering`.`academicyearid`')
+                        ->where(['academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
                                         'academic_offering.academicofferingid' => $possible_registration->academicofferingid, 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0])
                         ->one()
                         ->title;
@@ -328,34 +337,47 @@
                     $graduation_report = GraduationReport::find()
                             ->where(['studentregistrationid' => $possible_registration->studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
-                    $existing_report = $graduation_report;
-                    while ($existing_report == false)
+                    
+                    if ($graduation_report == false)
                     {
-                        /**** construct graduation report *****/
-                        $existing_report = $this->createGraduationReport($possible_registration->studentregistrationid, $possible_registration->personid, $possible_registration->academicofferingid);
+                        $graduation_report = $this->createGraduationReport($possible_registration->studentregistrationid, $possible_registration->personid, $possible_registration->academicofferingid);
                     }
                     
+                    
                     /********************************* package existing_reports in dataprovider *********************************/
-                    $reports_info["graduationreportid"] = $existing_report->graduationreportid;
-                    $reports_info["personid"] = $existing_report->personid;
-                    $reports_info["studentregistrationid"] = $existing_report->studentregistrationid;
-                    $reports_info["title"] = $existing_report->title;
-                    $reports_info["firstname"] = $existing_report->firstname;
-                    $reports_info["middlenames"] = $existing_report->middlenames;
-                    $reports_info["lastname"] = $existing_report->lastname;
-                    $reports_info["programme"] = $existing_report->programme;
-                    $reports_info["total_credits"] = $existing_report->total_credits;
-                    $reports_info["total_courses_passed"] = $existing_report->total_passes;
-                    $reports_info["is_eligble"] = $existing_report->iseligible == 1 ? "Eligible" : "Not Eligible";
+                   $new_graduation_report = GraduationReport::find()
+                            ->where(['studentregistrationid' => $possible_registration->studentregistrationid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                   if ($new_graduation_report == false)
+                   {
+                       continue;
+                   }
+                    $reports_info["graduationreportid"] = $new_graduation_report->graduationreportid;
+                    $reports_info["personid"] = $new_graduation_report->personid;
+                    $reports_info["studentregistrationid"] = $new_graduation_report->studentregistrationid;
+//                    $reports_info["username"] = User::find(['personid' => $new_graduation_report->personid, 'isactive' => 1, 'isdeleted' => 0])->one()->username;
+                    $reports_info["username"] = $new_graduation_report->personid;
+                    $reports_info["title"] = $new_graduation_report->title;
+                    $reports_info["firstname"] = $new_graduation_report->firstname;
+                    $reports_info["middlenames"] = $new_graduation_report->middlenames;
+                    $reports_info["lastname"] = $new_graduation_report->lastname;
+                    $reports_info["programme"] = $new_graduation_report->programme;
+                    $reports_info["total_credits"] = $new_graduation_report->total_credits;
+                    $reports_info["total_passes"] = $new_graduation_report->total_passes;
+                    $reports_info["iseligible"] = $new_graduation_report->iseligible == 1 ? "Yes" : "No";
                     
                     // if approvedby = 2184 => System Generated
-                    if ($existing_report->approvedby == 2184)
+                    if ($new_graduation_report->approvedby == NULL)
+                    {
+                        $reports_info["approvedby"] = "--" ;
+                    }
+                    elseif ($new_graduation_report->approvedby == 2184)
                     {
                         $reports_info["approvedby"] = "System Generated" ;
                     }
                     else
                     {
-                        $reports_info["approvedby"] = User::getFullName($existing_report->approvedby) ;
+                        $reports_info["approvedby"] = User::getFullName($new_graduation_report->approvedby) ;
                     }
                     
                     $reports_container[] = $reports_info;
@@ -364,11 +386,11 @@
                 $graduation_reports_dataprovider = new ArrayDataProvider([
                             'allModels' => $reports_container,
                             'pagination' => [
-                                'pageSize' => 20,
+                                'pageSize' => 150,
                             ],
                             'sort' => [
-                                'defaultOrder' => [ 'name' => SORT_ASC],
-                                'attributes' => ['programmetype', 'name'],
+                                'defaultOrder' => [ 'lastname' => SORT_ASC,  'firstname' => SORT_ASC],
+                                'attributes' => ['username', 'firstname', 'lastname'],
                             ]
                     ]);
             } 
@@ -377,11 +399,17 @@
                     ['division_id' => $division_id,
                         'academic_year_id' => $academic_year_id,
                         'academic_years' => $academic_years,
-                        'programmecatalog_id' => $programmecatalog_id,
-                        'programme_name' => $programme_name,
+                        'programme_catalog_id' => $programme_catalog_id,
+                        'current_programme' => $current_programme,
+                        'current_year' => $current_year,
                         'programmes' => $programmes,
                         'graduation_reports_dataprovider' => $graduation_reports_dataprovider]);
         }
+        
+        
+        
+        
+        
         
         
         // (laurence_charles) - View prospective graduant report
@@ -397,17 +425,21 @@
         
         
         
+        
+        
+        
+        // (laurence_charles) - Creates da grduation report record for a prospective graduand
         private function createGraduationReport($studentregistrationid, $personid, $academicofferingid)
         {
             $graduation_report = new GraduationReport();
             $graduation_report->personid = $personid;
             $graduation_report->studentregistrationid = $studentregistrationid;
             
-            $employee = Employee::find()->where(['personid' => $personid])->one();
-            $graduation_report->title = $employee->title;
-            $graduation_report->firstname = $employee->firstname;
-            $graduation_report->middlenames = $employee->middlename;
-            $graduation_report->lastname = $employee->lastname;
+            $student = Student::find()->where(['personid' => $personid])->one();
+            $graduation_report->title = $student->title;
+            $graduation_report->firstname = $student->firstname;
+            $graduation_report->middlenames = $student->middlename;
+            $graduation_report->lastname = $student->lastname;
             
             $graduation_report->programme = ProgrammeCatalog::getProgrammeName($academicofferingid);
             
@@ -434,22 +466,29 @@
                                         'course_offering.coursecatalogid' =>  $course_required->coursecatalogid, 'course_offering.isactive' => 1, 'course_offering.isdeleted'=> 0])
                         ->all();
                 
-                // iterate through sittings to try to find a sitting that was passed
-                foreach ($course_sittings_for_students as $course_sitting)
+                if (empty($course_sittings_for_students ) == false)
                 {
-                    if ($course_sitting->grade == true && $course_sitting->grade != "F" && $course_sitting->grade != "INC")
+                    // iterate through sittings to try to find a sitting that was passed
+//                    foreach ($course_sittings_for_students as $course_sitting)
+                    $found = false;
+                    $i = 0;
+                    while( $found == false  && $i < count($course_sittings_for_students))
                     {
-                        $total_passes += 1;
-                        $course_details = CourseOffering::find()
-                                ->innerJoin('batch', '`course_offering`.`courseofferingid` = `batch`.`courseofferingid`')
-                                ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
-                                               'batch.batchid' =>  $course_sitting->batchid, 'batch.isactive' => 1, 'batch.isdeleted' => 0])
-                                ->one();
-                        if ($course_details == true)
+                        if ($course_sittings_for_students[$i]->grade == true && $course_sittings_for_students[$i]->grade != "F" && $course_sittings_for_students[$i]->grade != "INC")
                         {
-                            $total_credits += $course_details->credits;
+                            $total_passes += 1;
+                            $course_details = CourseOffering::find()
+                                    ->innerJoin('batch', '`course_offering`.`courseofferingid` = `batch`.`courseofferingid`')
+                                    ->where(['course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
+                                                   'batch.batchid' =>  $course_sittings_for_students[$i]->batchid, 'batch.isactive' => 1, 'batch.isdeleted' => 0])
+                                    ->one();
+                            if ($course_details == true)
+                            {
+                                $total_credits += $course_details->credits;
+                            }
+                            $found = true;
                         }
-                        break;
+                        $i++;
                     }
                 }
             }
@@ -457,7 +496,7 @@
             $graduation_report->total_credits = $total_credits;
             $graduation_report->total_passes = $total_passes;
            
-            if ($academic_offering->required_credits != NULL  && $total_credits >= $academic_offering->required_credits)
+            if ($academic_offering->credits_required != NULL  && $total_credits >= $academic_offering->credits_required)
             {
                 $graduation_report->iseligible =  1;
                 $graduation_report->approvedby =  2184;

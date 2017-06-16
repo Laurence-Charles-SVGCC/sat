@@ -42,7 +42,7 @@ class GraduationReport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['personid', 'studentregistrationid', 'title', 'firstname', 'middlenames', 'lastname', 'programme', 'total_credits', 'total_passes', 'iseligible'], 'required'],
+            [['personid', 'studentregistrationid', 'title', 'firstname', 'lastname', 'programme', 'total_credits', 'total_passes', 'iseligible'], 'required'],
             [['personid', 'studentregistrationid', 'approvedby', 'total_credits', 'total_passes', 'iseligible', 'isactive', 'isdeleted'], 'integer'],
             [['title'], 'string', 'max' => 5],
             [['firstname', 'middlenames', 'lastname', 'programme'], 'string', 'max' => 255]

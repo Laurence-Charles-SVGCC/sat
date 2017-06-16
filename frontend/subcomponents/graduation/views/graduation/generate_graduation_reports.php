@@ -6,6 +6,7 @@
     
     use frontend\models\Division;
     use frontend\models\AcademicYear;
+    use frontend\models\GraduationProgrammeCourse;
 
      $this->title = 'Generate Graduation Reports';
      $this->params['breadcrumbs'][] = $this->title;
@@ -136,8 +137,10 @@
                         </button>
                         <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
                            <?php foreach($programmes as $programmecatalogid => $programme_name):?>
-                                <li><a href="<?= Url::toRoute(['/subcomponents/graduation/graduation/review-students-in-programme', 'division_id' => $division_id, 'academic_year_id' => $academic_year_id, 'programme_catalog_id' => $programmecatalogid])?>"><?= $programme_name ?></a></li>
-                           <?php endforeach;?>
+                                <?php if (empty(GraduationProgrammeCourse::find()->where(['programmecatalogid' => $programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])->all()) == false): ?>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/graduation/graduation/generate-graduation-reports', 'division_id' => $division_id, 'academic_year_id' => $academic_year_id, 'programme_catalog_id' => $programmecatalogid])?>"><?= $programme_name ?></a></li>
+                                <?php endif; ?>
+                            <?php endforeach;?>
                         </ul>
                     </span>
                 </div><br/>
@@ -147,10 +150,10 @@
 </div>
 
 
-<?php if ($division_id != NULL && $academic_year_id != NULL && $programmecatalog_id != NULL && $graduation_reports_dataprovider) : ?>
+<?php if ($division_id != NULL && $academic_year_id != NULL && $programme_catalog_id != NULL && $graduation_reports_dataprovider) : ?>
     <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;">
         <div class="box-header without-border">
-            <h2><?= $info_string . "Prospective Graduants" ?></h2>
+            <h2><?= $current_programme . " Prospective Graduants " . $current_year ?></h2>
         </div>
        
         <?= GridView::widget([
@@ -159,31 +162,32 @@
                 [
                     ['class' => 'yii\grid\SerialColumn'],
                     [
+                        'label' => 'Student ID',
                         'format' => 'html',
-                        'value' => function($row)
+                        'value' => function($row, $division_id, $programme_catalog_id)
                         {
                              return Html::a($row['username'], 
-                                            Url::to(['graduation/review-student-graduation-report', 'division_id' => $row['division_id'], 'programmecatalog_id' => $row['programmecatalogid'],
-                                                        'graduation_report_id' => $row['graduation_report_id']]));
+                                            Url::to(['graduation/review-student-graduation-report', 'division_id' => $division_id, 'programmecatalog_id' => $programme_catalog_id,
+                                                        'graduation_report_id' => $row['graduationreportid']]));
                         }
                     ],
                     [
-                        'attribute' => 'first_name',
+                        'attribute' => 'firstname',
                         'format' => 'text',
                         'label' => 'First Name'
                     ],
                     [
-                        'attribute' => 'last_name',
+                        'attribute' => 'lastname',
                         'format' => 'text',
                         'label' => 'Last Name'
                     ],
+//                    [
+//                        'attribute' => 'programme',
+//                        'format' => 'text',
+//                        'label' => 'Programme'
+//                    ],
                     [
-                        'attribute' => 'programme',
-                        'format' => 'text',
-                        'label' => 'Programme'
-                    ],
-                    [
-                        'attribute' => 'total_courses_passed',
+                        'attribute' => 'total_passes',
                         'format' => 'text',
                         'label' => 'Total Passes'
                     ],
@@ -193,24 +197,15 @@
                         'label' => 'Total Credits'
                     ],                  
                     [
-                        'attribute' => 'is_eligible',
+                        'attribute' => 'iseligible',
                         'format' => 'text',
                         'label' => 'Gradution Eligibilty'
-                    ],     
+                    ],   
                     [
+                        'attribute' => 'approvedby',
                         'format' => 'text',
-                        'value' => function($row)
-                        {
-                            if ($row['approvedby'] == true)
-                            {
-                                return $row['approvedby'];
-                            }
-                            else 
-                            {
-                                return "N/A";
-                            }
-                        }
-                    ],
+                        'label' => 'Approved By'
+                    ],   
                 ],
             ]); 
         ?>     

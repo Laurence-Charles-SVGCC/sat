@@ -261,28 +261,32 @@ class CordinatorController extends Controller
                {
                    $cordinator->departmentid = $departmentid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypeid' => 1, 'departmentid' => $departmentid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 1, 'departmentid' => $departmentid, 'academicyearid' => $cordinator->academicyearid,
+                                            'personid' => $cordinator->personid,  'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                elseif ($academicofferingid)
                {
                    $cordinator->academicofferingid = $academicofferingid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypeid' => 2, 'academicofferingid' => $academicofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 2, 'academicofferingid' => $academicofferingid, 'personid' => $cordinator->personid,
+                                        'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                elseif ($courseofferingid)
                {
                    $cordinator->courseofferingid = $courseofferingid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypeid' => 3, 'courseofferingid' => $courseofferingid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 3, 'courseofferingid' => $courseofferingid, 'personid' => $cordinator->personid,
+                                            'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                elseif ($capesubjectid)
                {
                    $cordinator->capesubjectid = $capesubjectid;
                    $duplicate_cordinator = Cordinator::find()
-                           ->where(['cordinatortypeid' => 4, 'capesubjectid' => $capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
+                           ->where(['cordinatortypeid' => 4, 'capesubjectid' => $capesubjectid,  'personid' => $cordinator->personid,
+                               'isactive' => 1, 'isdeleted' => 0])
                            ->one();
                }
                
@@ -295,13 +299,14 @@ class CordinatorController extends Controller
                             'cordinator' => $cordinator,
                             'employees' => $employees,
                             'departments' => $departments,
-                            'acaifdemicyears' => $academicyears,
+                            'academicyears' => $academicyears,
                         ]);
                }
                
                
                $transaction = \Yii::$app->db->beginTransaction();
-               try{
+               try
+               {
                    $cordinator_save_flag = $cordinator->save();
                    
                    $is_currently_cordinator =  AuthAssignment::find()

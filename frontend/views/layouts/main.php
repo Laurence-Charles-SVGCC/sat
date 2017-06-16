@@ -277,7 +277,7 @@
                         </li>
                     <?php endif; ?>
                         
-                   <!--     
+                    
                    <?php if (Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Registrar')): ?>
                         <li class="treeview">
                             <a href=""><span><i class="fa fa-graduation-cap"></i> Graduation</span> <i class="fa fa-angle-left pull-right"></i></a>
@@ -288,7 +288,7 @@
                             </ul>
                         </li>
                     <?php endif; ?>
-                   -->
+                   
 
 
                     <?php if (Yii::$app->user->can('gradebook')): ?>
