@@ -1,10 +1,4 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 27/04/2016
- */
-
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -19,7 +13,61 @@
     $this->title = 'Cordinator  Control Panel';
 ?>
 
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator']);?>" title="Programme Management">
+        <h1>Welcome to the Programme Management System</h1>
+    </a>
+</div>
 
+<div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  margin: 0 auto;">
+    <h2 class="text-center"><?= $this->title?></h2>
+    
+    <?php if ($is_programme_cordinator):?>
+        <div class="box-header with-border">
+            <span class="box-title"> Programme(s) Cordinated </span>
+        </div>
+
+        <div class="box-body">
+            <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => [
+                        [
+                            'label' => 'Name',
+                            'format' => 'html',
+                            'value' => function($row)
+                                {
+                                    return Html::a($row['name'], 
+                                                    Url::to(['programmes/programme-overview', 'programmecatalogid' => $row['programmecatalogid']]));
+                                }
+                        ],
+                        [
+                            'attribute' => 'qualificationtype',
+                            'format' => 'text',
+                            'label' => 'Qualification'
+                        ],
+                        [
+                            'attribute' => 'specialisation',
+                            'format' => 'text',
+                            'label' => 'Specialisation'
+                        ],
+                        [
+                            'attribute' => 'department',
+                            'format' => 'text',
+                            'label' => 'Department'
+                        ],
+                        [
+                            'attribute' => 'programmetype',
+                            'format' => 'text',
+                            'label' => 'Type'
+                        ],   
+                    ],
+                ]); 
+            ?>   
+        </div>
+     <?php endif;?>
+</div>
+
+<!--
     <div class="site-index">
         <div class = "custom_wrapper">
             <div class="custom_header">
@@ -91,6 +139,4 @@
             </div>
         </div>
     </div>
-
-
-
+-->
