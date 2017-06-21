@@ -121,9 +121,9 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <h2 class="text-center"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h2>
     
-    <?php if ($offers == true && $applicant->hasdeferred == 0 /*&& ($applicant->hasduplicate == 0*/):?>
-        <a class="btn btn-warning glyphicon glyphicon glyphicon-share-alt pull-right" style="margin-right:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/defer-applicant', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Defer Enrollment</a> <br/> <br/>
-    <?php elseif ($applicant->hasdeferred == 1):?>
+    <?php if ($offers == true && $applicant->hasdeferred == 0 && $applicant_deferral == false):?>
+        <a class="btn btn-warning glyphicon glyphicon glyphicon-share-alt pull-right" style="margin-right:2.5%" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/defer-applicant', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid , 'search_status' => $search_status, 'unrestricted' => $unrestricted]);?> role="button"> Defer Enrollment</a> <br/> <br/>
+    <?php elseif ($applicant->hasdeferred == 1  || ($applicant->hasdeferred == 0 && $applicant_deferral  == true && $applicant_deferral->dateresumed != NULL)):?>
 
         <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">
             Applicant has been issued an offer but has subsequently deferred their enrollment.
@@ -153,8 +153,8 @@
                         <td><?= $applicant_deferral->details ;?></td>
 
                         <?php if ($applicant_deferral->dateresumed == NULL && $applicant_deferral->resumedby == NULL):?>
-                            <td><a class="btn btn-danger glyphicon glyphicon-remove-sign" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/cancel-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid]);?> role="button"> Cancel </a></td>
-                            <td><a class="btn btn-primary glyphicon glyphicon-remove-sign"  href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/enroll-deferred-applicant', 'personid' => $applicant->personid]);?> role="button"> Resume Deferral</a></td>
+                            <td><a class="btn btn-danger glyphicon glyphicon-remove-sign" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/cancel-deferral', 'personid' => $applicant->personid, 'applicantid' => $applicant->applicantid, 'search_status' => $search_status, 'unrestricted' => $unrestricted]);?> role="button"> Cancel </a></td>
+                            <td><a class="btn btn-success glyphicon glyphicon-ok"  href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/enroll-deferred-applicant', 'personid' => $applicant->personid, 'search_status' => $search_status, 'unrestricted' => $unrestricted]);?> role="button"> Enroll Deferred Applicant</a></td>
                         <?php endif;?>
 
                         <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
@@ -327,7 +327,7 @@
                 <?php if(Yii::$app->user->can('ViewProfileData') || Yii::$app->user->can('viewGeneral')):?>    
                     <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">General
                     <?php if(Yii::$app->user->can('editGeneral')):?>        
-                        <a class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/edit-general', 'personid' => $applicant->personid, 'search_status' => $search_status]);?> role="button"> Edit</a>                                    
+                        <a class="btn btn-info glyphicon glyphicon-pencil pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/edit-general', 'personid' => $applicant->personid, 'search_status' => $search_status, 'unrestricted' => $unrestricted]);?> role="button"> Edit</a>                                    
                     <?php endif;?>
                     </div>
 

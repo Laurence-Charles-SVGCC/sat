@@ -403,7 +403,9 @@ class Applicant extends \yii\db\ActiveRecord
                 $count = count($applications);
 
                 if ($count == 1)
+                {
                     $application_status = $applications[0]->applicationstatusid;
+                }
 
                 elseif ($count == 2)
                 {
@@ -647,8 +649,8 @@ class Applicant extends \yii\db\ActiveRecord
                 {
                     if(
                         ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                        || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
-                        || ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
+//                        || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)      // Removed by L.Charles (21/06/2017)
+//                        || ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)     // Removed by L.Charles (21/06/2017)
                         || ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
                         )
                         return true;

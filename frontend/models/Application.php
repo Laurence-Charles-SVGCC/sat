@@ -1710,7 +1710,7 @@ class Application extends \yii\db\ActiveRecord
     
     
     /**
-     * Retrurns the lowest order application for the current application period for an applicant
+     * Returns the lowest order application for the current application period for an applicant
      * 
      * @param type $personid
      * @param type $isactive

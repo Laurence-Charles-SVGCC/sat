@@ -930,7 +930,7 @@
 
                     /*
                      * If an application is given pre-interview rejection,
-                     * -> all precceding applications are rejected
+                     * -> all preceeding application that are not PostInterviewRejections are rejected
                      * -> all subsequent applications are set to pending
                      */
                     elseif($new_status == 6)
@@ -975,49 +975,63 @@
                          */
                         else
                         {
-                            /**
-                            * this should prevent the creation of multiple rejections,
-                            * which is suspected to occur when internet timeout 
-                            * during request submission
-                            */
-                            $rejection = Rejection::find()
+                            $post_interview_rejections = Rejection::find()
                                     ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
                                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                                    ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                    ->where(['rejection.rejectiontypeid' => 2, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                             'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
                                             'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
-                                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1
-                                            ])
-                                    ->one();
-                            if($rejection == false)
+                                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1])
+                                    ->all();
+                            
+                            // Pre-Interview Rejection is only created if no Post Interview Rejections exist
+                            if ($post_interview_rejections == false)
                             {
-                                //create Rejection record
-                                $rejection = new Rejection();
-                                $rejection->personid = $update_candidate->personid;
-                                $rejection->rejectiontypeid = 1;
-                                $rejection->issuedby = Yii::$app->user->getID();
-                                $rejection->issuedate = date('Y-m-d');
-                                $rejection_save_flag = $rejection->save();
-                                if($rejection_save_flag == false)
+                                /**
+                                * this should prevent the creation of multiple rejections,
+                                * which is suspected to occur when internet timeout 
+                                * during request submission
+                                */
+                                $rejection = Rejection::find()
+                                        ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
+                                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                        ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
+                                                'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
+                                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                                ])
+                                        ->one();
+                                if($rejection == false)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
-                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                                }
-
-                                //crete associate RejectionApplications records
-                                foreach($applications as $application)
-                                {
-                                    $temp = new RejectionApplications();
-                                    $temp->rejectionid = $rejection->rejectionid;
-                                    $temp->applicationid = $application->applicationid;
-                                    $miscellaneous_save_flag = $temp->save();
-                                    if ($miscellaneous_save_flag == false)
+                                    //create Rejection record
+                                    $rejection = new Rejection();
+                                    $rejection->personid = $update_candidate->personid;
+                                    $rejection->rejectiontypeid = 1;
+                                    $rejection->issuedby = Yii::$app->user->getID();
+                                    $rejection->issuedate = date('Y-m-d');
+                                    $rejection_save_flag = $rejection->save();
+                                    if($rejection_save_flag == false)
                                     {
                                         $transaction->rollBack();
-                                        Yii::$app->session->setFlash('error', 'Error occured when saving record.');
+                                        Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+
+                                    //crete associate RejectionApplications records
+                                    foreach($applications as $application)
+                                    {
+                                        $temp = new RejectionApplications();
+                                        $temp->rejectionid = $rejection->rejectionid;
+                                        $temp->applicationid = $application->applicationid;
+                                        $miscellaneous_save_flag = $temp->save();
+                                        if ($miscellaneous_save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->session->setFlash('error', 'Error occured when saving record.');
+                                            return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                        }
                                     }
                                 }
                             }
@@ -1069,6 +1083,11 @@
                      */
                     elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
+                        /*
+                        * If previous status was "InterviewOffer";
+                        * ->any subsequent applications are rejected
+                        * -> full offer must be created
+                        */
                         if($old_status == 8)
                         {
                             $old_offer = Offer::find()
@@ -1097,6 +1116,22 @@
                                 */
                                 if($old_offer == true  && $existing_current_offer == false)
                                 {
+                                    //all subsequent applications are rejected
+                                    if($count - $position > 1)
+                                    {
+                                        for ($i = $position+1 ; $i < $count ; $i++)
+                                        {
+                                            $applications[$i]->applicationstatusid = 6;
+                                            $applications_save_flag = $applications[$i]->save();
+                                            if ($applications_save_flag == false)
+                                            {
+                                                $transaction->rollBack();
+                                                Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                            }
+                                        }
+                                    }
+                                    
                                     // create offer
                                     $offer = new Offer();
                                     $offer->applicationid = $applicationid;
@@ -1302,14 +1337,18 @@
                                 ->innerJoin('application' , '`application`.`personid` = `rejection`.`personid`')
                                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                ->innerJoin('rejection_applications', '`application`.`applicationid` = `rejection_applications`.`applicationid`')     // added by L.Charles (21/06/2017)
                                 ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                         'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
-                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1
+                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                                         'rejection_applications.applicationid' =>  $update_candidate->applicationid, 'rejection_applications.isactive' => 1             // added by L.Charles (21/06/2017)
                                         ])
                                 ->one();
                         if($rejection == false)
                         {
+                            
+                            /***********   Removed by L.Charles as the logice is flawed.  There should be rejection for each post interview rejection decision
                             //Rejection should only be created if this is the last progrmme choice
                             if (Application::istLastChosenApplication($update_candidate) == true)
                             {
@@ -1341,6 +1380,32 @@
                                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                     }
                                 }
+                            }**************************************************************************************************************/
+                            
+                            // Post-Interview rejection is created for every application that applicant receive rejection after interview for
+                            //create Rejection record
+                            $rejection = new Rejection();
+                            $rejection->personid = $update_candidate->personid;
+                            $rejection->rejectiontypeid = 2;
+                            $rejection->issuedby = Yii::$app->user->getID();
+                            $rejection->issuedate = date('Y-m-d');
+                            $rejection_save_flag = $rejection->save();
+                            if ($rejection_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                            }
+                            
+                            $temp = new RejectionApplications();
+                            $temp->rejectionid = $rejection->rejectionid;
+                            $temp->applicationid = $update_candidate->applicationid;
+                            $miscellaneous_save_flag = $temp->save();
+                            if ($miscellaneous_save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Error occured when saving record');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
                     }

@@ -1104,7 +1104,8 @@ function showCape()
     if (academicofferingid == offering_id  && divisionid == 4){    //if CAPE program isselected
         document.getElementById("cape-choice").style.display = "block";
     }
-    else {
+    else 
+    {
          document.getElementById("cape-choice").style.display = "none";
     }    
 }

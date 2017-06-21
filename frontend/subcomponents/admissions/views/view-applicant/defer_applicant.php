@@ -1,42 +1,45 @@
 <?php
-
-/* 
- * 'edit_medical_condition' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 28/02/2016
- */
-
+    use yii\widgets\Breadcrumbs;
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
-    $this->title = 'Defer Applicant';
+    $this->title = 'Applicant Deferral';
+    
+    $this->params['breadcrumbs'][] = ['label' => 'Find Applicant', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status])];
+    $this->params['breadcrumbs'][] = ['label' => 'Applicant Profile', 'url' => Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'search_status' => $search_status, 'applicantusername' => $user->username, 'unrestricted' => $unrestricted])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-    <div class="site-index">
-        <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                    <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                    <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-                </a>   
-            </div>
-            
-            <div class="custom_body">
-                <h1 class="custom_h1">Defer Applicant</h1>
+<div class="page-header text-center no-padding">
+    <a href="<?= Url::toRoute(['/subcomponents/admissions/view-applicant/applicant-profile', 'applicantusername' => $user->username]);?>" title="Applicant Profile">
+        <h1>Welcome to the Admissions Management System</h1>
+    </a>
+</div>
 
-                <?php $form = ActiveForm::begin(['id' => 'defer-applicant']);?>
-                    <table class='table table-hover' style='margin: 0 auto;'>   
-                        <tr>
-                            <th rowspan='2' style='vertical-align:top; text-align:center; font-size:1.2em;'>Details</th>
-                            <td><?= $form->field($applicant_deferral, 'details')->label('')->textArea(['rows' => '8']);?></td>
-                        </tr>
-                    </table>
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                    <?= Html::a(' Cancel',['view-applicant/applicant-profile', 'applicantusername' => $user->username], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);?>
-                    <?= Html::submitButton('Update', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);?>
-                <?php ActiveForm::end(); ?>
+
+<div class="box box-primary" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title">Deferral Of Un-enrolled Successful</span>
+     </div>
+    
+    <?php $form = ActiveForm::begin();?>
+        <div class="box-body">
+            <div class="form-group">
+               <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="details">Deferral Details:</label>
+               <?= $form->field($applicant_deferral, 'details')->label('')->textArea(['rows' => '8', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]);?>
             </div>
         </div>
-    </div>
+    
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                <?= Html::a(' Cancel', ['view-applicant/applicant-profile','search_status' => $search_status, 'applicantusername' => $user->username, 'unrestricted' => $unrestricted], ['class' => 'btn btn-danger']);?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
+</div>

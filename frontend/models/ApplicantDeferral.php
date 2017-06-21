@@ -34,7 +34,7 @@ class ApplicantDeferral extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['applicantid', 'personid', 'deferredby', 'deferraldate', 'details', 'resumedby', 'dateresumed'], 'required'],
+            [['applicantid', 'personid', 'deferredby', 'deferraldate', 'details'], 'required'],
             [['applicantid', 'personid', 'deferredby', 'isactive', 'isdeleted'], 'integer'],
             [['deferraldate'], 'safe'],
             [['details'], 'string']

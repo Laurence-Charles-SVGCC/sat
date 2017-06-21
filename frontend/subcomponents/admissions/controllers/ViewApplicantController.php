@@ -6,6 +6,7 @@
     use yii\helpers\Url;
     use yii\base\Model;
     use yii\data\ArrayDataProvider;
+    use yii\helpers\Json;
     
     use common\models\User;
     use frontend\models\Applicant;
@@ -1129,7 +1130,7 @@ class ViewApplicantController extends \yii\web\Controller
 
         /**************************  Applicant Deferrals  ************************/
         $applicant_deferral = ApplicantDeferral::find()
-                ->where(['applicantid' => $applicant->applicantid, 'isactive' => 1, 'isdeleted' => 0])
+                ->where(['applicantid' => $applicant->applicantid, 'isdeleted' => 0])
                 ->one();
         /*************************** Documents/Submitted ***********************/
         $document_details = array();
@@ -1170,6 +1171,7 @@ class ViewApplicantController extends \yii\web\Controller
         /***********************************************************************/
         return $this->render('applicant_profile',[
             'search_status' => $search_status,
+            'unrestricted' => $unrestricted,
             
             //models for profile tab
             'applicantusername' => $applicantusername,
@@ -1242,7 +1244,7 @@ class ViewApplicantController extends \yii\web\Controller
      * Date Created: 28/12/2015
      * Date Last Modified: 28/02/2016
      */
-    public function actionEditGeneral($personid, $search_status)
+    public function actionEditGeneral($personid, $search_status, $unrestricted = false)
     {
         $applicant = Applicant::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -1262,10 +1264,10 @@ class ViewApplicantController extends \yii\web\Controller
                 $applicant_save_flag = $applicant->save();
                 if ($applicant_save_flag == true)
                 {
-                    return self::actionApplicantProfile($search_status, $user->username);
+                    return self::actionApplicantProfile($search_status, $user->username, $unrestricted);
                 }
                 else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save applicant model. Please try again.');
             }
             else
             Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load applicant model. Please try again.');    
@@ -1276,6 +1278,7 @@ class ViewApplicantController extends \yii\web\Controller
             'user' => $user,
             'applicant' => $applicant,
             'search_status' => $search_status,
+           'unrestricted' => $unrestricted
         ]);
     }
     
@@ -1844,7 +1847,7 @@ class ViewApplicantController extends \yii\web\Controller
         else
             Yii::$app->getSession()->setFlash('error', 'Error occured retrieving medical condition record. Please try again.');
         
-        return self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($search_status, $user->username);
     }
     
     
@@ -3074,7 +3077,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $nursinginfo->save();
                     if($save_flag == true)
                     {
-                        return self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($search_status, $user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
@@ -3086,7 +3089,7 @@ class ViewApplicantController extends \yii\web\Controller
                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
         }
         
-        return self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($search_status, $user->username);
     }
     
     
@@ -3237,7 +3240,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $save_flag = $teachinginfo->save();
                     if($save_flag == true)
                     {
-                        return self::actionApplicantProfile($user->username);
+                        return self::actionApplicantProfile($search_status, $user->username);
                     }
                     else
                         Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save Additional Nursing Information record. Please try again.');
@@ -3249,7 +3252,7 @@ class ViewApplicantController extends \yii\web\Controller
                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load Additional Nursing Information record. Please try again.');              
         }
         
-        return self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($search_status, $user->username);
     }
     
     
@@ -3695,7 +3698,7 @@ class ViewApplicantController extends \yii\web\Controller
      * Date Created: 18/11/2016
      * Date Last Modified: 18/11/2016
      */
-    public function actionDeferApplicant($personid, $applicantid)
+    public function actionDeferApplicant($personid, $applicantid, $search_status, $unrestricted = false)
     {
         $user = User::find()
                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -3748,7 +3751,7 @@ class ViewApplicantController extends \yii\web\Controller
                             else
                             {
                                 $transaction->commit();
-                                return self::actionApplicantProfile($user->username);
+                                return self::actionApplicantProfile($search_status, $user->username, $unrestricted);
                             }
                         }
                     }
@@ -3768,28 +3771,23 @@ class ViewApplicantController extends \yii\web\Controller
         return $this->render('defer_applicant', [
             'user' => $user,
             'applicant_deferral' => $applicant_deferral,
+            'search_status' => $search_status,
+            'unrestricted' => $unrestricted
         ]);
     }
     
     
-    
-    /**
-     * Defers a successful applicant's offer
-     * 
-     * @param type $personid
-     * @param type $applicantid
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 18/11/2016
-     * Date Last Modified: 18/11/2016
-     */
-    public function actionCancelDeferral($personid, $applicantid)
+    // (laurence_charles) - Removes a deferral record from applicant record
+    public function actionCancelDeferral($personid, $applicantid, $search_status, $unrestricted = false)
     {
         $load_flag = false;
         $deferral_save_flag = false;
         $applicant_save_flag = false;
-            
+        
+        $user = User::find()
+                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->one();    
+        
         $applicant_deferral = ApplicantDeferral::find()
                 ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
@@ -3813,7 +3811,7 @@ class ViewApplicantController extends \yii\web\Controller
                         if($applicant_save_flag == true)
                         {
                             $transaction->commit();
-                            return self::actionApplicantProfile($user->username);
+                            return self::actionApplicantProfile($search_status, $user->username, $unrestricted);
                         }
                         else
                         {
@@ -3843,42 +3841,114 @@ class ViewApplicantController extends \yii\web\Controller
             Yii::$app->session->setFlash('error', 'Error occured loading deferral record');
         }
         
-        return self::actionApplicantProfile($user->username);
+        return self::actionApplicantProfile($search_status, $user->username, $unrestricted);
     }
     
     
-    /**
-     * Enrols a successful applicant that deferred the acceptance before they completed the registration process
-     * 
-     * @param type $personid
-     * @param type $studentregistrationid
-     * @param type $recordid
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 08/01/2016
-     * Date Last Modified: 10/01/2016 | 20/09/2016
-     */
-    public function actionEnrollDeferredApplicant($personid)
+   // (laurence_charles) - Encodes the academic offerings; essential for the dependant dropdown widget
+    public function actionAcademicoffering($personid) 
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) 
+        {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $division_id = $parents[0];
+                $out = self::getAcademicOfferingList($division_id, $personid); 
+                echo Json::encode(['output'=>$out, 'selected'=>'']);
+                return;
+            }
+        }
+        echo Json::encode(['output'=>'', 'selected'=>'']);
+    }
+    
+
+    //  (laurence_charles) - Retrieves the academic offerings; essential for the dependant dropdown widget
+    public static function getAcademicOfferingList($division_id, $personid)
+    { 
+        $intent = Applicant::getApplicantIntent($personid);
+        $db = Yii::$app->db;
+
+        if ($intent == 1  || $intent == 4 || $intent == 6)       //if user is applying for full time programme
+        {
+            $programmetypeid = 1;   //used to identify full time programmes
+        }
+
+        else if ($intent == 2 || $intent == 3  || $intent ==5  || $intent ==7)      //if user is applying for part time
+        {
+            $programmetypeid = 2;  //will be used to identify part time programmes
+        } 
+
+        $records = $db->createCommand(
+                'SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation'
+                . ' FROM programme_catalog '
+                . ' JOIN academic_offering'
+                . ' ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid'
+                . ' JOIN qualification_type'
+                . ' ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid' 
+                . ' JOIN application_period'
+                . ' ON academic_offering.applicationperiodid = application_period.applicationperiodid'
+                . ' WHERE academic_offering.isactive=1'
+                . ' AND academic_offering.isdeleted=0'
+                . ' AND application_period.iscomplete = 0'
+                . ' AND application_period.isactive = 1'
+                . ' AND programme_catalog.programmetypeid= ' . $programmetypeid
+                . ' AND programme_catalog.departmentid'
+                . ' IN ('
+                . ' SELECT departmentid'
+                . ' FROM department'
+                . ' WHERE divisionid = '. $division_id
+                . ' );'
+                )
+                ->queryAll();  
+        
+        $arr = array();
+        foreach ($records as $record)
+        {
+            $combined = array();
+            $keys = array();
+            $values = array();
+            array_push($keys, "id");
+            array_push($keys, "name");
+            $k1 = strval($record["academicofferingid"]);
+            $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"]);
+            array_push($values, $k1);
+            array_push($values, $k2);
+            $combined = array_combine($keys, $values);
+            array_push($arr, $combined);
+            $combined = NULL;
+            $keys = NULL;
+            $values = NULL;        
+        }
+        return $arr; 
+    }
+        
+    
+    // (laurence_charles) - Enrols a successful applicant that deferred the acceptance before they completed the registration process
+    public function actionEnrollDeferredApplicant($personid, $search_status, $unrestricted)
     {
         $user = User::find()
                 ->where(['personid' => $personid, 'isdeleted' => 0])
                 ->one();
+        
+        $applicant = Applicant::find()
+                ->where(['personid' => $personid, 'isdeleted' => 0])
+                ->one();
+        
          if($user == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error retrieving user record.');
             return $this->redirect(\Yii::$app->request->getReferrer());
         }
         
-        $title = "Applicant Deferral Resumption";
-
         $current_offer =  Offer::getActiveFullOffer($personid);
         if($current_offer == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error retrieving offer record.');
             return $this->redirect(\Yii::$app->request->getReferrer());
         }
-
+        
+        /*********************** Retrieve information for current programme *********************************/
         $current_cape_subjects_names = array();                
         $current_cape_subjects = array();
         $current_application = $current_offer->getApplication()->one();
@@ -3889,14 +3959,13 @@ class ViewApplicantController extends \yii\web\Controller
             $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
         }
         $current_programme = empty($current_cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $current_cape_subjects_names);
-
+        /*********************************************************************************************/
 
         date_default_timezone_set('America/St_Vincent');
         $selected = NULL;
         $capegroups = CapeGroup::getGroups();
         $groupCount = count($capegroups);
         $new_application = new Application();
-        $deferral = new StudentDeferral();
 
         //Create blank records to accommodate capesubject-application associations
         $applicationcapesubject = array();
@@ -3912,9 +3981,6 @@ class ViewApplicantController extends \yii\web\Controller
         //Handles post request
         if ($post_data = Yii::$app->request->post())
         {
-            //Register flags
-             $new_registration_save_flag = false;
-
             $application_load_flag = $new_application->load($post_data);
 
             if($application_load_flag == true)
@@ -3961,6 +4027,12 @@ class ViewApplicantController extends \yii\web\Controller
                     $current_offer_save_flag = false;
                     $current_offer->isactive = 0;
                     $current_offer_save_flag = $current_offer->save();
+                    if( $current_offer_save_flag == false)
+                    {
+                         $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error de-activating offer records.');
+                        return $this->redirect(\Yii::$app->request->getReferrer());
+                    }
                     /******************************************************************************************/
 
                     $new_application_load_flag = false;
@@ -4037,7 +4109,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $new_offer->offertypeid = 1;
                     $new_offer->issuedby = Yii::$app->user->identity->personid;
                     $new_offer->issuedate = date('Y-m-d');
-                    $new_offer->ispublished = 1;
+                    $new_offer->ispublished = 0;
                     $new_offer_save_flag = $new_offer->save();
 
                     if ($new_offer_save_flag == false)
@@ -4046,39 +4118,36 @@ class ViewApplicantController extends \yii\web\Controller
                         Yii::$app->getSession()->setFlash('error', 'Error occured saving offer.');
                          return $this->redirect(\Yii::$app->request->getReferrer());
                     }
-
-                    //Creates new  student registration
-                    $new_registration = new StudentRegistration();
-                    $new_registration->offerid = $new_offer->offerid;
-                    $new_registration->personid = $personid;
-                    $new_registration->academicofferingid = $new_application->academicofferingid;
-                    $programme_catalog = ProgrammeCatalog::find()
-                            ->innerJoin('academic_offering', '`programme_catalog`.`programmecatalogid` = `academic_offering`.`programmecatalogid`')
-                            ->where(['programme_catalog.isdeleted' => 0,
-                                            'academic_offering.academicofferingid' => $new_application->academicofferingid, 'academic_offering.isdeleted' => 0
-                                        ])
-                            ->one();
-                    if ($programme_catalog == false)
+                    
+                    $applicant_deferral = ApplicantDeferral::find()
+                        ->where(['applicantid' => $applicant->applicantid, 'isdeleted' => 0])
+                        ->one();
+                    $applicant_deferral->resumedby = Yii::$app->user->identity->personid;
+                    $applicant_deferral->dateresumed = date('Y-m-d');
+                    $applicant_deferral_save_flag = $applicant_deferral->save();
+                    if ($applicant_deferral_save_flag == false)
                     {
                         $transaction->rollBack();
-                        Yii::$app->getSession()->setFlash('error', 'Error retrieving programme catalog.');
+                        Yii::$app->getSession()->setFlash('error', 'Error occured updating deferral record.');
                          return $this->redirect(\Yii::$app->request->getReferrer());
                     }
-
-                    $new_registration->registrationtypeid = $programme_catalog->programmetypeid;
-                    $new_registration->currentlevel = 1;
-                    $new_registration->registrationdate = date('Y-m-d');
-                    $new_registration_save_flag = $new_registration->save();
-
-                    if ($new_registration_save_flag == false)
-                    {   
+                    
+                    
+                    $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+                    $applicant->hasdeferred = 0;
+                    $applicant_save_flag = $applicant->save();
+                    if ($applicant_save_flag == false)
+                    {
                         $transaction->rollBack();
-                        Yii::$app->getSession()->setFlash('error', 'Error saving new student registration record.');
-                        return $this->redirect(\Yii::$app->request->getReferrer());
+                        Yii::$app->getSession()->setFlash('error', 'Error occured updating applicant record.');
+                         return $this->redirect(\Yii::$app->request->getReferrer());
                     }
                     
+                    
                     $transaction->commit();
-                    return self::actionStudentProfile($personid, $new_registration->studentregistrationid);     
+                    return self::actionApplicantProfile($search_status, $user->username, $unrestricted);
 
                 }catch (Exception $e){
                     $transaction->rollBack();
@@ -4091,14 +4160,14 @@ class ViewApplicantController extends \yii\web\Controller
 
         return $this->render('add_deferral', [
                     'personid' => $personid, 
-                     'user' => $user,
-                     'title' => $title,
+                    'search_status' => $search_status,
+                    'unrestricted' => $unrestricted,
+                    'user' => $user,
                     'current_programme' => $current_programme,
 
                     'capegroups' => $capegroups,
                     'new_application' => $new_application,
                     'applicationcapesubject' =>  $applicationcapesubject,
-                    'deferral' => $deferral
         ]); 
     }
         

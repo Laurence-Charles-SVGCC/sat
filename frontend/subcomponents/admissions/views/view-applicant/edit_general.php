@@ -111,7 +111,7 @@
          <div class="box-footer">
             <span class = "pull-right">
                 <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
-                <?= Html::a(' Cancel', ['view-applicant/applicant-profile',  'search_status' => $search_status,  'applicantusername' => $user->username], ['class' => 'btn  btn-danger']);?>
+                <?= Html::a(' Cancel', ['view-applicant/applicant-profile',  'search_status' => $search_status,  'applicantusername' => $user->username, 'unrestricted' => $unrestricted], ['class' => 'btn  btn-danger']);?>
             </span>
         </div>
     <?php ActiveForm::end(); ?>
