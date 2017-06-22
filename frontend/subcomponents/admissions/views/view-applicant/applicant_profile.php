@@ -126,7 +126,11 @@
     <?php elseif ($applicant->hasdeferred == 1  || ($applicant->hasdeferred == 0 && $applicant_deferral  == true && $applicant_deferral->dateresumed != NULL)):?>
 
         <div class ="btn btn-danger" style="font-size:16px; width: 95%; margin-left: 2.5%;">
-            Applicant has been issued an offer but has subsequently deferred their enrollment.
+            <?php if ($applicant->hasdeferred == 1): ?>
+                Applicant has been issued an offer but has subsequently deferred their enrollment.
+            <?php elseif ($applicant->hasdeferred == 0):?>
+                Applicant has enrolled after previously being deferred.
+            <?php endif;?>
         </div>
         <table class="table table-striped"  style="font-size:16px; width: 95%; margin-left: 2.5%;">
                 <thead>
@@ -141,6 +145,8 @@
                         <?php endif;?>
 
                         <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
+                            <th>Deferred Acceptance</th>
+                            <th>Current Acceptance</th>
                             <th>Resumed By</th>
                             <th>Date Resumed</th>
                         <?php endif;?>
@@ -158,7 +164,9 @@
                         <?php endif;?>
 
                         <?php if ($applicant_deferral->dateresumed != NULL && $applicant_deferral->resumedby != NULL):?>
-                            <td><?= $applicant_deferral->resumedby ;?></td>
+                            <td><?= $deferred_acceptance ;?></td>
+                            <td><?= $current_acceptance ;?></td>
+                            <td><?= Employee::getEmployeeName($applicant_deferral->resumedby) ;?></td>
                             <td><?= $applicant_deferral->dateresumed ;?></td>
                         <?php endif;?>
                     </tr>

@@ -12,6 +12,8 @@ use Yii;
  * @property string $personid
  * @property string $deferredby
  * @property string $deferraldate
+ * @property string from_applicationid
+ * @property string to_applicationid
  * @property string $resumedby
  * @property string $dateresumed
  * @property string $details
@@ -35,7 +37,7 @@ class ApplicantDeferral extends \yii\db\ActiveRecord
     {
         return [
             [['applicantid', 'personid', 'deferredby', 'deferraldate', 'details'], 'required'],
-            [['applicantid', 'personid', 'deferredby', 'isactive', 'isdeleted'], 'integer'],
+            [['applicantid', 'personid', 'deferredby', 'from_applicationid', 'to_applicationid', 'isactive', 'isdeleted'], 'integer'],
             [['deferraldate'], 'safe'],
             [['details'], 'string']
         ];
@@ -52,6 +54,8 @@ class ApplicantDeferral extends \yii\db\ActiveRecord
             'personid' => 'Personid',
             'deferredby' => 'Deferredby',
             'deferraldate' => 'Deferraldate',
+            'from_applicationid' => 'Deferred Acceptance',
+            'to_applicationid' => 'Current Acceptance' ,
             'details' => 'Details',
             'resumedby' => 'ResumedBy',
             'dateresumed' => 'Date Resumed',

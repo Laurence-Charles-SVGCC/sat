@@ -50,6 +50,7 @@
     use frontend\models\ApplicantDeferral;
     use frontend\models\CapeGroup;
     use frontend\models\StudentDeferral;
+    use frontend\models\AcademicYear;
 
 
 class ViewApplicantController extends \yii\web\Controller
@@ -1129,9 +1130,53 @@ class ViewApplicantController extends \yii\web\Controller
         $offers = Offer::getOffers($personid);
 
         /**************************  Applicant Deferrals  ************************/
+        $deferred_acceptance = NULL;
+        $current_acceptance = NULL;
         $applicant_deferral = ApplicantDeferral::find()
                 ->where(['applicantid' => $applicant->applicantid, 'isdeleted' => 0])
                 ->one();
+        if ( $applicant_deferral == true)
+        {
+            $deferred_application = Application::find()
+                    ->where(['applicationid' => $applicant_deferral->from_applicationid, 'isdeleted' => 0])
+                    ->one();
+            if ($deferred_application == true)
+            {
+                $deferred_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $deferred_application->getAcademicoffering()->one()->programmecatalogid]);
+                $deferred_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $deferred_application->applicationid]);
+                foreach ($deferred_cape_subjects as $cs)
+                { 
+                    $deferred_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $deferred_academic_year = AcademicYear::find()
+                        ->where(['academicyearid' => $deferred_application->getAcademicoffering()->one()->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->title;
+                $deferredprogramme = empty($deferred_cape_subjects) ? "(" . $deferred_academic_year . ")  " . $deferred_programme->getFullName() : $deferred_programme->name . ": " . implode(' ,', $deferred_cape_subjects_names);
+                $deferred_acceptance = $deferredprogramme;
+            }
+            
+            
+            $current_application = Application::find()
+                    ->where(['applicationid' => $applicant_deferral->to_applicationid, 'isdeleted' => 0])
+                    ->one();
+            if ($current_application == true)
+            {
+                $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
+                $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
+                foreach ($current_cape_subjects as $cs)
+                { 
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                }
+                $current_academic_year = AcademicYear::find()
+                        ->where(['academicyearid' => $current_application->getAcademicoffering()->one()->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one()
+                        ->title;
+               $currentprogramme = empty($current_cape_subjects) ? "(" . $current_academic_year . ")  " . $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
+               $current_acceptance = $currentprogramme;
+            }
+        }
+        
         /*************************** Documents/Submitted ***********************/
         $document_details = array();
         $documents = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
@@ -1229,6 +1274,8 @@ class ViewApplicantController extends \yii\web\Controller
             'thirdDetails' =>$thirdDetails,
             'offers' => $offers,
             'applicant_deferral' => $applicant_deferral,
+            'deferred_acceptance' => $deferred_acceptance,
+            'current_acceptance' => $current_acceptance,
             'document_details' => $document_details,
         ]);
     }
@@ -3718,6 +3765,16 @@ class ViewApplicantController extends \yii\web\Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
+                    $applications = Application::find()
+                            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->orderBy('ordering DESC')
+                            ->all();
+                    if ($applications == true)
+                    {
+                        $most_recent_application = $applications[0];
+                        $applicant_deferral->from_applicationid = $most_recent_application;
+                    }
+            
                     $applicant_deferral->personid = $personid;
                     $applicant_deferral->applicantid = $applicantid;
                     $applicant_deferral->deferraldate = date('Y-m-d');
@@ -4043,7 +4100,21 @@ class ViewApplicantController extends \yii\web\Controller
                     $new_application->personid = $personid;    
                     $new_application->applicationtimestamp = date('Y-m-d H:i:s' );
                     $new_application->submissiontimestamp = date('Y-m-d H:i:s' );
-                    $new_application->ordering = Application::getNextApplicationID($personid);
+                    
+                     $deferred_applications = Application::find()
+                            ->where(['personid' => $personid, 'isdeleted' => 0])
+                            ->andWhere(['>', 'ordering', 9])
+                            ->orderBy('ordering ASC')
+                            ->all();
+                     if ($deferred_applications == true)
+                     {
+                        $new_application->ordering = Application::getNextApplicationID($personid);
+                     }
+                     else
+                     {
+                        $new_application->ordering = 10;
+                     }
+                    
                     $new_application->ipaddress = Yii::$app->request->getUserIP();
                     $new_application->browseragent = Yii::$app->request->getUserAgent();
                     $new_application->applicationstatusid = 9;
@@ -4122,6 +4193,7 @@ class ViewApplicantController extends \yii\web\Controller
                     $applicant_deferral = ApplicantDeferral::find()
                         ->where(['applicantid' => $applicant->applicantid, 'isdeleted' => 0])
                         ->one();
+                    $applicant_deferral->to_applicationid = $new_application->applicationid;
                     $applicant_deferral->resumedby = Yii::$app->user->identity->personid;
                     $applicant_deferral->dateresumed = date('Y-m-d');
                     $applicant_deferral_save_flag = $applicant_deferral->save();
