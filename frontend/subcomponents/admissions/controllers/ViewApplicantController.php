@@ -3772,7 +3772,7 @@ class ViewApplicantController extends \yii\web\Controller
                     if ($applications == true)
                     {
                         $most_recent_application = $applications[0];
-                        $applicant_deferral->from_applicationid = $most_recent_application;
+                        $applicant_deferral->from_applicationid = $most_recent_application->applicationid;
                     }
             
                     $applicant_deferral->personid = $personid;
