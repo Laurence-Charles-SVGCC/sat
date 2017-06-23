@@ -679,16 +679,26 @@ class AcademicOffering extends \yii\db\ActiveRecord
         $highest_gpa = 0;
         foreach ($enrolled_students as $student)
         {
-            $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
-            if($gpa > $highest_gpa)
-                $highest_gpa = $gpa;
+            if ($student->studentstatusid == 1 || $student->studentstatusid == 11)
+            {
+                $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
+                if($gpa > $highest_gpa)
+                {
+                    $highest_gpa = $gpa;
+                }
+            }
         }
         
         foreach ($enrolled_students as $student)
         {
-            $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
-            if($gpa == $highest_gpa)
-                $top_performers[] = $student->studentregistrationid;
+            if ($student->studentstatusid == 1 || $student->studentstatusid == 11)
+            {
+                $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
+                if($gpa == $highest_gpa)
+                {
+                    $top_performers[] = $student->studentregistrationid;
+                }
+            }
         }
         return $top_performers;
     }
