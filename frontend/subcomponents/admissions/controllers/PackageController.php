@@ -476,11 +476,21 @@
             elseif ($package->packagetypeid == 4)
             {
                 if ($divisionid == 4)
+                {
                     $viewfile = '@common/mail/packages/dasgs_full_offer_email.php';
+                }
                 elseif ($divisionid == 5)
+                {
                     $viewfile = '@common/mail/packages/dtve_full_offer_email.php';
-                elseif ($divisionid == 6  || $divisionid == 7)
-                    $viewfile = '@common/mail/packages/full_offer_email.php';
+                }
+                elseif ($divisionid == 6)
+                {
+                    $viewfile = '@common/mail/packages/dte_full_offer_email.php';
+                }
+                elseif ($divisionid == 7)
+                {
+                    $viewfile = '@common/mail/packages/dne_full_offer_email.php';
+                }
             }
                 
             

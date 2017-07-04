@@ -287,8 +287,8 @@
                                 <li><a href=""><i class="fa fa-circle-o"></i> Graduation Listing</a></li>
                             </ul>
                         </li>
-                    <?php endif; ?>
-                   -->
+                    <?php endif; ?>-->
+                   
 
 
                     <?php if (Yii::$app->user->can('gradebook')): ?>
