@@ -183,7 +183,7 @@
                     </span><br/><br/>
                 </div>
             
-                <div><strong>Prepare interview schedule by prgramme:</strong>
+                <div><strong>Prepare interview schedule by programme:</strong>
                     <span class='dropdown' style="margin-left:2%">
                         <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
                             Select application period...

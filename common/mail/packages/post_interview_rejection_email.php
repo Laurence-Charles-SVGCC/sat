@@ -4,9 +4,9 @@
 
 <div class="post_interview_rejection_email">
    <?php if (stripos(Url::home(true), "localhost") == false) :?>
-        <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:180px;">
+        <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:150px;">
     <?php else: ?>
-        <img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:180px;">
+        <img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:150px;">
     <?php endif; ?>
 
     <div id="introduction">
