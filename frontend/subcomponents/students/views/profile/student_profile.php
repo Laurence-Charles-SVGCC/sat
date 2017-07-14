@@ -2738,21 +2738,28 @@
                                             for ($j = 0 ; $j < $courses_count ; $j++)
                                             {  
                                                 $grade_points = $course_results[$j]['credits_attempted'] * $course_results[$j]['qualitypoints'];
-                                                echo "<tr>";
-                                                    echo "<td>{$course_results[$j]['code']}</td>";
-                                                    echo "<td>{$course_results[$j]['name']}</td>";
-                                                    echo "<td>{$course_results[$j]['credits_attempted']}</td>";
-                                                    if (strcmp($course_results[$j]['course_status'], "P") == 0)       
-                                                        echo "<td>{$course_results[$j]['credits_awarded']}</td>";                                     
-                                                    else
-                                                        echo "<td>0</td>";  
-                                                    echo "<td>{$course_results[$j]['courseworktotal']}</td>";
-                                                    echo "<td>{$course_results[$j]['examtotal']}</td>";
-                                                    echo "<td>{$course_results[$j]['final']}</td>"; 
-                                                    echo "<td>{$course_results[$j]['course_status']}</td>";
-                                                    echo "<td>{$course_results[$j]['grade']}</td>";
-                                                    echo "<td>{$course_results[$j]['qualitypoints']}</td>";
-                                                    echo "<td>$grade_points</td> "; 
+                                                if ($course_results[$j]['batch_is_active'] == 0 )
+                                                {
+                                                    echo "<tr style='background-color:lightcoral'>";
+                                                }
+                                                else
+                                                {
+                                                    echo "<tr>";
+                                                }
+                                                        echo "<td>{$course_results[$j]['code']}</td>";
+                                                        echo "<td>{$course_results[$j]['name']}</td>";
+                                                        echo "<td>{$course_results[$j]['credits_attempted']}</td>";
+                                                        if (strcmp($course_results[$j]['course_status'], "P") == 0)       
+                                                            echo "<td>{$course_results[$j]['credits_awarded']}</td>";                                     
+                                                        else
+                                                            echo "<td>0</td>";  
+                                                        echo "<td>{$course_results[$j]['courseworktotal']}</td>";
+                                                        echo "<td>{$course_results[$j]['examtotal']}</td>";
+                                                        echo "<td>{$course_results[$j]['final']}</td>"; 
+                                                        echo "<td>{$course_results[$j]['course_status']}</td>";
+                                                        echo "<td>{$course_results[$j]['grade']}</td>";
+                                                        echo "<td>{$course_results[$j]['qualitypoints']}</td>";
+                                                        echo "<td>$grade_points</td> "; 
                                                 echo "</tr>";
 
                                                 if (strcmp($course_results[$j]['course_status'], "P") == 0)

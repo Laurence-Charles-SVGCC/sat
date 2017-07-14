@@ -322,6 +322,9 @@ class BatchStudent extends \yii\db\ActiveRecord
         $db = Yii::$app->db;
         $batch_student_records = $db->createCommand(
                 "SELECT batch.batchid AS 'batchid',"
+                . " batch.batchtypeid AS 'batchtypeid',"
+                . " batch.isactive AS 'batch_is_active',"
+                . " batch.isdeleted AS 'batch_is_deleted',"
                 . " course_type.name AS 'course_type',"
                 . " course_offering.courseworkweight AS 'courseworkweight',"
                 . " course_offering.examweight AS 'examweight', "
@@ -358,6 +361,9 @@ class BatchStudent extends \yii\db\ActiveRecord
         {
             $keys = array();
             array_push($keys, "batchid");
+            array_push($keys, "batchtypeid");
+            array_push($keys, "batch_is_active");
+            array_push($keys, "batch_is_deleted");
             array_push($keys, "course_type");
             array_push($keys, "courseworkweight");
             array_push($keys, "examweight");
@@ -375,29 +381,28 @@ class BatchStudent extends \yii\db\ActiveRecord
             
             $values = array();
             array_push($values, $batch_student_records[$i]["batchid"]);
+            array_push($values, $batch_student_records[$i]["batchtypeid"]);
+            array_push($values, $batch_student_records[$i]["batch_is_active"]);
+            array_push($values, $batch_student_records[$i]["batch_is_deleted"]);
             array_push($values, $batch_student_records[$i]["course_type"]);
             array_push($values, $batch_student_records[$i]["courseworkweight"]);
             array_push($values, $batch_student_records[$i]["examweight"]);
             array_push($values, $batch_student_records[$i]["passfailtypeid"]);
             array_push($values, $batch_student_records[$i]["code"]);
             
-            $batch = Batch::find()
-                    ->where(['batchid' => $batch_student_records[$i]["batchid"], 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-            
-            if ($batch->batchtypeid == 1)
+            if ($batch_student_records[$i]["batchtypeid"] == 1)
             {
                 $batch_name = $batch_student_records[$i]["name"];
             }
-            elseif ($batch->batchtypeid == 2)
+            elseif ($batch_student_records[$i]["batchtypeid"] == 2)
             {
                 $batch_name = $batch_student_records[$i]["name"] . " - RESIT";
             }
-            elseif ($batch->batchtypeid == 3)
+            elseif ($batch_student_records[$i]["batchtypeid"] == 3)
             {
                 $batch_name = $batch_student_records[$i]["name"] . " - SUPPLEMENTAL";
             }
-            elseif($batch->batchtypeid == 4)
+            elseif ($batch_student_records[$i]["batchtypeid"]  == 4)
             {
                 $batch_name = $batch_student_records[$i]["name"] . " - EXEMPTION";
             }
