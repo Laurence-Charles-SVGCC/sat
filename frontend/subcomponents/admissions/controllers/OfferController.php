@@ -1882,6 +1882,9 @@ class OfferController extends Controller
             $cape_subjects_names = array();
             $application = $offer->getApplication()->one();
             $applicant = Applicant::findOne(['personid' => $application->personid]);
+            $email = Email::find()
+                    ->where(['personid' => $application->personid , 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $application->getAcademicoffering()->one()->programmecatalogid]);
             $issuer = Employee::findOne(['personid' => $offer->issuedby]);
             $issuername = $issuer ? $issuer->firstname . ' ' . $issuer->lastname : 'Undefined Issuer';
@@ -1896,6 +1899,7 @@ class OfferController extends Controller
             $offer_data['applicationid'] = $offer->applicationid;
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
+            $offer_data['email'] = ($email == true) ? $email->email : "";
             $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;

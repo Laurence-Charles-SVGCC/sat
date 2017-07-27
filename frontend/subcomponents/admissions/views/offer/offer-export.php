@@ -21,6 +21,7 @@
                 'username',
                 'firstname',
                 'lastname',
+                'email',
                 'programme',
                 'issuedby',
                 'issuedate',
