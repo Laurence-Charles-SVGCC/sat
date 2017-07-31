@@ -27,7 +27,7 @@
     class WithdrawalController extends Controller 
     {
         /**
-         * Renders withdrawl candidates search view
+         * Renders withdrawal candidates search view
          * 
          * @return type
          * 
@@ -176,6 +176,7 @@
                     $info['first_name'] = $student->firstname;
                     $info['middle_name'] = $student->middlename;
                     $info['last_name'] = $student->lastname;
+                     $info['fails'] = $fails;
 
                     $cape_subjects = array();
                     $cape_subjects_names = array();

@@ -30,16 +30,18 @@
         <span class="box-title">Generate New Listing</span>
      </div>
     
-    <div class="box-body">
-        <div class="form-group">
-           <?= Html::label('Select application period you wish to generate withdrawal candidate list for: ', 'period_id_label'); ?>
-           <?= Html::dropDownList('period-id',  "Select...", $periods, ['id' => 'period_id_field', 'onchange' => 'toggleSubmitButton();']) ; ?>                                   
-       </div>
-        
-         <p class = "pull-right">
-            <?= Html::submitButton('Generate', ['class' => 'btn btn-md btn-success pull-right', 'style' => 'margin-right:20px; display:none', 'id' => 'withdrawal-submit-button']) ?>
-        </p>
-    </div>
+    <?php $form = ActiveForm::begin(['action' => Url::to(['withdrawal/generate-withdrawal-candidates'])]);?>
+        <div class="box-body">
+            <div class="form-group">
+               <?= Html::label('Select application period you wish to generate withdrawal candidate list for: ', 'period_id_label'); ?>
+               <?= Html::dropDownList('period-id',  "Select...", $periods, ['id' => 'period_id_field', 'onchange' => 'toggleSubmitButton();']) ; ?>                                   
+           </div>
+
+             <p class = "pull-right">
+                <?= Html::submitButton('Generate', ['class' => 'btn btn-md btn-success pull-right', 'style' => 'margin-right:20px; display:none', 'id' => 'withdrawal-submit-button']) ?>
+            </p>
+        </div>
+    <?php ActiveForm::end(); ?>
 </div><br/>
 
 
