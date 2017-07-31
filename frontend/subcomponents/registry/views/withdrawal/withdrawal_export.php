@@ -47,6 +47,11 @@
                     'label' => 'Programme'
                 ],
                 [
+                    'attribute' => 'fails',
+                    'format' => 'text',
+                    'label' => 'Fails'
+                ],  
+                [
                     'attribute' => 'current_level',
                     'format' => 'text',
                     'label' => 'Level'

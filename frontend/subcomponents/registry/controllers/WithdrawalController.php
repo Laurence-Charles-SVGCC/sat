@@ -176,7 +176,7 @@
                     $info['first_name'] = $student->firstname;
                     $info['middle_name'] = $student->middlename;
                     $info['last_name'] = $student->lastname;
-                     $info['fails'] = $fails;
+                    $info['fails'] = $fails;
 
                     $cape_subjects = array();
                     $cape_subjects_names = array();
@@ -344,6 +344,7 @@
                 $info['first_name'] = $student->firstname;
                 $info['middle_name'] = $student->middlename;
                 $info['last_name'] = $student->lastname;
+                $info['fails'] = $fails;
 
                 $cape_subjects = array();
                 $cape_subjects_names = array();

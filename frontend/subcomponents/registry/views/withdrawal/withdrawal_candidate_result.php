@@ -48,7 +48,7 @@
 
 <div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
     <div class="box-header with-border">
-        <span class="box-title"><?= $this->title?></span>
+        <span class="box-title"><?= $title?></span>
      </div>
 
     <div class="box-body">
@@ -89,6 +89,11 @@
                             'format' => 'text',
                             'label' => 'Programme'
                         ],
+                        [
+                            'attribute' => 'fails',
+                            'format' => 'text',
+                            'label' => 'Fails'
+                        ],        
                         [
                             'attribute' => 'current_level',
                             'format' => 'text',
