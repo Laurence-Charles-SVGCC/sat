@@ -22,6 +22,7 @@
     use frontend\models\AcademicOffering;
     use frontend\models\BatchStudent;
     use frontend\models\BatchStudentCape;
+    use frontend\models\AcademicYear;
       
 
     class WithdrawalController extends Controller 
@@ -33,15 +34,59 @@
          * 
          * Author: Laurence Charles
          * Date Created: 10/09/2016
-         * Date Last Modified: 10/09/2016 | 15/11/2016
+         * Date Last Modified: 02/08/2017
          */
          public function actionIndex()
          {
-             $periods = ApplicationPeriod::preparePastPeriods();
+            $periods = array();
+            $records = ApplicationPeriod::find()
+                        ->innerJoin('academic_year' , '`application_period`.`academicyearid` = `academic_year`.`academicyearid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                       'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0
+                                    ])
+                        ->andWhere(['>=', 'applicationperiodstatusid', 5])
+                        ->all();
+            if (count($records) > 0)
+            {
+                $keys = array();
+                array_push($keys, '');
+
+                $values = array();
+                array_push($values, 'Select...');
+
+                $today = date('Y-m-d');
+                
+                foreach($records as $record)
+                {
+                    
+                    $academic_year = AcademicYear::find()
+                            ->where(['academicyearid' => $record->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    $split_date = explode("-", $academic_year->enddate);
+                    $year = $split_date[0];
+                    $month = $split_date[1];
+                    $day = $split_date[2];
+                    $targetDate = date($year . "-" . ($month - 1) . "-" . $day);
+                    
+                    // if current date equal to or past 1 month prior to end of academic year for application period in question
+                    if (strtotime($today) > strtotime($targetDate))
+                    {
+                        $key = strval($record->applicationperiodid);
+                        array_push($keys, $key);
+                        $value = strval($record->name);
+                        array_push($values, $value);
+                    }
+                }
+                $periods = array_combine($keys, $values);
+            }
              
              return $this->render('select_candidate_criteria',
                 [
-                    'periods' => $periods,
+                    'periods' => $periods
                 ]);
          }
         
