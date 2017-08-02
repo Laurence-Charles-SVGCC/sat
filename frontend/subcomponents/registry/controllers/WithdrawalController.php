@@ -53,7 +53,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 15/11/2016
-         * Date Last Modified: 15/11/2016
+         * Date Last Modified: 31/07/2017
          */
         public function actionGenerateWithdrawalCandidates() 
         {
@@ -127,8 +127,19 @@
                     }
                     else
                     {
+//                        $courses = BatchStudent::find()
+//                                ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
+//                                ->all();
                         $courses = BatchStudent::find()
-                                ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
+                                ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                                ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                                ->innerJoin('academic_offering', '`course_offering`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                                ->where(['batch_students.studentregistrationid' => $registration->studentregistrationid, 'batch_students.isactive' => 1, 'batch_students.isdeleted'=> 0,
+                                                'batch.batchtypeid' =>[1], 'batch.isactive' => 1, 'batch.isdeleted'=> 0,
+                                                'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
+                                                 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
                                 ->all();
                     }
                     
@@ -136,7 +147,7 @@
                     {
                         foreach ($courses as $course)
                         {
-                            if ($course->final != NULL && $course->final < 40)
+                            if ($course->final !== NULL && $course->final < 40)
                             {
                                 $fails++;
                             }
@@ -145,6 +156,7 @@
                     
                     if ($fails < 4)
                         continue;
+                    
                     /*************************************************************************/
                     $prospective_withdrawals ++;
                     
@@ -177,6 +189,7 @@
                     $info['middle_name'] = $student->middlename;
                     $info['last_name'] = $student->lastname;
                     $info['fails'] = $fails;
+//                     $info['fails'] = count($courses);
 
                     $cape_subjects = array();
                     $cape_subjects_names = array();
@@ -220,7 +233,7 @@
                 $dataProvider = new ArrayDataProvider([
                         'allModels' => $data,
                         'pagination' => [
-                            'pageSize' => 25,
+                            'pageSize' => 50,
                         ],
                         'sort' => [
                                 'defaultOrder' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC],
@@ -261,7 +274,7 @@
         * 
         * Author: Laurence Charles
         * Date Created: 15/1/2016
-        * Date Last Modified: 15/1/2016
+        * Date Last Modified: 31/07/2017
         */
        public function actionExportWithdrawalListing($application_periodid)
        {
