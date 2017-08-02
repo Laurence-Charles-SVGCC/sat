@@ -122,6 +122,7 @@
                     <th>Current</th>
                     <th>Probationary Retention</th>
                     <th>Withdrawn</th>
+                    <th>Voluntary Withdrawn</th>
                 </tr>
             </thead>
 
@@ -131,6 +132,7 @@
                     <td><?= $current ;?></td>
                     <td><?= $probationary_retention ;?></td>
                     <td><?= $academic_withdrawal ;?></td>
+                    <td><?= $voluntary_withdrawal ;?></td>
                 </tr>
             </tbody>
         </table><br/>

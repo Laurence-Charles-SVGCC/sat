@@ -65,6 +65,7 @@
             $prospective_withdrawals = 0;
             $probationary_retention = 0;
             $academic_withdrawal = 0;
+            $voluntary_withdrawal = 0;
             $current = 0;
             
             $periods = ApplicationPeriod::preparePastPeriods();
@@ -161,11 +162,22 @@
                     $prospective_withdrawals ++;
                     
                     if ($registration->studentstatusid == 1)
+                    {
                         $current++;
+                    }
                     elseif ($registration->studentstatusid == 2)
+                    {
                         $academic_withdrawal++;
+                    }
+                    elseif ($registration->studentstatusid == 3)
+                    {
+                        $voluntary_withdrawal++;
+                    }
                     elseif ($registration->studentstatusid == 11)
+                    {
                         $probationary_retention++;
+                    }
+                    
                    
                     $info['student_registrationid'] = $registration->studentregistrationid;
                     $info['offerid'] = $registration->offerid;
@@ -262,6 +274,7 @@
                     'prospective_withdrawals' => $prospective_withdrawals,
                     'probationary_retention' => $probationary_retention,
                     'academic_withdrawal' => $academic_withdrawal,
+                    'voluntary_withdrawal' => $voluntary_withdrawal,
                     'current' => $current,
                 ]);
         }
