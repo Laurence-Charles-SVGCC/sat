@@ -190,7 +190,11 @@
                     {
                         foreach ($courses as $course)
                         {
-                            if ($course->final !== NULL && $course->final < 40)
+//                            if ($course->final !== NULL && $course->final < 40)
+//                            {
+//                                $fails++;
+//                            }
+                            if ($course->was_failed() == true)
                             {
                                 $fails++;
                             }
@@ -388,7 +392,11 @@
                 {
                     foreach ($courses as $course)
                     {
-                        if ($course->final !== NULL && $course->final < 40)
+//                        if ($course->final !== NULL && $course->final < 40)
+//                        {
+//                            $fails++;
+//                        }
+                        if ($course->was_failed() == true)
                         {
                             $fails++;
                         }

@@ -405,4 +405,24 @@ class BatchStudentCape extends \yii\db\ActiveRecord
         return false;
     }
     
+    
+    
+    /**
+     * Return true if student has failed course
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/08/2017
+     * Date Last Modified: 03/08/2017
+     */
+    public function was_failed()
+    {
+        if ($this->final !== NULL &&  $this->final < 40)
+        {
+            return true;
+        }
+        return false;
+    }
+    
 }

@@ -519,6 +519,23 @@ class BatchStudent extends \yii\db\ActiveRecord
     }
     
     
+    /**
+     * Return true if student has failed course
+     * 
+     * @return boolean
+     * 
+     * Author: Laurence Charles
+     * Date Created: 03/08/2017
+     * Date Last Modified: 03/08/2017
+     */
+    public function was_failed()
+    {
+        if ($this->grade == "F" || $this->grade == "INC")
+        {
+            return true;
+        }
+        return false;
+    }
     
     
     
