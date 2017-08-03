@@ -173,9 +173,6 @@
                     }
                     else
                     {
-//                        $courses = BatchStudent::find()
-//                                ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
-//                                ->all();
                         $courses = BatchStudent::find()
                                 ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
                                 ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
@@ -246,7 +243,6 @@
                     $info['middle_name'] = $student->middlename;
                     $info['last_name'] = $student->lastname;
                     $info['fails'] = $fails;
-//                     $info['fails'] = count($courses);
 
                     $cape_subjects = array();
                     $cape_subjects_names = array();
@@ -337,17 +333,17 @@
        public function actionExportWithdrawalListing($application_periodid)
        {
            $registrations = StudentRegistration::find()
-                    ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
-                    ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-                    ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                    ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                    ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
-                                    'offer.isactive' => 1, 'offer.isdeleted' => 0,
-                                    'application.isactive' => 1, 'application.isdeleted' => 0,
-                                    'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                    'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                ])
-                    ->all();
+                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
+                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
+                                        'offer.isactive' => 1, 'offer.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
+                                    ])
+                        ->all();
 
             foreach ($registrations as $registration)
             {
@@ -376,8 +372,16 @@
                 else
                 {
                     $courses = BatchStudent::find()
-                            ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
-                            ->all();
+                                ->innerJoin('batch', '`batch_students`.`batchid` = `batch`.`batchid`')
+                                ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
+                                ->innerJoin('academic_offering', '`course_offering`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                                ->where(['batch_students.studentregistrationid' => $registration->studentregistrationid, 'batch_students.isactive' => 1, 'batch_students.isdeleted'=> 0,
+                                                'batch.batchtypeid' =>[1], 'batch.isactive' => 1, 'batch.isdeleted'=> 0,
+                                                'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
+                                                 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
+                                ->all();
                 }
 
                 if ($courses)
