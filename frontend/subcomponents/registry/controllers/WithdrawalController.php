@@ -186,22 +186,23 @@
                                 ->all();
                     }
                     
-                    if ($courses)
+                    if ($courses == false)
+                        continue;
+                    
+                    foreach ($courses as $course)
                     {
-                        foreach ($courses as $course)
+                        if ($course->was_failed() == true)
                         {
-//                            if ($course->final !== NULL && $course->final < 40)
-//                            {
-//                                $fails++;
-//                            }
-                            if ($course->was_failed() == true)
-                            {
-                                $fails++;
-                            }
+                            $fails++;
                         }
                     }
-                    
-                    if ($fails < 4)
+
+                    $total_courses = count($courses);
+                    $percentage_failed = round( (($fails/$total_courses)*100) , 1);
+                   
+//                    if ($fails < 4)
+//                        continue;
+                    if ($percentage_failed < 33)
                         continue;
                     
                     /*************************************************************************/
@@ -247,6 +248,8 @@
                     $info['middle_name'] = $student->middlename;
                     $info['last_name'] = $student->lastname;
                     $info['fails'] = $fails;
+                    $info['total_courses'] = $total_courses;
+                    $info['percentage_failed'] = $percentage_failed;
 
                     $cape_subjects = array();
                     $cape_subjects_names = array();
@@ -388,23 +391,24 @@
                                 ->all();
                 }
 
-                if ($courses)
+                if ($courses == false)
+                    continue;
+                
+                foreach ($courses as $course)
                 {
-                    foreach ($courses as $course)
+                    if ($course->was_failed() == true)
                     {
-//                        if ($course->final !== NULL && $course->final < 40)
-//                        {
-//                            $fails++;
-//                        }
-                        if ($course->was_failed() == true)
-                        {
-                            $fails++;
-                        }
+                        $fails++;
                     }
                 }
 
-                if ($fails < 4)
-                    continue;
+                $total_courses = count($courses);
+                $percentage_failed = round( (($fails/$total_courses)*100) , 1);
+                        
+//                if ($fails < 4)
+//                    continue;
+                 if ($percentage_failed < 33)
+                        continue;
                 /*************************************************************************/
                 $info['student_registrationid'] = $registration->studentregistrationid;
                 $info['offerid'] = $registration->offerid;
@@ -428,6 +432,8 @@
                 $info['middle_name'] = $student->middlename;
                 $info['last_name'] = $student->lastname;
                 $info['fails'] = $fails;
+                $info['total_courses'] = $total_courses;
+                $info['percentage_failed'] = $percentage_failed;
 
                 $cape_subjects = array();
                 $cape_subjects_names = array();
@@ -473,6 +479,10 @@
                     'pagination' => [
                         'pageSize' => 1000,
                     ],
+                     'sort' => [
+                                'defaultOrder' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC],
+                                'attributes' => ['username', 'last_name', 'first_name', 'programme'],
+                            ],
                 ]);
 
             $periodname = ApplicationPeriod::find()

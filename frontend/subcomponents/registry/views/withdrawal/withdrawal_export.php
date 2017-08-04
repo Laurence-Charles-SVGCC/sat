@@ -52,6 +52,16 @@
                     'label' => 'Fails'
                 ],  
                 [
+                    'attribute' => 'total_courses',
+                    'format' => 'text',
+                    'label' => 'Total Courses'
+                ],   
+                [
+                    'attribute' => 'percentage_failed',
+                    'format' => 'text',
+                    'label' => 'Failure Rate (%)'
+                ],  
+                [
                     'attribute' => 'current_level',
                     'format' => 'text',
                     'label' => 'Level'
