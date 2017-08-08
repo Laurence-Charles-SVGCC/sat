@@ -1,27 +1,29 @@
 <?php
-use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+    use yii\helpers\Html;
+    use yii\bootstrap\ActiveForm;
+    use yii\helpers\Url;
+    use frontend\assets\LoginAsset;
 
-/* @var $this yii\web\View */
-/* @var $form yii\bootstrap\ActiveForm */
-/* @var $model \frontend\models\ResetPasswordForm */
+    $this->title = 'Request Password Reset';
+    $this->params['breadcrumbs'][] = $this->title;
 
-$this->title = 'Reset password';
-$this->params['breadcrumbs'][] = $this->title;
+    LoginAsset::register($this);
 ?>
-<div class="site-reset-password">
-    <h1><?= Html::encode($this->title) ?></h1>
+	
+<div class="top">
+     <h1 id="title" class="hidden">
+         <span id="logo" style="margin: 0 auto; display: block"><img src="<?= Url::to('css/login/img/logo.png')?>"/></span>
+     </h1>
+</div>
 
-    <p>Please choose your new password:</p>
-
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'reset-password-form']); ?>
-                <?= $form->field($model, 'password')->passwordInput() ?>
-                <div class="form-group">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
-                </div>
-            <?php ActiveForm::end(); ?>
-        </div>
+<div class="login-box animated fadeInUp">
+    <div class="box-header">
+        <h2>Reset Password</h2>
     </div>
+    
+    <?php $form = ActiveForm::begin(); ?>
+        <?= $form->field($model, 'password')->passwordInput()->label(false) ?>
+        
+        <?= Html::submitButton('Save New Password ', []) ?><br/>
+    <?php ActiveForm::end(); ?>
 </div>

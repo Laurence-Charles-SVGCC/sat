@@ -12,7 +12,6 @@
 	
 <div class="top">
      <h1 id="title" class="hidden">
-         <!--<span id="logo">Welcome to <span>SAT</span></span>-->
          <span id="logo" style="margin: 0 auto; display: block"><img src="<?= Url::to('css/login/img/logo.png')?>"/></span>
      </h1>
 </div>
@@ -27,7 +26,7 @@
         
          <?= $form->field($model, 'password', ['options' => ['id' => 'username'] ])->passwordInput(['placeholder' => 'Password'])->label(false) ?>
         
-        <?= Html::submitButton('Log In ', ['class' => 'btn btn-primary btn-block', 'name' => 'login-button']) ?><br/><br/>
+        <?= Html::submitButton('Log In ', []) ?><br/><br/>
     <?php ActiveForm::end(); ?>
     
     <?= Html::a('Forgot your password?', ['site/request-password-reset']) ?>
