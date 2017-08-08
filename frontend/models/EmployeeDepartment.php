@@ -99,5 +99,4 @@ class EmployeeDepartment extends \yii\db\ActiveRecord
         return false;
     }
     
-    
 }

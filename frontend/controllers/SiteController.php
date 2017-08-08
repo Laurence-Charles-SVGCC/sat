@@ -81,6 +81,7 @@ class SiteController extends Controller
             return $this->render('index');
         }
     }
+    
 
     /**
      * Logs in a user.
@@ -89,7 +90,7 @@ class SiteController extends Controller
      * 
      * Author: Gamal Crichton
      * Date Created: ??
-     * Date Last Modified: 01/06/2016
+     * Date Last Modified: 08/08/2017 (L. Charles)
      */
     public function actionLogin()
     {
@@ -104,61 +105,15 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()))
         {
             //if login is successful
-            if ($model->login() == 1) 
+            if ($model->login() == true) 
             {
-//                return self::actionIndex();
-                return $this->goBack();
-            }
-            
-            /*
-             * If login is unauthorized; i.e
-             * if applicant or student attempts to log into SAT t
-             */
-            elseif ($model->login() == -1) 
-            {
-                return $this->render('unauthorized_login', [
-                    'model' => $model,
-                ]);
-            }
-            
-            /*
-             * if login failure is not a result of unauthorized access
-             */
-            else 
-            {
-                return $this->render('login', [
-                    'model' => $model,
-                ]);
+                return $this->redirect(['index']);
             }
         }
         
-        return $this->render('login', [
-                    'model' => $model,
-                ]);
+        return $this->render('login', ['model' => $model]);
     } 
-        
-//    public function actionLogin()
-//    {
-//        $this->layout = 'loginlayout';
-//        
-//        if (!\Yii::$app->user->isGuest) 
-//        {
-//            return $this->goHome();
-//        }
-//
-//        $model = new LoginForm();
-//        if ($model->load(Yii::$app->request->post()) && $model->login()) 
-//        {
-//            return $this->goBack();
-//        } 
-//        else 
-//        {
-//            return $this->render('login', [
-//                'model' => $model,
-//            ]);
-//        }
-//    }
-    
+
 
     /**
      * Logs out the current user.
@@ -172,31 +127,14 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
-    }
-
+    
     /**
      * Requests password reset.
      *
      * @return mixed
+     * 
+     * Author: Gamal Crichton, Laurence Charles
+     * Date Last Modified: 08/08/2017
      */
     public function actionRequestPasswordReset()
     {
@@ -220,12 +158,16 @@ class SiteController extends Controller
         return $this->render('requestPasswordResetToken', [ 'model' => $model ]);
     }
 
+    
     /**
      * Resets password.
      *
      * @param string $token
      * @return mixed
      * @throws BadRequestHttpException
+     * 
+     * Author: Gamal Crichton, Laurence Charles
+     * Date Last Modified: 08/08/2017
      */
     public function actionResetPassword($token)
     {
@@ -245,4 +187,5 @@ class SiteController extends Controller
 
         return $this->render('resetPassword', ['model' => $model]);
     }
+    
 }

@@ -9,7 +9,9 @@
     use yii\web\IdentityInterface;
     use yii\db\Expression;
 
+    use frontend\models\Division;
     use frontend\models\EmployeeDivision;
+    use frontend\models\EmployeeDepartment;
     use frontend\models\Employee;
     use frontend\models\Student;
     
@@ -313,5 +315,31 @@
             
             return $users;
         }
+        
+        
+        /**
+        * Returns the division id of the user
+        * 
+        * @return boolean
+        * 
+        * Author: Laurence Charles
+        * Date Created: 08/08/2017
+        * Date Last Modified: 08/08/2017
+        */
+       public function getUserDivision()
+       {
+            $division = Division::find()
+                    ->innerJoin('department' , '`division`.`divisionid` = `department`.`divisionid`')
+                    ->innerJoin('employee_department' , '`department`.`departmentid` = `employee_department`.`departmentid`')
+                    ->where(['division.isactive' => 1,  'division.isdeleted' => 0,
+                                    'department.isactive' => 1,  'department.isdeleted' => 0,
+                                    'department.isactive' => 1,  'department.isdeleted' => 0 ])
+                    ->one();
+            if ($division)
+            {
+                 return $division->divisionid;
+            }
+            return false;
+       }
         
     }
