@@ -76,7 +76,10 @@ class SiteController extends Controller
         {
             return $this->actionLogin();
         }
-        return $this->render('index');
+        else
+        {
+            return $this->render('index');
+        }
     }
 
     /**
