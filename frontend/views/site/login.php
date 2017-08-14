@@ -18,7 +18,7 @@
 
 <div class="login-box animated fadeInUp">
     <div class="box-header">
-        <h2>Log In</h2>
+        <h2>Log In </h2>
     </div>
     
     <?php $form = ActiveForm::begin(); ?>

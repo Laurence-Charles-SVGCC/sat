@@ -9,6 +9,7 @@
     use frontend\models\Employee;
     use frontend\models\CordinatorType;
     use frontend\models\LegacyYear;
+    use frontend\models\ApplicationSettings;
 
     AppAsset::register($this);
 
@@ -40,8 +41,12 @@
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
     </head>
-
-    <body class="skin-green-light sidebar-mini">
+    
+    <?php if (ApplicationSettings::getApplicationSettings()->is_online == true):?>
+        <body class="skin-green-light sidebar-mini">
+    <?php elseif (ApplicationSettings::getApplicationSettings()->is_online == false):?>
+        <body class="skin-red-light sidebar-mini">
+    <?php endif;?>
         <?php $this->beginBody() ?>
             <div class="wrapper">
                 <div class="wrap">
@@ -110,6 +115,22 @@
                 <!-- Sidebar user panel -->
                   <!-- sidebar menu: : style can be found in sidebar.less -->
                   <ul class="sidebar-menu">
+                    <?php if (Yii::$app->user->can('System Administrator')): ?>
+                      <li class="treeview">
+                        <a href="">
+                          <i class="fa fa-cogs" aria-hidden="true"></i> <span>Administrator Settings</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <?php if (ApplicationSettings::getApplicationSettings()->is_online == true):?>
+                                <li><a href="<?= Url::toRoute(['/site/toggle-maintenance-mode', 'status' => false])?>"><i class="fa fa-circle-o"></i>Set As Offline</a></li> 
+                            <?php elseif (ApplicationSettings::getApplicationSettings()->is_online == false):?>
+                                <li><a href="<?= Url::toRoute(['/site/toggle-maintenance-mode', 'status' => true])?>"><i class="fa fa-circle-o"></i>Set As Online</a></li>
+                            <?php endif;?>
+                        </ul>
+                     </li>
+                    <?php endif;?>
+                      
+                      
                    <?php if (Yii::$app->user->can('admissions')): ?>
                     <li class="treeview">
                       <a href="">

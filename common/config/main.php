@@ -14,6 +14,9 @@ return [
 //            'showScriptName' => false,
 //          ]
     ],
+    'as beforeRequest' => [
+        'class' => 'frontend\components\CheckApplicationSettings',
+    ],
     'modules' => [
         'gridview' =>  [
              'class' => '\kartik\grid\Module'
