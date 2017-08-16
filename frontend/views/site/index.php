@@ -14,5 +14,5 @@
         </div>
     <h4>
             
-    <img src="css/dist/img/college_home.png" alt="octagon" style="width:100%;">
+    <!--<img src="css/dist/img/college_home.png" alt="octagon" style="width:100%;">-->
 </div>
