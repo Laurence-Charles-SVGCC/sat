@@ -1286,7 +1286,7 @@ class AdmissionsController extends Controller
              {
                  $academicYearExists = 1;
                  $period = ApplicationPeriod::find()
-                         ->where(['divisionid' => $divisionid, 'iscomplete' => 0, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                         ->where(['divisionid' => $divisionid, 'iscomplete' => 0, 'isactive' => 1, 'isdeleted' => 0])
                          ->one();
                  if ($period)
                  {
