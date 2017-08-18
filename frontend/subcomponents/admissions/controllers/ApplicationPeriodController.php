@@ -173,8 +173,55 @@ class ApplicationPeriodController extends Controller
                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record. Please try again.');              
         }
 
+        $applicantintentid = NULL;
+        if ($period->divisionid == 4)
+        {
+            if ($period->applicationperiodtypeid == 1)
+            {
+                $applicantintentid = 1;
+            }
+            else
+            {
+                $applicantintentid = 2;
+            }
+        }
+        elseif ($period->divisionid == 5)
+        {
+            if ($period->applicationperiodtypeid == 1)
+            {
+                $applicantintentid = 1;
+            }
+            else
+            {
+                $applicantintentid = 3;
+            }
+        }
+        elseif ($period->divisionid == 6)
+        {
+            if ($period->applicationperiodtypeid == 1)
+            {
+                $applicantintentid = 4;
+            }
+            else
+            {
+                $applicantintentid = 5;
+            }
+        }
+        elseif ($period->divisionid == 7)
+        {
+            if ($period->applicationperiodtypeid == 1)
+            {
+                $applicantintentid = 6;
+            }
+            else
+            {
+                $applicantintentid = 7;
+            }
+        }
+        
         return $this->render('edit_application_period',[
-                                'period' => $period
+                                'period' => $period,
+                                'applicantintentid' => $applicantintentid
                             ]);
     }
     

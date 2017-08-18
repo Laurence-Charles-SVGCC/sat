@@ -13,7 +13,7 @@
     
     $status = [
         '' => 'Select Status',
-        5 => 'active',
+        5 => 'open',
         6 => 'close'
     ];
     
@@ -69,7 +69,11 @@
             
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="academicyearid">Year:</label>
-               <?= $form->field($period, 'academicyearid')->label('')->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+               <?= $form->field($period, 'academicyearid')->label('')->dropDownList(ArrayHelper::map(AcademicYear::find()
+                                                                                                                                                                    ->where(['applicantintentid' => $applicantintentid,
+                                                                                                                                                                        'isactive' => 1 , 'isdeleted' => 0])
+                                                                                                                                                                    ->all(), 'academicyearid', 'title'),       
+                                                                                                                                                                    ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
