@@ -635,9 +635,9 @@ class VerifyApplicantsController extends \yii\web\Controller
                      */
                     if ($divisionid == 4  || $divisionid == 5)
                     {
+                        $divisions = "  ";
                         foreach($applications as $application)
                         {
-                            $divisions = "  ";
                             $divID = $application->divisionid;
                             $div = Division::getDivisionAbbreviation($divID);
 //                            $divisions = " " . $div . " ";
