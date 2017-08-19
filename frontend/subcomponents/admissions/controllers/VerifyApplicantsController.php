@@ -586,11 +586,13 @@ class VerifyApplicantsController extends \yii\web\Controller
                  */
                 if ($divisionid == 4  || $divisionid == 5)
                 {
+                    $divisions = " ";
                     foreach($applications as $application)
                     {
                         $divID = $application->divisionid;
                         $div = Division::getDivisionAbbreviation($divID);
-                        $divisions = " " . $div . " ";
+//                        $divisions = " " . $div . " ";
+                         $divisions .= "  " . $div;
                     }
                     $container["division"] = $divisions;
                 }
@@ -635,9 +637,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                     {
                         foreach($applications as $application)
                         {
+                            $divisions = "  ";
                             $divID = $application->divisionid;
                             $div = Division::getDivisionAbbreviation($divID);
-                            $divisions = " " . $div . " ";
+//                            $divisions = " " . $div . " ";
+                             $divisions .= "  " . $div;
                         }
                         $container["division"] = $divisions;
                     }
