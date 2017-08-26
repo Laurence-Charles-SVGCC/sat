@@ -14,12 +14,12 @@
         <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
     </div>
 
+    <p>
+        You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the 
+        <?= $division_name ?>
+    </p>
+    
     <div id="body" style="white-space: pre-wrap;">
-        <p>
-            You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the 
-            <?= $division_name ?>
-        </p>
-                
         <?= $package->emailcontent?>
 
         <?php if ($offer != false && $offer->appointment == true):?>
