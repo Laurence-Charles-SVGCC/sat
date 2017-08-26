@@ -16,10 +16,10 @@
 
     <p>
         You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the 
-        <?= $division_name ?>
+        <?= $division_name ?>.
     </p>
     
-    <div id="body" style="white-space: pre-wrap;">
+    <span id="body" style="white-space: pre-wrap;">
         <?= $package->emailcontent?>
 
         <?php if ($offer != false && $offer->appointment == true):?>
@@ -27,7 +27,7 @@
             <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p>
             <br/>
         <?php endif; ?>
-    </div>
+    </span>
 
     <div id="salutations">
         <p>With warm wishes and kind regards,</p>
