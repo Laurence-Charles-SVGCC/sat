@@ -37,6 +37,9 @@ return [
         'subcomponents' => [
             'class' => 'app\subcomponents\SubcomponentsModule',
             'modules' =>[
+                'applications' => [
+                    'class' => 'app\subcomponents\applications\ApplicationsModule'
+                 ],
                 'admissions' => [
                     'class' => 'app\subcomponents\admissions\AdmissionsModule'
                  ],

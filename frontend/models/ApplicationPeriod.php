@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\data\ArrayDataProvider;
 
 use frontend\models\Division;
 use frontend\models\AcademicYear;
@@ -717,13 +718,28 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
     }
         
         
+     
         
         
-        
-        
-       
-        
-        
+    
+    
+    /*******************************************************************************************/
+    /**
+     * Retrieve all active aplication period records
+     * 
+     * @return [ApplicationPeriod] | []
+     * 
+     * Author: Laurence Charles
+    *  Date Created: 2017_08_24
+    *  Date Last Modified: 2017_08_24
+     */
+    public static function getAllActivePeriods()
+    {
+        $application_periods = ApplicationPeriod::find()
+                    ->where(['isactive' => 1,  'isdeleted' => 0])
+                    ->all();
+        return $application_periods;
+    }
         
         
         

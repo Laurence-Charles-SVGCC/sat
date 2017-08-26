@@ -308,4 +308,25 @@ class AcademicYear extends \yii\db\ActiveRecord
     }
     
     
+    
+    
+    
+    /*******************************************************************************************/
+    /**
+     * Retrieve all active aplication period records
+     * 
+     * @return [AcademicYear] | []
+     * 
+     * Author: Laurence Charles
+    *  Date Created: 2017_08_24
+    *  Date Last Modified: 2017_08_24
+     */
+    public static function getAllActiveYears()
+    {
+        $academic_years = AcademicYear::find()
+                    ->where(['isactive' => 1,  'isdeleted' => 0])
+                    ->all();
+        return $academic_years;
+    }
+    
 }

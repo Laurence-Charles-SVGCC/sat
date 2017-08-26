@@ -1,6 +1,6 @@
 <?php
 
-    namespace app\subcomponents\admissions\controllers;
+    namespace app\subcomponents\applications\controllers;
 
     use Yii;
     use yii\web\Controller;
@@ -10,6 +10,9 @@
     
     use common\models\User;
     use frontend\models\ApplicationPeriod;
+    
+    
+    
     use frontend\models\AcademicYear;
     use frontend\models\ProgrammeCatalog;
     use frontend\models\CapeSubject;
@@ -30,7 +33,7 @@
     use frontend\models\ApplicantIntent;
     use frontend\models\Employee;
 
-class AdmissionsController extends Controller
+class ManageApplicationPeriodsController extends Controller
 {
 
     public function actionIndex()
@@ -45,185 +48,41 @@ class AdmissionsController extends Controller
      * @return type
      * 
      * Author: Laurence Charles
-     * Date Created: 08/02/2016
-     * Date Last Modified: 08/02/2016 | 23/02/2016 | 28/01/2017 | 15/03/2017
+     * Date Created: 21/08/2017
+     * Date Last Modified: 21/08/2017
      */
-    public function actionManageApplicationPeriod()
+    public function actionPeriods()
     {
-        /********************************   Builds dataprovider for 'Application Periods Listing'    ************************/
-        $application_periods = ApplicationPeriod::find()
-                ->where(['isactive' => 1,  'isdeleted' => 0])
-                ->all();
-        
-        $period_details_data_provider = array();
-        $period_stats_data_provider = array();
-        $details_records = array();
-        $stats_records = array();
-        
-        if ($application_periods  == true)
-        {
-            foreach ($application_periods  as $application_period)
-            {
-                $details_data = array();
-                $details_data['id'] = $application_period->applicationperiodid;
-                $details_data['status'] = ApplicationperiodStatus::find()
-                        ->where(['applicationperiodstatusid' =>$application_period->applicationperiodstatusid, 'isdeleted' => 0])
-                        ->one()
-                        ->name;
-                $details_data['type'] = ApplicationPeriodType::find()
-                        ->where(['applicationperiodtypeid' =>$application_period->applicationperiodtypeid, 'isdeleted' => 0])
-                        ->one()
-                        ->name;
-                $division = Division::find()
-                        ->where(['divisionid' =>  $application_period->divisionid])
-                        ->one()
-                        ->abbreviation;
-                $details_data['division'] = $division;
-                $details_data['created_by'] = Employee::getEmployeeName($application_period->personid);
-                $year = AcademicYear::find()
-                        ->where(['academicyearid' => $application_period->academicyearid])
-                        ->one()
-                        ->title;
-                $details_data['year'] = $year;
-                $details_data['name'] =  $application_period->name;
-                $details_data['onsitestartdate'] =  $application_period->onsitestartdate;
-                $details_data['onsiteenddate'] =  $application_period->onsiteenddate;
-                $details_data['offsitestartdate'] =  $application_period->offsitestartdate;
-                $details_data['offsiteenddate'] =  $application_period->offsiteenddate;
-                $details_data['iscomplete'] =  $application_period->iscomplete == 1 ? "Excluded" : "Selectable";
-                $details_records[] = $details_data;
-            }
-
-            $period_details_data_provider = new ArrayDataProvider([
-                        'allModels' => $details_records,
-                        'pagination' => [
-                            'pageSize' => 15,
-                        ],
-                        'sort' => [
-                            'defaultOrder' => ['id' =>SORT_ASC],
-                            'attributes' => ['id', 'division'],
-                        ]
-                ]); 
-        }
-            
-         /******************************   Builds dataprovider for 'Application Periods Statistics'    ************************/
-         $academic_years = AcademicYear::find()
-            ->where(['isactive' => 1,  'isdeleted' => 0])
-            ->all();
-
-        if ( $academic_years  == true)
-        {
-            foreach ( $academic_years  as  $academic_year)
-            {
-                $stats_data = array();
-                $stats_data['academicyearid'] = $academic_year->academicyearid;
-                $stats_data['title'] = $academic_year->title;
-
-                $intent = ApplicantIntent::find()
-                         ->where(['applicantintentid' => $academic_year->applicantintentid,  'isactive' => 1,  'isdeleted' => 0])
-                        ->one();
-                $stats_data['applicantintent_name'] = $intent->name;
-
-                $total_number_of_applications_started = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                $stats_data['total_number_of_applications_started'] = $total_number_of_applications_started;
-
-                $total_number_of_applications_completed = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                $stats_data['total_number_of_applications_completed'] = $total_number_of_applications_completed;
-               
-                
-                $total_number_of_applications_removed = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => 11, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                $stats_data['total_number_of_applications_removed'] = $total_number_of_applications_removed;
-
-                $total_number_of_applications_incomplete =Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => 1, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                $stats_data['total_number_of_applications_incomplete'] = $total_number_of_applications_incomplete;
-
-                $total_number_of_applications_verified = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [3,4,5,6,7,8,9,10], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                $stats_data['total_number_of_applications_verified'] = $total_number_of_applications_verified;
-
-                $total_number_of_applications_unverified = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [2, 11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                 $stats_data['total_number_of_applications_unverified'] = $total_number_of_applications_unverified;
-                $stats_records[] = $stats_data;
-            }
-            
-            $period_stats_data_provider = new ArrayDataProvider([
-                    'allModels' => $stats_records,
-                    'pagination' => [
-                        'pageSize' => 15,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['title' =>SORT_ASC, 'applicantintent_name' =>SORT_ASC],
-                        'attributes' => ['title', 'applicantintent_name'],
-                    ]
-            ]); 
-        }
-
+        $period_details_data_provider = ApplicationPeriod::generateApplicaitonPeriodListing() ;
+        $period_stats_data_provider = ApplicationPeriod::generateApplicaitonPeriodStatistics() ;
               
-        return $this->render('period_summary', 
-            [
-                'period_details_data_provider' => $period_details_data_provider,
-                'period_stats_data_provider' => $period_stats_data_provider
-            ]);
+        return $this->render('periods', [ 'period_details_data_provider' => $period_details_data_provider ]);
     }
+    
+    
+     /**
+     * Renders the Application Period Statistics
+     * 
+     * @return type
+     * 
+     * Author: Laurence Charles
+     * Date Created: 21/08/2017
+     * Date Last Modified: 21/08/2017
+     */
+    public function actionPeriodStatistics()
+    {
+        $period_stats_data_provider = ApplicationPeriod::generateApplicaitonPeriodStatistics() ;
+              
+        return $this->render('period_statistics', [ 'period_stats_data_provider' => $period_stats_data_provider]);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

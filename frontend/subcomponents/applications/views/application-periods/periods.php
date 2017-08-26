@@ -6,14 +6,14 @@
     
     use frontend\models\ApplicationPeriod;
 
-    $this->title = 'Application Periods Summary';
+    $this->title = 'Application Periods';
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period']);?>" title="Manage Application Periods">
-        <h1>Welcome to the Admissions Management System</h1>
+    <a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods']);?>" title="View Application Periods">
+        <h1>Welcome to the Applications Module</h1>
     </a>
 </div>
 
@@ -21,14 +21,21 @@
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
 </section><br/><br/>
 
+<div class="alert alert-info" style = "font-size:1.1em">
+    The following presents a summary of all configured application periods. <br/>
+    <strong>Please Note:</strong> 
+    <ul>
+        <li>The deletion of an application period is only allowed no student applications are associated with that period.</li>
+        <li>Status = "Open" indicates that applications can be submitted for that period.</li>
+        <li>Status = "Closed" indicates that no further applications can be submitted for that period.</li>
+        <li>Visibility = "Selectable" indicates that applicants to that application period will be included in a 'Current Applicant' search request.</li>
+        <li>Visibility = "Excluded" indicates that applicants to that application period will be excluded from any 'Current Applicant' search request.</li>
+    </ul>
+</div>
+
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title">Application Periods Listing</span>
-         <?php if (ApplicationPeriod::hasIncompletePeriod() == true):?>
-            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/admissions/initiate-period', 'recordid' => ApplicationPeriod::getIncompletePeriodID()]);?> role="button"> Complete-Period-Setup</a>
-        <?php else:?>
-            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/admissions/admissions/initiate-period']);?> role="button"> Initiate-Period-Setup</a>
-        <?php endif;?>
      </div>
     
     <div class="box-body">
@@ -123,60 +130,4 @@
             ]); 
         ?>
     </div>
-</div><br/><br/>
-
-
-<div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
-     <div class="box-header with-border">
-         <span class="box-title">Application Period Statistics</span>
-     </div>
-    
-    <div class="box-body">
-        <?= GridView::widget([
-                'dataProvider' => $period_stats_data_provider,
-                'columns' => [
-                    [
-                        'attribute' => 'title',
-                        'format' => 'text',
-                        'label' => 'Title'
-                    ],
-                    [
-                        'attribute' => 'applicantintent_name',
-                        'format' => 'text',
-                        'label' => 'Type'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_started',
-                        'format' => 'text',
-                        'label' => ' Applications Commenced'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_completed',
-                        'format' => 'text',
-                        'label' => 'Completed Applications'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_incomplete',
-                        'format' => 'text',
-                        'label' => 'Incomplete Applications'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_removed',
-                        'format' => 'text',
-                        'label' => 'Duplicate Applications'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_verified',
-                        'format' => 'text',
-                        'label' => 'Verified Applications'
-                    ],
-                    [
-                        'attribute' => 'total_number_of_applications_unverified',
-                        'format' => 'text',
-                        'label' =>'Unverified Applications'
-                    ],
-                ],
-            ]); 
-        ?>
-    </div>
-</div>
+</div><br/>

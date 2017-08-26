@@ -468,7 +468,9 @@
             }
             elseif ($package->packagetypeid == 3)
             {
-                if ($divisionid == 6)
+                if ($divisionid == 5)
+                    $viewfile = '@common/mail/packages/dtve_conditional_offer_email.php';
+                elseif ($divisionid == 6)
                    $viewfile = '@common/mail/packages/dte_conditional_offer_email.php';
                 elseif ($divisionid == 7)
                     $viewfile = '@common/mail/packages/dne_conditional_offer_email.php';

@@ -1,10 +1,10 @@
 <?php
 
-namespace app\subcomponents\admissions;
+namespace app\subcomponents\applications;
 
 use \yii\base\Module;
 
-class AdmissionsModule extends Module
+class ApplicationsModule extends Module
 {
     
 }
