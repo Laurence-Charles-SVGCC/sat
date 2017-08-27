@@ -55,7 +55,7 @@
                             if ($row['total_number_of_applications_started'] > 0)
                             {
                                 return Html::a($row['total_number_of_applications_started'], 
-                                                        ['application-periods/download-commenced-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['application-period-statistics/download-commenced-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else
@@ -72,7 +72,7 @@
                             if ($row['total_number_of_applications_completed'] > 0)
                             {
                                 return Html::a($row['total_number_of_applications_completed'], 
-                                                        ['application-periods/download-completed-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['application-period-statistics/download-completed-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else
@@ -89,7 +89,7 @@
                             if ($row['total_number_of_applications_incomplete'] > 0)
                             {
                                 return Html::a($row['total_number_of_applications_incomplete'], 
-                                                        ['application-periods/download-incomplete-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['application-period-statistics/download-incomplete-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else
@@ -101,7 +101,7 @@
                     [
                         'attribute' => 'total_number_of_applications_removed',
                         'format' => 'text',
-                        'label' => 'Duplicates'
+                        'label' => 'Removed'
                     ],
                     [
                         'label' => 'Verified',
@@ -111,7 +111,7 @@
                             if ($row['total_number_of_applications_verified'] > 0)
                             {
                                 return Html::a($row['total_number_of_applications_verified'], 
-                                                        ['application-periods/download-verified-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['application-period-statistics/download-verified-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else
@@ -128,7 +128,7 @@
                             if ($row['total_number_of_applications_unverified'] > 0)
                             {
                                 return Html::a($row['total_number_of_applications_unverified'], 
-                                                        ['application-periods/download-unverified-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['application-period-statistics/download-unverified-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else

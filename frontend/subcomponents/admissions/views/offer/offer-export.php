@@ -23,6 +23,7 @@
                 'lastname',
                 'email',
                 'programme',
+                'appointment',
                 'issuedby',
                 'issuedate',
                 'revokedby',

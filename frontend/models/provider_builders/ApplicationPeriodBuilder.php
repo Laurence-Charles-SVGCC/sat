@@ -5,6 +5,7 @@
     use yii\data\ArrayDataProvider;
     use yii\custom\ModelNotFoundException;
      
+    use common\models\User;
     use frontend\models\ApplicationPeriod;
     use frontend\models\ApplicationperiodStatus;
     use frontend\models\ApplicationPeriodType;
@@ -13,10 +14,16 @@
     use frontend\models\AcademicYear;
     use frontend\models\ApplicantIntent;
     use frontend\models\Applicant;
+    use frontend\models\ApplicantRegistration;
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\ApplicationCapeSubject;
+    use frontend\models\data_formatter\ArrayFormatter;
+    use frontend\models\Email;
+    use frontend\models\CsecQualification;
      
+    
     class ApplicationPeriodBuilder extends \yii\base\Model
     { 
-
         /**
          * Created collection of application period details
          * 
@@ -64,7 +71,6 @@
                     throw new ModelNotFoundException($error_message);
                 }
                 $details_data['type'] = $period_type->name;
-                
                 
                 $division = Division::find()
                         ->where(['divisionid' =>  $application_period->divisionid])
@@ -120,7 +126,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 2017_08_24
-         * Date Last Modified: 2017_08_24
+         * Date Last Modified: 2017_08_26
          */   
         public static function generateApplicaitonPeriodStatistics()
         {
@@ -151,84 +157,24 @@
                 }
                 $stats_data['applicantintent_name'] = $intent->name;
 
-                $total_number_of_applications_started = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
+                $total_number_of_applications_started = count(Applicant::getCommencedApplicants($academic_year->academicyearid));
                 $stats_data['total_number_of_applications_started'] = $total_number_of_applications_started;
 
-                $total_number_of_applications_completed = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
+                $total_number_of_applications_completed = count(Applicant::getCompletedApplicants($academic_year->academicyearid));
                 $stats_data['total_number_of_applications_completed'] = $total_number_of_applications_completed;
 
-
-                $total_number_of_applications_removed = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => 11, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
+                $total_number_of_applications_removed  = count(Applicant::getRemovedApplicants($academic_year->academicyearid));
                 $stats_data['total_number_of_applications_removed'] = $total_number_of_applications_removed;
 
-                $total_number_of_applications_incomplete =Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => 1, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
+                $total_number_of_applications_incomplete  = count(Applicant::getIncompleteApplicants($academic_year->academicyearid));
                 $stats_data['total_number_of_applications_incomplete'] = $total_number_of_applications_incomplete;
 
-                $total_number_of_applications_verified = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [3,4,5,6,7,8,9,10], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
+                $total_number_of_applications_verified = count(Applicant::getVerifiedApplicants($academic_year->academicyearid));
                 $stats_data['total_number_of_applications_verified'] = $total_number_of_applications_verified;
-
-                $total_number_of_applications_unverified = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [2, 11], 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                         'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
-                                    ])
-                        ->groupBy('applicant.personid')
-                        ->count();
-                 $stats_data['total_number_of_applications_unverified'] = $total_number_of_applications_unverified;
+                
+                $total_number_of_applications_unverified = count(Applicant::getUnverifiedApplicants($academic_year->academicyearid));
+                $stats_data['total_number_of_applications_unverified'] = $total_number_of_applications_unverified;
+                
                 $stats_records[] = $stats_data;
             }
 
@@ -260,19 +206,22 @@
             $data_provider = array();
             $records = array();
             
-            $registrations = ApplicantRegistration::getApplicantRegistrationsByYear($acadmeicyearid);
+            $registrations = ApplicantRegistration::getApplicantRegistrationsByYear($academicyearid);
             
             if (empty($registrations) == true)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $acadmeicyearid;
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
                 throw new ModelNotFoundException($error_message);
             }
             
-            foreach ($registrations as $registrations)
+            foreach ($registrations as $registration)
             {
                 $data = array();
-                
-                
+                $data['username'] = $registration->applicantname;
+                $data['title'] = $registration->title;
+                $data['firstname'] = $registration->firstname;
+                $data['lastname'] = $registration->lastname;
+                $data['email'] = $registration->email;
                 $records[] = $data;
             }
                 
@@ -303,6 +252,60 @@
         {
             $data_provider = array();
             $records = array();
+            
+            $applicants = Applicant::getCompletedApplicants($academicyearid);
+            
+             if (empty($applicants) == true)
+            {
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
+                throw new ModelNotFoundException($error_message);
+            }
+            
+            foreach ($applicants as $applicant)
+            {
+                $id = $applicant->personid;
+                $data = array();
+                
+                $user = User::getUser($applicant->personid);
+                if ($user == NULL)
+                {
+                    $error_message = "No user record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['username'] = $user->username;
+                
+                $data['title'] = $applicant->title;
+                $data['firstname'] = $applicant->firstname;
+                $data['middlename'] = $applicant->middlename;
+                $data['lastname'] = $applicant->lastname;
+                
+                $email = Email::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($email == NULL)
+                {
+                    $error_message = "No email record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['email'] = $email->email;
+                
+                $programme_listing = $applicant->getProgrammeChoices();
+                $data['programmes'] = $programme_listing;
+                
+                
+                $institution_listing =  $applicant->getSchoolCareer();
+                $data['institutions'] = $institution_listing;
+                
+                $qualifications = $applicant->getQualifications(3);
+                $data['total_csec_qualifications'] = count($qualifications);
+                
+                $data['csec_ones'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 1);
+                $data['csec_twos'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 2);
+                $data['csec_threes'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 3);
+                $data['application_duration (mins)'] = $applicant->calculateApplicantSubmissionDurationFromAccountCreation();
+                
+                $records[] = $data;
+            }
             
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,

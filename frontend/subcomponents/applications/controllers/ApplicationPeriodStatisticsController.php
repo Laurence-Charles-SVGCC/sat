@@ -33,7 +33,7 @@
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_25
          */
-        public static function downloadCommencedApplicationsReport($academicyearid)
+        public function actionDownloadCommencedApplicationsReport($academicyearid)
         {
             $data_provider = ApplicationPeriodBuilder::generateCommencedApplicationsReport($academicyearid);
             $title = "Commenced Applications";
@@ -59,7 +59,7 @@
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_25
          */
-        public static function downloadCompletedApplicationsReport($academicyearid)
+        public function actionDownloadCompletedApplicationsReport($academicyearid)
         {
             $data_provider = ApplicationPeriodBuilder::generateCompletedApplicationsReport($academicyearid);
             $title = "Completed Applications";
@@ -85,7 +85,7 @@
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_25
          */
-        public static function downloadIncompleteApplicationsReport($academicyearid)
+        public function actionDownloadIncompleteApplicationsReport($academicyearid)
         {
             $data_provider = ApplicationPeriodBuilder::generateIncompleteApplicationsReport($academicyearid);
             $title = "Incomplete Applications";
@@ -111,7 +111,7 @@
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_25
          */
-        public static function downloadVerifiedApplicationsReport($academicyearid)
+        public function actionDownloadVerifiedApplicationsReport($academicyearid)
         {
             $data_provider = ApplicationPeriodBuilder::generateVerifiedApplicationsReport($academicyearid);
             $title = "Verified Applications";
@@ -137,7 +137,7 @@
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_25
          */
-        public static function downloadUnverifiedApplicationsReport($academicyearid)
+        public function actionDownloadUnverifiedApplicationsReport($academicyearid)
         {
             $data_provider = ApplicationPeriodBuilder::generateUnverifiedApplicationsReport($academicyearid);
             $title = "Unverified Applications";

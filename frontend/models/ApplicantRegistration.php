@@ -75,14 +75,24 @@
         }
 
 
-        public static function getApplicantRegistrationsByYear($acadmeicyearid)
+        /**
+         * Return collection of accounts that are associated with a particular academis year
+         * 
+         * @return [ApplicantRegistration] | []
+         * @throws ModelNotFoundException
+         * 
+         * Author: Laurence Charles
+         * Date Created: 2017_08_25
+         * Date Last Modified: 2017_08_26
+         */
+        public static function getApplicantRegistrationsByYear($academicyearid)
         {
-            $users = User::getStudentUsersByYear($acadmeicyearid);
+            $users = User::getStudentUsersByYear($academicyearid);
             $registrations = array();
             
             if (empty($users) == true)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $acadmeicyearid;
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
                 throw new ModelNotFoundException($error_message);
             }
                     
@@ -90,9 +100,9 @@
             {
                 $id = $user->id;
                 $registration = ApplicantRegistration::find()
-                        ->where(['applicantname' => $user->username, 'isactive' => 1, 'isdeleted' => 0])
+                        ->where(['applicantname' => $user->username])
                         ->one();
-                if (empty($users) == NULL)
+                if (empty($registration) == true)
                 {
                     $error_message = "ApplicantRegistration for User -> ID= " .  $id  .  " not found.";
                     throw new ModelNotFoundException($error_message);

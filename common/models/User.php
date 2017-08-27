@@ -223,22 +223,21 @@
 
 
             /**
-             * Returns a user based on $personid
+             * Returns a user record
              * 
              * @param type $personid
-             * @return boolean
+             * @return User | NULL
              * 
              * Author: Laurence Charles
-             * Date Created: 20/12/2015
-             * Date Last Modified: 20/12/2015
+             * Date Created: 2015_12_20
+             * Date Last Modified: 2017_08_26
              */
-            public static function getUser($personid){
+            public static function getUser($personid)
+            {
                 $user = User::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
-                if ($user)
-                    return $user;
-                return false;
+                return $user;
             }
 
             // (laurence_charles) - Returns full name of user or employee
@@ -344,11 +343,18 @@
 
 
 
-
+        /**
+         * Return collection of student user accounts that are associated with a particular academis year
+         * 
+         * @return [User] | []
+         * 
+         * Author: Laurence Charles
+         * Date Created: 2017_07_25
+         * Date Last Modified: 2017_08_26
+         */
         public static function getStudentUsersByYear($acadmeicyearid)
         {
             $cond = array();
-
             $cond['person.isactive'] = 1;
             $cond['person.isdeleted'] = 0;
             $cond['application.isactive'] = 1;
@@ -361,7 +367,7 @@
                     ->innerJoin('`application`', '`person`.`personid` = `application`.`personid`')
                     ->innerJoin('`academic_offering`', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->where($cond)
-                    ->groupby('person.id')
+                    ->groupby('person.personid')
                     ->all();
 
            return $users;

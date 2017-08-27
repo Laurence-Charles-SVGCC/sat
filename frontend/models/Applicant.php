@@ -8,9 +8,16 @@ use frontend\models\Application;
 use frontend\models\Applicant;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
+use frontend\models\ApplicationCapeSubject;
 use frontend\models\CsecQualification;
 use frontend\models\Rejection;
 use frontend\models\RejectionApplications;
+
+use yii\custom\ModelNotFoundException;
+use frontend\models\PersonInstitution;
+use frontend\models\Institution;
+use frontend\models\data_formatter\ArrayFormatter;
+
 
 /**
  * This is the model class for table "applicant".
@@ -2825,5 +2832,396 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
   
+    /**
+     * Return collection of applicants associated with academic year
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_07_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getCommencedApplicants($acadmeicyearid)
+    {
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = [1,2,3,4,5,6,7,8,9,10,11];
+        $cond['application.isactive'] = 1;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+     /**
+     * Return collection of applicants that have submitted application(s) in an academic year
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_07_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getCompletedApplicants($acadmeicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
+        $cond['application.isactive'] = 1;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Return collection of applicants that have unsubmitted application(s) in an academic year
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_07_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getIncompleteApplicants($acadmeicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = 1;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+
+    /**
+     * Return collection of applicants that had their application(s) removed
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_07_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getRemovedApplicants($acadmeicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = 11;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Return collection of applicants that have submitted applicants and been verified 
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_07_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getVerifiedApplicants($acadmeicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = [3,4,5,6,7,8,9,10];
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Return collection of applicants that have submitted applications that have not been verified 
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_26
+     * Date Last Modified: 2017_08_26
+     */
+    public static function getUnverifiedApplicants($acadmeicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = 2;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Returns array of applicant's institution attendances
+     * 
+     * @return [PersonInstitution] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function getInstitutions($levels = NULL)
+    {
+        if ($levels == NULL)
+        {
+            $institution_enrollements = PersonInstitution::find()
+                    ->innerJoin('institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
+                    ->where(['person_institution.personid' => $this->personid, 'person_institution.isactive' => 1, 'person_institution.isdeleted' =>0,
+                                    'institution.isactive' => 1, 'institution.isdeleted' =>0])
+                    ->orderBy('institution.levelid')
+                    ->all();
+        }
+        else
+        {
+            $institution_enrollements = PersonInstitution::find()
+                    ->innerJoin('institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
+                    ->where(['person_institution.personid' => $this->personid, 'person_institution.isactive' => 1, 'person_institution.isdeleted' =>0,
+                                    'institution.levelid' => $levels, 'institution.isactive' => 1, 'institution.isdeleted' =>0])
+                    ->all();
+        }
+        return $institution_enrollements;
+    }
+    
+    
+    /**
+     * Returns array of applicant's institution attendance
+     * 
+     * @param $examination_bodies
+     * @return [CsecQualification] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function getSchoolCareer($levels = NULL)
+    {
+        $institution_enrollements = $this->getInstitutions($levels);
+        return ArrayFormatter::FormatInstitutions($institution_enrollements);
+    }
+    
+    
+    public function getQualifications($examination_bodies = NULL)
+    {
+        if ($examination_bodies == NULL)
+        {
+            $qualifications = CsecQualification::find()
+                    ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+        }
+        else
+        {
+            $qualifications = CsecQualification::find()
+                    ->where(['personid' => $this->personid, 'examinationbodyid' => $examination_bodies, 
+                                    'isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+        }
+        return $qualifications;
+    }
+    
+    
+    
+    /**
+     * Returns array of applicant's institution attendance
+     * 
+     * @param $levels
+     * @return [ String ] | []
+     * @throws ModelNotFoundException
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function getAcademicPerformance($examination_bodies = NULL)
+    {
+        $qualification_listing = array();
+        
+        if ($level == NULL)
+        {
+            $qualifications = CsecQualification::find()
+                    ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+        }
+        else
+        {
+            $qualifications = CsecQualification::find()
+                    ->where(['personid' => $this->personid, 'examinationbodyid' => $examination_bodies, 
+                                    'isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+        }
+        
+        if (empty($qualifications) == true)
+        {
+           return $qualification_listing;
+        }
+
+        foreach ($qualifications as $qualification)
+        {
+            $qualification_name = CsecQualification::formatQualificationName($qualification->csecqualificationid);
+            array_push($qualification_listing, $qualification_name);
+        }
+        
+        return $qualification_listing;
+    }
+    
+    
+    /**
+     * Returns array of applicant's applications
+     * 
+     * @return [Application] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function getApplications()
+    {
+        $applications = Application::find()
+                ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $this->personid, 'isactive' => 1, 'isdeleted' =>0])
+                ->orderBy('ordering')
+                ->all();
+        return $applications;
+    }
+        
+    
+     /**
+     * Returns array of applicant's formatted programme choices
+     * 
+     * @return String
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function getProgrammeChoices()
+    {
+        $applications = $this->getApplications();
+        return ArrayFormatter::FormatProgrammesChoices($applications);
+    }
+    
+    
+    
+    /**
+     * Returns time in minsutes thatapplicant took to complete application
+     * 
+     * @return String
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function calculateApplicantSubmissionDurationFromEmailRegistration()
+    {
+        $user = User::getUser($this->personid);
+        if ($user->persontypeid == 1)
+        {
+            $applicant_registration = ApplicantRegistration::find()
+                    ->where(['applicantname' => $user->username])
+                    ->one();
+        }
+        if ($user->persontypeid == 2)
+        {
+            $student = Student::find()
+                    ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+            $applicant_registration = ApplicantRegistration::find()
+                    ->where(['applicantname' => $student->applicantname])
+                    ->one();
+        }
+        
+        $application = Application::find()
+                ->where(['personid' => $this->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10,11],
+                                'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $duration =  (strtotime($application->submissiontimestamp) - strtotime($applicant_registration->created_at))/60;
+        return round($duration);
+    }
+    
+    
+    /**
+     * Returns time in minsutes thatapplicant took to complete application
+     * 
+     * @return String
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_08_27
+     * Date Last Modified: 2017_08_27
+     */
+    public function calculateApplicantSubmissionDurationFromAccountCreation()
+    {
+        $user = User::getUser($this->personid);
+       
+        $application = Application::find()
+                ->where(['personid' => $this->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10,11],
+                                'isactive' => 1, 'isdeleted' => 0])
+                ->one();
+        
+        $duration =  (strtotime($application->submissiontimestamp) - strtotime($user->datecreated))/60;
+        return round($duration);
+    }
+    
+    
     
 }

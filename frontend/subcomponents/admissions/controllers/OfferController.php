@@ -1901,6 +1901,7 @@ class OfferController extends Controller
             $offer_data['lastname'] = $applicant->lastname;
             $offer_data['email'] = ($email == true) ? $email->email : "";
             $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['appointment'] = ($offer->appointment == true) ? $offer->appointment : "N/A";
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;
@@ -1982,6 +1983,7 @@ class OfferController extends Controller
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
             $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['appointment'] = ($offer->appointment == true) ? $offer->appointment : "N/A";
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;
@@ -2063,6 +2065,7 @@ class OfferController extends Controller
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
             $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['appointment'] = ($offer->appointment == true) ? $offer->appointment : "N/A";
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;
@@ -2144,6 +2147,7 @@ class OfferController extends Controller
             $offer_data['firstname'] = $applicant->firstname;
             $offer_data['lastname'] = $applicant->lastname;
             $offer_data['programme'] = empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+            $offer_data['appointment'] = ($offer->appointment == true) ? $offer->appointment : "N/A";
             $offer_data['issuedby'] = $issuername;
             $offer_data['issuedate'] = $offer->issuedate;
             $offer_data['revokedby'] = $revokername;

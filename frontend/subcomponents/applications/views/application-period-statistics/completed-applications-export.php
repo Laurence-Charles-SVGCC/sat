@@ -15,13 +15,12 @@
                 'lastname',
                 'email',
                 'programmes',
-                'secondary_schools',
-                'total_qualifications',
+                'institutions',
                 'total_csec_qualifications',
                 'csec_ones',
                 'csec_twos',
                 'csec_threes',
-                'application_duration'
+                'application_duration (mins)'
             ],
         ]);
 
