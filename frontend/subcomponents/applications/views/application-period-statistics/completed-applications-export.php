@@ -14,6 +14,7 @@
                 'middlename',
                 'lastname',
                 'email',
+                'phone',
                 'programmes',
                 'institutions',
                 'total_csec_qualifications',

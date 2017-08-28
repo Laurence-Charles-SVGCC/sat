@@ -15,8 +15,6 @@
                 'lastname',
                 'email',
                 'phone',
-                'complete_components',
-                'incomplete_components'
             ],
         ]);
 

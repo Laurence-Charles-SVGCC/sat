@@ -642,7 +642,7 @@
          * 
          * Author: Laurence Charles
          * Date Created: 19/02/2016
-         * Date Last Modified: 19/02/2016
+         * Date Last Modified: 19/02/2016 |   2017_08_28
          */
         public function actionUpdateApplicationStatus($applicationid, $new_status, $old_status, $divisionid, $programme, $programme_id)
         {
@@ -671,7 +671,8 @@
                  * If user is a member of "DTE" of "DNE", many condiseration can be negated such as application spanning multiple divsions
                  * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7  ||  ApplicationPeriod::isDteOrDneApplicationPeriodUnderReview() == true )
+                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7 
+                        || ( EmployeeDepartment::getUserDivision() == 1  && ApplicationPeriod::isDteOrDneApplicationPeriodUnderReview() == true ))
                 {
                     /*
                      * If an application is pending all subsequent applications
@@ -1431,7 +1432,8 @@
                  * If user is a member of "DASGS" of "DTVE" many additional considerations have to be  accounted for such as application spanning multiple divisions
                  * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5  || ApplicationPeriod::isDasgsOrDtveApplicationPeriodUnderReview() == true )
+                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5  
+                        ||  ( EmployeeDepartment::getUserDivision() == 1  && ApplicationPeriod::isDasgsOrDtveApplicationPeriodUnderReview() == true ))
                 {
                     /*
                      * If an application is pending all subsequent applications
@@ -2082,8 +2084,7 @@
 
                     /*
                      * If an application is interview-rejected;
-                     * -> all precceding applications are rejected
-                     * ->all subsequent applications are set to rejected
+                     * ->all subsequent applications are set to 'pending'
                      */
                     elseif($new_status == 10  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {

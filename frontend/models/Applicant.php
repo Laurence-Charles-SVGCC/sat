@@ -322,7 +322,7 @@ class Applicant extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 24/02/2016
-     * Date Last Modified: 24/02/2016 | 20/03/2016
+     * Date Last Modified: 2017_08_28
      */
     public static function getApplicantInformation($personid, $unrestricted = false)
     {
@@ -387,7 +387,7 @@ class Applicant extends \yii\db\ActiveRecord
                             ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                             ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
                                     'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                    /*'application_period.iscomplete' => 0,*/ 'application_period.isactive' => 1, 
+                                    'application_period.isactive' => 1, 
                                     /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10,11]
                                     ])
                             ->orderBy('application.ordering ASC')
@@ -455,13 +455,12 @@ class Applicant extends \yii\db\ActiveRecord
                             ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9) )
                             $application_status = 9;
 
-                    //is reject of conditional offer
-                    elseif(($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                    //if reject of interview offer
+                    elseif(($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
                             ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10))
                             $application_status =10;
 
-                    //is abandoned
+                    //if abandoned
                     elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11)
                         $application_status =11;
                 }
@@ -529,17 +528,12 @@ class Applicant extends \yii\db\ActiveRecord
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 9))
                     $application_status = 9;
 
-                    //is reject of conditional offer
-                    elseif(($applications[0]->applicationstatusid == 3  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 3)
-                            ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3) )
+                    //if reject of interview offer
+                   elseif(($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 10)
+                            ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10))
                     $application_status =10;
-
-                    //is abandoned
+                    
+                    //if abandoned
                     elseif($applications[0]->applicationstatusid == 11  && $applications[1]->applicationstatusid == 11 && $applications[2]->applicationstatusid == 11)
                         $application_status =11;
                 }
@@ -3016,37 +3010,38 @@ class Applicant extends \yii\db\ActiveRecord
     /**
      * Returns array of applicant's institution attendances
      * 
-     * @return [PersonInstitution] | []
+     * @return [String] | 
      * 
      * Author: Laurence Charles
      * Date Created: 2017_08_27
      * Date Last Modified: 2017_08_27
      */
-    public function getInstitutions($levels = NULL)
+    public function getInstitutions()
     {
-        if ($levels == NULL)
-        {
-            $institution_enrollements = PersonInstitution::find()
-                    ->innerJoin('institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
+        $listing = array();
+        $institutions = Institution::find()
+                    ->innerJoin('person_institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
                     ->where(['person_institution.personid' => $this->personid, 'person_institution.isactive' => 1, 'person_institution.isdeleted' =>0,
-                                    'institution.isactive' => 1, 'institution.isdeleted' =>0])
+                                    'institution.levelid' => [3,4]
+                                ])
                     ->orderBy('institution.levelid')
                     ->all();
-        }
-        else
+        
+        if (empty($institutions) == true)
         {
-            $institution_enrollements = PersonInstitution::find()
-                    ->innerJoin('institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
-                    ->where(['person_institution.personid' => $this->personid, 'person_institution.isactive' => 1, 'person_institution.isdeleted' =>0,
-                                    'institution.levelid' => $levels, 'institution.isactive' => 1, 'institution.isdeleted' =>0])
-                    ->all();
+            return NULL; 
         }
-        return $institution_enrollements;
+        
+        foreach ($institutions as $institution)
+        {
+            array_push($listing, $institution->name);
+        }
+         return implode("|", $listing);
     }
     
     
     /**
-     * Returns array of applicant's institution attendance
+     * Returns array of applicant's qualifications
      * 
      * @param $examination_bodies
      * @return [CsecQualification] | []
@@ -3055,13 +3050,6 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_08_27
      * Date Last Modified: 2017_08_27
      */
-    public function getSchoolCareer($levels = NULL)
-    {
-        $institution_enrollements = $this->getInstitutions($levels);
-        return ArrayFormatter::FormatInstitutions($institution_enrollements);
-    }
-    
-    
     public function getQualifications($examination_bodies = NULL)
     {
         if ($examination_bodies == NULL)
@@ -3079,7 +3067,6 @@ class Applicant extends \yii\db\ActiveRecord
         }
         return $qualifications;
     }
-    
     
     
     /**
@@ -3165,7 +3152,7 @@ class Applicant extends \yii\db\ActiveRecord
     /**
      * Returns time in minsutes thatapplicant took to complete application
      * 
-     * @return String
+     * @return Float
      * 
      * Author: Laurence Charles
      * Date Created: 2017_08_27
@@ -3201,9 +3188,9 @@ class Applicant extends \yii\db\ActiveRecord
     
     
     /**
-     * Returns time in minsutes thatapplicant took to complete application
+     * Returns time in minutes that applicant took to complete application
      * 
-     * @return String
+     * @return Float
      * 
      * Author: Laurence Charles
      * Date Created: 2017_08_27

@@ -911,7 +911,7 @@ class Application extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 20/02/2016
-     * Date Last Modified: 20/02/2016
+     * Date Last Modified: 2017_08_28
      */
     public static function isTarget($applications, $application_status, $candidate)
     {
@@ -945,6 +945,8 @@ class Application extends \yii\db\ActiveRecord
         else
         {
             $alternatives = self::getCustomApplications($personid);
+            
+             // if applicant has custom offers -> get last application
             if($alternatives)
             {
                 $target_application = end($alternatives);
@@ -953,13 +955,15 @@ class Application extends \yii\db\ActiveRecord
             {
                 $count = count($applications);
 
+                // if rejected -> get last application
                 if ($application_status == 6)       //if reject
                 {
-                    $target_application = $applications[($count-1)];
+//                    $target_application = $applications[($count-1)];
+                    $target_application = end($applications);
                 }
 
-
-                elseif ($application_status == 2)   //if unverifed
+                // if unverified -> get first application that has unverified status
+                elseif ($application_status == 2)   
                 {
                     foreach($applications as $application)
                     {
@@ -971,8 +975,8 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-
-                elseif ($application_status == 3)   //if pending
+                // if pending -> get first application that has pending status
+                elseif ($application_status == 3)   
                 {
                     foreach($applications as $application)
                     {
@@ -984,7 +988,8 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-                elseif ($application_status == 4)    //if shortlist
+                 // if shortlisted -> get first application that has shortlisted status
+                elseif ($application_status == 4)   
                 {
                     foreach($applications as $application)
                     {
@@ -996,7 +1001,8 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-                elseif ($application_status == 7)   //if borderline
+                // if borderline -> get first application that has borderline status
+                elseif ($application_status == 7)   
                 {
                     foreach($applications as $application)
                     {
@@ -1008,7 +1014,8 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-                elseif ($application_status == 8)    //if conditional offer
+                // if interview offer -> get first application that has interview offer status
+                elseif ($application_status == 8)
                 {
                     foreach($applications as $application)
                     {
@@ -1020,7 +1027,8 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-                elseif ($application_status == 9)   //if full-offer
+                // if full offer -> get first application that has full offer status
+                elseif ($application_status == 9)   
                 {
                     foreach($applications as $application)
                     {
@@ -1032,19 +1040,14 @@ class Application extends \yii\db\ActiveRecord
                     }
                 }
 
-                elseif ($application_status == 10)  //if conditional-offer-reject
+                //if interview-offer-reject -> get last application that has interview-offer-reject status
+                elseif ($application_status == 10) 
                 {
-                    foreach($applications as $application)
-                    {
-                        if ($application->applicationstatusid == 10)
-                        {
-                            $target_application = $application;
-                            break;
-                        }
-                    }
+                    $target_application = end($applications);
                 }
 
-                elseif ($application_status == 11)    //if abandoned
+                // if abandoned -> get first application that has abandoned status
+                elseif ($application_status == 11)    
                 {
                     foreach($applications as $application)
                     {
@@ -1074,7 +1077,7 @@ class Application extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 20/02/2016
-     * Date Last Modified: 20/02/2016
+     * Date Last Modified: 2017_08_28
      */
     public static function getTarget($applications, $application_status)
     {
@@ -1086,116 +1089,143 @@ class Application extends \yii\db\ActiveRecord
          * -> the determination is a bit more complex
          */
         $personid = $applications[0]->personid;
-        $alternatives = self::getCustomApplications($personid);
-        if($alternatives)
+        
+        /**
+         * applications from the 2015DASGS and 2015 DTVE application periods must be 
+         * processed differently as the application handling mechanism was subsequently 
+         * changed
+         */
+        $old_applications = Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+                    ])
+                ->orderBy('application.ordering ASC')
+                ->all();
+        
+        if ($old_applications)
         {
-            $target_application = end($alternatives);
+            $target_application = end($old_applications);
         }
         else
         {
-            $count = count($applications);
-            if ($application_status == 0)
+            $alternatives = self::getCustomApplications($personid);
+            // if applicant has custom offers -> get last application
+            if($alternatives)
             {
-                $target_application = $applications[0];     //chooses default application
+                $target_application = end($alternatives);
             }
-
-            elseif ($application_status == 6)       //if reject
+            else
             {
-                $target_application = $applications[($count-1)];
-            }
-
-            elseif ($application_status == 2)   //if unnverified
-            {
-                foreach($applications as $application)
+                $count = count($applications);
+                if ($application_status == 0)
                 {
-                    if ($application->applicationstatusid==2)
+                    $target_application = $applications[0];     //chooses default application
+                }
+
+                // if rejected -> get last application
+                elseif ($application_status == 6)      
+                {
+//                    $target_application = $applications[($count-1)];
+                    $target_application = end($applications);
+                }
+
+                // if unverified -> get first application that has unverified status
+                elseif ($application_status == 2)   //if unverified
+                {
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid==2)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 3)   //if pending
-            {
-                foreach($applications as $application)
+                // if pending -> get first application that has pending status
+                elseif ($application_status == 3)
                 {
-                    if ($application->applicationstatusid==3)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid==3)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 4)    //if shortlist
-            {
-                foreach($applications as $application)
+                 // if shortlisted -> get first application that has shortlisted status
+                elseif ($application_status == 4)    
                 {
-                    if ($application->applicationstatusid == 4)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 4)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 7)   //if borderline
-            {
-                foreach($applications as $application)
+                // if borderline -> get first application that has borderline status
+                elseif ($application_status == 7) 
                 {
-                    if ($application->applicationstatusid == 7)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 7)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 8)    //if conditional offer
-            {
-                foreach($applications as $application)
+                 // if interview offer -> get first application that has interview offer status
+                elseif ($application_status == 8)   
                 {
-                    if ($application->applicationstatusid == 8)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 8)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 9)   //if full-offer
-            {
-                foreach($applications as $application)
+                // if full offer -> get first application that has full offer status
+                elseif ($application_status == 9)
                 {
-                    if ($application->applicationstatusid == 9)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 9)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
-            }
 
-            elseif ($application_status == 10)  //if conditional-offer-reject
-            {
-                foreach($applications as $application)
+                //if interview-offer-reject -> get last application that has interview-offer-reject status
+                elseif ($application_status == 10) 
                 {
-                    if ($application->applicationstatusid == 10)
-                    {
-                        $target_application = $application;
-                        break;
-                    }
+                    $target_application = end($applications);
                 }
-            }
 
-            elseif ($application_status == 11)    //if abandoned
-            {
-                foreach($applications as $application)
+                // if abandoned -> get first application that has abandoned status
+                elseif ($application_status == 11)    
                 {
-                    if ($application->applicationstatusid == 11)
+                    foreach($applications as $application)
                     {
-                        $target_application = $application;
-                        break;
+                        if ($application->applicationstatusid == 11)
+                        {
+                            $target_application = $application;
+                            break;
+                        }
                     }
                 }
             }

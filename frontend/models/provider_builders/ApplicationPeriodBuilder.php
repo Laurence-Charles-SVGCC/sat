@@ -18,8 +18,14 @@
     use frontend\models\ProgrammeCatalog;
     use frontend\models\ApplicationCapeSubject;
     use frontend\models\data_formatter\ArrayFormatter;
+    use frontend\models\Phone;
     use frontend\models\Email;
     use frontend\models\CsecQualification;
+    use frontend\models\ExaminationBody;
+    use frontend\models\ExaminationGrade;
+    use frontend\models\ExaminationProficiencyType;
+    use frontend\models\Subject;
+    use frontend\models\CsecCentre;
      
     
     class ApplicationPeriodBuilder extends \yii\base\Model
@@ -276,7 +282,7 @@
                 
                 $data['title'] = $applicant->title;
                 $data['firstname'] = $applicant->firstname;
-                $data['middlename'] = $applicant->middlename;
+                $data['middlename'] = $applicant->middlename == true ? $applicant->middlename : "--";
                 $data['lastname'] = $applicant->lastname;
                 
                 $email = Email::find()
@@ -289,11 +295,27 @@
                 }
                 $data['email'] = $email->email;
                 
+                $phone = Phone::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($phone == NULL)
+                {
+                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $phone_contacts = "";
+                if ($phone->homephone == true)
+                    $phone_contacts .= $phone->homephone . ", ";
+                if ($phone->workphone == true)
+                    $phone_contacts .= $phone->workphone . ", ";
+                if ($phone->cellphone == true)
+                    $phone_contacts .= $phone->cellphone;
+                $data['phone'] =  $phone_contacts;
+                
                 $programme_listing = $applicant->getProgrammeChoices();
                 $data['programmes'] = $programme_listing;
                 
-                
-                $institution_listing =  $applicant->getSchoolCareer();
+                $institution_listing =  $applicant->getInstitutions();
                 $data['institutions'] = $institution_listing;
                 
                 $qualifications = $applicant->getQualifications(3);
@@ -335,6 +357,62 @@
             $data_provider = array();
             $records = array();
             
+            $applicants = Applicant::getIncompleteApplicants($academicyearid);
+            
+             if (empty($applicants) == true)
+            {
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
+                throw new ModelNotFoundException($error_message);
+            }
+            
+            foreach ($applicants as $applicant)
+            {
+                $id = $applicant->personid;
+                $data = array();
+                
+                $user = User::getUser($applicant->personid);
+                if ($user == NULL)
+                {
+                    $error_message = "No user record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['username'] = $user->username;
+                
+                $data['title'] = $applicant->title;
+                $data['firstname'] = $applicant->firstname;
+                $data['middlename'] = $applicant->middlename;
+                $data['lastname'] = $applicant->lastname;
+                
+                $email = Email::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($email == NULL)
+                {
+                    $error_message = "No email record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['email'] = $email->email;
+                
+                $phone = Phone::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($phone == NULL)
+                {
+                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $phone_contacts = "";
+                if ($phone->homephone == true)
+                    $phone_contacts .= $phone->homephone . ", ";
+                if ($phone->workphone == true)
+                    $phone_contacts .= $phone->workphone . ", ";
+                if ($phone->cellphone == true)
+                    $phone_contacts .= $phone->cellphone;
+                $data['phone'] =  $phone_contacts;
+                
+                $records[] = $data;
+            }
+            
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
@@ -363,6 +441,68 @@
             $data_provider = array();
             $records = array();
             
+            $applicants = Applicant::getVerifiedApplicants($academicyearid);
+            
+            if (empty($applicants) == true)
+            {
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
+                throw new ModelNotFoundException($error_message);
+            }
+            
+            foreach ($applicants as $applicant)
+            {
+                $id = $applicant->personid;
+                
+                $data = array();
+
+                $user = User::getUser($applicant->personid);
+                if ($user == NULL)
+                {
+                    $error_message = "No user record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['username'] = $user->username;
+
+                $data['title'] = $applicant->title;
+                $data['firstname'] = $applicant->firstname;
+                $data['middlename'] = $applicant->middlename;
+                $data['lastname'] = $applicant->lastname;
+
+                $email = Email::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($email == NULL)
+                {
+                    $error_message = "No email record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['email'] = $email->email;
+
+                $phone = Phone::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($phone == NULL)
+                {
+                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $phone_contacts = "";
+                if ($phone->homephone == true)
+                    $phone_contacts .= $phone->homephone . ", ";
+                if ($phone->workphone == true)
+                    $phone_contacts .= $phone->workphone . ", ";
+                if ($phone->cellphone == true)
+                    $phone_contacts .= $phone->cellphone;
+                $data['phone'] =  $phone_contacts;
+                
+                $programme_listing = $applicant->getProgrammeChoices();
+                $data['programmes'] = $programme_listing;
+
+                $data['verifying_officer'] = Employee::getEmployeeName($applicant->verifier);
+
+                $records[] = $data;
+            }
+            
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
@@ -390,6 +530,66 @@
         {
             $data_provider = array();
             $records = array();
+            
+            $applicants = Applicant::getUnverifiedApplicants($academicyearid);
+            
+            if (empty($applicants) == true)
+            {
+                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
+                throw new ModelNotFoundException($error_message);
+            }
+            
+            foreach ($applicants as $applicant)
+            {
+                $id = $applicant->personid;
+                
+                $data = array();
+
+                $user = User::getUser($applicant->personid);
+                if ($user == NULL)
+                {
+                    $error_message = "No user record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['username'] = $user->username;
+
+                $data['title'] = $applicant->title;
+                $data['firstname'] = $applicant->firstname;
+                $data['middlename'] = $applicant->middlename;
+                $data['lastname'] = $applicant->lastname;
+
+                $email = Email::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($email == NULL)
+                {
+                    $error_message = "No email record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $data['email'] = $email->email;
+
+                $phone = Phone::find()
+                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                if ($phone == NULL)
+                {
+                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                    throw new ModelNotFoundException($error_message);
+                }
+                $phone_contacts = "";
+                if ($phone->homephone == true)
+                    $phone_contacts .= $phone->homephone . ", ";
+                if ($phone->workphone == true)
+                    $phone_contacts .= $phone->workphone . ", ";
+                if ($phone->cellphone == true)
+                    $phone_contacts .= $phone->cellphone;
+                $data['phone'] =  $phone_contacts;
+                
+                $programme_listing = $applicant->getProgrammeChoices();
+                $data['programmes'] = $programme_listing;
+
+                $records[] = $data;
+            }
             
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,

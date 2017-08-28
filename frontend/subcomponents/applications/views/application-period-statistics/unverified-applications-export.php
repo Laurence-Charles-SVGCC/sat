@@ -15,10 +15,6 @@
                 'lastname',
                 'email',
                 'programmes',
-                'qualification_name',
-                'qualification_grade',
-                'qualification_exam_centre',
-                'qualification_candidate_number'
             ],
         ]);
 

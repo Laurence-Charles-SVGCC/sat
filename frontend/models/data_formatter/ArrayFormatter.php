@@ -93,53 +93,6 @@
         }
         
         
-        
-         /**
-         * Returns programme choices in the format [key][full_programme_name]
-         * 
-         * @param type $applications
-         * @return string
-         * @throws ModelNotFoundException
-         * 
-         * Author: Laurence Charles
-         * Date Created: 2017_12_27
-         * Date Last Modified: 2017_08_27
-         */
-        public static function FormatInstitutions($institution_enrollements)
-        {
-            $institution_listing = "";
-           
-            if (empty($institution_enrollements) == true)
-            {
-               return $institution_listing;
-            }
-
-            foreach ($institution_enrollements as $key=>$institution_enrollement)
-            {
-
-                $institution =Institution::find()
-                        ->where(['institutionid' => $institution_enrollement->institutionid, 'isactive' => 1, 'isdeleted' => 0])
-                        ->one();
-                if ($institution == NULL)
-                {
-                    $error_message = "Institution record for  PersonInstitution->InstitutionID= " . $institution_enrollement->institutionid . "not found.";
-                    throw new ModelNotFoundException($error_message);
-                }
-                
-                if((count($institution_enrollements)-1) == $key)
-                {
-                    $institution_listing .= " " . "(" . ($key+1) . ") " . $institution->name;
-                }
-                else
-                {
-                    $institution_listing .= " " . "(" . ($key+1) . ") " . $institution->name . ",";
-                }
-            }
-
-            return $institution_listing;
-            }
-        
-        
     }
 
 
