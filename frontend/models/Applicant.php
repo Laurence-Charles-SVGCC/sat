@@ -2775,7 +2775,7 @@ class Applicant extends \yii\db\ActiveRecord
         }
         
         $offers = Offer::find()
-                ->where(['applicationid' => $ids,  'ispublished' => 1, 'offer.isdeleted' => 0/*, 'offertypeid' => 1*/])
+                ->where(['applicationid' => $ids,  'ispublished' => 1, 'offer.isdeleted' => 0, 'offertypeid' => 1])
                 ->all();
         if ($offers == true)
             return true;

@@ -1828,8 +1828,8 @@
 
                     /*
                      * If an application is given an 'offer';
-                     * -> nothing is done to preceeding applications
-                     * -> nothing is done to subsequent applications
+                     * -> preceeding applications are rejected
+                     * -> subsequent applications are rejected
                      */
                     elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
                     {
