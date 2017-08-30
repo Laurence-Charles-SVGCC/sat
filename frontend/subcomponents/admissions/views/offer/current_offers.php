@@ -302,7 +302,6 @@
                                                                 ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
                                                                 ->where(['application.academicofferingid' => $key, 'application.isactive' => 1, 'application.isdeleted' => 0,
                                                                                 'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0])
-                                                                ->all()
                                                                 ->count();  
                                                                 
                                                         $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish', 
