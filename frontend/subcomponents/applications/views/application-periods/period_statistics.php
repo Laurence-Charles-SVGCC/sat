@@ -31,6 +31,7 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title">Application Period Statistics</span>
+         <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/applications/application-period-statistics/download-period-statistics-report']);?> role="button"> Download Report</a>
      </div>
     
     <div class="box-body">

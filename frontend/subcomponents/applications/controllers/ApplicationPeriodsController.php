@@ -41,7 +41,7 @@
          */
         public function actionViewPeriods()
         {
-            $period_details_data_provider = ApplicationPeriodBuilder::generateApplicaitonPeriodListing() ;
+            $period_details_data_provider = ApplicationPeriodBuilder::generateApplicaitonPeriodListing(25) ;
             return $this->render('periods', [ 'period_details_data_provider' => $period_details_data_provider ]);
         }
 
@@ -57,7 +57,7 @@
          */
         public function actionViewPeriodStatistics()
         {
-            $period_stats_data_provider = ApplicationPeriodBuilder::generateApplicaitonPeriodStatistics();
+            $period_stats_data_provider = ApplicationPeriodBuilder::generateApplicaitonPeriodStatistics(25);
             return $this->render('period_statistics', [ 'period_stats_data_provider' => $period_stats_data_provider]);
         }
 

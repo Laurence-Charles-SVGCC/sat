@@ -33,13 +33,15 @@
         /**
          * Created collection of application period details
          * 
+         * @param type $page_size
          * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_08_24
-         * Date Last Modified: 2017_08_24
+         * Date Last Modified: 2017_08_29
          */   
-        public static function generateApplicaitonPeriodListing()
+        public static function generateApplicaitonPeriodListing($page_size)
         {
             $period_details_data_provider = array();
             $period_stats_data_provider = array();
@@ -112,7 +114,7 @@
             $period_details_data_provider = new ArrayDataProvider([
                         'allModels' => $details_records,
                         'pagination' => [
-                            'pageSize' => 25,
+                            'pageSize' => $page_size,
                         ],
                         'sort' => [
                             'defaultOrder' => ['id' =>SORT_ASC],
@@ -128,13 +130,15 @@
         /**
          * Created collection of application period ap-plicant partipation statistics
          * 
+         * @param type $page_size
          * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_08_24
-         * Date Last Modified: 2017_08_26
+         * Date Last Modified: 2017_08_29
          */   
-        public static function generateApplicaitonPeriodStatistics()
+        public static function generateApplicaitonPeriodStatistics($page_size)
         {
             $period_stats_data_provider = array();
             $stats_records = array();
@@ -187,7 +191,7 @@
             $period_stats_data_provider = new ArrayDataProvider([
                     'allModels' => $stats_records,
                     'pagination' => [
-                        'pageSize' => 25,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['title' =>SORT_ASC, 'applicantintent_name' =>SORT_ASC],
@@ -201,13 +205,16 @@
         /**
          * Generates report listing applicants that begin the application unverified applicants
          * 
-         * @return csvfile
+         * @param type $academicyearid
+         * @param type $page_size
+         * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_25
+         * Date Last Modified: 2017_08_29
          */
-        public static function generateCommencedApplicationsReport($academicyearid)
+        public static function generateCommencedApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
@@ -225,8 +232,8 @@
                 $data = array();
                 $data['username'] = $registration->applicantname;
                 $data['title'] = $registration->title;
-                $data['firstname'] = $registration->firstname;
-                $data['lastname'] = $registration->lastname;
+                $data['firstname'] = trim($registration->firstname);
+                $data['lastname'] = trim($registration->lastname);
                 $data['email'] = $registration->email;
                 $records[] = $data;
             }
@@ -234,7 +241,7 @@
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
-                        'pageSize' => 2000,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
@@ -248,13 +255,16 @@
         /**
          * Generates report listing applicants that completed the submission of their applications
          * 
-         * @return csvfile
+         * @param type $academicyearid
+         * @param type $page_size
+         * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_25
+         * Date Last Modified: 2017_08_29
          */
-        public static function generateCompletedApplicationsReport($academicyearid)
+        public static function generateCompletedApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
@@ -281,9 +291,9 @@
                 $data['username'] = $user->username;
                 
                 $data['title'] = $applicant->title;
-                $data['firstname'] = $applicant->firstname;
-                $data['middlename'] = $applicant->middlename == true ? $applicant->middlename : "--";
-                $data['lastname'] = $applicant->lastname;
+                $data['firstname'] = trim($applicant->firstname);
+                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                $data['lastname'] = trim($applicant->lastname);
                 
                 $email = Email::find()
                         ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
@@ -332,7 +342,7 @@
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
-                        'pageSize' => 2000,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
@@ -346,13 +356,16 @@
         /**
          * Generates report listing who started but did not submit their applications
          * 
-         * @return csvfile
+         * @param type $academicyearid
+         * @param type $page_size
+         * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_25
+         * Date Last Modified: 2017_08_29
          */
-        public static function generateIncompleteApplicationsReport($academicyearid)
+        public static function generateIncompleteApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
@@ -379,9 +392,9 @@
                 $data['username'] = $user->username;
                 
                 $data['title'] = $applicant->title;
-                $data['firstname'] = $applicant->firstname;
-                $data['middlename'] = $applicant->middlename;
-                $data['lastname'] = $applicant->lastname;
+                $data['firstname'] = trim($applicant->firstname);
+                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                $data['lastname'] = trim($applicant->lastname);
                 
                 $email = Email::find()
                         ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
@@ -416,7 +429,7 @@
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
-                        'pageSize' => 2000,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
@@ -430,13 +443,16 @@
         /**
          * Generates report listing applicants whose certificates have been verified
          * 
-         * @return csvfile
+         * @param type $academicyearid
+         * @param type $page_size
+         * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_25
+         * Date Last Modified: 2017_08_29
          */
-        public static function generateVerifiedApplicationsReport($academicyearid)
+        public static function generateVerifiedApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
@@ -464,8 +480,13 @@
                 $data['username'] = $user->username;
 
                 $data['title'] = $applicant->title;
-                $data['firstname'] = $applicant->firstname;
-                $data['middlename'] = $applicant->middlename;
+                $data['firstname'] = trim($applicant->firstname);
+                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+//                $data['lastname'] = htmlspecialchars_decode(trim($applicant->lastname), ENT_QUOTES);
+//                $data['lastname'] = htmlspecialchars_decode($applicant->lastname, ENT_QUOTES);
+               
+//                 $data['lastname'] = substr_replace($applicant->lastname, "'", "&#39;");
+//                 $data['lastname'] = html_entity_decode($applicant->lastname, ENT_QUOTES);
                 $data['lastname'] = $applicant->lastname;
 
                 $email = Email::find()
@@ -506,7 +527,7 @@
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
-                        'pageSize' => 2000,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
@@ -520,13 +541,16 @@
         /**
          * Generates report listing applicants whose certificates have not  been verified
          * 
-         * @return csvfile
+         * @param type $academicyearid
+         * @param type $page_size
+         * @return ArrayDataProvider
+         * @throws ModelNotFoundException
          * 
          * Author: Laurence Charles
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_25
+         * Date Last Modified: 2017_08_29
          */
-        public static function generateUnverifiedApplicationsReport($academicyearid)
+        public static function generateUnverifiedApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
@@ -554,9 +578,9 @@
                 $data['username'] = $user->username;
 
                 $data['title'] = $applicant->title;
-                $data['firstname'] = $applicant->firstname;
-                $data['middlename'] = $applicant->middlename;
-                $data['lastname'] = $applicant->lastname;
+                $data['firstname'] = trim($applicant->firstname);
+                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                $data['lastname'] = trim($applicant->lastname);
 
                 $email = Email::find()
                         ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
@@ -594,7 +618,7 @@
             $data_provider = new ArrayDataProvider([
                     'allModels' => $records,
                     'pagination' => [
-                        'pageSize' => 2000,
+                        'pageSize' => $page_size,
                     ],
                     'sort' => [
                         'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],

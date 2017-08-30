@@ -617,16 +617,23 @@ class Offer extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 18/04/2016
-     * Date Last Modified: 18/04/2016 | 08/09/2016
+     * Date Last Modified: 2017_08_29
      */
     public static function anyPendingOfferExists($applicationperiods, $offertype)
     {
         $periodids = array();
         foreach($applicationperiods as $period)
+        {
             $periodids[]=$period->applicationperiodid;
+        }
         
+        $offer_cond['application.isactive'] = 1;
+        $offer_cond['application.isdeleted'] = 0;
+        $offer_cond['academic_offering.isactive'] = 1;
+        $offer_cond['academic_offering.isdeleted'] = 0;
         $offer_cond['application_period.applicationperiodid'] = $periodids;
         $offer_cond['application_period.isactive'] = 1;
+         $offer_cond['application_period.isdeleted'] = 0;
         $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
@@ -655,17 +662,16 @@ class Offer extends \yii\db\ActiveRecord
      * 
      * Author: Laurence Charles
      * Date Created: 18/04/2016
-     * Date Last Modified: 18/04/2016 | 08/09/2016
+     * Date Last Modified: 2017_08_29
      */
     public static function anyOfferExists($applicationperiods, $offertype)
     {
         $periodids = array();
         foreach($applicationperiods as $period)
+        {
             $periodids[] = $period->applicationperiodid;
+        }
         
-        $offer_cond['offer.offertypeid'] = $offertype;
-        $offer_cond['offer.isactive'] = 1;
-        $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['application.isactive'] = 1;
         $offer_cond['application.isdeleted'] = 0;
         $offer_cond['academic_offering.isactive'] = 1;
@@ -674,6 +680,9 @@ class Offer extends \yii\db\ActiveRecord
         $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['application_period.isactive'] = 1;
         $offer_cond['application_period.isdeleted'] = 0;
+        $offer_cond['offer.offertypeid'] = $offertype;
+        $offer_cond['offer.isactive'] = 1;
+        $offer_cond['offer.isdeleted'] = 0;
         
         $offers = Offer::find()
                 ->innerJoin('`application`', '`application`.`applicationid` = `offer`.`applicationid`')

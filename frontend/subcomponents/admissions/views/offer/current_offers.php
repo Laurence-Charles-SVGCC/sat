@@ -126,7 +126,7 @@
             <div id="offer-revoked" style="display:none">
                 <a class="btn btn-success" href=<?=Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => $offertype, 'criteria' => 'revoked']);?> role="button">  View Revoked Offers</a>
             </div>
-        </div>
+        </div><br/><br/>
     <?php ActiveForm::end(); ?>
 </div><br/>
 
@@ -241,25 +241,77 @@
                 </p>
 
                 <div id="publish-button" style="display:none">
-                    <?php
-                        $periods = ApplicationPeriod::periodIncomplete();
-                        if (Offer::anyOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1) == true)
-                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
-                        else
-                            echo "<p><strong>No offers can be published at this time. Please ensure the requiste packages have been created.</strong></p>";
-
-                        if ($periods == true)
-                        {
-                            foreach ($periods as $period) 
+                    <ol>
+                        <?php
+                            $periods = ApplicationPeriod::periodIncomplete();
+                            if ($periods > 0)
                             {
-                                if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
-                                    echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                if (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1, $offertype) == false)
+                                {
+                                    echo "<p><strong>Requiste package(s)  must be configured before offers can be published.<strong></p>";
+                                }
+                                elseif (Offer::anyPendingOfferExists($periods, $offertype) == false  &&  Package::hasCompletePackage(1, 1, $offertype) == true)
+                                {
+                                    echo "<p><strong>Offer package(s) are configured; but no offers currently exist to publish.</strong></p>";
+                                }
+                                else
+                                {
+                                     //Bulk Publish All Divisions
+                                    if (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1, $offertype) == true)
+                                    {
+                                        echo "<li>";
+                                            echo "<span>Publish All Pending Offers :</span>";
+                                            echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) . "<br/></br/>";
+                                        echo "</li>";
+                                        echo "<br/></br>";
+                                    }
+                                    
+                                    //Bulk Publish By Division
+                                    echo "<span>Publish By Division: </span>";
+                                    foreach ($periods as $period) 
+                                    {
+                                        if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
+                                        {
+                                            echo "<li>";
+                                                echo "<span>" . Division::getDivisionAbbreviation($period->divisionid) . "Offers :</span>";
+                                                echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
+                                            echo "</li>";
+                                            
+                                        }
+                                    }
+                                    
+                                    //Publish By Programme
+                                    if (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1) == true && count($progs_with_pending_offers) > 0)
+                                    {    
+                                        echo "<br/></br>";
+                                        echo "<li>";
+                                            echo "<div class='dropdown'>
+                                                <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>";
+                                                echo "Click to publish offers by programme...";
+                                                echo "<span class='caret'></span>";
+                                                echo "</button>";
+                                                echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
+                                                    foreach ($progs_with_pending_offers as $key=>$prog_with_pending_offer)
+                                                    {
+                                                        $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish', 
+                                                                                                'category' => 1,
+                                                                                                'sub_category' => $offertype,
+                                                                                                'divisionid' => $period->divisionid,
+                                                                                                'academicofferingid' => $key ]);
+                                                        echo "<li><a href='$hyperlink'>$prog_with_pending_offer</a></li>";  
+                                                    }
+                                                echo "</ul>";
+                                            echo "</div>";
+                                        echo "</li>";
+                                        echo "<br/></br>";
+                                    }
+                                }
                             }
-                        }
-                   ?>
+                       ?>
+                   </ol>
                 </div>
             <?php endif; ?>
-        </div><br/>
+        </div><br/><br/>
     <?php endif; ?>
 </div><br/>
 
