@@ -280,7 +280,7 @@
                                     }
                                     
                                     //Publish By Programme
-                                    if (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1) == true && count($progs_with_pending_offers) > 0)
+                                    if (Offer::anyPendingOfferExists($periods, $offertype) == true  &&  Package::hasCompletePackage(1, 1 , $offertype) == true && count($progs_with_pending_offers) > 0)
                                     {    
                                         echo "<br/></br>";
                                         echo "<li>";
@@ -292,12 +292,25 @@
                                                 echo "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>";
                                                     foreach ($progs_with_pending_offers as $key=>$prog_with_pending_offer)
                                                     {
+                                                        $division_id =  ApplicationPeriod::find()
+                                                                ->innerJoin('academic_offering', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                                                ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                                                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $key])
+                                                                ->one()
+                                                                ->divisionid;  
+                                                        $count = Offer()
+                                                                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                                                                ->where(['application.academicofferingid' => $key, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0])
+                                                                ->all()
+                                                                ->count();  
+                                                                
                                                         $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish', 
                                                                                                 'category' => 1,
                                                                                                 'sub_category' => $offertype,
-                                                                                                'divisionid' => $period->divisionid,
+                                                                                                'divisionid' => $division_id,
                                                                                                 'academicofferingid' => $key]);
-                                                        echo "<li><a href='$hyperlink'>$prog_with_pending_offer</a></li>";  
+                                                        echo "<li><a href='$hyperlink'>$prog_with_pending_offer . '(' . $count . ')'</a></li>";  
                                                     }
                                                 echo "</ul>";
                                             echo "</div>";
