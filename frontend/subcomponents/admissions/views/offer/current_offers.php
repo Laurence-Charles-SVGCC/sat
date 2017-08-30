@@ -261,11 +261,16 @@
                                     {
                                         echo "<li>";
                                             echo "<span>Publish All Pending Offers :</span>";
-                                            $count = Offer::find()
-                                                                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-                                                                ->where(['application.isactive' => 1, 'application.isdeleted' => 0,
-                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype])
-                                                                ->count();  
+                                             $count = Offer::find()
+                                                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                                                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                                        ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype,
+                                                                        'application.isactive' => 1, 'application.isdeleted' => 0,
+                                                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                                                        ])
+                                                        ->count();  
                                             echo Html::a('Bulk Publish (' . $count . ') offers' , ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) . "<br/></br/>";
                                         echo "</li>";
                                         echo "<br/>";
@@ -279,10 +284,15 @@
                                             echo "<li>";
                                                 echo "<span>" . Division::getDivisionAbbreviation($period->divisionid) . "  Offers :</span>";
                                                 $count = Offer::find()
-                                                                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-                                                                ->where(['application.divisionid' => $period->divisionid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype])
-                                                                ->count();  
+                                                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                                                        ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                                                        ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                                                        ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype,
+                                                                        'application.divisionid' => $period->divisionid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                                                        'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                                                        ])
+                                                        ->count();  
                                                 echo Html::a('Bulk Publish (' . $count . ') ' .Division::getDivisionAbbreviation($period->divisionid) . ' offers', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             echo "</li>";
                                             
