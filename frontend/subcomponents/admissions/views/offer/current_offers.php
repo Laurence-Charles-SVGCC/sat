@@ -301,7 +301,7 @@
                                                         $count = Offer::find()
                                                                 ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
                                                                 ->where(['application.academicofferingid' => $key, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0])
+                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype])
                                                                 ->count();  
                                                                 
                                                         $hyperlink = Url::toRoute(['/subcomponents/admissions/package/bulk-publish', 
@@ -309,7 +309,7 @@
                                                                                                 'sub_category' => $offertype,
                                                                                                 'divisionid' => $division_id,
                                                                                                 'academicofferingid' => $key]);
-                                                        echo "<li><a href='$hyperlink'>$prog_with_pending_offer . '(' . $count . ')'</a></li>";  
+                                                        echo "<li><a href='$hyperlink'>$prog_with_pending_offer( " . $count . " )</a></li>";  
                                                     }
                                                 echo "</ul>";
                                             echo "</div>";
