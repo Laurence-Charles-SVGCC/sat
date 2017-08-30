@@ -273,6 +273,11 @@
                                         {
                                             echo "<li>";
                                                 echo "<span>" . Division::getDivisionAbbreviation($period->divisionid) . "  Offers :</span>";
+                                                $count = Offer::find()
+                                                                ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+                                                                ->where(['application.divisionid' => $key, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                                                                'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offertypeid' => $offertype])
+                                                                ->count();  
                                                 echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             echo "</li>";
                                             
