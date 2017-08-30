@@ -295,7 +295,7 @@
                                                         ->count();  
                                                 echo Html::a('Bulk Publish (' . $count . ') ' .Division::getDivisionAbbreviation($period->divisionid) . ' offers', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             echo "</li>";
-                                            
+                                            echo "<br/>";
                                         }
                                     }
                                     
@@ -341,7 +341,7 @@
                    </ol>
                 </div>
             <?php endif; ?>
-        </div><br/><br/>
+        </div><br/><br/><br/><br/><br/><br/><br/><br/>
     <?php endif; ?>
 </div><br/>
 
