@@ -263,17 +263,16 @@
                                             echo "<span>Publish All Pending Offers :</span>";
                                             echo Html::a('Bulk Publish', ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']) . "<br/></br/>";
                                         echo "</li>";
-                                        echo "<br/></br>";
+                                        echo "<br/>";
                                     }
                                     
                                     //Bulk Publish By Division
-                                    echo "<span>Publish By Division: </span>";
                                     foreach ($periods as $period) 
                                     {
                                         if(Offer::offerExists($period->applicationperiodid, $offertype) == true  && Package::hasCompletePackage($period->divisionid, 1, $offertype) == true)
                                         {
                                             echo "<li>";
-                                                echo "<span>" . Division::getDivisionAbbreviation($period->divisionid) . "Offers :</span>";
+                                                echo "<span>" . Division::getDivisionAbbreviation($period->divisionid) . "  Offers :</span>";
                                                 echo Html::a('Bulk Publish ' . Division::getDivisionAbbreviation($period->divisionid), ['package/bulk-publish', 'category' => 1,  'sub_category' => $offertype, 'divisionid' => $period->divisionid], ['class' => 'btn btn-primary', 'style' => 'margin-left:15px']);
                                             echo "</li>";
                                             
@@ -297,13 +296,12 @@
                                                                                                 'category' => 1,
                                                                                                 'sub_category' => $offertype,
                                                                                                 'divisionid' => $period->divisionid,
-                                                                                                'academicofferingid' => $key ]);
+                                                                                                'academicofferingid' => $key]);
                                                         echo "<li><a href='$hyperlink'>$prog_with_pending_offer</a></li>";  
                                                     }
                                                 echo "</ul>";
                                             echo "</div>";
                                         echo "</li>";
-                                        echo "<br/></br>";
                                     }
                                 }
                             }
