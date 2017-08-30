@@ -298,7 +298,7 @@
                                                                                 'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.academicofferingid' => $key])
                                                                 ->one()
                                                                 ->divisionid;  
-                                                        $count = Offer()
+                                                        $count = Offer::find()
                                                                 ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
                                                                 ->where(['application.academicofferingid' => $key, 'application.isactive' => 1, 'application.isdeleted' => 0,
                                                                                 'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0])
