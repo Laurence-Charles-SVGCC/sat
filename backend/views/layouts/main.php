@@ -152,11 +152,11 @@
                             </a>
                             <ul class="treeview-menu">
                                 <!--<li><a href="<?= Url::toRoute(['/auth-rule/index'])?>"><i class="fa fa-circle-o"></i>Manage Authorization Rules</a></li>-->
-                                <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Assign Children</a></li>
                                 <li><a href="<?= Url::toRoute(['/auth-item/index', 'type' =>'Roles'])?>"><i class="fa fa-circle-o"></i>Manage Roles</a></li>
                                 <li><a href="<?= Url::toRoute(['/auth-item/index', 'type' =>'Permissions'])?>"><i class="fa fa-circle-o"></i>Manage Permissions</a></li>
                                 <li><a href="<?= Url::toRoute(['/auth-assignment/index'])?>"><i class="fa fa-circle-o"></i>Assign User Roles</a></li>
-                                <li><a href="<?= Url::toRoute(['/auth-item-child/index'])?>"><i class="fa fa-circle-o"></i>Role Hierarchies</a></li>
+                                <li><a href="<?= Url::toRoute(['/auth-item-child/index', 'type' => 'assign-role-to-role'])?>"><i class="fa fa-circle-o"></i>Role Hierarchies</a></li>
+                                <li><a href="<?= Url::toRoute(['/auth-item-child/index', 'type' => 'assign-permission-to-role'])?>"><i class="fa fa-circle-o"></i> Role Responsibilities</a></li>
                               </ul>
                         </li>
                         

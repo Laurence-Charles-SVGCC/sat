@@ -4,7 +4,7 @@
     use yii\grid\GridView;
     use yii\helpers\Url;
 
-    $this->title = 'Role Hierarchies';
+    $this->title = $title;
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -21,8 +21,12 @@
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:99%; margin: 0 auto;">
     <div class="box-header with-border">
-        <span class="box-title">Role Assignments</span>
-        <a class="btn btn-info pull-right" href=<?=Url::toRoute(['create']);?> role="button"> Create Role-Role Assignment</a>
+        <span class="box-title"><?= $title ?></span>
+        <?php  if ($type == "assign-role-to-role"):?>
+            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['create', 'type' => 'assign-role-to-role']);?> role="button"> Create Role-Role Assignment</a>
+        <?php elseif ($type == "assign-permission-to-role"):?>
+            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['create', 'type' => 'assign-permission-to-role']);?> role="button"> Assign Permission To Role</a>
+        <?php endif;?>
     </div>
     
     <div class="box-body">

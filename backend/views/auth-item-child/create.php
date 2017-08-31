@@ -7,7 +7,7 @@
     
     use backend\models\AuthItem;
     
-    $this->title = 'Assign Role';
+    $this->title = $title;
     $this->params['breadcrumbs'][] = ['label' => 'Role Assignments', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -26,19 +26,23 @@
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:99%; margin: 0 auto;">
     <div class="box-header with-border">
-        <span class="box-title">Build Role Hierarchy</span>
+        <?php  if ($type == "assign-role-to-role"):?>
+           <span class="box-title"> Build Role Hierarchy</span>
+        <?php elseif ($type == "assign-permission-to-role"):?>
+            <span class="box-title"> Increase Role Responsibilities</span>
+        <?php endif;?>
     </div>
     
     <?php $form = ActiveForm::begin(); ?>
         <div class="box-body">
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="parent">Parent:</label>
-               <?= $form->field($model, 'parent')->label('')->dropDownList(ArrayHelper::map(AuthItem::find()->where(['type' => 1])->all(), 'name', 'name'), ['prompt'=>'Select Parent..', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               <?= $form->field($model, 'parent')->label('')->dropDownList(ArrayHelper::map($parents, 'name', 'name'), ['prompt'=>'Select Parent..', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
             
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="child">Child:</label>
-               <?= $form->field($model, 'child')->label('')->dropDownList(ArrayHelper::map(AuthItem::find()->where(['type' => 1])->all(), 'name', 'name'), ['prompt'=>'Select Child..', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+               <?= $form->field($model, 'child')->label('')->dropDownList(ArrayHelper::map($children, 'name', 'name'), ['prompt'=>'Select Child..', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
             </div>
         </div>
 

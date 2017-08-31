@@ -29,8 +29,18 @@
             ];
         }
 
-        // (laurence_charles) - Displays parent-child role associations
-        public function actionIndex()
+        
+        /**
+         * Displays parent-child role associations
+         * 
+         * @param type $type
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: ??
+         * Date Last Modified: 2017_08_31
+         */
+        public function actionIndex($type)
         {
             if (Yii::$app->user->can('System Administrator') == false)
             {
@@ -38,24 +48,48 @@
                 return $this->redirect(['/site/index']);
             }
             
-            $dataProvider = NULL;
+             $dataProvider = NULL;
             $container = array();
             
             $role_associations = AuthItemChild::find()->all();
-            
-            if (empty($role_associations) == false)
+                    
+            if ($type == "assign-role-to-role")
             {
-                foreach ($role_associations as $role_association)
-                { 
-                     $data = array();
-                     
-                    $parent_type = AuthItem::find()->where(['name' => $role_association->parent])->one()->type;
-                    $child_type = AuthItem::find()->where(['name' => $role_association->child])->one()->type;
-                    if ($parent_type == 1 && $child_type == 1)
-                    {
-                        $data['parent'] =  $role_association->parent;
-                        $data['child'] = $role_association->child;
-                        $container[] = $data;
+                $title = "Role Hierarchies";
+                if (empty($role_associations) == false)
+                {
+                    foreach ($role_associations as $role_association)
+                    { 
+                         $data = array();
+
+                        $parent_type = AuthItem::find()->where(['name' => $role_association->parent])->one()->type;
+                        $child_type = AuthItem::find()->where(['name' => $role_association->child])->one()->type;
+                        if ($parent_type == 1 && $child_type == 1)
+                        {
+                            $data['parent'] =  $role_association->parent;
+                            $data['child'] = $role_association->child;
+                            $container[] = $data;
+                        }
+                    }
+                }
+            }
+            elseif($type == "assign-permission-to-role")
+            {
+                $title = "Role Responsibilities";
+                if (empty($role_associations) == false)
+                {
+                    foreach ($role_associations as $role_association)
+                    { 
+                         $data = array();
+
+                        $parent_type = AuthItem::find()->where(['name' => $role_association->parent])->one()->type;
+                        $child_type = AuthItem::find()->where(['name' => $role_association->child])->one()->type;
+                        if ($parent_type == 1 && $child_type == 2)
+                        {
+                            $data['parent'] =  $role_association->parent;
+                            $data['child'] = $role_association->child;
+                            $container[] = $data;
+                        }
                     }
                 }
             }
@@ -73,12 +107,25 @@
             
             return $this->render('index', [
                 'dataProvider' => $dataProvider,
+                'type' => $type,
+                'title' => $title,
+                'parents' => 'parents',
+                'children' => 'children'
             ]);
         }
 
 
-        // (laurence_charles) - Assigns child role to parent role
-        public function actionCreate()
+         /**
+         *  Assigns child role to parent role
+         * 
+         * @param type $type
+         * @return type
+         * 
+         * Author: Laurence Charles
+         * Date Created: ??
+         * Date Last Modified: 2017_08_31
+         */
+        public function actionCreate($type)
         {
             if (Yii::$app->user->can('System Administrator') == false)
             {
@@ -87,6 +134,23 @@
             }
             
             $model = new AuthItemChild();
+            
+            if ($type == "assign-role-to-role")
+            {
+                $title = "Role Hierarchies";
+                $children = AuthItem::find()
+                        ->where(['type' => 1])
+                        ->all();
+            }
+            elseif($type == "assign-permission-to-role")
+            {
+                $title = "Role Responsibilities";
+                $children = AuthItem::find()
+                        ->where(['type' => 2])
+                        ->all();
+            }
+            
+            $parents = AuthItem::find()->where(['type' => 1])->all();
             
             if ($post_data = Yii::$app->request->post())
             {
@@ -110,7 +174,12 @@
                     Yii::$app->session->setFlash('error', 'Error occured loading data entry.');
                 } 
             } 
-            return $this->render('create', ['model' => $model,]);
+            return $this->render('create', [
+                'model' => $model,
+                'type' => $type,
+                'title' => $title,
+                'parents' => $parents,
+                'children' => $children]);
         }
            
         
