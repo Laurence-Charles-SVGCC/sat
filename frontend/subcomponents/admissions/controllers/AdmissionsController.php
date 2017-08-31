@@ -195,7 +195,7 @@ class AdmissionsController extends Controller
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->where(['applicant.applicantintentid' =>  $intent->applicantintentid , 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                        'application.applicationstatusid' => [2, 11], 'application.isactive' => 1, 'application.isdeleted' => 0,
+                                        'application.applicationstatusid' => [2], 'application.isactive' => 1, 'application.isdeleted' => 0,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                          'application_period.academicyearid' => $academic_year->academicyearid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                                     ])

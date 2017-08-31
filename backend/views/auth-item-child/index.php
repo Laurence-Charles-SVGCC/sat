@@ -61,7 +61,7 @@
                          {
                             return Html::a(
                                 '<span class="glyphicon glyphicon-trash"></span>',
-                                Url::to(['auth-assignment/delete',  'parent' => $row['parent'], 'child' => $row['child']]),
+                                Url::to(['auth-assignment/delete',  'parent' => $row['parent'], 'child' => $row['child'], 'type' => $row['type']]),
                                 ['title' => 'Delete']);
                         },
                     ],

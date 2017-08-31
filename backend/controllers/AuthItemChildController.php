@@ -68,6 +68,7 @@
                         {
                             $data['parent'] =  $role_association->parent;
                             $data['child'] = $role_association->child;
+                            $data['type'] = $type;
                             $container[] = $data;
                         }
                     }
@@ -88,6 +89,7 @@
                         {
                             $data['parent'] =  $role_association->parent;
                             $data['child'] = $role_association->child;
+                            $data['type'] = $type;
                             $container[] = $data;
                         }
                     }
@@ -130,7 +132,7 @@
             if (Yii::$app->user->can('System Administrator') == false)
             {
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
-                return $this->redirect(['/site/index']);
+                  return $this->redirect(['index', 'type' => $type]);
             }
             
             $model = new AuthItemChild();
@@ -162,7 +164,7 @@
                 {
                     if ($model->save())
                     {
-                        return self::actionIndex();
+                         return $this->redirect(['index', 'type' => $type]);
                     }
                     else
                     {
@@ -214,11 +216,11 @@
 
         
         // (laurence_charles) - Delete role-role assignment
-        public function actionDelete($parent, $child)
+        public function actionDelete($parent, $child, $type)
         {
             $this->findModel($parent, $child)->delete();
 
-            return $this->redirect(['index']);
+              return $this->redirect(['index', 'type' => $type]);
         }
 
         /**
