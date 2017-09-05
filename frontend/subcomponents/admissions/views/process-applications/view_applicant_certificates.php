@@ -326,13 +326,13 @@
                         <?php
                             if ($application_status > 2)
                             {
-                                /*Application cchoice must not be one suggested by Dean/DEputy Dean and;
+                                /*Application choice must not be one suggested by Dean/Deputy Dean and;
                                  * User must be a Dean or Deputy Dean to be able to change the status of an applicant's application
                                  */
-                                if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') ))
+                                if (Application::getCustomApplications($applicant->personid) == false && (Yii::$app->user->can('Registrar')  || Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') ))
                                 {
                                     /*
-                                     * All users that are not 'System Admin' are only allowed to edit applicatio nchoices that belong to their division 
+                                     * All users that are not 'System Admin' are only allowed to edit application choices that belong to their division 
                                      */
                                     if ($division_id != 1 && $target_application->divisionid != $division_id)
                                     {
