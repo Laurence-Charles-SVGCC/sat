@@ -62,6 +62,7 @@ class CardController extends \yii\web\Controller
                 $offer_cond['offer.isactive'] = 1;
                 $offer_cond['offer.isdeleted'] = 0;
                 $offer_cond['offer.ispublished'] = 1;
+                $offer_cond['offer.offertypeid'] = 1;
                 $offer_cond['student_registration.isdeleted'] = 0;
 
                 $offers = Offer::find()
