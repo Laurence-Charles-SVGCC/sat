@@ -340,6 +340,10 @@
                 return $this->redirect(['/site/index']);
             }
             
+            $roles = AuthItem::find()
+                    ->where(['type' => 1])
+                    ->all();
+            
             $new_role = new AuthAssignment();
             
             $employee = Employee::find()
@@ -374,9 +378,10 @@
                 }
             }
             
-            return $this->render('new_role', 
-                                                ['employee' => $employee,
-                                                    'new_role' => $new_role,
-                                                    'employee_full_name' => $employee_full_name]);
+            return $this->render('new_role',  [
+                'roles' => $roles,
+                'employee' => $employee,
+                'new_role' => $new_role,
+                'employee_full_name' => $employee_full_name]);
         }
     }

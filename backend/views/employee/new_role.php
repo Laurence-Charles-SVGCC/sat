@@ -38,7 +38,7 @@
             
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="title">New Role:</label>
-                <?= $form->field($new_role, 'item_name')->label('')->dropDownList(ArrayHelper::map(AuthItem::find()->all(), 'name', 'name'), ['prompt'=>'Select Role', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
+                <?= $form->field($new_role, 'item_name')->label('')->dropDownList(ArrayHelper::map($roles, 'name', 'name'), ['prompt'=>'Select Role', "class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]) ?>
            </div>
         </div>
 
