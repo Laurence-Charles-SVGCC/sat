@@ -16,7 +16,8 @@
     use frontend\models\Division;
     use frontend\models\Department;
     use backend\models\AuthAssignment;
-     use backend\models\AuthItemChild;
+    use backend\models\AuthItemChild;
+    use backend\models\AuthItem;
     
 
     /**
