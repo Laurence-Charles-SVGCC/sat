@@ -1128,7 +1128,6 @@ class Application extends \yii\db\ActiveRecord
                 // if rejected -> get last application
                 elseif ($application_status == 6)      
                 {
-//                    $target_application = $applications[($count-1)];
                     $target_application = end($applications);
                 }
 

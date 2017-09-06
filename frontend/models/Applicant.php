@@ -975,13 +975,14 @@ class Applicant extends \yii\db\ActiveRecord
                 }
 
                 /* If applicant has 2 applications; they are considered offer if; 
-                 * Application 1 -> Offer       | Rejected | RejectedConditionalOffer
-                 * Application 2 -> Rejected  | Offer      | Offer
+                 * Application 1 -> Offer       | Offer                                  | Rejected  | RejectedConditionalOffer
+                 * Application 2 -> Rejected  | RejectedConditionalOffer  | Offer       | Offer
                  */
                 elseif($count == 2)
                 {
                     if(
                             ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 10)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
                         ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9)
                       )
@@ -989,14 +990,16 @@ class Applicant extends \yii\db\ActiveRecord
                 }
 
                 /* If applicant has 3 applications; they are considered offer if; 
-                 * Application 1 -> Offer             | Rejected   | RejectedConditionalOffer | Rejected | RejectedConditionalOffer | RejectedConditionalOffer  | Rejected
-                 * Application 2 -> Rejected        | Offer        | Offer                                | Rejected | RejectedConditionalOffer | Rejected                            | RejectedConditionalOffer
-                 * Application 3 -> Rejected        | Rejected   | Rejected                            | Offer     | Offer                                | Offer                                 | Offer
+                 * Application 1 -> Offer        |Offer                                  | Offer                                 | Rejected   | RejectedConditionalOffer  | Rejected | RejectedConditionalOffer | RejectedConditionalOffer  | Rejected
+                 * Application 2 -> Rejected   |Rejected                             |RejectedConditionalOffer  | Offer        | Offer                                  | Rejected | RejectedConditionalOffer | Rejected                             | RejectedConditionalOffer
+                 * Application 3 -> Rejected   |RejectedConditionalOffer  |Rejected                             | Rejected   | Rejected                             | Offer      | Offer                                 | Offer                                  | Offer
                  */
                 elseif($count == 3)
                 {
                     if(
                             ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+                        ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
