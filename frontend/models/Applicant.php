@@ -451,6 +451,7 @@ class Applicant extends \yii\db\ActiveRecord
 
                     //if offer
                     elseif(($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6)
+                            ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 10)
                             ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9)
                             ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9) )
                             $application_status = 9;
@@ -520,6 +521,8 @@ class Applicant extends \yii\db\ActiveRecord
 
                     //if offer
                     elseif( ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 6)
+                        ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+                        ||  ($applications[0]->applicationstatusid == 9  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 6)   
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 9 && $applications[2]->applicationstatusid == 6)
                         ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 9)
