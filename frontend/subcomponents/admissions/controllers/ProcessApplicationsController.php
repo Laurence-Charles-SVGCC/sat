@@ -1831,7 +1831,7 @@
                      * -> preceeding applications are rejected
                      * -> subsequent applications are rejected
                      */
-                    elseif($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean')))
+                    elseif($new_status == 9  && (Yii::$app->user->can('Registrar') || Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean') ))
                     {
                         //all subsequent applications are rejected
                         if($count - $position > 1)
