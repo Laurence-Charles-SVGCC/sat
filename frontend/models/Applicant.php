@@ -1049,9 +1049,13 @@ class Applicant extends \yii\db\ActiveRecord
              */
             elseif($count == 2)
             {
+//                if(
+//                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
+//                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+//                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10)
+//                  )
                 if(
-                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 6)
-                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
+                        ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10)
                     ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10)
                   )
                     return true;
@@ -1064,9 +1068,14 @@ class Applicant extends \yii\db\ActiveRecord
              */
             elseif($count == 3)
             {
+//                if(
+//                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
+//                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
+//                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
+//                    ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 10)
+//                  )
                 if(
-                        ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 3 && $applications[2]->applicationstatusid == 3)
-                    ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 3)
+                        ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 10)
                     ||  ($applications[0]->applicationstatusid == 6  && $applications[1]->applicationstatusid == 6 && $applications[2]->applicationstatusid == 10)
                     ||  ($applications[0]->applicationstatusid == 10  && $applications[1]->applicationstatusid == 10 && $applications[2]->applicationstatusid == 10)
                   )
