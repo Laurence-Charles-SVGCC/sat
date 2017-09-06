@@ -91,6 +91,10 @@ class OfferController extends Controller
                 $offer_cond['offer.isactive'] = 0;
             }
         }
+        else
+        {
+            $offer_cond['offer.isactive'] = 1;
+        }
         
         
         /*
