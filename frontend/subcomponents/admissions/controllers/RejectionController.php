@@ -751,7 +751,7 @@ class RejectionController extends Controller
         elseif ($criteria == "five_passes")
         {
             $subs = Applicant::getRejectedWithFivePasses($rejections, true);
-            $subjects_and_english_req1 = $subs ? $subs : array();
+            $five_passes_req = $subs ? $subs : array();
         }
         elseif ($criteria == "five_passes_and_english")
         {
@@ -806,7 +806,7 @@ class RejectionController extends Controller
                 }
                 elseif ($criteria == "five_passes")
                 {
-                    if (!in_array($rejection, $subjects_req1))
+                    if (!in_array($rejection, $five_passes_req))
                        continue;
                 }
                 elseif ($criteria == "five_passes_and_english")
@@ -911,7 +911,7 @@ class RejectionController extends Controller
                 }
                 elseif ($criteria == "five_passes")
                 {
-                    if (in_array($rejection, $subjects_req1))
+                    if (in_array($rejection, $five_passes_req))
                     {
                          $subjects_req_data[] = $rejection_data;
                     }
