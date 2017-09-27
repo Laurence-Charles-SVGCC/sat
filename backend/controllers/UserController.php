@@ -480,7 +480,7 @@
 
                         $personal_email = (strcmp($model->personal_email,"") == 0 || $model->personal_email == NULL)? "pending..." : $model->personal_email;
                         
-                        $user = $model-> signup_user_without_login_credentials($username, $model->institutional_email);
+                        $user = $model->signup_user_without_login_credentials($username, $model->institutional_email);
                         if ($user == false || $user == NULL)
                         {
                             $transaction->rollBack();

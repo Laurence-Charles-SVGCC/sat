@@ -74,6 +74,27 @@
             }
             return null;
         }
+        
+        
+         // (laurence_charles) - Creates user account with no login credentials
+        public function signup_user_without_login_credentials($username, $institutional_email)
+        {
+            if ($this->validate()) 
+            {
+                $user = new User();
+                $user->username = $username;
+                $user->email = $institutional_email;
+                $user->persontypeid = 3;
+                $user->isactive = 1;
+                $user->isdeleted = 0;
+
+                if ($user->save() == true) 
+                {
+                    return $user;
+                }   
+            }
+            return null;
+        }
 
         
         // (gamal_crichton) - Restrict ability to sign up to only College emails
