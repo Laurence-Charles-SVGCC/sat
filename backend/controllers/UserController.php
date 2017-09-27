@@ -529,7 +529,7 @@
                                 else
                                 {
                                     $department = new EmployeeDepartment();
-                                    $department->departmentid = $model->department;
+                                    $department->departmentid = $model->departmentid;
                                     $department->personid = $user->personid;
                                     $department_save_flag = $department->save();
                                     if ($department_save_flag == false)
