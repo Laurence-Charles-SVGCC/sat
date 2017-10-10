@@ -227,5 +227,22 @@ class CapeSubjectGroup extends \yii\db\ActiveRecord
     }
     
     
+     /**
+         * Soft deletes the 'cape_subject_group' record
+         * 
+         * @return boolean
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2017_10_02
+         * Modified: 2017_10_02
+         */
+        public function softDelete()
+        {
+            $this->isactive = 0;
+            $this->isdeleted = 1;
+            return $this->save();
+        }
+    
+    
     
 }

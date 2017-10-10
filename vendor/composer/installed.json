@@ -10,7 +10,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/348122de0b2c2e343b579f93fcda1da78cab4912",
+            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/248f7065a352273b15a9f624be63830f360a59f2",
             "reference": "6b2a2b3bb83d4b3dd791f76e64c48973ce01bac6",
             "shasum": ""
         },
@@ -105,7 +105,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/cebe/markdown/zipball/e2a490ceec590bf5bfd1b43bd424fb9dceceb7c5",
+            "url": "https://api.github.com/repos/cebe/markdown/zipball/fcc325311c4c5e11c4453a405344d02adfa64aa1",
             "reference": "e14d3da8f84eefa3792fd22b5b5ecba9c98d2e18",
             "shasum": ""
         },
@@ -167,7 +167,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/5ad72ae0546e337b51ace609a0a0bfa12953521c",
+            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/4c1522c13dee5b91d30e6120aab44e3c9f00a922",
             "reference": "06e9f915f52906b04377ac62169d66e8cbcd4a66",
             "shasum": ""
         },
@@ -257,7 +257,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/fffbc0e2a7e376dbb0a4b5f2ff6847330f20ccf9",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/93df08e2dadf7ae27fef6eb7dd4ad4cdbd1e6b5f",
             "reference": "5a1b5d121689369cf7b54cc67b16216cfd4da7b3",
             "shasum": ""
         },
@@ -312,7 +312,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/2d759ae40cddcf34c3dfb9faa49a5027ec83f91f",
+            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/76cd85c7ed79cfff57b69096099ef38adc37691e",
             "reference": "fffcd50b35c53888b40bb7cf9d52f25e1a4e2f43",
             "shasum": ""
         },
@@ -364,7 +364,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/e01b3c46917b3f00c42f6a4aabf612cc36d792e6",
+            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/086c8c2d28736e7a484a7a8611b5cc84024e9fb3",
             "reference": "b3407b0c8614c1d614c5c58287816027ba98418b",
             "shasum": ""
         },
@@ -411,7 +411,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/79ef1b1d0976a0eec8b7699f558b10e38b6501db",
+            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/034d57071f7bb91074c0c2728c60ae8abdaa0e47",
             "reference": "56d47544eb98ebdb542422abc598ef8097b3e9c5",
             "shasum": ""
         },
@@ -463,7 +463,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/0b7eb271ba4785beb1184c6b09d3349065a2b426",
+            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/ccf0e5cc533f26f6151f013e26de452b06662de1",
             "reference": "1d2f8519c78c557b3d28f647a6bacfad1d6720f8",
             "shasum": ""
         },
@@ -548,7 +548,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/0d93a9dbd55f2d0921b8e153554379bb213a2c7f",
+            "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/4ec2b55e4f0e5a6f27be93b4a1618a727409dec5",
             "reference": "bc7df9d8fa44b3308cc899ffc8e4204316304e41",
             "shasum": ""
         },
@@ -603,7 +603,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/172d1bb0cf1b5cb8dec8385028a8d0219523d0a9",
+            "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/9775b728ac99cf5bb49d80169523dc50dd9c3d62",
             "reference": "6615c01b7b2a9c46f4cc426f860866a122eae0af",
             "shasum": ""
         },
@@ -657,7 +657,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/a8daa97749e7154d91676405a1c59ed81e1ca999",
+            "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/ed09caef15777a867f386158f84ea75b84053dff",
             "reference": "66432de272e5795435dc7da49381ea7bea2a2a67",
             "shasum": ""
         },
@@ -706,7 +706,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/2amigos/yii2-date-picker-widget/zipball/89cd0d7f00785b608b4a9670016f2795f2e3984d",
+            "url": "https://api.github.com/repos/2amigos/yii2-date-picker-widget/zipball/48e73f154f8e15adcbc5880c14058a9496070220",
             "reference": "89cd0d7f00785b608b4a9670016f2795f2e3984d",
             "shasum": ""
         },
@@ -881,7 +881,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wbraganca/yii2-dynamicform/zipball/049770e48bff426fb7aeb0e86690ee689c514c70",
+            "url": "https://api.github.com/repos/wbraganca/yii2-dynamicform/zipball/fa1fec069ce8262dcb359db8d3b849235ddf7781",
             "reference": "049770e48bff426fb7aeb0e86690ee689c514c70",
             "shasum": ""
         },
@@ -1358,7 +1358,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/c4782b660619be139a64d96a545f6a422ca74c20",
+            "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/185bf412339526c97a98d959c3c0ecf4b7c80016",
             "reference": "36d2ba12e38b6be60429e31f217c09afe781d620",
             "shasum": ""
         },
@@ -1421,7 +1421,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/fe29bcf8f46bde42aa3eb067851b38dc07cd4d8a",
+            "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/62728a88816af2dc93640f2b8e10e10871cf4ee2",
             "reference": "574c0e310bda692253c1ba0eac9a94c699b299d5",
             "shasum": ""
         },
@@ -1472,7 +1472,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-export/zipball/b040d1ff78506f35cfb63b22f1d7b7c315380fd6",
+            "url": "https://api.github.com/repos/kartik-v/yii2-export/zipball/d1ab7ab4a1b2603ea03aa2c8aba885628fa09b31",
             "reference": "5c2429fae2bc176fdc7f5edb3965ddf989b46e26",
             "shasum": ""
         },
@@ -1533,7 +1533,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/mpdf/zipball/b67c84b5270ff338a84fa0c94ff8c87531d6eb49",
+            "url": "https://api.github.com/repos/kartik-v/mpdf/zipball/01689a83d4e428ef55645d0d0ff1d2f6268047a4",
             "reference": "4d83c4e0719793c416304ebda6c58dd8736d5513",
             "shasum": ""
         },
@@ -1578,7 +1578,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-mpdf/zipball/d2513eb34e507097ceafc1125164c50aeb905547",
+            "url": "https://api.github.com/repos/kartik-v/yii2-mpdf/zipball/67980ab7861ae9541b1a1784be8938dbeba13045",
             "reference": "873a4f10ba961bbf3c63c9ede82a13d407f00acf",
             "shasum": ""
         },
@@ -1627,7 +1627,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/d866af325936209258989d3bd17b4fbdb9835a72",
+            "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/5911e2cbf1f9e854ebe5ffb4102fb16af859a0bb",
             "reference": "d866af325936209258989d3bd17b4fbdb9835a72",
             "shasum": ""
         },
@@ -1682,7 +1682,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/36f9f493c2d814529f2a195422a8af2e020fc80c",
+            "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/a4f363c9e5ba8a019cec6865ced20c3f8a09d3d8",
             "reference": "36f9f493c2d814529f2a195422a8af2e020fc80c",
             "shasum": ""
         },
@@ -1720,6 +1720,51 @@
             "plugin",
             "upload",
             "widget",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-jui",
+        "version": "2.0.0-beta",
+        "version_normalized": "2.0.0.0-beta",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-jui.git",
+            "reference": "24626ae44d56b86275e2dcdadf874bc21028a9f8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-jui/zipball/24626ae44d56b86275e2dcdadf874bc21028a9f8",
+            "reference": "24626ae44d56b86275e2dcdadf874bc21028a9f8",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2": "*"
+        },
+        "time": "2014-04-13 21:58:59",
+        "type": "yii2-extension",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\jui\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com",
+                "homepage": "http://www.yiiframework.com/",
+                "role": "Founder and project lead"
+            }
+        ],
+        "description": "The Jquery UI extension for the Yii framework",
+        "keywords": [
+            "jQuery UI",
+            "renderer",
             "yii2"
         ]
     }

@@ -2,50 +2,28 @@
     use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
-    use yii\widgets\ActiveForm;
-    use yii\bootstrap\Modal;
-    use yii\bootstrap\ActiveField;
-    use dosamigos\datepicker\DatePicker;
-    use yii\helpers\ArrayHelper;
     
-    use frontend\models\Division;
-    use frontend\models\AcademicYear;
-    use frontend\models\ProgrammeCatalog;
-    use frontend\models\CapeSubject;
-    use frontend\models\CapeGroup;
-
     $this->title = 'Application Period Setup Step-3';
-    
-    $options = [
-       'yes' => 'Yes',
-       'no' =>'No'
-   ];
-    
-    $this->params['breadcrumbs'][] = ['label' => 'Period Listing', 'url' => Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])];
-    $this->params['breadcrumbs'][] = ['label' => 'Setup Dashboard', 'url' => Url::toRoute(['admissions/initiate-period', 'recordid' => $period->applicationperiodid])];
+    $this->params['breadcrumbs'][] = ['label' => 'Period Listing', 'url' => Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])];
+    $this->params['breadcrumbs'][] = ['label' => 'Setup Dashboard', 'url' => Url::toRoute(['initiate-period', 'id' => $period->applicationperiodid])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/package']);?>" title="Manage Packages">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
 <section class="content-header">
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
-
-<h2 class="text-center">Assign Programmes</h2>
+</section><br/><br/>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;">
+    <div class="box-header with-border">
+        <span class="box-title"> Programme Catalog Approval</span>
+    </div>
+    
     <div class="box-body">
         <ul>
             <li>
                 <p>
                 You are currently in the process of creating an application period session for
-                the <?=Division::getDivisionName($period->divisionid)?>.
+                the <?= $period->getDivisionName()?>.
                 </p>
             </li>
 
@@ -93,8 +71,8 @@
 
                     <tr>
                         <td></td>
-                        <td><?= Html::a(' Add New Programme',['admissions/add-programme-catalog'], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-plus pull-left', 'style' => 'margin:10px;']);?></th>
-                        <td><?= Html::a(' Add New CAPE Subject',['admissions/add-cape-subject'], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-plus pull-left', 'style' => 'margin:10px']);?></td>
+                        <td><?= Html::a(' Add New Programme',['manage-application-periods/add-programme-to-catalog'], ['class' => 'btn btn-block btn-info pull-left', 'style' => 'margin:10px;']);?></td>
+                        <td><?= Html::a(' Add New CAPE Subject',['manage-application-periods/add-cape-subject'], ['class' => 'btn btn-block btn-info glyphicon pull-left', 'style' => 'margin:10px']);?></td>
                     </tr>
                 </table> 
 
@@ -125,88 +103,13 @@
                         <?php endfor;?>
 
                         <tr>
-                            <td colspan="2"><?= Html::a(' Add New Programme',['admissions/add-programme-catalog'], ['class' => 'btn btn-block btn-lg btn-success glyphicon glyphicon-plus pull-left']);?></th>
+                            <td colspan="2"><?= Html::a(' Add New Programme',['manage-application-periods/add-programme-to-catalog'], ['class' => 'btn btn-block btn-lg btn-info glyphicon glyphicon-plus']);?></td>
                         </tr>
                     </table> 
             <?php endif;?>
         </div>
 
-        <ul>
-            <li>
-                <p id="finished-entering-programmes">
-                    Do you have any programs left to add to the list above?
-                    <?= Html::radioList('more-programmes', 'yes', $options, ['class'=> 'form-field', 'onclick'=> 'toggleAcademicOfferingForm()']);?>               
-                </p>
-            </li>
-        </ul>
-
-        <?php
-            $form = ActiveForm::begin([
-                'id' => 'add-academic-offering-form',
-                'options' => [
-                    'style' => 'display:none;font-size:16px;'
-                ],
-            ]);?>
-
-                <br/><p style ="font-size:18px;">Please select all programmes you wish to create an academic offer for this application period</p>                      
-                <?php for($i = 0 ; $i < count($programmes) ; $i++): ?>
-                    <?php 
-                        if($programmes[$i]["specialisation"]!=NULL || strcmp($programmes[$i]["specialisation"],"") != 0)
-                            $specialisation = " (" . $programmes[$i]["specialisation"] . ")";
-                        else
-                            $specialisation = "";
-                    ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $form->field($offerings[$i], '['.$i.']programmecatalogid')->checkbox(
-                                [   'unchecked' => false,
-                                    'label' => $programmes[$i]["qualification"] . ". " . $programmes[$i]["name"] . $specialisation 
-                                ]) 
-                            ?>
-                        </div>
-                        <div class="col-md-2">
-                            <?= $form->field($offerings[$i], '['.$i.']spaces')->label('Capacity')->textInput() ?>
-                        </div>
-                        <div class="col-md-4">
-                            <?= $form->field($offerings[$i], '['.$i.']interviewneeded')->checkbox(['label' => 'Interview Needed']) ?>
-                        </div>
-                    </div>
-                <?php endfor; ?>
-
-
-                 <?php if ($period->divisionid == 4):?>
-                    <br/><p style ="font-size:18px;">Please select all the CAPE subjects you wish to create an academic offer for this application period</p>
-
-                    <?php for($j = 0 ; $j < count($subjects) ; $j++): ?>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <?= $form->field($cape_subjects[$j], '['.$j.']subjectname')->checkbox(
-                                    [   'unchecked' => false,
-                                        'label' => $subjects[$j]['name']
-                                    ]) 
-                                ?>
-                            </div>
-
-                            <div class="col-md-2">
-                                <?= $form->field($cape_subjects[$j], '['.$j.']unitcount')->dropDownList([NULL => 'Please Select', 1 => '1', 2 => '2']) ?>
-                            </div>
-
-                            <div class="col-md-2">
-                                <?= $form->field($cape_subjects[$j], '['.$j.']capacity')->textInput() ?>
-                            </div>
-
-                             <div class="col-md-4">
-                                <?= $form->field($subject_groups[$j], '['.$j.']capegroupid')->label('Group')->dropDownList(ArrayHelper::map(CapeGroup::find()->all(), 'capegroupid', 'name'), ['prompt'=>'Select Cape Group']) ?>
-                            </div>
-                        </div>
-                    <hr>
-                    <?php endfor; ?>
-                <?php endif;?>
-      
-            <span class="pull-right">
-                <?=Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'margin-right:20px;']);?>
-                <?=Html::a(' Back',['admissions/initiate-period', 'recordid' => $period->applicationperiodid], ['class' => 'btn btn-danger', 'id' => 'back-button']);?>              
-            </span>
-    <?php ActiveForm::end();?>
+        <?= Html::a('Approve Programme Catalog', ['manage-application-periods/period-setup-step-three', 'approve' => true], ['class' => 'btn btn-block btn-lg btn-success',  'style' => 'width: 95%; margin-left: 5%;']);?>
+       
     </div>
 </div>

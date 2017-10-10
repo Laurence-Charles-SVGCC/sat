@@ -33,15 +33,15 @@
         /**
          * Created collection of application period details
          * 
-         * @param type $page_size
+         * @param Integer $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_08_24
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_09
          */   
-        public static function generateApplicaitonPeriodListing($page_size)
+        public static function generateApplicationPeriodListing($page_size)
         {
             $period_details_data_provider = array();
             $period_stats_data_provider = array();
@@ -117,8 +117,8 @@
                             'pageSize' => $page_size,
                         ],
                         'sort' => [
-                            'defaultOrder' => ['id' =>SORT_ASC],
-                            'attributes' => ['id', 'division'],
+                            'defaultOrder' => ['id' => SORT_ASC],
+                            'attributes' => ['id', 'division', 'year'],
                         ]
                 ]); 
             
@@ -126,19 +126,18 @@
         }
 
 
-        
         /**
          * Created collection of application period ap-plicant partipation statistics
          * 
-         * @param type $page_size
+         * @param  Integer $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_08_24
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_10
          */   
-        public static function generateApplicaitonPeriodStatistics($page_size)
+        public static function generateApplicationPeriodStatistics($page_size)
         {
             $period_stats_data_provider = array();
             $stats_records = array();
@@ -152,6 +151,11 @@
                     
            foreach ( $academic_years  as  $academic_year)
            {
+                $active_application_period = ApplicationPeriod::find()->where(['academicyearid' => $academic_year->academicyearid, 'isactive' =>1, 'isdeleted' => 0])->one();
+                if ($active_application_period == false)
+                {
+                    continue;
+                }
                 $id = $academic_year->academicyearid;
                 $stats_data = array();
                 $stats_data['academicyearid'] = $academic_year->academicyearid;
@@ -204,50 +208,48 @@
 
         /**
          * Generates report listing applicants that begin the application unverified applicants
+         * Generates report listing applicants that completed email verification and had applicant accounts initialized
          * 
-         * @param type $academicyearid
+         * @param  Integer $academicyearid
          * @param type $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_09
          */
         public static function generateCommencedApplicationsReport($academicyearid, $page_size)
         {
             $data_provider = array();
             $records = array();
             
-            $registrations = ApplicantRegistration::getApplicantRegistrationsByYear($academicyearid);
+            $applicants = Applicant::getCommencedApplicants($academicyearid);
             
-            if (empty($registrations) == true)
+            if (empty($applicants) == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                foreach ($applicants as $applicant)
+                {
+                    $data = array();
+                    $data['username'] = User::find()->where(['personid' => $applicant->personid])->one()->username;
+                    $data['title'] = $applicant->title;
+                    $data['firstname'] = trim($applicant->firstname);
+                    $data['lastname'] = trim($applicant->lastname);
+                    $data['email'] = Email::find()->where(['personid' => $applicant->personid])->one()->email;
+                    $records[] = $data;
+                }
+
+                $data_provider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => $page_size,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
+                            'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+                    ]); 
             }
-            
-            foreach ($registrations as $registration)
-            {
-                $data = array();
-                $data['username'] = $registration->applicantname;
-                $data['title'] = $registration->title;
-                $data['firstname'] = trim($registration->firstname);
-                $data['lastname'] = trim($registration->lastname);
-                $data['email'] = $registration->email;
-                $records[] = $data;
-            }
-                
-            $data_provider = new ArrayDataProvider([
-                    'allModels' => $records,
-                    'pagination' => [
-                        'pageSize' => $page_size,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
-                    ]
-                ]); 
             return $data_provider;
         }
         
@@ -255,100 +257,101 @@
         /**
          * Generates report listing applicants that completed the submission of their applications
          * 
-         * @param type $academicyearid
-         * @param type $page_size
+         * @param Integer $academicyearid
+         * @param Integer $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_10
          */
         public static function generateCompletedApplicationsReport($academicyearid, $page_size)
         {
+            $provider_collection = array();
             $data_provider = array();
             $records = array();
             
             $applicants = Applicant::getCompletedApplicants($academicyearid);
             
-             if (empty($applicants) == true)
+            if (empty($applicants) == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                $i = 0;
+                foreach ($applicants as $applicant)
+                {
+                   
+                    $id = $applicant->personid;
+                    $data = array();
+
+                    $user = User::getUser($applicant->personid);
+                    if ($user == NULL)
+                    {
+                        $error_message = "No user record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['username'] = $user->username;
+
+                    $data['title'] = $applicant->title;
+                    $data['firstname'] = trim($applicant->firstname);
+                    $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                    $data['lastname'] = trim($applicant->lastname);
+
+                    $email = Email::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($email == NULL)
+                    {
+                        $error_message = "No email record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['email'] = $email->email;
+
+                    $phone = Phone::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($phone == NULL)
+                    {
+                        $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $phone_contacts = "";
+                    if ($phone->homephone == true)
+                        $phone_contacts .= $phone->homephone . ", ";
+                    if ($phone->workphone == true)
+                        $phone_contacts .= $phone->workphone . ", ";
+                    if ($phone->cellphone == true)
+                        $phone_contacts .= $phone->cellphone;
+                    $data['phone'] =  $phone_contacts;
+
+                    $programme_listing = $applicant->getProgrammeChoices();
+                    $data['programmes'] = $programme_listing;
+
+                    $institution_listing =  $applicant->getInstitutions();
+                    $data['institutions'] = $institution_listing;
+
+                    $qualifications = $applicant->getQualifications(3);
+                    $data['total_csec_qualifications'] = count($qualifications);
+
+                    $data['csec_ones'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 1);
+                    $data['csec_twos'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 2);
+                    $data['csec_threes'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 3);
+                    $data['application_duration (mins)'] = $applicant->calculateApplicantSubmissionDurationFromAccountCreation();
+
+                    $records[] = $data;
+                    $i++;
+                }
+
+                $data_provider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => $page_size,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
+                            'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+                    ]);
             }
-            
-            foreach ($applicants as $applicant)
-            {
-                $id = $applicant->personid;
-                $data = array();
-                
-                $user = User::getUser($applicant->personid);
-                if ($user == NULL)
-                {
-                    $error_message = "No user record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['username'] = $user->username;
-                
-                $data['title'] = $applicant->title;
-                $data['firstname'] = trim($applicant->firstname);
-                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
-                $data['lastname'] = trim($applicant->lastname);
-                
-                $email = Email::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($email == NULL)
-                {
-                    $error_message = "No email record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['email'] = $email->email;
-                
-                $phone = Phone::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($phone == NULL)
-                {
-                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $phone_contacts = "";
-                if ($phone->homephone == true)
-                    $phone_contacts .= $phone->homephone . ", ";
-                if ($phone->workphone == true)
-                    $phone_contacts .= $phone->workphone . ", ";
-                if ($phone->cellphone == true)
-                    $phone_contacts .= $phone->cellphone;
-                $data['phone'] =  $phone_contacts;
-                
-                $programme_listing = $applicant->getProgrammeChoices();
-                $data['programmes'] = $programme_listing;
-                
-                $institution_listing =  $applicant->getInstitutions();
-                $data['institutions'] = $institution_listing;
-                
-                $qualifications = $applicant->getQualifications(3);
-                $data['total_csec_qualifications'] = count($qualifications);
-                
-                $data['csec_ones'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 1);
-                $data['csec_twos'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 2);
-                $data['csec_threes'] = CsecQualification::getAllSubjectGradesCount($applicant->personid, 3, 3);
-                $data['application_duration (mins)'] = $applicant->calculateApplicantSubmissionDurationFromAccountCreation();
-                
-                $records[] = $data;
-            }
-            
-            $data_provider = new ArrayDataProvider([
-                    'allModels' => $records,
-                    'pagination' => [
-                        'pageSize' => $page_size,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
-                    ]
-                ]); 
             return $data_provider;
         }
 
@@ -356,14 +359,14 @@
         /**
          * Generates report listing who started but did not submit their applications
          * 
-         * @param type $academicyearid
-         * @param type $page_size
+         * @param Integer $academicyearid
+         * @param Integere $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_09
          */
         public static function generateIncompleteApplicationsReport($academicyearid, $page_size)
         {
@@ -372,70 +375,67 @@
             
             $applicants = Applicant::getIncompleteApplicants($academicyearid);
             
-             if (empty($applicants) == true)
+            if (empty($applicants) == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                foreach ($applicants as $applicant)
+                {
+                    $id = $applicant->personid;
+                    $data = array();
+
+                    $user = User::getUser($applicant->personid);
+                    if ($user == NULL)
+                    {
+                        $error_message = "No user record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['username'] = $user->username;
+
+                    $data['title'] = $applicant->title;
+                    $data['firstname'] = trim($applicant->firstname);
+                    $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                    $data['lastname'] = trim($applicant->lastname);
+
+                    $email = Email::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($email == NULL)
+                    {
+                        $error_message = "No email record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['email'] = $email->email;
+
+                    $phone = Phone::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($phone == NULL)
+                    {
+                        $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $phone_contacts = "";
+                    if ($phone->homephone == true)
+                        $phone_contacts .= $phone->homephone . ", ";
+                    if ($phone->workphone == true)
+                        $phone_contacts .= $phone->workphone . ", ";
+                    if ($phone->cellphone == true)
+                        $phone_contacts .= $phone->cellphone;
+                    $data['phone'] =  $phone_contacts;
+
+                    $records[] = $data;
+                }
+
+                $data_provider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => $page_size,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
+                            'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+                    ]); 
             }
-            
-            foreach ($applicants as $applicant)
-            {
-                $id = $applicant->personid;
-                $data = array();
-                
-                $user = User::getUser($applicant->personid);
-                if ($user == NULL)
-                {
-                    $error_message = "No user record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['username'] = $user->username;
-                
-                $data['title'] = $applicant->title;
-                $data['firstname'] = trim($applicant->firstname);
-                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
-                $data['lastname'] = trim($applicant->lastname);
-                
-                $email = Email::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($email == NULL)
-                {
-                    $error_message = "No email record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['email'] = $email->email;
-                
-                $phone = Phone::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($phone == NULL)
-                {
-                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $phone_contacts = "";
-                if ($phone->homephone == true)
-                    $phone_contacts .= $phone->homephone . ", ";
-                if ($phone->workphone == true)
-                    $phone_contacts .= $phone->workphone . ", ";
-                if ($phone->cellphone == true)
-                    $phone_contacts .= $phone->cellphone;
-                $data['phone'] =  $phone_contacts;
-                
-                $records[] = $data;
-            }
-            
-            $data_provider = new ArrayDataProvider([
-                    'allModels' => $records,
-                    'pagination' => [
-                        'pageSize' => $page_size,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
-                    ]
-                ]); 
             return $data_provider;
         }
         
@@ -443,14 +443,14 @@
         /**
          * Generates report listing applicants whose certificates have been verified
          * 
-         * @param type $academicyearid
-         * @param type $page_size
+         * @param Integer $academicyearid
+         * @param Integer $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_09
          */
         public static function generateVerifiedApplicationsReport($academicyearid, $page_size)
         {
@@ -459,81 +459,78 @@
             
             $applicants = Applicant::getVerifiedApplicants($academicyearid);
             
-            if (empty($applicants) == true)
+            if (empty($applicants) == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                foreach ($applicants as $applicant)
+                {
+                    $id = $applicant->personid;
+
+                    $data = array();
+
+                    $user = User::getUser($applicant->personid);
+                    if ($user == NULL)
+                    {
+                        $error_message = "No user record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['username'] = $user->username;
+
+                    $data['title'] = $applicant->title;
+                    $data['firstname'] = trim($applicant->firstname);
+                    $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+    //                $data['lastname'] = htmlspecialchars_decode(trim($applicant->lastname), ENT_QUOTES);
+    //                $data['lastname'] = htmlspecialchars_decode($applicant->lastname, ENT_QUOTES);
+
+    //                 $data['lastname'] = substr_replace($applicant->lastname, "'", "&#39;");
+    //                 $data['lastname'] = html_entity_decode($applicant->lastname, ENT_QUOTES);
+                    $data['lastname'] = $applicant->lastname;
+
+                    $email = Email::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($email == NULL)
+                    {
+                        $error_message = "No email record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['email'] = $email->email;
+
+                    $phone = Phone::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($phone == NULL)
+                    {
+                        $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $phone_contacts = "";
+                    if ($phone->homephone == true)
+                        $phone_contacts .= $phone->homephone . ", ";
+                    if ($phone->workphone == true)
+                        $phone_contacts .= $phone->workphone . ", ";
+                    if ($phone->cellphone == true)
+                        $phone_contacts .= $phone->cellphone;
+                    $data['phone'] =  $phone_contacts;
+
+                    $programme_listing = $applicant->getProgrammeChoices();
+                    $data['programmes'] = $programme_listing;
+
+                    $data['verifying_officer'] = Employee::getEmployeeName($applicant->verifier);
+
+                    $records[] = $data;
+                }
+
+                $data_provider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => $page_size,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
+                            'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+                    ]); 
             }
-            
-            foreach ($applicants as $applicant)
-            {
-                $id = $applicant->personid;
-                
-                $data = array();
-
-                $user = User::getUser($applicant->personid);
-                if ($user == NULL)
-                {
-                    $error_message = "No user record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['username'] = $user->username;
-
-                $data['title'] = $applicant->title;
-                $data['firstname'] = trim($applicant->firstname);
-                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
-//                $data['lastname'] = htmlspecialchars_decode(trim($applicant->lastname), ENT_QUOTES);
-//                $data['lastname'] = htmlspecialchars_decode($applicant->lastname, ENT_QUOTES);
-               
-//                 $data['lastname'] = substr_replace($applicant->lastname, "'", "&#39;");
-//                 $data['lastname'] = html_entity_decode($applicant->lastname, ENT_QUOTES);
-                $data['lastname'] = $applicant->lastname;
-
-                $email = Email::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($email == NULL)
-                {
-                    $error_message = "No email record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['email'] = $email->email;
-
-                $phone = Phone::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($phone == NULL)
-                {
-                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $phone_contacts = "";
-                if ($phone->homephone == true)
-                    $phone_contacts .= $phone->homephone . ", ";
-                if ($phone->workphone == true)
-                    $phone_contacts .= $phone->workphone . ", ";
-                if ($phone->cellphone == true)
-                    $phone_contacts .= $phone->cellphone;
-                $data['phone'] =  $phone_contacts;
-                
-                $programme_listing = $applicant->getProgrammeChoices();
-                $data['programmes'] = $programme_listing;
-
-                $data['verifying_officer'] = Employee::getEmployeeName($applicant->verifier);
-
-                $records[] = $data;
-            }
-            
-            $data_provider = new ArrayDataProvider([
-                    'allModels' => $records,
-                    'pagination' => [
-                        'pageSize' => $page_size,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
-                    ]
-                ]); 
             return $data_provider;
         }
         
@@ -541,14 +538,14 @@
         /**
          * Generates report listing applicants whose certificates have not  been verified
          * 
-         * @param type $academicyearid
-         * @param type $page_size
+         * @param Integer $academicyearid
+         * @param Integer $page_size
          * @return ArrayDataProvider
          * @throws ModelNotFoundException
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_29
+         * Date Last Modified: 2017_10_09
          */
         public static function generateUnverifiedApplicationsReport($academicyearid, $page_size)
         {
@@ -557,75 +554,74 @@
             
             $applicants = Applicant::getUnverifiedApplicants($academicyearid);
             
-            if (empty($applicants) == true)
+            if (empty($applicants) == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                foreach ($applicants as $applicant)
+                {
+                    $id = $applicant->personid;
+
+                    $data = array();
+
+                    $user = User::getUser($applicant->personid);
+                    if ($user == NULL)
+                    {
+                        $error_message = "No user record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['username'] = $user->username;
+
+                    $data['title'] = $applicant->title;
+                    $data['firstname'] = trim($applicant->firstname);
+                    $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
+                    $data['lastname'] = trim($applicant->lastname);
+
+                    $email = Email::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($email == NULL)
+                    {
+                        $error_message = "No email record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $data['email'] = $email->email;
+
+                    $phone = Phone::find()
+                            ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->one();
+                    if ($phone == NULL)
+                    {
+                        $error_message = "No phone record found for Applicant->PersonID= " . $id;
+                        throw new ModelNotFoundException($error_message);
+                    }
+                    $phone_contacts = "";
+                    if ($phone->homephone == true)
+                        $phone_contacts .= $phone->homephone . ", ";
+                    if ($phone->workphone == true)
+                        $phone_contacts .= $phone->workphone . ", ";
+                    if ($phone->cellphone == true)
+                        $phone_contacts .= $phone->cellphone;
+                    $data['phone'] =  $phone_contacts;
+
+                    $programme_listing = $applicant->getProgrammeChoices();
+                    $data['programmes'] = $programme_listing;
+
+                    $records[] = $data;
+                }
+
+                $data_provider = new ArrayDataProvider([
+                        'allModels' => $records,
+                        'pagination' => [
+                            'pageSize' => $page_size,
+                        ],
+                        'sort' => [
+                            'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
+                            'attributes' => ['username', 'firstname', 'lastname'],
+                        ]
+                    ]); 
             }
-            
-            foreach ($applicants as $applicant)
-            {
-                $id = $applicant->personid;
-                
-                $data = array();
-
-                $user = User::getUser($applicant->personid);
-                if ($user == NULL)
-                {
-                    $error_message = "No user record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['username'] = $user->username;
-
-                $data['title'] = $applicant->title;
-                $data['firstname'] = trim($applicant->firstname);
-                $data['middlename'] = $applicant->middlename == true ? trim($applicant->middlename) : "";
-                $data['lastname'] = trim($applicant->lastname);
-
-                $email = Email::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($email == NULL)
-                {
-                    $error_message = "No email record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $data['email'] = $email->email;
-
-                $phone = Phone::find()
-                        ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->one();
-                if ($phone == NULL)
-                {
-                    $error_message = "No phone record found for Applicant->PersonID= " . $id;
-                    throw new ModelNotFoundException($error_message);
-                }
-                $phone_contacts = "";
-                if ($phone->homephone == true)
-                    $phone_contacts .= $phone->homephone . ", ";
-                if ($phone->workphone == true)
-                    $phone_contacts .= $phone->workphone . ", ";
-                if ($phone->cellphone == true)
-                    $phone_contacts .= $phone->cellphone;
-                $data['phone'] =  $phone_contacts;
-                
-                $programme_listing = $applicant->getProgrammeChoices();
-                $data['programmes'] = $programme_listing;
-
-                $records[] = $data;
-            }
-            
-            $data_provider = new ArrayDataProvider([
-                    'allModels' => $records,
-                    'pagination' => [
-                        'pageSize' => $page_size,
-                    ],
-                    'sort' => [
-                        'defaultOrder' => ['lastname' =>SORT_ASC, 'firstname' =>SORT_ASC],
-                        'attributes' => ['username', 'firstname', 'lastname'],
-                    ]
-                ]); 
             return $data_provider;
         }
+        
+        
     }
     

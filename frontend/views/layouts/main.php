@@ -134,11 +134,21 @@
                    <?php if (Yii::$app->user->can('System Administrator')): ?>
                       <li class="treeview">
                         <a href="">
-                          <i class="fa fa-wrench" aria-hidden="true"></i> <span> Applications</span> <i class="fa fa-angle-left pull-right"></i>
+                          <i class="fa fa-wrench" aria-hidden="true"></i> <span> Manage Applications</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])?>"><i class="fa fa-circle-o"></i>View Periods</a></li>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-period-statistics'])?>"><i class="fa fa-circle-o"></i>Period Statistics</a></li>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])?>"><i class="fa fa-circle-o"></i> View Periods</a></li>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-period-statistics'])?>"><i class="fa fa-circle-o"></i> Period Statistics</a></li>
+                            <li class="treeview">
+                                <a href="">
+                                  <i class="fa fa-circle-o" aria-hidden="true"></i> <span> Find Applicants</span> <i class="fa fa-angle-left pull-right"></i>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/applications/review-applications/find-applicant-by-email'])?>"><i class="fa fa-circle-o"></i> By Email</a></li>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/applications/review-applications/find-applicant-by-applicantid'])?>"><i class="fa fa-circle-o"></i> By Applicant ID</a></li>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/applications/review-applications/find-applicant-by-name'])?>"><i class="fa fa-circle-o"></i> By Name</a></li>
+                                </ul>
+                             </li>
                         </ul>
                      </li>
                     <?php endif;?>

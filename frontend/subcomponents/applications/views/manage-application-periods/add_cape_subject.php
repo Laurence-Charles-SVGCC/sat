@@ -1,69 +1,60 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created 11/02/2016
- */
-
+use yii\widgets\Breadcrumbs;
     use yii\helpers\Url;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
     use yii\bootstrap\Modal;
     use yii\bootstrap\ActiveField;
     use dosamigos\datepicker\DatePicker;
-    
-    use frontend\models\Division;
-    use frontend\models\AcademicYear;
-    use yii\helpers\ArrayHelper;
-    use frontend\models\IntentType;
-    use frontend\models\ExaminationBody;
-    use frontend\models\QualificatinoType;
-    use frontend\models\Department;
-    
-    $this->title = 'Add CAPE Subject to Insitution Catalog';
+   
+    $this->title = 'Add CAPE Subject';
+    $this->params['breadcrumbs'][] = ['label' => 'Application Periods', 'url' => Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])];
+    $this->params['breadcrumbs'][] = ['label' => $period->name, 'url' => Url::toRoute(['/subcomponents/applications/manage-application-periods/view-application-period', 'id' => $period->applicationperiodid])];
+   
+    if ($id == NULL)
+    {
+         $this->params['breadcrumbs'][] = ['label' => 'Manage Programmes', 'url' => Url::toRoute(['/subcomponents/applications/manage-application-periods/period-setup-step-three'])];
+     }
+     else
+     {
+         $this->params['breadcrumbs'][] = ['label' => 'Manage Programmes', 'url' => Url::toRoute(['/subcomponents/applications/manage-application-periods/manage-programme-offerings', 'id' => $period->applicationperiodid])];
+     }
+//    $this->params['breadcrumbs'][] = ['label' => 'Manage Programmes', 'url' => Url::toRoute(['/subcomponents/applications/manage-application-periods/manage-programme-offerings', 'id' => $period->applicationperiodid])];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-index">
-    <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admissions Home">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/admissions.png" alt="admission-avatar">
-                <span class="custom_module_label">Welcome to the Admissions Management System</span> 
-                <img src ="css/dist/img/header_images/admissions.png" alt="admission-avatar" class="pull-right">
-            </a>    
-        </div>
-        
-        
-        <div class="custom_body">  
-            <h1 class="custom_h1">Add New CAPE Subject</h1>
-            
-            <br/>
-            <div style="width:70%; margin: 0 auto; font-size: 20px;">
-                <?php
-                    $form = ActiveForm::begin([
-                        'id' => 'add-cape-subject-form',
-                        'options' => [
-//                                            'class' => 'form-layout'
-                        ],
-                    ]);
+<section class="content-header">
+    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+</section><br/><br/>
 
-                        echo "<br/>";
-                        echo "<table class='table table-hover' style='width:100%; margin: 0 auto;'>";
-                            echo "<tr>";
-                                echo "<th style='width:30%; vertical-align:middle'>Name</th>";
-                                    echo "<td>{$form->field($subject, 'name')->label('', ['class'=> 'form-label'])->textInput(['maxlength' => true])}</td>";
-                            echo "</tr>";
-                        echo "</table>"; 
-
-                        echo "<br/>";
-                        echo Html::a(' Cancel',['admissions/period-setup-step-three'], ['class' => 'btn btn-block btn-lg btn-danger glyphicon glyphicon-remove-circle pull-left', 'style' => 'width:25%; margin-left:15%;']);
-                        echo Html::submitButton('Save', ['class' => 'btn btn-block btn-lg btn-success pull-right', 'style' => 'width:25%; margin-right:15%;']);        
-                    ActiveForm::end();    
-                ?>
-            </div>
-            
-        </div>
+<div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
+    <div class="box-header with-border">
+        <span class="box-title"><?= $this->title?></span>
     </div>
+
+     <?php $form = ActiveForm::begin();?>
+        <div class="box-body"> 
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for='name'>Name:</label>
+                <?= $form->field($subject, 'name')
+                        ->label('')
+                        ->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <span class = "pull-right">
+                <?= Html::submitButton(' Submit', ['class' => 'btn btn-success', 'style' => 'margin-right:20px']);?>
+                
+                <?php if ($id == NULL): ?>
+                    <?= Html::a(' Cancel',['manage-application-periods/period-setup-step-three'], ['class' => 'btn btn-danger']);?>
+                <?php else: ?>
+                    <?= Html::a(' Cancel',['manage-application-periods/manage-programme-offerings', 'id' => $period->applicationperiodid], ['class' => 'btn btn-danger']);?>
+                <?php endif;?>
+            </span>
+        </div>
+    <?php ActiveForm::end(); ?>
 </div>
+
 
 

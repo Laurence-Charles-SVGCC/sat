@@ -15,8 +15,8 @@ use frontend\models\ApplicantIntent;
  * @property boolean $iscurrent
  * @property string $startdate
  * @property string $enddate
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $isactive
+ * @property integer $isdeleted
  */
 class AcademicYear extends \yii\db\ActiveRecord
 {
@@ -35,8 +35,7 @@ class AcademicYear extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'startdate'], 'required'],
-            [['applicantintentid'], 'integer'],
-            [['iscurrent', 'isactive', 'isdeleted'], 'boolean'],
+            [['applicantintentid', 'iscurrent', 'isactive', 'isdeleted'], 'integer'],
             [['startdate', 'enddate'], 'safe'],
             [['title'], 'string', 'max' => 45]
         ];

@@ -354,6 +354,7 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     }
     
     
+    
     /**
      * Returns instances of programme booklets
      * 
@@ -392,6 +393,50 @@ class ProgrammeCatalog extends \yii\db\ActiveRecord
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /***************************************************************************************************************/
+    
+    
+    /**
+     * Returns the formal name of ProgrammeCatalog record
+     * 
+     * @return string
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_09_11
+     * Modified: 2017_09_11
+     */
+    public function getFormalProgrammeName()
+    {
+        $qualification_type = QualificationType::find()
+                                ->where(['qualificationtypeid' => $this->qualificationtypeid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one()->abbreviation;
+        $specialisation = $this->specialisation;
+
+        if ($this->programmecatalogid == 10)      //if CAPE
+        {
+            return  $this->name;
+        }
+        elseif($specialisation != false && $specialisation != NULL  && $specialisation != ""  && $specialisation != " " )
+        {
+            return $qualification_type . ". " . $this->name . " (" . $specialisation . ")";
+        }
+        else
+        {
+            return $qualification_type . ". " . $this->name;
+        }
+    }
     
     
 }

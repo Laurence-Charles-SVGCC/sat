@@ -23,8 +23,6 @@ function displayPeriodType()
         document.getElementById("application-period-exists-alert").style.display = "none";
         document.getElementById("new-year-options").style.display = "none";
         document.getElementById("buttons").style.display = "none";
-         
-         
     }
     else
     {

@@ -16,6 +16,7 @@ return [
     ],
     'as beforeRequest' => [
         'class' => 'frontend\components\CheckApplicationSettings',
+        'class' => 'frontend\components\CheckLoginStatus',
     ],
     'modules' => [
         'gridview' =>  [

@@ -11,12 +11,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods']);?>" title="View Application Periods">
-        <h1>Welcome to the Applications Module</h1>
-    </a>
-</div>
-
 <section class="content-header">
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
 </section><br/><br/>
@@ -36,6 +30,11 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title">Application Periods Listing</span>
+         <?php if ($unconfigured_period == true):?>
+            <a class="btn btn-warning pull-right" href=<?=Url::toRoute(['/subcomponents/applications/manage-application-periods/initiate-period', 'id' => $unconfigured_period->applicationperiodid]);?> role="button"> Complete-Period-Setup</a>
+        <?php else:?>
+            <a class="btn btn-success pull-right" href=<?=Url::toRoute(['/subcomponents/applications/manage-application-periods/initiate-period']);?> role="button"> Initiate-Period-Setup</a>
+        <?php endif;?>
      </div>
     
     <div class="box-body">
@@ -43,9 +42,14 @@
                 'dataProvider' => $period_details_data_provider,
                 'columns' => [
                     [
-                        'attribute' => 'name',
-                        'format' => 'text',
-                        'label' => 'Name'
+                        'label' => 'Name',
+                        'format' => 'html',
+                        'value' => function($row)
+                         {
+                            return Html::a($row['name'], 
+                                ['manage-application-periods/view-application-period', 
+                                    'id' => $row["id"]]);
+                         }
                     ],
                     [
                         'attribute' => 'year',
@@ -70,7 +74,7 @@
                     [
                         'attribute' => 'iscomplete',
                         'format' => 'text',
-                        'label' => 'Visibility'
+                        'label' => 'Applicant Visibility'
                     ],
                     [
                         'attribute' => 'offsitestartdate',
@@ -83,47 +87,21 @@
                         'label' => 'End Date'
                     ],
                     [
-                        'attribute' => 'created_by',
-                        'format' => 'text',
-                        'label' => 'Creator'
-                    ],
-                    [
-                        'label' => 'Edit',
-                        'format' => 'html',
-                        'value' => function($row)
-                         {
-                               if(Yii::$app->user->can('admissions'))
-                                {
-                                    return Html::a(' Edit', 
-                                                        ['application-period/edit-application-period', 'recordid' => $row["id"]], 
-                                                        ['class' => 'btn btn-info']);
-                                }
-                                else
-                                {
-                                    return "N/A";
-                                }
-                         }
-                    ],
-                    [
                         'label' => 'Delete',
                         'format' => 'html',
                         'value' => function($row)
                          {
-                                if(Yii::$app->user->can('admissions')  && ApplicationPeriod::canSafeToDelete($row['id']) == true)
-                                {
-                                    return Html::a(' Delete', 
-                                ['application-period/delete-application-period', 'recordid' => $row["id"]], 
-                                                        ['class' => 'btn btn-danger',
-                                                            'data' => [
-                                                                'confirm' => 'Are you sure you want to delete this item?',
-                                                                'method' => 'post',
-                                                            ],
-                                                        ]);
-                                }
-                                else
-                                {
-                                    return "N/A";
-                                }
+                            if (ApplicationPeriod::eligibleToDelete($row['id']) == true)
+                            {
+                                return Html::a(' Delete', 
+                                        ['applications/manage-application-periods', 'recordid' => $row["id"]], 
+                                        ['class' => 'btn btn-danger',
+                                            'data' => ['confirm' => 'Are you sure you want to delete this item?', 'method' => 'post',]]);
+                            }
+                            else
+                            {
+                                return "N/A";
+                            }
                          }
                     ],
                 ],

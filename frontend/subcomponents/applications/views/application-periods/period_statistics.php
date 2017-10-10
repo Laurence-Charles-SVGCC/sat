@@ -10,23 +10,24 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-period-statistics']);?>" title="View Application Period Statistics">
-        <h1>Welcome to the Applications Module</h1>
-    </a>
-</div>
-
-<div class="alert alert-info" style = "font-size:1.1em">
-    The following presents application statistics for each application period. <br/>
-    <strong>Please Note:</strong>  If you wish to view the applicant listing which relates to the particular statistic, 
-    simple click on the figure of interest.
-</div>
-
 <section class="content-header">
     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
 </section><br/><br/>
 
+<div class="alert alert-info" style = "font-size:1.1em">
+    The following presents application statistics for each application period. <br/>
+    If you wish to view the applicant listing which relates to the particular statistic, 
+    simple click on the figure of interest.<br/>
+    <strong>Category Key:</strong>  
+    <ul>
+        <li>Commenced = Email has been verified and applicant account created.</li>
+        <li>Completed = Applicants that submitted applications.</li>
+        <li>Incomplete = Applicants that have not submitted applications.</li>
+        <li>Removed = Applications that have been removed.</li>
+        <li>Verified = Applicants whose qualifications have been verified.</li>
+        <li>Verification Incomplete = Applicants whose qualifications have been verified.</li>
+    </ul>
+</div>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
@@ -66,23 +67,6 @@
                         }
                     ],
                     [
-                        'label' => 'Completed',
-                        'format' => 'html',
-                        'value' => function($row)
-                        {
-                            if ($row['total_number_of_applications_completed'] > 0)
-                            {
-                                return Html::a($row['total_number_of_applications_completed'], 
-                                                        ['application-period-statistics/download-completed-applications-report', 'academicyearid' => $row["academicyearid"]], 
-                                                        ['title' => 'Click to download']);
-                            }
-                            else
-                            {
-                                return $row['total_number_of_applications_completed'];
-                            }
-                        }
-                    ],
-                    [
                         'label' => 'Incomplete',
                         'format' => 'html',
                         'value' => function($row)
@@ -96,6 +80,23 @@
                             else
                             {
                                 return $row['total_number_of_applications_incomplete'];
+                            }
+                        }
+                    ],
+                    [
+                        'label' => 'Completed',
+                        'format' => 'html',
+                        'value' => function($row)
+                        {
+                            if ($row['total_number_of_applications_completed'] > 0)
+                            {
+                                return Html::a($row['total_number_of_applications_completed'], 
+                                                        ['application-period-statistics/download-completed-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['title' => 'Click to download']);
+                            }
+                            else
+                            {
+                                return $row['total_number_of_applications_completed'];
                             }
                         }
                     ],
@@ -122,7 +123,7 @@
                         }
                     ],
                     [
-                        'label' =>'Verification Pending',
+                        'label' =>'Verification Incomplete',
                          'format' => 'html',
                         'value' => function($row)
                         {

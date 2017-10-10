@@ -1086,6 +1086,34 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+    
+    /**
+     * Determines if application is currently considered a "Abandoned"
+     * 
+     * @param type integer $personid
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_10_05
+     * Modified: 2017_10_05
+     */
+    public static function isAbandoned($personid)
+    {
+        $applications = Application::find()
+                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->orderBy('ordering ASC')
+                    ->all();
+        foreach($applications as $application)
+        {
+            if ($application->applicationstatusid == 11)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
     /**
      * Retrieves applicants based on the current application status 
      * 
@@ -2898,6 +2926,7 @@ class Applicant extends \yii\db\ActiveRecord
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->where($cond)
                         ->groupBy('applicant.personid')
+                        ->orderBy('applicant.lastname ASC')
                         ->all();
         return $applicants;
     }

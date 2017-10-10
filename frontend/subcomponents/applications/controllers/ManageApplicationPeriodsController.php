@@ -1,1163 +1,1230 @@
 <?php
-
     namespace app\subcomponents\applications\controllers;
 
     use Yii;
     use yii\web\Controller;
     use yii\base\Model;
-    use yii\data\ArrayDataProvider;
-    use yii\helpers\Json;
     
-    use common\models\User;
+    use yii\custom\UnauthorizedAccessException;
     use frontend\models\ApplicationPeriod;
-    
-    
-    
     use frontend\models\AcademicYear;
-    use frontend\models\ProgrammeCatalog;
-    use frontend\models\CapeSubject;
-    use frontend\models\Subject;
-    use frontend\models\CapeGroup;
-    use frontend\models\CapeSubjectGroup;
-    use frontend\models\AcademicOffering;
-    use frontend\models\EmployeeDepartment;
-    use frontend\models\Email;
-    use frontend\models\Applicant;
-    use frontend\models\Offer;
-    use frontend\models\StudentRegistration;
-    use frontend\models\Application;
-    use frontend\models\ApplicationCapesubject;
+    use frontend\models\Division;
+    use frontend\models\Employee;
     use frontend\models\ApplicationPeriodType;
     use frontend\models\ApplicationperiodStatus;
-    use frontend\models\Division;
+    
+    use frontend\models\ProgrammeCatalog;
+    use frontend\models\AcademicOffering;
+     use frontend\models\CapeGroup;
+    use frontend\models\CapeSubjectGroup;
+    use frontend\models\CapeSubject;
+    use frontend\models\Subject;
+    use frontend\models\IntentType;
+    use frontend\models\ExaminationBody;
+    use frontend\models\QualificationType;
+    use frontend\models\Department;
     use frontend\models\ApplicantIntent;
-    use frontend\models\Employee;
-
-class ManageApplicationPeriodsController extends Controller
-{
-
-    public function actionIndex()
+    
+    class ManageApplicationPeriodsController extends Controller
     {
-        return $this->render('index');
-    }
-    
-    
-    /**
-     * Renders the Application Period Summary view
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 21/08/2017
-     * Date Last Modified: 21/08/2017
-     */
-    public function actionPeriods()
-    {
-        $period_details_data_provider = ApplicationPeriod::generateApplicaitonPeriodListing() ;
-        $period_stats_data_provider = ApplicationPeriod::generateApplicaitonPeriodStatistics() ;
-              
-        return $this->render('periods', [ 'period_details_data_provider' => $period_details_data_provider ]);
-    }
-    
-    
-     /**
-     * Renders the Application Period Statistics
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 21/08/2017
-     * Date Last Modified: 21/08/2017
-     */
-    public function actionPeriodStatistics()
-    {
-        $period_stats_data_provider = ApplicationPeriod::generateApplicaitonPeriodStatistics() ;
-              
-        return $this->render('period_statistics', [ 'period_stats_data_provider' => $period_stats_data_provider]);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * Renders the Application Period Setup Dashboard view
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 10/02/2016
-     * Date Last Modified: 10/02/2016
-     */
-    public function actionInitiatePeriod($recordid = NULL)
-    {
-        if ($recordid == NULL)      //if no outstanding application period session exists for user
+        /**
+         * Renders details and programme listing of an application period
+         * 
+         * @param Integer $id
+         * @return view 'view_application_period'
+         * @throws UnauthorizedAccessException
+         * 
+         *  Author: charles.laurence1@gmail.com
+         *  Created: 2017_09_07
+         *  Modified: 2017_10_09
+         */
+        public function actionViewApplicationPeriod($id)
         {
-            $save_flag = false;
-            $personid = Yii::$app->user->identity->personid;
-            $period = new ApplicationPeriod();
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
             
-            $period->applicationperiodtypeid = 1;
-            $period->applicationperiodstatusid = 1;
-            $period->divisionid = 4;
-            $period->personid = $personid;
-            $period->academicyearid = 4;
-            $period->name = strval(date('Y'));
-            $period->onsitestartdate = date('Y-m-d');
-            $period->onsiteenddate = date('Y-m-d');
-            $period->offsitestartdate = date('Y-m-d');
-            $period->offsiteenddate =  date('Y-m-d');
-            $period->isactive = 1;
-            $period->isdeleted = 1;
-
-            $save_flag = $period->save();
-            if ($save_flag == false)
-            {
-                Yii::$app->getSession()->setFlash('error', 'Error occured when initiating application period record. Please try again.');
-                return $this->redirect(['manage-application-period']);
-            }
-        }
-        else            //if outstanding application period session exists for user
-        {
-            $period = ApplicationPeriod::find()
-                    ->where(['applicationperiodid' => $recordid])
-                    ->one();
-            if ($period == false)
-            {
-                Yii::$app->getSession()->setFlash('error', 'Error occured when retreiving outstanding application period record. Please try again.');
-                return $this->redirect(['manage-application-period']);
-            }
+            $application_period =  ApplicationPeriod::getApplicationPeriod($id);
+            
+            $programmes = $application_period->prepareAcademicOfferingsSummary();
+            
+            $cape_offerings =  $application_period-> prepareCapeOfferingSummary();
+            
+            
+            return $this->render('view_application_period', [
+                'id' => $application_period->applicationperiodid,
+                'iscomplete' => $application_period->iscomplete,
+                'applicationperiodstatusid' => $application_period->applicationperiodstatusid,
+                'academic_year' => AcademicYear::find()->where(['academicyearid' => $application_period->academicyearid])->one()->title,
+                'division' => Division::find()->where(['divisionid' => $application_period->divisionid])->one()->name,
+                'creator' => Employee::getEmployeeName($application_period->personid),
+                'name' => $application_period->name,
+                'onsitestartdate' => date_format(date_create($application_period->onsiteenddate), "d/m/Y"),
+                'onsiteenddate' => date_format(date_create($application_period->onsiteenddate), "d/m/Y"),
+                'offsitestartdate' => date_format(date_create($application_period->offsitestartdate), "d/m/Y"),
+                'offsiteenddate' => date_format(date_create($application_period->offsiteenddate), "d/m/Y"),
+                'period_type' => ApplicationPeriodType::find()->where(['applicationperiodtypeid' => $application_period->applicationperiodtypeid])->one()->name,
+                 'period_status' => ApplicationPeriodStatus::find()->where(['applicationperiodstatusid' => $application_period->applicationperiodstatusid])->one()->name,
+                'applicant_visibility' => $application_period->iscomplete == 1 ? "Excluded" : "Visible",
+                'programmes' => $programmes,
+                'cape_offerings' => $cape_offerings]);
         }
         
-        return $this->render('period_setup_dashobard', [
+        
+        /**
+         * Updates an ApplicationPeriod record
+         * 
+         * @param Integer $id
+         * @return view 'edit_application_period'
+         * @throws UnauthorizedAccessException
+         * 
+         * Author: charles.laurence1@gmail.com
+         *  Created: 2017_09_11
+         *  Modified: 2017_10_09
+         */
+        public function actionEditApplicationPeriod($id)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $period = ApplicationPeriod::getApplicationPeriod($id);
+            $applicantintentid = $period->getApplicantIntent();
+            $divisions = Division::find()
+                    ->where(['divisionid' => [4,5,6,7], 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
+            $academic_years = AcademicYear::find()
+                    ->where(['applicantintentid' => $applicantintentid, 'isactive' => 1 , 'isdeleted' => 0])
+                    ->all();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                if($period->load($post_data) == true)
+                {
+                    $period->personid = Yii::$app->user->identity->personid;
+                    if($period->save() == true)
+                    {
+                        return $this->redirect(['manage-application-periods/view-application-period', 'id' => $id]);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record.');     
+                }
+            }
+
+            return $this->render('edit_application_period',[
                 'period' => $period,
-            ]);
-    }
-    
-    
-    /**
-     * Renders the Application Period Setup Year Verification view
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 10/02/2016
-     * Date Last Modified: 10/02/2016
-     */
-    public function actionPeriodSetupStepOne()
-    {
-        $period_save_flag = false;
-        $year_save_flag = false;
+                'divisions' => $divisions,
+                'academic_years' => $academic_years]);
+        }
         
-        $new_year = new AcademicYear();
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $period->divisionid = NULL;
-        $period->applicationperiodtypeid = NULL;
-       
-        if ($post_data = Yii::$app->request->post())
+        
+        /**
+         * Update programme_listing and cape_subject listing
+         * 
+         * @param Integer $id
+         * @return view 'manage_programme_offerings'
+         * @throws UnauthorizedAccessException
+         * 
+         * Author: charles.laurence1@gmail.com
+         *  Created: 2017_09_12
+         *  Modified: 2017_10_09
+         */
+        public function actionManageProgrammeOfferings($id)
         {
-            $period = ApplicationPeriod::getIncompletePeriod();
-            
-            $period_load_flag = $period->load($post_data);
-            $year_load_flag = $new_year->load($post_data);
-            
-            if($period_load_flag == true  && $year_load_flag == true)
+            if (Yii::$app->user->can('System Administrator') == false)
             {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $operation_successful = true;
+            $period = ApplicationPeriod::getApplicationPeriod($id);
+            
+            /********************************     Process Associate Degree Programmes    **************************************/
+            
+            $offerings_result_set = $period->prepareAcademicOfferings();
+            $programmes = $offerings_result_set[0];
+            $programme_count = count($programmes);
+            $offering_copy = $offerings_result_set[1];
+            $offerings = $offerings_result_set[2];
+            
+           /****************************************     Process CAPE Subjects    *******************************************/
+            
+            $subjects = array();
+            $cape_result_set = $period->prepareCapeOfferings();
+            $subjects = $cape_result_set[0];
+            $subject_count = count($subjects);
+            $group_copy = $cape_result_set[1];
+            $cape_offering_copy = $cape_result_set[2];
+            $cape_subjects_copy = $cape_result_set[3];
+            $cape_subjects = $cape_result_set[4];
+            $subject_groups = $cape_result_set[5];
+
+            /************************************************************************************************/
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                //period flags
+                $period_save_flag = false;
+
+                //academic offering flags
+                $offerings_load_flag = false;
+                $offering_save_flag = false;
+
+                //cape subject flags
+                $subjects_load_flag = false;
+                $subject_save_flag = false;
+
+                //cape-subject-group flags
+                $groups_load_flag = false;
+                $groups_save_flag = false;
+
+                $offerings_load_flag = Model::loadMultiple($offerings, $post_data);
+
+                if($period->divisionid == 4)
+                {
+                    $subjects_load_flag = Model::loadMultiple($cape_subjects, $post_data);
+                    $groups_load_flag = Model::loadMultiple($subject_groups, $post_data);
+                }
+                else
+                {
+                    $subjects_load_flag = true;
+                    $groups_load_flag = true;
+                }
+
+                if($offerings_load_flag == true  &&  $subjects_load_flag == true  &&  $groups_load_flag == true)
+                {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try 
+                    {
+                        if($saved_offerings == true)    //if previous offering exists in database
+                        {
+                            AcademicOffering::deleteAll(['and', 'applicationperiodid = ' . $period->applicationperiodid, 'programmecatalogid != 10']);
+                        }
+
+                        $index = 0;
+                        foreach ($offerings as $offering) 
+                        {
+                            //Checkbox for this programme is ticked
+                            if ($offering->programmecatalogid != false)
+                            {
+                                $none_cape_check = true;
+
+                                //Checkbox for this programme is ticked
+                                $ao_model = new AcademicOffering();
+                                $ao_model->programmecatalogid = $programmes[$index]->programmecatalogid;
+                                $ao_model->academicyearid = $period->academicyearid;
+                                $ao_model->applicationperiodid = $period->applicationperiodid;
+                                $ao_model->spaces = $offering->spaces;
+                                $ao_model->interviewneeded = $offering->interviewneeded;
+                                $offering_save_flag = $ao_model->save();
+                                if($offering_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    if($saved_offerings == true)    //if previous offering exist in database
+                                    {
+                                        AcademicOffering::restore($offering_copy);
+                                    }
+                                    Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
+                                    $operation_successful = false;
+                                }
+                            }
+                            $index++;
+                        }
+
+                        $cape_model = NULL;
+                        $cape_selected = false;
+
+                        if($period->divisionid == 4)
+                        {
+                            foreach ($cape_subjects as $cape_subject)
+                            {
+                                //if checkbox is 'checked'
+                                if ($cape_subject->subjectname != false)
+                                {
+                                    $cape_check = true;
+                                    $cape_selected = true;
+
+                                    if ($saved_cape_offering == false)  //if no CAPE academic-offering exists it must be created
+                                    {
+                                        $cape_model = new AcademicOffering();
+                                        $cape_model->programmecatalogid = 10;
+                                        $cape_model->academicyearid = $period->academicyearid;
+                                        $cape_model->applicationperiodid = $period->applicationperiodid;
+                                        $cape_model->spaces = NULL;
+                                        $cape_model->interviewneeded = 0;
+                                        $save_flag = $cape_model->save();
+                                        if($save_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            if($saved_offerings == true)    //if previous offering exist in database
+                                            {
+                                                AcademicOffering::restore($offering_copy);
+                                            }
+                                            Yii::$app->getSession()->setFlash('error', 'CAPE Academic Offering was not saved.');
+                                            $operation_successful = false;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                        if($cape_selected == false)      //if CAPE academic offering is not under selection
+                        {
+                            if ($saved_cape_offering == true  && $saved_cape_subjects == true  && $saved_subject_groups == true)       //if previous CAPE offering exists
+                            {
+                                $groups_candidates = CapeSubjectGroup::getAssociatedCapeGroups($period->applicationperiodid);
+                                CapeSubjectGroup::deleteGroups($groups_candidates);
+                                CapeSubject::deleteAll(['academicofferingid' => $saved_cape_offering->academicofferingid]);
+                                AcademicOffering::deleteAll(['applicationperiodid' => $period->applicationperiodid, 'programmecatalogid' => 10]);
+                            }
+                        }
+                        else    //if CAPE academic offering is present selection
+                        {
+                            if ($saved_cape_offering == true)
+                            {
+                                $groups_candidates = CapeSubjectGroup::getAssociatedCapeGroups($period->applicationperiodid);
+                                CapeSubjectGroup::deleteGroups($groups_candidates);
+                                CapeSubject::deleteAll(['academicofferingid' => $saved_cape_offering->academicofferingid]);
+                            }
+
+                            $counter = 0;
+                            foreach ($cape_subjects as $cape_subject) 
+                            {
+                                //Checkbox for this cape_subject is ticked
+                                if ($cape_subject->subjectname != false)
+                                {
+                                    $c_model = new CapeSubject();
+                                    $c_model->cordinatorid = NULL;
+
+                                    if ($saved_cape_offering == true)
+                                        $c_model->academicofferingid = $saved_cape_offering->academicofferingid;
+                                    else
+                                        $c_model->academicofferingid = $cape_model->academicofferingid;
+
+                                    $c_model->subjectname = $subjects[$counter]["name"];
+                                    $c_model->unitcount = $cape_subject->unitcount;
+                                    $c_model->capacity = $cape_subject->capacity;
+                                    $subjects_save_flag = $c_model->save();
+                                    if($subjects_save_flag == false)        ///if save has failed
+                                    {
+                                        $transaction->rollBack();
+                                        if($saved_cape_subjects == true)    //if previous offering exist in database
+                                        {
+                                            CapeSubject::restore($cape_subjects_copy);
+                                        }
+                                        if($saved_offerings == true)    //if previous offering exist in database
+                                        {
+                                            AcademicOffering::restore($offering_copy);
+                                        }
+                                        Yii::$app->getSession()->setFlash('error', 'Cape subjects was not saved.');
+                                        $operation_successful = false;
+                                    }
+                                    else        //if save is successful create associated groups
+                                    {
+                                        $group_flag = false;
+                                        $g_model = new CapeSubjectGroup();
+                                        $g_model->capesubjectid = $c_model->capesubjectid;
+                                        $g_model->capegroupid = $subject_groups[$counter]->capegroupid;
+                                        $group_flag = $g_model->save();
+                                        if($group_flag == false)        ///if save has failed
+                                        {
+                                            $transaction->rollBack();
+                                            if($saved_subject_groups == true)
+                                                CapeSubjectGroup::restore($groups_copy);
+
+                                            if($saved_cape_subjects == true)    //if previous offering exist in database
+                                                CapeSubject::restore($cape_subjects_copy);
+
+                                            if($saved_offerings == true)    //if previous offering exist in database
+                                                AcademicOffering::restore($offering_copy);
+                                            Yii::$app->getSession()->setFlash('error', 'Cape subjects was not saved.');
+                                            $operation_successful = false;
+                                        }
+                                    }
+                                }
+                                $counter++;
+                            }
+                        }
+
+                        //update application period record accordingly
+                        if($cape_check == false && $none_cape_check == false)
+                            $period->applicationperiodstatusid = 3;
+
+                        elseif($cape_check == true || $none_cape_check == true)
+                            $period->applicationperiodstatusid = 4;
+
+                        $period_save_flag = $period->save();
+                        if ($period_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            if($saved_offerings == true)    //if previous offering exist in database
+                            {
+                                AcademicOffering::restore($offering_copy);
+                            }
+                            if($saved_offerings == true)    //if previous offering exist in database
+                            {
+                                AcademicOffering::restore($offering_copy);
+                            }
+                            Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
+                            $operation_successful = false;
+                        }
+
+                        if ($operation_successful == true)
+                        {
+                            $transaction->commit();
+                            return $this->redirect(['view-application-period', 'id' => $period->applicationperiodid]);
+                        }
+
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error loading records.');
+                }
+            }
+
+            $offerings_limit = ($programme_count > $subject_count)? $programme_count : $subject_count ;
+             
+            return $this->render('manage_programme_offerings', [
+                'period' => $period,
+                'programmes' => $programmes,
+                'programme_count' => count($programmes),
+                'subjects' => $subjects,
+                'subject_count' => count($subjects),
+                'offerings_limit' => $offerings_limit,
+                'offerings' => $offerings,
+                'cape_subjects' => $cape_subjects,
+                'subject_groups' => $subject_groups]);
+        }
+        
+        
+        /**
+         * Adds new ProgrammeCatalog record
+         * 
+         * @param Integer $id
+         * @return view 'add_programme'
+         * 
+         * Author: charles.laurence1@gmail.com
+         *  Created: 2017_09_12
+         *  Modified: 2017_10_09
+         */
+        public function actionAddProgrammeToCatalog($id = NULL)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            if ($id == NULL)
+            {
+                $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            }
+            else
+            {
+                 $period = ApplicationPeriod::getApplicationPeriod($id);
+            }
+            
+            $programme = new ProgrammeCatalog();
+            
+            $duration = [
+                '' => 'Select Duration', 
+                1 => '1 Year', 
+                2 => '2 Years'];
+            
+            $intent_types = IntentType::find()->all();
+            $qualification_types = QualificationType::find()->all();
+            $examination_bodies = ExaminationBody::find()->all();
+            $departments = Department::find()
+                    ->where(['not', ['like', 'name', 'Administrative']])
+                    ->andWhere(['not', ['like', 'name', 'Library']])
+                    ->andWhere(['not', ['like', 'name', 'Senior']])
+                    ->andWhere(['not', ['like', 'name', 'CAPE']])
+                    ->all();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                if ($programme->load($post_data) == true)
+                { 
+                    $programme->creationdate = date('Y-m-d');
+                    $save_flag = $programme->save();
+                    if ($programme->save() == true)
+                    {
+                        if ($id == NULL)
+                        {
+                            return $this->redirect(['period-setup-step-three']);
+                        }
+                        else
+                        {
+                             return $this->redirect(['manage-programme-offerings',  'id' => $period->applicationperiodid]);
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update programme record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load programme record.');              
+                }
+            }
+
+            return $this->render('add_programme', [
+                'period' => $period,
+                'programme' => $programme,
+                'duration' => $duration,
+                'intent_types' => $intent_types,
+                'qualification_types' => $qualification_types,
+                'examination_bodies' => $examination_bodies,
+                'departments' => $departments,
+                'id' => $id]);
+        }
+
+        
+        /**
+         * Adds new Subject record
+         * 
+         * @param Integer $id
+         * @return view 'add_cape_subject'
+         * 
+         * Author: charles.laurence1@gmail.com
+         *  Created: 2017_09_12
+         *  Modified: 2017_10_09
+         */
+        public function actionAddCapeSubject($id = NULL)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            if ($id == NULL)
+            {
+                $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            }
+            else
+            {
+                 $period = ApplicationPeriod::getApplicationPeriod($id);
+            }
+           
+            $subject = new Subject();
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                if ($subject->load($post_data) == true)
+                { 
+                    $subject->examinationbodyid = 2;
+                    if ($subject->save() == true)
+                    { 
+                        if ($id == NULL)
+                        {
+                            return $this->redirect(['period-setup-step-three']);
+                        }
+                        else
+                        {
+                             return $this->redirect(['manage-programme-offerings',  'id' => $period->applicationperiodid]);
+                        }
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update CAPE record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load CAPE record.');
+                }
+            }
+
+            return $this->render('add_cape_subject', [
+                'subject' => $subject,
+                'period' => $period,
+                'id' => $id]);
+        }
+        
+        
+        /**
+         * Renders the Application Period Setup Dashboard view
+         * 
+         * @param Integer $recordid
+         * @return view 'period_setup_dashobard'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_02_10
+         * Modified: 2017_10_09
+         */
+        public function actionInitiatePeriod($id = NULL)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            // if initializing new application period
+            if ($id == NULL)      
+            {
+                $period = ApplicationPeriod::createDefaultApplicationPeriod();
+                if ($period  == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when initiating application period record.');
+                    return $this->redirect(['application-periods/view-periods']);
+                }
+            }
+            // if continuing the configuration of application period
+            else            
+            {
+                $period = ApplicationPeriod::find()
+                        ->where(['applicationperiodid' => $id])
+                        ->one();
+                if ($period == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when retreiving outstanding application period record.');
+                    return $this->redirect(['application-periods/view-periods']);
+                }
+            }
+
+            return $this->render('period_setup_dashobard', [
+                'period' => $period,
+                'cape_offering_selected' => AcademicOffering::hasCapeOffering($period->applicationperiodid)]);
+        }
+        
+        
+        /**
+         * Renders the Application Period Setup Year Verification view
+         * 
+         * @return view 'period_setup_step_one'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_02_10
+         * Modified: 2017_10_09
+         */
+        public function actionPeriodSetupStepOne($divisionid = NULL, $applicationperiodtypeid = NULL)
+        {
+            $new_year = new AcademicYear();
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            $result_set = array();
+            
+            if ($divisionid !=NULL && $applicationperiodtypeid != NULL)
+            {
+                $result_set = ApplicationPeriod::processApplicantIntentid($divisionid, $applicationperiodtypeid);
+            }
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $operation_successful = true;
+                $academic_year_exists = NULL;
+                $application_period_exists = NULL;
+            
+                $request = Yii::$app->request;
+                $submitted_divisionid = $request->post('divisionid');
+                $submitted_applicationperiodtypeid = $request->post('applicationperiodtypeid');
+                
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-//                    if($new_year->title == true  &&  $new_year->title!= "default" && $new_year->startdate == true  && $new_year->enddate == true)    //if new year record creation was necessary
-                    if($new_year->title!= "default")    //if new year record creation was necessary
+                    if ($divisionid == true && $applicationperiodtypeid == true)
                     {
-                        $applicantintentid = ApplicantIntent::getApplicantIntent($period->divisionid, $period->applicationperiodtypeid);
-                        $new_year->applicantintentid =  $applicantintentid; 
-                        $new_year->iscurrent = 1;
-                        $year_save_flag = $new_year->save();
-                        if (!$year_save_flag)
+                        $academic_year_exists = $request->post('academic_year_exists'); 
+                        $application_period_exists = $request->post('application_period_exists');
+
+                        // if academic year record needed to be initialized
+                        if ($academic_year_exists == 0 && $application_period_exists == 0)
                         {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error occured saving new academic year.');
-                            return self::actionInitiatePeriod($period->applicationperiodid);
+                            if($new_year->load($post_data) == true)
+                            {
+                                $applicantintentid = ApplicantIntent::getApplicantIntent($divisionid, $applicationperiodtypeid);
+                                $new_year->applicantintentid =  $applicantintentid; 
+                                $new_year->iscurrent = 1;
+                                $year_save_flag = $new_year->save();
+                                if ($new_year->save() == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured saving new academic year.');
+                                    $operation_successful = false;
+                                }
+                                else
+                                {
+                                    $period->divisionid = $submitted_divisionid;
+                                    $period->applicationperiodtypeid = $submitted_applicationperiodtypeid;
+                                    $period->academicyearid = $new_year->academicyearid;
+                                    $period->applicationperiodstatusid = 2;
+                                    if ($period->save() == false)
+                                    {
+                                        $transaction->rollBack();
+                                        Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                                        $operation_successful = false;
+                                    }
+                                    
+                                    if ($operation_successful == true)
+                                    {
+                                        $transaction->commit();
+                                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load records.');  
+                            }
                         }
-                    }
-                    else        //only executes when DASGS  OR DTVE full time application period is is being creatd and its counterpart already exists
-                    {
-                        $new_year = AcademicYear::find()
-                                ->where(['applicantintentid' => 1,  'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
-                                ->one();
-                    }
-                    
-                    $period->academicyearid = $new_year->academicyearid;
-                    $period->applicationperiodstatusid = 2;
-                    $period_save_flag = $period->save();
-                    if (!$period_save_flag)
-                    {
-                        $transaction->rollBack();
-                        Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
-                        return self::actionInitiatePeriod($period->applicationperiodid);
-                    }
-                     
-                    $transaction->commit();
-                    return self::actionInitiatePeriod($period->applicationperiodid);
+                        else        //only executes when DASGS  OR DTVE full time application period is is being creatd and its counterpart already exists
+                        {
+                            $new_year = AcademicYear::find()
+                                    ->where(['applicantintentid' => 1,  'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->one();
                             
+                            $period->divisionid = $submitted_divisionid;
+                            $period->applicationperiodtypeid = $submitted_applicationperiodtypeid;
+                            $period->academicyearid = $new_year->academicyearid;
+                            $period->applicationperiodstatusid = 2;
+                            if ($period->save() == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                                $operation_successful = false;
+                            }
+                            
+                            if ($operation_successful == true)
+                            {
+                                $transaction->commit();
+                                return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                            }
+                        }
+                   } 
+                }catch (Exception $ex) {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
+                }
+            }
+
+            return $this->render('period_setup_step_one', [
+                'new_year' => $new_year,
+                'period' => $period,
+                'divisionid' => $divisionid,
+                'applicationperiodtypeid' => $applicationperiodtypeid,
+                'result_set' => $result_set]);
+        }
+        
+        
+        /**
+         * Renders the Application Period Setup view
+         * 
+         * @return view 'period_setup_step_two'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_02_10
+         * Modified: 2017_10_09
+         */
+        public function actionPeriodSetupStepTwo()
+        {
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            $divisions = Division::find()
+                    ->where(['abbreviation' => ["DASGS", "DTVE", "DTE", "DNE"]])
+                    ->all();
+            $academic_years = AcademicYear::getAllAcademicYears();
+            $application_period_types = ApplicationPeriodType::find()->all();
+            
+            $template_period = new ApplicationPeriod();
+            $template_period->divisionid = $period->divisionid;
+            $template_period->academicyearid = $period->academicyearid;
+            $template_period->applicationperiodtypeid = $period->applicationperiodtypeid;
+
+            if ($post_data = Yii::$app->request->post())
+            {
+                $load_flag = false;
+                $save_flag = false;
+                $template_period = new ApplicationPeriod();
+
+                if($template_period->load($post_data) == true)
+                { 
+                    $period->applicationperiodtypeid = $template_period->applicationperiodtypeid;
+                    $period->applicationperiodstatusid = 3;
+                    $period->divisionid = $template_period->divisionid;
+                    $period->academicyearid = $template_period->academicyearid;
+                    $period->name = $template_period->name;
+                    $period->onsitestartdate = $template_period->onsitestartdate;
+                    $period->onsiteenddate = $template_period->onsiteenddate;
+                    $period->offsitestartdate = $template_period->offsitestartdate;
+                    $period->offsiteenddate =  $template_period->offsiteenddate;
+                    if($period->save() == true)
+                    {
+                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record.');
+                    }
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record.');              
+                }
+            }
+
+            if ($period->applicationperiodstatusid > 2)
+            {
+                return $this->render('period_setup_step_two', [
+                    'template_period' => $period,
+                    'period' => $period,
+                    'divisions' => $divisions,
+                    'academic_years' => $academic_years,
+                    'application_period_types' => $application_period_types]);
+            }
+            else
+            {
+                return $this->render('period_setup_step_two', [
+                    'template_period' => $template_period,
+                    'period' => $period,
+                    'divisions' => $divisions,
+                    'academic_years' => $academic_years,
+                    'application_period_types' => $application_period_types]);
+            }
+        }
+        
+        
+         /**
+         * Renders the Programme Catalog Approval view
+         * 
+         * @return view 'period_setup_step_three'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_02_10
+         * Modified: 2017_10_09
+         */
+        public function actionPeriodSetupStepThree($approve = NULL)
+        {
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            
+            if($approve  == true)
+            {
+                $feedback = $period->toggleProgrammeCatalogApproval("approve");
+                if ($feedback == true)
+                {
+                    return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                }
+                else
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured approving programme catalog.');        
+                }
+            }
+            else
+            {
+                $feedback = $period->toggleProgrammeCatalogApproval("reset");
+                $programmes = NULL;
+                $subjects = NULL;
+
+                $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
+
+                if ($period->divisionid == 4)
+                {
+                    $subjects = Subject::findAll(['examinationbodyid' => 2, 'isactive' => 1, 'isdeleted' => 0]);
+                }
+            }
+            
+             return $this->render('period_setup_step_three', [
+                'period' => $period,
+                'programmes' => $programmes,
+                'subjects' => $subjects]);
+        }
+        
+        
+        /**
+         * Renders the Assign Programmes view
+         * 
+         * @return view 'period_setup_step_four' view
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_09_27
+         * Modified: 2017_10_09
+         */
+        public function actionPeriodSetupStepFour()
+        {
+             if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            $programmes = $period->getAvailableProgrammes();
+            $offerings = $period->processProgrammes($programmes);
+            
+            if ($post_data = Yii::$app->request->post())
+            {
+                $error_occurred = false;
+                $cape_offering_exists = false;
+                $offerings_exist = false;
+                $user_input_feedback = Model::loadMultiple($offerings, $post_data);
+
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
+                {
+                    $index = 0;
+                    foreach ($offerings as $offering) 
+                    {
+                        $existing_offer = $period->getAcadmeicOffering($programmes[$index]["programmecatalogid"]);
+                        
+                        // if input checkbox is selected
+                        if ($offering->isactive != false)
+                        {
+                             $offerings_exist = true;
+                             
+                             if ($programmes[$index]["programmecatalogid"] == 10)
+                            {
+                                $cape_offering_exists = true;
+                            }
+                            
+                            // if academic offering does not already exist, it is created
+                            if ($existing_offer == false)
+                            {
+                                $new_offering = new AcademicOffering();
+                                $new_offering->programmecatalogid = $programmes[$index]["programmecatalogid"];
+                                $new_offering->academicyearid = $period->academicyearid;
+                                $new_offering->applicationperiodid = $period->applicationperiodid;
+                                $new_offering->spaces = $offering->spaces;
+                                $new_offering->interviewneeded = $offering->interviewneeded;
+                                $new_offering->credits_required = $offering->credits_required;
+                                if ($new_offering->save() == false)
+                                {
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating new academic offering.');
+                                }
+                            }
+                            //else update necessary field to take user changes into account
+                            else
+                            {
+                                $existing_offering->spaces = $offering->spaces;
+                                $existing_offering->interviewneeded = $offering->interviewneeded;
+                                $existing_offering->credits_required = $offering->credits_required;
+                                if ($existing_offering->save() == false)
+                                {
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured updating academic offering.');
+                                }
+                            }
+                        }
+                        // else if input checkbox is not selected
+                        else
+                        {
+                            // if academic offering previously existed, it is deleted
+                            if ($existing_offer == true)
+                            {
+                                if ($existing_offer->softDelete() == false)
+                                {
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting existing academic offering.');
+                                }
+                            }
+                        }
+                        
+                        // if rollback is triggerred the processing of the user input is stopped
+                        if ($error_occurred == true)
+                        {
+                            break;
+                        }
+                         $index += 1;
+                    }
+                   
+                    if ($offerings_exist == true)
+                    {
+                        $period->programmes_added = 1;
+
+                        /* applicationperiodstatus is incremented if period belongs to the DTVE, DTE or DNE division; thus indicating
+                         *  CAPE subject selection is uncessary
+                         *  OR
+                         * period belongs to DASGS division and CAPE academic offering does not exist
+                         * 
+                         */
+                        if ($period->divisionid != 4 || ($period->divisionid == 4 && $cape_offering_exists == false))
+                        {
+                            $period->applicationperiodstatusid = 4 ;
+                        }
+                        elseif ($cape_offering_exists == true && empty($period->getCapeSubjects()) == true)
+                        {
+                            $period->applicationperiodstatusid = 3 ;
+                        }
+                        if ($period->save() == false)
+                        {
+                            $error_occurred = true;
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                        }
+
+                        $transaction->commit();
+                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No programmes were selected. Please select the programmes that will be offered this academic year.');
+                    }
+
                 } catch (Exception $ex) {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
                 }
             }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load records. Please try again.');  
-        }
-              
-        return $this->render('period_setup_step_one', [
-                'new_year' => $new_year,
-                'period' => $period,
-            ]);
-    }
-    
-    
-    /**
-     * Renders the Application Period Setup view
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 10/02/2016
-     * Date Last Modified: 10/02/2016
-     */
-    public function actionPeriodSetupStepTwo()
-    {
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $template_period = new ApplicationPeriod();
-        $template_period->divisionid = $period->divisionid;
-        $template_period->academicyearid = $period->academicyearid;
-        $template_period->applicationperiodtypeid = $period->applicationperiodtypeid;
-        
-        if ($post_data = Yii::$app->request->post())
-        {
-            $load_flag = false;
-            $save_flag = false;
-            $template_period = new ApplicationPeriod();
-            
-            $load_flag = $template_period->load($post_data);
-            if($load_flag == true)
-            { 
-                $period->applicationperiodtypeid = $template_period->applicationperiodtypeid;
-                $period->applicationperiodstatusid = 3;
-                $period->divisionid = $template_period->divisionid;
-                $period->academicyearid = $template_period->academicyearid;
-                $period->name = $template_period->name;
-                $period->onsitestartdate = $template_period->onsitestartdate;
-                $period->onsiteenddate = $template_period->onsiteenddate;
-                $period->offsitestartdate = $template_period->offsitestartdate;
-                $period->offsiteenddate =  $template_period->offsiteenddate;
-                $save_flag = $period->save();
-                if($save_flag == true)
-                    return $this->redirect(['admissions/initiate-period',
-                                'recordid' => $period->applicationperiodid
-                            ]);
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update application period record. Please try again.');
-            }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load application period record. Please try again.');              
+  
+            return $this->render('period_setup_step_four', [
+                    'period' => $period,
+                    'programmes' => $programmes,
+                    'offerings' => $offerings,
+                ]);
         }
         
-        if ($period->applicationperiodstatusid > 2)
-        {
-            return $this->render('period_setup_step_two', [
-                'template_period' => $period,
-                'period' => $period
-            ]);
-        }
-        else
-        {
-            return $this->render('period_setup_step_two', [
-                'template_period' => $template_period,
-                'period' => $period
-            ]);
-        }
         
-    }
-    
-    
-    /**
-     * Renders the Prgoramme Creation Setup view
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 10/02/2016
-     * Date Last Modified: 16/02/2016
-     */
-    public function actionPeriodSetupStepThree()
-    {
-        $cape_check = false;
-        $none_cape_check = false;
-        
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $year = $period->academicyearid;
-            
-        $programmes = NULL;
-        $all_programmes = NULL;
-        $subjects = NULL;
-        
-        $programmes = ProgrammeCatalog::getProgrammeListing($period->divisionid, $period->applicationperiodtypeid); 
-        
-        if ($period->divisionid == 4)
+        /**
+         * Renders the Assign CAPE Subject view
+         * 
+         * @return view 'period_setup_step_five'
+         * @throws UnauthorizedAccessException
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_10_03
+         * Modified: 2017_10_09
+         */
+        public function actionPeriodSetupStepFive()
         {
-            $subjects = Subject::findAll(['examinationbodyid' => 2, 'isactive' => 1, 'isdeleted' => 0]);
-        }
-       
-        //process programmes
-        $programme_count = count($programmes);
-        $offerings = array();
-        $saved_offerings = array();
-        $offering_copy = array();
-        if (AcademicOffering::hasNoneCapeOffering($period->applicationperiodid) == true)
-        {
-            $saved_offerings = AcademicOffering::getNoneCapeOffering($period->applicationperiodid);
-            $offering_copy = AcademicOffering::backUp($saved_offerings);
-            for ($j = 0 ; $j < $programme_count ; $j++)
+            if (Yii::$app->user->can('System Administrator') == false)
             {
-                $selected_offer = AcademicOffering::find()
-                            ->where(['programmecatalogid' => $programmes[$j]['id'], 'applicationperiodid' => $period->applicationperiodid])
-                            ->one();
-                if ($selected_offer == true)
-                {
-                    $selected_offer->programmecatalogid = 1;        //done to ensure checkbox is 'checked'
-                    array_push($offerings, $selected_offer);
-                }
-                else
-                {
-                    $offer = new AcademicOffering();
-                    array_push($offerings, $offer);
-                }
+                throw new UnauthorizedAccessException();
             }
-        }
-        else
-        {
-            for ($j = 0 ; $j < $programme_count ; $j++)
-            {
-                $offer = new AcademicOffering();
-                array_push($offerings, $offer);
-            }
-        }       
-           
-       //process cape subjects
-        $subject_count = count($subjects);
-        $cape_subjects = array();
-        $saved_cape_offering = NULL;
-        $cape_offering_copy = NULL;
-        $saved_cape_subjects = array();
-        $cape_subjects_copy = array();
-        
-        $subject_groups = array();
-        $group_copy = array();
-        $saved_subject_groups = array();
-        if (AcademicOffering::hasCapeOffering($period->applicationperiodid) == true)
-        {
-            $saved_subject_groups = CapeSubjectGroup::getAssociatedCapeGroups($period->applicationperiodid);
-            $group_copy = CapeSubjectGroup::backup($saved_subject_groups);
             
-            $saved_cape_offering = AcademicOffering::getCapeOffering($period->applicationperiodid);
-            $cape_offering_copy = AcademicOffering::backUpSingle($saved_cape_offering);
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+            $cape_groups = $period->getAvailableCapeSubjectGroups();
+            $subjects = $period->getAvailableCapeSubjects();
+            $cape_subject_data = $period->processCapeSubjectsAndGroups($subjects);
+            $cape_subjects = $cape_subject_data[0];
+            $subject_groups = $cape_subject_data[1];
             
-            $saved_cape_subjects = CapeSubject::getCapeSubjects($saved_cape_offering->academicofferingid);
-            $cape_subjects_copy = CapeSubject::backUp($saved_cape_subjects);
-            
-            for ($i = 0 ; $i < $subject_count ; $i++)
+            if ($post_data = Yii::$app->request->post())
             {
-                $subject = CapeSubject::find()
-                            ->innerJoin('academic_offering', '`cape_subject`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                            ->where(['cape_subject.subjectname' => $subjects[$i]['name'], 'academic_offering.applicationperiodid' => $period->applicationperiodid])
-                            ->one();
-                if ($subject == true)
-                {
-                    $subject->subjectname = 1;
-                    array_push($cape_subjects, $subject);
-                    
-                    //prepare appropriate associated capesubjectgroup record
-                    $subject_group = CapeSubjectGroup::find()
-                                ->where(['capesubjectid' => $subject->capesubjectid])
-                                ->one();
-                    if($subject_group == true)
-                        array_push($subject_groups, $subject_group);
-                    else
-                    {
-                        $subject_group = new CapeSubjectGroup();
-                        array_push($subject_groups, $subject_group);
-                    }
-                }
-                else
-                {
-                    $subject = new CapeSubject();
-                    array_push($cape_subjects, $subject);
-                    
-                    $subject_group = new CapeSubjectGroup();
-                    array_push($subject_groups, $subject_group);
-                }
-            }
-        }
-        else
-        {
-            for ($i = 0 ; $i < $subject_count ; $i++)
-            {
-                $cape = new CapeSubject();
-                array_push($cape_subjects, $cape);
+                $error_occurred = false;
+                $cape_academic_offering = $period->getCurrentCapeAcademicOffering();
                 
-                $subject_group = new CapeSubjectGroup();
-                array_push($subject_groups, $subject_group);
-            }
-        }  
-        
-        
-        if ($post_data = Yii::$app->request->post())
-        {
-            //period flags
-            $period_save_flag = false;
-            
-            //academic offering flags
-            $offerings_load_flag = false;
-            $offering_save_flag = false;
-            
-            //cape subject flags
-            $subjects_load_flag = false;
-            $subject_save_flag = false;
-            
-            //cape-subject-group flags
-            $groups_load_flag = false;
-            $groups_save_flag = false;
-
-            $offerings_load_flag = Model::loadMultiple($offerings, $post_data);
-            
-            if($period->divisionid == 4)
-            {
                 $subjects_load_flag = Model::loadMultiple($cape_subjects, $post_data);
                 $groups_load_flag = Model::loadMultiple($subject_groups, $post_data);
-            }
-            else
-            {
-                $subjects_load_flag = true;
-                $groups_load_flag = true;
-            }
-            
-            if($offerings_load_flag == true  &&  $subjects_load_flag == true  &&  $groups_load_flag == true)
-            {
+                
+                $cape_subjects_selected = false;
+                 
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
                 {
-                    if($saved_offerings == true)    //if previous offering exists in database
-                    {
-                        $period_id = $period->applicationperiodid;
-                        AcademicOffering::deleteAll(['and', 'applicationperiodid = ' . $period_id, 'programmecatalogid != 10']);
-                    }
-                    
                     $index = 0;
-                    foreach ($offerings as $offering) 
+                    foreach ($cape_subjects as $cape_subject) 
                     {
-                        //Checkbox for this programme is ticked
-                        if ($offering->programmecatalogid != false)
+                        $existing_cape_subject = $period->getExistingCapeSubjectOffering($subjects[$index]);
+                        
+                        //Checkbox for this cape_subject is ticked
+                        if ($cape_subjects[$index]->isactive != false)
                         {
-                            $none_cape_check = true;
+                            $cape_subjects_selected = true;
                             
-                            //Checkbox for this programme is ticked
-                            $ao_model = new AcademicOffering();
-                            $ao_model->programmecatalogid = $programmes[$index]["id"];
-                            $ao_model->academicyearid = $period->academicyearid;
-                            $ao_model->applicationperiodid = $period->applicationperiodid;
-                            $ao_model->spaces = $offering->spaces;
-                            $ao_model->interviewneeded = $offering->interviewneeded;
-                            $offering_save_flag = $ao_model->save();
-                            if($offering_save_flag == false)
+                            // if academic offering does not already exist, it is created
+                            if ($existing_cape_subject == false)
                             {
-                                $transaction->rollBack();
-                                if($saved_offerings == true)    //if previous offering exist in database
+                                $new_cape_subject = new CapeSubject();
+                                $new_cape_subject->cordinatorid = NULL;
+                                $new_cape_subject->academicofferingid = $cape_academic_offering->academicofferingid;
+                                $new_cape_subject->subjectname = $subjects[$index]->name;
+                                $new_cape_subject->unitcount = $cape_subject->unitcount;
+                                $new_cape_subject->capacity = $cape_subject->capacity;
+                                if ($new_cape_subject->save() == false)
                                 {
-                                    AcademicOffering::restore($offering_copy);
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating cape subject '. $subjects[$index]->name . '.');
                                 }
-                                Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
-                                return $this->render('period_setup_step_three', [
-                                    'period' => $period,
-                                    'programmes' => $programmes,
-//                                    'all_programmes' => $all_programmes,
-                                    'subjects' => $subjects,
-                                    'offerings' => $offerings,
-                                    'cape_subjects' => $cape_subjects,
-                                ]);
+                                
+                                $new_group = new CapeSubjectGroup();
+                                $new_group->capesubjectid = $new_cape_subject->capesubjectid;
+                                $new_group->capegroupid = $subject_groups[$index]->capegroupid;
+                                if ($new_group->save() == false)
+                                {
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating CAPE subject group '. $group->capegroupid . ' for ' . $subjects[$index]->name . '.');
+                                }
                             }
-                        }
-                        $index++;
-                    }
-                    
-                    $cape_model = NULL;
-                    $cape_selected = false;
-                    
-                    if($period->divisionid == 4)
-                    {
-                        foreach ($cape_subjects as $cape_subject)
-                        {
-                            //if checkbox is 'checked'
-                            if ($cape_subject->subjectname != false)
+                            
+                            //else update necessary fields for 'cape_subject' record and its associated group
+                            // to take user changes into account
+                            else
                             {
-                                $cape_check = true;
-                                $cape_selected = true;
-
-                                if ($saved_cape_offering == false)  //if no CAPE academic-offering exists it must be created
+                                $existing_cape_subject->unitcount = $cape_subject->unitcount;
+                                $existing_cape_subject->capacity = $cape_subject->capacity;
+                                if ($existing_cape_subject->save() == false)
                                 {
-                                    $cape_model = new AcademicOffering();
-                                    $cape_model->programmecatalogid = 10;
-                                    $cape_model->academicyearid = $period->academicyearid;
-                                    $cape_model->applicationperiodid = $period->applicationperiodid;
-                                    $cape_model->spaces = NULL;
-                                    $cape_model->interviewneeded = 0;
-                                    $save_flag = $cape_model->save();
-                                    if($save_flag == false)
-                                    {
-                                        $transaction->rollBack();
-                                        if($saved_offerings == true)    //if previous offering exist in database
-                                        {
-                                            AcademicOffering::restore($offering_copy);
-                                        }
-                                        Yii::$app->getSession()->setFlash('error', 'CAPE Academic Offering was not saved.');
-                                        return $this->render('period_setup_step_three', [
-                                            'period' => $period,
-                                            'programmes' => $programmes,
-    //                                        'all_programmes' => $all_programmes,
-                                            'subjects' => $subjects,
-                                            'offerings' => $offerings,
-                                            'cape_subjects' => $cape_subjects,
-                                        ]);
-                                    }
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating cape subject '. $subjects[$index]->name . '.');
                                 }
-                                break;
+                                $existing_group = CapeSubjectGroup::find()
+                                        ->where(['capesubjectid' =>  $existing_cape_subject->capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+                                if ($existing_group->save() == false)
+                                {
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating CAPE subject group '. $group->capegroupid . ' for ' . $subjects[$index]->name . '.');
+                                }
                             }
-                        }
-                    }
-                    
-                    if($cape_selected == false)      //if CAPE academic offering is not under selection
-                    {
-                        if ($saved_cape_offering == true  && $saved_cape_subjects == true  && $saved_subject_groups == true)       //if previous CAPE offering exists
-                        {
-                            $groups_candidates = CapeSubjectGroup::getAssociatedCapeGroups($period->applicationperiodid);
-                            CapeSubjectGroup::deleteGroups($groups_candidates);
-                            CapeSubject::deleteAll(['academicofferingid' => $saved_cape_offering->academicofferingid]);
-                            AcademicOffering::deleteAll(['applicationperiodid' => $period->applicationperiodid, 'programmecatalogid' => 10]);
-                        }
-                    }
-                    else    //if CAPE academic offering is present selection
-                    {
-                        if ($saved_cape_offering == true)
-                        {
-                            $groups_candidates = CapeSubjectGroup::getAssociatedCapeGroups($period->applicationperiodid);
-                            CapeSubjectGroup::deleteGroups($groups_candidates);
-                            CapeSubject::deleteAll(['academicofferingid' => $saved_cape_offering->academicofferingid]);
                         }
                         
-                        $counter = 0;
-                        foreach ($cape_subjects as $cape_subject) 
+                        // else if input checkbox is not selected
+                        else
                         {
-                            //Checkbox for this cape_subject is ticked
-                            if ($cape_subject->subjectname != false)
+                            // if cape subject previously existed, it is deleted
+                            if ($existing_cape_subject == true)
                             {
-                                $c_model = new CapeSubject();
-                                $c_model->cordinatorid = NULL;
-                                
-                                if ($saved_cape_offering == true)
-                                    $c_model->academicofferingid = $saved_cape_offering->academicofferingid;
-                                else
-                                    $c_model->academicofferingid = $cape_model->academicofferingid;
-                                    
-                                $c_model->subjectname = $subjects[$counter]["name"];
-                                $c_model->unitcount = $cape_subject->unitcount;
-                                $c_model->capacity = $cape_subject->capacity;
-                                $subjects_save_flag = $c_model->save();
-                                if($subjects_save_flag == false)        ///if save has failed
+                                if ($existing_cape_subject->softDelete() == false)
                                 {
+                                    $error_occurred = true;
                                     $transaction->rollBack();
-                                    if($saved_cape_subjects == true)    //if previous offering exist in database
-                                    {
-                                        CapeSubject::restore($cape_subjects_copy);
-                                    }
-                                    if($saved_offerings == true)    //if previous offering exist in database
-                                    {
-                                        AcademicOffering::restore($offering_copy);
-                                    }
-                                    Yii::$app->getSession()->setFlash('error', 'Cape subjects was not saved.');
-                                    return $this->render('period_setup_step_three', [
-                                        'period' => $period,
-                                        'programmes' => $programmes,
-//                                        'all_programmes' => $all_programmes,
-                                        'subjects' => $subjects,
-                                        'offerings' => $offerings,
-                                        'cape_subjects' => $cape_subjects,
-                                    ]);
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting existing cape subject.');
                                 }
-                                else        //if save is successful create associated groups
+                                $existing_group = CapeSubjectGroup::find()
+                                        ->where(['capesubjectid' =>  $existing_cape_subject->capesubjectid, 'isactive' => 1, 'isdeleted' => 0])
+                                        ->one();
+                                if ($existing_group->save() == false)
                                 {
-                                    $group_flag = false;
-                                    $g_model = new CapeSubjectGroup();
-                                    $g_model->capesubjectid = $c_model->capesubjectid;
-                                    $g_model->capegroupid = $subject_groups[$counter]->capegroupid;
-                                    $group_flag = $g_model->save();
-                                    if($group_flag == false)        ///if save has failed
-                                    {
-                                        $transaction->rollBack();
-                                        if($saved_subject_groups == true)
-                                            CapeSubjectGroup::restore($groups_copy);
-                                        
-                                        if($saved_cape_subjects == true)    //if previous offering exist in database
-                                            CapeSubject::restore($cape_subjects_copy);
-                                        
-                                        if($saved_offerings == true)    //if previous offering exist in database
-                                            AcademicOffering::restore($offering_copy);
-                                        Yii::$app->getSession()->setFlash('error', 'Cape subjects was not saved.');
-                                        return $this->render('period_setup_step_three', [
-                                            'period' => $period,
-                                            'programmes' => $programmes,
-    //                                        'all_programmes' => $all_programmes,
-                                            'subjects' => $subjects,
-                                            'offerings' => $offerings,
-                                            'cape_subjects' => $cape_subjects,
-                                        ]);
-                                    }
+                                    $error_occurred = true;
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured creating CAPE subject group '. $group->capegroupid . ' for ' . $subject->name . '.');
                                 }
                             }
-                            $counter++;
                         }
+                       
+                        // if rollback is triggerred the processing of the user input is stopped
+                        if ($error_occurred == true)
+                        {
+                            break;
+                        }
+                         $index += 1;
                     }
-                    
-                    //update application period record accordingly
-                    if($cape_check == false && $none_cape_check == false)
-                        $period->applicationperiodstatusid = 3;
-                    
-                    elseif($cape_check == true || $none_cape_check == true)
-                        $period->applicationperiodstatusid = 4;
-                    
-                    $period_save_flag = $period->save();
-                    if ($period_save_flag == false)
+                        
+                    if ($cape_subjects_selected == true)
                     {
-                        $transaction->rollBack();
-                        if($saved_offerings == true)    //if previous offering exist in database
+                        $period->cape_subjects_added = 1;
+                        $period->applicationperiodstatusid = 4 ;
+                        if ($period->save() == false)
                         {
-                            AcademicOffering::restore($offering_copy);
+                            $error_occurred = true;
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
                         }
-                        if($saved_offerings == true)    //if previous offering exist in database
-                        {
-                            AcademicOffering::restore($offering_copy);
-                        }
-                        Yii::$app->getSession()->setFlash('error', 'Academic Offering was not saved.');
-                        return $this->render('period_setup_step_three', [
-                            'period' => $period,
-                            'programmes' => $programmes,
-//                            'all_programmes' => $all_programmes,
-                            'subjects' => $subjects,
-                            'offerings' => $offerings,
-                            'cape_subjects' => $cape_subjects,
-                        ]);
+
+                        $transaction->commit();
+                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
                     }
-                    
-                    $transaction->commit();
-                    return $this->redirect(['admissions/initiate-period',
-                        'recordid' => $period->applicationperiodid
-                    ]);
-                
-                } catch (Exception $e) {
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('error', 'No cape subjects were selected. Please select the CAPE subjects that will be offered this academic year.');
+                    }
+                } catch (Exception $ex) {
                     $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing request.');
                 }
             }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error loading records.');
+  
+            return $this->render('period_setup_step_five', [
+                    'period' => $period,
+                    'subjects' => $subjects,
+                    'cape_subjects' => $cape_subjects,
+                    'subject_groups' => $subject_groups,
+                    'cape_groups' => $cape_groups
+                ]);
         }
         
-        return $this->render('period_setup_step_three', [
-                'period' => $period,
-                'programmes' => $programmes,
-                'subjects' => $subjects,
-                'offerings' => $offerings,
-                'cape_subjects' => $cape_subjects,
-                'subject_groups' => $subject_groups,
-            ]);
-    }
-    
-    /**
-     * Manages the process of adding a Programme Catalog record
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 13/02/2016
-     * Date Last Modified: 13/02/2016
-     */
-    public function actionAddProgrammeCatalog()
-    {
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $programme = new ProgrammeCatalog();
-        
-        if ($post_data = Yii::$app->request->post())
+         
+        /**
+         * Confirms Application period setting
+         * 
+         * @return view 'manage-application-period' || 'initiate-period'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2016_02_10
+         * Modified: 2016_10_09
+         */
+        public function actionPeriodSetupConfirm()
         {
-            $load_flag = false;
-            $save_flag = false;
-            
-            $load_flag = $programme->load($post_data);
-            if($load_flag == true)
-            { 
-                $programme->creationdate = date('Y-m-d');
-                $save_flag = $programme->save();
-                if($save_flag == true)
-                    return $this->redirect(['period-setup-step-three'
-                            ]);
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update programme record. Please try again.');
+            if (Yii::$app->user->can('System Administrator') == false)
+            {
+                throw new UnauthorizedAccessException();
             }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load programme record. Please try again.');              
-        }
-        
-        return $this->render('add_programme', [
-                'programme' => $programme,
-                'period' => $period
-            ]);
             
-    }
-    
-    
-    /**
-     * Manages the process of adding a CAPE subject record
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 14/02/2016
-     * Date Last Modified: 14/02/2016
-     */
-    public function actionAddCapeSubject()
-    {
-        $period = ApplicationPeriod::getIncompletePeriod();
-        $subject = new Subject();
-        
-        if ($post_data = Yii::$app->request->post())
-        {
-            $load_flag = false;
-            $save_flag = false;
-            
-            $load_flag = $subject->load($post_data);
-            if($load_flag == true)
-            { 
-                $subject->examinationbodyid = 2;
-                $save_flag = $subject->save();
-                if($save_flag == true)
-                { 
-                    return $this->redirect(['period-setup-step-three']);
+            $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
+
+            if($period)
+            {
+                $period->applicationperiodstatusid = 6;
+                $period->isactive = 1;
+                $period->isdeleted = 0;
+                if($period->save() == true)
+                {
+                     Yii::$app->getSession()->setFlash('success', 'Application period configuration is complete.');
+                     return $this->redirect(['manage-application-period']);
                 }
                 else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to update CAPE record. Please try again.');
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when confirming application period settings.');
+                    return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
+                }
             }
-            else
-                Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load CAPE record. Please try again.');              
-        }
-        
-        return $this->render('add_cape_subject', [
-                'subject' => $subject,
-                'period' => $period
-            ]);
-    }
-    
-    
-    /**
-     * Confirms Application period setting
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 10/02/2016
-     * Date Last Modified: 16/02/2016
-     */
-    public function actionPeriodSetupConfirm($recordid)
-    {
-        $save_flag = false;
-        $period = ApplicationPeriod::find()
-                ->where(['applicationperiodid' => $recordid])
-                ->one();
-        if($period)
-        {
-            $period->applicationperiodstatusid = 6;
-            $period->isactive = 1;
-            $period->isdeleted = 0;
-            $save_flag = $period->save();
-            if($save_flag == true)
-               return $this->redirect(['manage-application-period']);
             else
             {
-                Yii::$app->getSession()->setFlash('error', 'Error occured when confirming application period settings.');
+                Yii::$app->getSession()->setFlash('error', 'Error occured when loading application period record.');
                 return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
             }
         }
-        else
-        {
-            Yii::$app->getSession()->setFlash('error', 'Error occured when loading application period record.');
-            return $this->redirect(['initiate-period', 'recordid' => $period->applicationperiodid]);
-        }
-    }
-    
-    
-    /**
-     * Facilitates search for current applicants
-     * 
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 24/02/2016
-     * Date Last Modified: 24/02/2016
-     */
-    public function actionFindCurrentApplicant($status)
-    {
-        $division_id = EmployeeDepartment::getUserDivision();
-        
-        $dataProvider = null;
-        $info_string = null;
-        
-        if (Yii::$app->request->post())
-        {
-            //Everytime a new search is initiated session variable must be removed
-             if (Yii::$app->session->get('app_id'))
-                Yii::$app->session->remove('app_id');
-             
-            if (Yii::$app->session->get('firstname'))
-                Yii::$app->session->remove('firstname');
-            
-            if (Yii::$app->session->get('lastname'))
-                Yii::$app->session->remove('lastname');
-            
-             if (Yii::$app->session->get('email'))
-                Yii::$app->session->remove('email');
-             
-            $request = Yii::$app->request;
-            $app_id = $request->post('applicantid_field');
-            $email = $request->post('email_field');
-            $firstname = $request->post('FirstName_field');
-            $lastname = $request->post('LastName_field');
-            
-             if(Yii::$app->session->get('app_id') == null  && $app_id == true)
-                Yii::$app->session->set('app_id', $app_id);
-            
-            if(Yii::$app->session->get('firstname') == null  && $firstname == true)
-                Yii::$app->session->set('firstname', $firstname);
-            
-            if(Yii::$app->session->get('lastname') == null  && $lastname == true)
-                Yii::$app->session->set('lastname', $lastname);
-            
-            if(Yii::$app->session->get('email') == null  && $email == true)
-                Yii::$app->session->set('email', $email);
-        }
-        else    
-        {
-            $app_id = Yii::$app->session->get('app_id');
-            $firstname = Yii::$app->session->get('firstname');
-            $lastname = Yii::$app->session->get('lastname');
-            $email = Yii::$app->session->get('email');
-        }
-            
-        
-        //if user initiates search based on applicantid
-        if ($app_id)
-        {
-            $user = User::findOne(['username' => $app_id, 'isdeleted' => 0]);
-            $cond_arr['applicant.personid'] = $user? $user->personid : null;
-            $info_string = $info_string .  " Applicant ID: " . $app_id;
-        }    
-
-        //if user initiates search based on applicant name    
-        if ($firstname)
-        {
-            $cond_arr['applicant.firstname'] = $firstname;
-            $info_string = $info_string .  " First Name: " . $firstname; 
-        }
-        if ($lastname)
-        {
-            $cond_arr['applicant.lastname'] = $lastname;
-            $info_string = $info_string .  " Last Name: " . $lastname;
-        }        
-
-        //if user initiates search based on applicant email
-        if ($email)
-        {
-            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
-            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
-            $info_string = $info_string .  " Email: " . $email;
-        }
 
 
-        if (empty($cond_arr))
+        /**
+         * Deletes an application period
+         * 
+         * @param Integer $personid
+         * @return view 'periods'
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 21/03/2016
+         * Modified: 2016_10_09
+         */
+        public function actionDeleteApplicationPeriod($id)
         {
-            Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
-        }
-        else
-        {
-            $cond_arr['applicant.isactive'] = 1;
-            $cond_arr['applicant.isdeleted'] = 0;
-            $cond_arr['academic_offering.isactive'] = 1;
-            $cond_arr['academic_offering.isdeleted'] = 0;
-            $cond_arr['application_period.isactive'] = 1;
-
-            if ($status== "pending")
-                $cond_arr['application_period.iscomplete'] = 0;
-
-            $cond_arr['application.isactive'] = 1;
-            $cond_arr['application.isdeleted'] = 0;
-            if ($status == "pending" || $status == "pending-unlimited")
-                $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
-
-            elseif ($status == "successful")
+            $period = ApplicationPeriod::getApplicationPeriod($id);
+            if ($period == true)
             {
-                $cond_arr['application.applicationstatusid'] = 9;
-                $cond_arr['offer.isactive'] = 1;  
-                $cond_arr['offer.isdeleted'] = 0;
-                $cond_arr['offer.ispublished'] = 1;
-            }
-
-            /*
-             *  If DASGS or DTVE, both divisions are searched
-             *  This is because applicants may apply to both divisions
-             */
-            if ($division_id == 4  || $division_id == 5 )
-                $cond_arr['application.divisionid'] = [4,5];
-
-            /*
-             *  If DTE or DNE the applicants are constrained to each division
-             */
-            elseif ($division_id == 6  || $division_id == 7 )
-                $cond_arr['application.divisionid'] = $division_id;
-
-            if ($status == "pending" || $status == "pending-unlimited")
-            {
-                $applicants = Applicant::find()
-                            ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                            ->where($cond_arr)
-                            ->groupBy('applicant.personid')
-                            ->all();
-            }
-            elseif($status == "successful")
-            {
-                $applicants = Applicant::find()
-                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
-                         ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->where($cond_arr)
-                        ->groupBy('applicant.personid')
-                        ->all();
-            }
-
-            if (empty($applicants))
-            {
-                Yii::$app->getSession()->setFlash('error', 'No applicant found matching this criteria.');
+                $period->isdeleted = 1;
+                $period->isactive = 0;
+                if($period->save() == false)
+                {
+                    Yii::$app->getSession()->setFlash('error', 'Error occured deleting ApplicationPeriod record ID => ' . $period . "not found.");    
+                }
             }
             else
             {
-                $data = array();
-                foreach ($applicants as $applicant)
-                {
-                    if($status == "pending"  || $status == "pending-unlimited")
-                    {
-                        $app = array();
-                        $user = $applicant->getPerson()->one();
-                        
-                        
-                        $app['status'] = $status;
-                        $app['username'] = $user ? $user->username : '';
-                        $app['personid'] = $applicant->personid;
-                        $app['applicantid'] = $applicant->applicantid;
-                        $app['firstname'] = $applicant->firstname;
-                        $app['middlename'] = $applicant->middlename;
-                        $app['lastname'] = $applicant->lastname;
-                        $app['gender'] = $applicant->gender;
-                        $app['dateofbirth'] = $applicant->dateofbirth;
-
-                        $applications = Application::getApplications($applicant->personid);
-                        $divisionid = $applications[0]->divisionid;
-
-                        /*
-                         * If division is DTE or DNE then all applications refer to one division
-                         */
-                        if ($divisionid == 6  || $divisionid == 7)
-                        {
-                            $division = Division::getDivisionAbbreviation($divisionid);
-                            $app["division"] = $division;
-                        }
-                        /*
-                         * If division is DASGS or DTVE then applications may refer to multiple divisions
-                         */
-                        elseif ($divisionid == 4  || $divisionid == 5)
-                        {
-                            $dasgs = 0;
-                            $dtve = 0;
-                            foreach($applications as $application)
-                            {
-                                if ($application->divisionid == 4)
-                                    $dasgs++;
-                                elseif ($application->divisionid == 5)
-                                    $dtve++;
-                            }
-                            if ($dasgs>=1  && $dtve>=1)
-                                $divisions = "DASGS & DTVE";
-                            elseif ($dasgs>=1  && $dtve==0)
-                                $divisions = "DASGS";
-                            elseif ($dasgs==0  && $dtve>=1)
-                                $divisions = "DTVE";
-                            else
-                                 $divisions = "Unknown";
-                            $app["division"] = $divisions;
-                        }
-
-
-                        if($status == "pending-unlimited")
-                            $info = Applicant::getApplicantInformation($applicant->personid, true);
-                        else
-                            $info = Applicant::getApplicantInformation($applicant->personid);
-
-                        $app['programme_name'] = $info["prog"];
-                        $app['application_status'] = $info["status"];
-
-                        if(Application::hasOldApplication($applicant->personid)==true)
-                            $app['has_deprecated_application'] = true;
-                        else
-                            $app['has_deprecated_application'] = false;
-
-                        if(Offer::hasActivePublishedFullOffer($applicant->personid))
-                            $app['has_offer'] = true;
-                        else
-                            $app['has_offer'] = false;
-
-                        if(Application::hasActiveApplications($applicant->personid))
-                            $app['has_active_applications'] = true;
-                        else
-                            $app['has_active_applications'] = false;
-
-                        if(Application::hasInactiveApplications($applicant->personid))
-                            $app['has_inactive_applications'] = true;
-                        else
-                            $app['has_inactive_applications'] = false;
-
-                        $data[] = $app;
-                    }
-                    elseif($status =="successful")
-                    {
-                        $offers = Offer::hasOffer($applicant->personid);
-
-                        if($offers == true)
-                        {
-                            foreach ($offers as $offer) 
-                            {
-                                $has_enrolled = StudentRegistration::find()
-                                        ->where(['offerid' => $offer->offerid, 'isactive' => 1, 'isdeleted' => 0])
-                                        ->one();
-
-                                if($has_enrolled == false)
-                                {
-                                    $username = User::findOne(['personid' => $applicant->personid, 'isdeleted' => 0])->username;
-
-                                    $programme = "N/A";
-                                    $target_application = Application::find()
-                                            ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
-                                            ->one();
-                                    if ($target_application) 
-                                    {
-                                        $programme_record = ProgrammeCatalog::find()
-                                                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-                                                ->where(['academicofferingid' => $target_application->academicofferingid])
-                                                ->one();
-                                        $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $target_application->applicationid]);
-                                        foreach ($cape_subjects as $cs) 
-                                        {
-                                            $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
-                                        }
-                                        $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
-                                    }
-
-                                    $app = array();
-                                    $app['status'] = $status;
-                                    $app['personid'] = $applicant->personid;
-                                    $app['applicantid'] = $applicant->applicantid;
-                                    $app['username'] = $username;
-                                    $app['title'] = $applicant->title;
-                                    $app['firstname'] = $applicant->firstname;
-                                    $app['middlename'] = $applicant->middlename;
-                                    $app['lastname'] = $applicant->lastname;
-                                    $app['offerid'] = $offer->offerid;
-                                    $app['applicationid'] = $offer->applicationid;
-                                    $app['programme_name'] = $programme;
-
-                                    $data[] = $app;
-
-                                    $cape_subjects = NULL;
-                                    $cape_subjects_names = NULL;
-                                }
-                            }
-                        }
-                    }
-                }
-                $dataProvider = new ArrayDataProvider([
-                    'allModels' => $data,
-                    'pagination' => [
-                        'pageSize' => 25,
-                    ],
-                    'sort' => [
-                        'attributes' => ['applicantid', 'firstname', 'lastname'],
-                        ],
-                ]);
+                $error_message = "ApplicationPeriod record with AcademicYear ->ID= " . $period;
+                throw new ModelNotFoundException($error_message);
             }
-        }
-        //}removed to rescope post block
-        
-        $search_status = $status;
-        
-        return $this->render('find_current_applicant', 
-            [
-            'dataProvider' => $dataProvider,
-//            'status' => $status,
-            'info_string' => $info_string,
-            'search_status' => $search_status,
-        ]);
-    }
-    
-    
-    
-    public function actionProcessApplicantIntentid($divisionid, $applicationperiodtypeid, $applicantintentid)
-    {
-        $academicYearExists = 0;
-        $applicationPeriodExists = 0;
-        
-        if ($applicantintentid == 1)
-        {
-            $academicYear = AcademicYear::find()
-                    ->where(['applicantintentid' => $applicantintentid, 'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-             if ($academicYear)   
-             {
-                 $academicYearExists = 1;
-                 $period = ApplicationPeriod::find()
-                         ->where(['divisionid' => $divisionid, 'iscomplete' => 0, 'isactive' => 1, 'isdeleted' => 0])
-                         ->one();
-                 if ($period)
-                 {
-                     $applicationPeriodExists = 1;
-                 }
-             }
+            return $this->redirect(\Yii::$app->request->getReferrer());
         }
         
         
-        echo Json::encode(['academicYearExists' => $academicYearExists, 'applicationPeriodExists' => $applicationPeriodExists]);
     }
-    
-    
-    
-}

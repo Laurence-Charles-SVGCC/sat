@@ -5,6 +5,9 @@
     use Yii;
     use common\models\User;
     use yii\custom\ModelNotFoundException;
+    
+    use frontend\models\Email;
+    use frontend\models\Student;
 
     /**
      * This is the model class for table "applicant_registration".
@@ -74,45 +77,105 @@
             return $this->hasOne(ApplicantIntent::className(), ['applicantintentid' => 'applicantintentid']);
         }
 
-
+        
         /**
-         * Return collection of accounts that are associated with a particular academis year
+         * Return status of applicant account
          * 
-         * @return [ApplicantRegistration] | []
-         * @throws ModelNotFoundException
+         * @return string
          * 
-         * Author: Laurence Charles
-         * Date Created: 2017_08_25
-         * Date Last Modified: 2017_08_26
+         * Author: charles.laurence1@gmail.com
+         * Created: 2017_10_06
+         * Modified: 2017_10_09
          */
-        public static function getApplicantRegistrationsByYear($academicyearid)
+        public function getStatus()
         {
-            $users = User::getStudentUsersByYear($academicyearid);
-            $registrations = array();
+            $status = "--";
             
-            if (empty($users) == true)
+            $email = Email::find()
+                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
+                    ->one();
+            if ($email == false)
             {
-                $error_message = "No student user accounts found for AcademicYear ->ID= " . $academicyearid;
-                throw new ModelNotFoundException($error_message);
+                $status = "Email Verification Pending";
             }
-                    
-            foreach ($users as $user)
+            else
             {
-                $id = $user->id;
-                $registration = ApplicantRegistration::find()
-                        ->where(['applicantname' => $user->username])
-                        ->one();
-                if (empty($registration) == true)
+                $applications = Application::find()
+                    ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $email->personid, 'isactive' => 1, 'isdeleted' =>0])
+                    ->all();
+                if (empty($applications) == true)
                 {
-                    $error_message = "ApplicantRegistration for User -> ID= " .  $id  .  " not found.";
-                    throw new ModelNotFoundException($error_message);
+                    $status = "Applicant Account Created";
                 }
-                array_push($registrations, $registration);
+                else
+                {
+                    if (Applicant::isAbandoned($email->personid) == true)
+                    {
+                        $status = "Applications Removed";
+                    }
+                    else
+                    {
+                        $processed_applications =  Application::find()
+                            ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $email->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                        if (empty($processed_applications) == false)
+                        {
+                            $status = "Application Processed";
+                        }
+                        else
+                        {
+                            $verified_applications =  Application::find()
+                                ->where(['applicationstatusid' => [3], 'personid' => $email->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                ->all();
+                            if (empty($verified_applications) == false)
+                            {
+                                $status = "Application Verified";
+                            }
+                            else
+                            {
+                                $submitted_unverified_applications =  Application::find()
+                                    ->where(['applicationstatusid' => [2], 'personid' => $email->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                    ->all();
+                                if (empty($submitted_unverified_applications) == false)
+                                {
+                                    $status = "Application Submitted";
+                                }
+                                else
+                                {
+                                    $status = "Programme(s) Selected";
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            
-            return $registrations;
+            return $status;
         }
         
+        
+        /**
+         * Return User record that is associated with ApplicantRegristration record
+         * 
+         * @return User
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2017_10_06
+         * Modified: 2017_10_06
+         */
+        public function getUser()
+        {
+            $user = NULL;
+             $email = Email::find()
+                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
+                    ->one();
+             if ($email == true)
+             {
+                 $user = User::find()
+                         ->where(['personid' => $email->personid])
+                         ->one();
+             }
+             return $user;
+        }
         
         
     }
