@@ -2878,7 +2878,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_07_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getCommencedApplicants($acadmeicyearid)
+    public static function getCommencedApplicants($academicyearid)
     {
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -2888,7 +2888,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -2909,7 +2909,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_07_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getCompletedApplicants($acadmeicyearid)
+    public static function getCompletedApplicants($academicyearid)
     {  
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -2919,7 +2919,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -2941,7 +2941,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_07_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getIncompleteApplicants($acadmeicyearid)
+    public static function getIncompleteApplicants($academicyearid)
     {  
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -2950,7 +2950,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -2970,7 +2970,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_07_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getRemovedApplicants($acadmeicyearid)
+    public static function getRemovedApplicants($academicyearid)
     {  
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -2979,7 +2979,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -3000,7 +3000,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_07_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getVerifiedApplicants($acadmeicyearid)
+    public static function getVerifiedApplicants($academicyearid)
     {  
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -3009,7 +3009,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -3030,7 +3030,7 @@ class Applicant extends \yii\db\ActiveRecord
      * Date Created: 2017_08_26
      * Date Last Modified: 2017_08_26
      */
-    public static function getUnverifiedApplicants($acadmeicyearid)
+    public static function getUnverifiedApplicants($academicyearid)
     {  
         $cond = array();
         $cond['applicant.isactive'] = 1;
@@ -3039,7 +3039,7 @@ class Applicant extends \yii\db\ActiveRecord
         $cond['application.isdeleted'] = 0;
         $cond['academic_offering.isactive'] = 1;
         $cond['academic_offering.isdeleted'] = 0;
-        $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
         
         $applicants = Applicant::find()
                         ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -3047,6 +3047,77 @@ class Applicant extends \yii\db\ActiveRecord
                         ->where($cond)
                         ->groupBy('applicant.personid')
                         ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Return collection of applicants that have been issued full offers 
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_10_12
+     * Date Last Modified: 2017_10_12
+     */
+    public static function getSuccessfulApplicants($academicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = 9;
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
+        $cond['offer.offertypeid'] = 1;
+        $cond['offer.ispublished'] = 1;
+        $cond['offer.isactive'] = 1;
+        $cond['offer.isdeleted'] = 0;
+        
+        $applicants = Applicant::find()
+                        ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->where($cond)
+                        ->groupBy('applicant.personid')
+                        ->all();
+        return $applicants;
+    }
+    
+    
+    /**
+     * Return collection of applicants that have been issued full offers 
+     * 
+     * @return [Applicant] | []
+     * 
+     * Author: Laurence Charles
+     * Date Created: 2017_10_12
+     * Date Last Modified: 2017_10_12
+     */
+    public static function getUnsuccessfulApplicants($academicyearid)
+    {  
+        $cond = array();
+        $cond['applicant.isactive'] = 1;
+        $cond['applicant.isdeleted'] = 0;
+        $cond['application.applicationstatusid'] = [6,10];
+        $cond['application.isdeleted'] = 0;
+        $cond['academic_offering.isactive'] = 1;
+        $cond['academic_offering.isdeleted'] = 0;
+        $cond['academic_offering.academicyearid'] = $academicyearid;
+        $cond['rejection.isactive'] = 1;
+        $cond['rejection.isdeleted'] = 0;
+        $cond['rejection_applications.isactive'] = 1;
+        $cond['rejection_applications.isdeleted'] = 0;
+        
+        $applicants = Applicant::find()
+                ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('`rejection_applications`', '`application`.`applicationid` = `rejection_applications`.`applicationid`')
+                ->innerJoin('`rejection`', '`rejection_applications`.`rejectionid` = `rejection`.`rejectionid`')
+                ->where($cond)
+                ->groupBy('applicant.personid')
+                ->all();
         return $applicants;
     }
     

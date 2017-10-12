@@ -30,13 +30,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
-         * Date Created: 2017_07_21
-         * Date Last Modified: 2017_08_31
+         * Author: charles.laurence1@gmail.com
+         * Created: 2017_07_21
+         * Last Modified: 2017_10_12
          */
         public function actionViewPeriods()
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -55,13 +55,13 @@
          * 
          * @return type
          * 
-         * Author: Laurence Charles
-         * Date Created: 2017_07_21
-         * Date Last Modified: 2017_09_07
+         * Author: charles.laurence1@gmail.com
+         * Created: 2017_07_21
+         * Last Modified: 2017_10_12
          */
         public function actionViewPeriodStatistics()
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+           if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }

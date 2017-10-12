@@ -30,13 +30,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_29
-         * Date Last Modified: 2017_08_31
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadPeriodStatisticsReport()
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -61,13 +61,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_31
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadCommencedApplicationsReport($academicyearid)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -92,13 +92,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_10_10
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadCompletedApplicationsReport($academicyearid)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -123,13 +123,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_31
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadIncompleteApplicationsReport($academicyearid)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -154,13 +154,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_31
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadVerifiedApplicationsReport($academicyearid)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -185,13 +185,13 @@
          * 
          * @return view
          * 
-         * Author: Laurence Charles
+         * Author: charles.laurence1@gmail.com
          * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_31
+         * Date Last Modified: 2017_10_12
          */
         public function actionDownloadUnverifiedApplicationsReport($academicyearid)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -203,6 +203,68 @@
             $filename = $title . "    " . $date . "    " . $generating_officer;
             
             return $this->renderPartial( 'unverified-applications-export', [
+                'dataProvider' => $data_provider,
+                'title' => $title,
+                'generating_officer' => $generating_officer,
+                'filename' => $filename,
+            ]);
+        }
+        
+        
+        /**
+         * Downloads report listing successful applicants 
+         * 
+         * @return view
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Date Created: 2017_10_12
+         * Date Last Modified: 2017_10_12
+         */
+        public function actionDownloadSuccessfulApplicationsReport($academicyearid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $data_provider = ApplicationPeriodBuilder::generateSuccessfulApplicationsReport($academicyearid, 2000);
+            $title = "Successful Applications";
+            $date =  date('Y-m-d');
+            $generating_officer = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+            $filename = $title . "    " . $date . "    " . $generating_officer;
+            
+            return $this->renderPartial( 'successful-applications-export', [
+                'dataProvider' => $data_provider,
+                'title' => $title,
+                'generating_officer' => $generating_officer,
+                'filename' => $filename,
+            ]);
+        }
+        
+        
+        /**
+         * Downloads report listing unsuccessful applicants 
+         * 
+         * @return view
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Date Created: 2017_10_12
+         * Date Last Modified: 2017_10_12
+         */
+        public function actionDownloadUnsuccessfulApplicationsReport($academicyearid)
+        {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
+            $data_provider = ApplicationPeriodBuilder::generateUnsuccessfulApplicationsReport($academicyearid, 2000);
+            $title = "Unsuccessful Applications";
+            $date =  date('Y-m-d');
+            $generating_officer = Employee::getEmployeeName(Yii::$app->user->identity->personid);
+            $filename = $title . "    " . $date . "    " . $generating_officer;
+            
+            return $this->renderPartial( 'unsuccessful-applications-export', [
                 'dataProvider' => $data_provider,
                 'title' => $title,
                 'generating_officer' => $generating_officer,

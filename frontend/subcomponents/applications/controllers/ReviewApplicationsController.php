@@ -27,10 +27,15 @@
         * 
         * Author: charles.laurence1@gmil.com
         * Created: 2017_10_04
-        * Modified: 2017_10_04
+        * Modified: 2017_10_12
         */
        public function actionFindApplicantByEmail()
        {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
            $info_string = "";
            $email = NULL;
            $dataProvider = array();
@@ -89,10 +94,15 @@
         * 
         * Author: charles.laurence1@gmil.com
         * Created: 2017_10_04
-        * Modified: 2017_10_04
+        * Modified: 2017_10_12
         */
        public function actionFindApplicantByApplicantid()
        {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
            $info_string = "";
            $applicantid = NULL;
            $dataProvider = array();
@@ -151,10 +161,15 @@
         * 
         * Author: charles.laurence1@gmil.com
         * Created: 2017_10_04
-        * Modified: 2017_10_04
+        * Modified: 2017_10_12
         */
        public function actionFindApplicantByName()
        {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
            $info_string = "";
            $search_criteria = array();
            $dataProvider = array();

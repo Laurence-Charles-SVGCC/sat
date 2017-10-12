@@ -25,7 +25,9 @@
         <li>Incomplete = Applicants that have not submitted applications.</li>
         <li>Removed = Applications that have been removed.</li>
         <li>Verified = Applicants whose qualifications have been verified.</li>
-        <li>Verification Incomplete = Applicants whose qualifications have been verified.</li>
+        <li>Unverified = Applicants whose qualifications have been verified.</li>
+        <li>Offers = Applicants who have been issued an offer.</li>
+        <li>Rejections = Applicants who have been issued a rejection.</li>
     </ul>
 </div>
 
@@ -106,6 +108,23 @@
                         'label' => 'Removed'
                     ],
                     [
+                        'label' =>'Unverified',
+                         'format' => 'html',
+                        'value' => function($row)
+                        {
+                            if ($row['total_number_of_applications_unverified'] > 0)
+                            {
+                                return Html::a($row['total_number_of_applications_unverified'], 
+                                                        ['application-period-statistics/download-unverified-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['title' => 'Click to download']);
+                            }
+                            else
+                            {
+                                return $row['total_number_of_applications_unverified'];
+                            }
+                        }
+                    ],
+                    [
                         'label' => 'Verified',
                         'format' => 'html',
                         'value' => function($row)
@@ -123,19 +142,36 @@
                         }
                     ],
                     [
-                        'label' =>'Verification Incomplete',
-                         'format' => 'html',
+                        'label' => 'Offers',
+                        'format' => 'html',
                         'value' => function($row)
                         {
-                            if ($row['total_number_of_applications_unverified'] > 0)
+                            if ($row['total_number_of_applications_offers'] > 0)
                             {
-                                return Html::a($row['total_number_of_applications_unverified'], 
-                                                        ['application-period-statistics/download-unverified-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                return Html::a($row['total_number_of_applications_offers'], 
+                                                        ['application-period-statistics/download-successful-applications-report', 'academicyearid' => $row["academicyearid"]], 
                                                         ['title' => 'Click to download']);
                             }
                             else
                             {
-                                return $row['total_number_of_applications_unverified'];
+                                return $row['total_number_of_applications_offers'];
+                            }
+                        }
+                    ],
+                    [
+                        'label' => 'Rejections',
+                        'format' => 'html',
+                        'value' => function($row)
+                        {
+                            if ($row['total_number_of_applications_rejections'] > 0)
+                            {
+                                return Html::a($row['total_number_of_applications_rejections'], 
+                                                        ['application-period-statistics/download-unsuccessful-applications-report', 'academicyearid' => $row["academicyearid"]], 
+                                                        ['title' => 'Click to download']);
+                            }
+                            else
+                            {
+                                return $row['total_number_of_applications_rejections'];
                             }
                         }
                     ],

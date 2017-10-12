@@ -131,7 +131,7 @@
                     <?php endif;?>
                      
                    <!--
-                   <?php if (Yii::$app->user->can('System Administrator')): ?>
+                   <?php if (Yii::$app->user->can('System Administrator')  || Yii::$app->user->can('Registrar')): ?>
                       <li class="treeview">
                         <a href="">
                           <i class="fa fa-wrench" aria-hidden="true"></i> <span> Manage Applications</span> <i class="fa fa-angle-left pull-right"></i>

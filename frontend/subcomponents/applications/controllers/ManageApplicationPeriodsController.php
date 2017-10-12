@@ -36,11 +36,11 @@
          * 
          *  Author: charles.laurence1@gmail.com
          *  Created: 2017_09_07
-         *  Modified: 2017_10_09
+         *  Modified: 2017_10_12
          */
         public function actionViewApplicationPeriod($id)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -81,11 +81,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          *  Created: 2017_09_11
-         *  Modified: 2017_10_09
+         *  Modified: 2017_10_12
          */
         public function actionEditApplicationPeriod($id)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -135,11 +135,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          *  Created: 2017_09_12
-         *  Modified: 2017_10_09
+         *  Modified: 2017_10_12
          */
         public function actionManageProgrammeOfferings($id)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -417,11 +417,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          *  Created: 2017_09_12
-         *  Modified: 2017_10_09
+         *  Modified: 2017_10_12
          */
         public function actionAddProgrammeToCatalog($id = NULL)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -500,11 +500,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          *  Created: 2017_09_12
-         *  Modified: 2017_10_09
+         *  Modified: 2017_10_12
          */
         public function actionAddCapeSubject($id = NULL)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -562,11 +562,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionInitiatePeriod($id = NULL)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -607,10 +607,15 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionPeriodSetupStepOne($divisionid = NULL, $applicationperiodtypeid = NULL)
         {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
             $new_year = new AcademicYear();
             $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
             $result_set = array();
@@ -724,10 +729,15 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionPeriodSetupStepTwo()
         {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
             $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
             $divisions = Division::find()
                     ->where(['abbreviation' => ["DASGS", "DTVE", "DTE", "DNE"]])
@@ -800,11 +810,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionPeriodSetupStepThree($approve = NULL)
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -851,11 +861,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_09_27
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionPeriodSetupStepFour()
         {
-             if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -998,11 +1008,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_10_03
-         * Modified: 2017_10_09
+         * Modified: 2017_10_12
          */
         public function actionPeriodSetupStepFive()
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -1161,11 +1171,11 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2016_10_09
+         * Modified: 2016_10_12
          */
         public function actionPeriodSetupConfirm()
         {
-            if (Yii::$app->user->can('System Administrator') == false)
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
             {
                 throw new UnauthorizedAccessException();
             }
@@ -1204,10 +1214,15 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 21/03/2016
-         * Modified: 2016_10_09
+         * Modified: 2016_10_12
          */
         public function actionDeleteApplicationPeriod($id)
         {
+            if (Yii::$app->user->can('System Administrator') == false && Yii::$app->user->can('Registrar') == false)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            
             $period = ApplicationPeriod::getApplicationPeriod($id);
             if ($period == true)
             {

@@ -38,14 +38,24 @@
                     'label' => 'Removed'
                 ],
                 [
+                    'attribute' => 'total_number_of_applications_unverified',
+                    'format' => 'text',
+                    'label' =>'Verification Pending'
+                ],
+                [
                     'attribute' => 'total_number_of_applications_verified',
                     'format' => 'text',
                     'label' => 'Verified'
                 ],
                 [
-                    'attribute' => 'total_number_of_applications_unverified',
+                    'attribute' => 'total_number_of_applications_offers',
                     'format' => 'text',
-                    'label' =>'Verification Pending'
+                    'label' => 'Offers'
+                ],
+                [
+                    'attribute' => 'total_number_of_applications_rejections',
+                    'format' => 'text',
+                    'label' => 'Rejections'
                 ],
             ],
         ]);
