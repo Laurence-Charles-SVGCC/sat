@@ -130,11 +130,11 @@
                      </li>
                     <?php endif;?>
                      
-                   <!--
+                   
                    <?php if (Yii::$app->user->can('System Administrator')  || Yii::$app->user->can('Registrar')): ?>
                       <li class="treeview">
                         <a href="">
-                          <i class="fa fa-wrench" aria-hidden="true"></i> <span> Manage Applications</span> <i class="fa fa-angle-left pull-right"></i>
+                          <i class="fa fa-wrench" aria-hidden="true"></i> <span> Apply Administration</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])?>"><i class="fa fa-circle-o"></i> View Periods</a></li>
@@ -152,7 +152,7 @@
                         </ul>
                      </li>
                     <?php endif;?>
-                    -->
+                    
                       
                    <?php if (Yii::$app->user->can('admissions')): ?>
                     <li class="treeview">
@@ -160,11 +160,6 @@
                         <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
                       </a>
                       <ul class="treeview-menu">
-
-                        <?php if (Yii::$app->user->can('Registrar')): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/manage-application-period'])?>"><i class="fa fa-circle-o"></i>Manage Application Periods</a></li> 
-                        <?php endif; ?>
-
                         <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
                         <?php endif; ?>
