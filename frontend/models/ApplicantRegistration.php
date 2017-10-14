@@ -96,7 +96,7 @@
                     ->one();
             if ($email == false)
             {
-                $status = "Email Verification Pending";
+                $status = "Account Pending";
             }
             else
             {
@@ -105,13 +105,13 @@
                     ->all();
                 if (empty($applications) == true)
                 {
-                    $status = "Applicant Account Created";
+                    $status = "Account Created";
                 }
                 else
                 {
                     if (Applicant::isAbandoned($email->personid) == true)
                     {
-                        $status = "Applications Removed";
+                        $status = "Removed";
                     }
                     else
                     {
@@ -120,7 +120,7 @@
                             ->all();
                         if (empty($processed_applications) == false)
                         {
-                            $status = "Application Processed";
+                            $status = "Processed";
                         }
                         else
                         {
@@ -129,7 +129,7 @@
                                 ->all();
                             if (empty($verified_applications) == false)
                             {
-                                $status = "Application Verified";
+                                $status = "Verified";
                             }
                             else
                             {
@@ -138,7 +138,7 @@
                                     ->all();
                                 if (empty($submitted_unverified_applications) == false)
                                 {
-                                    $status = "Application Submitted";
+                                    $status = "Submitted";
                                 }
                                 else
                                 {
