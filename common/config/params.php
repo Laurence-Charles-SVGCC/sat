@@ -765,6 +765,7 @@ return [
         'arnos vale'=>'Arnos Vale',
         'ashton'=>'Ashton',
         'barrouallie'=>'Barrouallie',
+        'belair'=>'Belair',
         'belmont'=>'Belmont',
         'bridgetown'=>'Bridgetown',
         'biabou'=>'Biabou',
