@@ -202,7 +202,8 @@ class StudentRegistration extends \yii\db\ActiveRecord
                 . " ON batch.courseofferingid = course_offering.courseofferingid"
                 . " JOIN course_type"
                 . " ON course_offering.coursetypeid = course_type.coursetypeid"
-                . " WHERE batch_students.studentregistrationid = ". $studentregistrationid
+                . " WHERE batch_students.isactive = 1 AND batch_students.isdeleted = 0"
+                . " AND batch_students.studentregistrationid = ". $studentregistrationid
                 . ";"
                 )
                 ->queryAll();
