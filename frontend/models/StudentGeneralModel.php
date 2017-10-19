@@ -39,7 +39,7 @@
         public function rules()
         {
             return [
-                [['personid', 'studentregistrationid', 'studentstatusid', 'title', 'firstname', 'middlename', 'lastname', 'nationality', 'religion', 'placeofbirth', 'gender', 'dateofbirth', 'maritalstatus'],'required'],
+                [['personid', 'studentregistrationid', 'studentstatusid', 'title', 'firstname', 'lastname', 'nationality', 'religion', 'placeofbirth', 'gender', 'dateofbirth', 'maritalstatus'],'required'],
                 [['personid', 'studentregistrationid', 'studentstatusid'], 'integer'],
                 [['title'], 'string', 'max' => 3],
                 [['firstname', 'middlename', 'lastname', 'sponsorname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],               
