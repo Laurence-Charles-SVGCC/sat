@@ -241,8 +241,8 @@
                 {
                     $employee = Employee::find()
                              ->where(['personid' => $model->userid,  'isactive' => 1, 'isdeleted' => 0])
-                            ->one();
-                    if ($employee = false)
+                             ->one();
+                    if ($employee == false)
                     {
                         Yii::$app->getSession()->setFlash('error', 'Employee record not found.');
                     }

@@ -716,7 +716,7 @@
          */
         public function getProgrammeName()
         {
-             $programme = ProgrammeCatalog::find()
+            $programme = ProgrammeCatalog::find()
                     ->where(['programmecatalogid' => $this->programmecatalogid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
 
