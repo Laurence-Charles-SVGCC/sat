@@ -967,7 +967,11 @@
                         {
                             $period->applicationperiodstatusid = 4 ;
                         }
-                        elseif ($cape_offering_exists == true && empty($period->getCapeSubjects()) == true)
+                        /*
+                         * elseif ($cape_offering_exists == true && empty($period->getCapeSubjects()) == true)
+                         * removed because server version of php doesnt allow use of empty() on temporary variables
+                         */
+                        elseif ($cape_offering_exists == true && count($period->getCapeSubjects()) == 0)
                         {
                             $period->applicationperiodstatusid = 3 ;
                         }
@@ -978,8 +982,11 @@
                             Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
                         }
 
-                        $transaction->commit();
-                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                        if ($error_occurred == false)
+                        {
+                            $transaction->commit();
+                            return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                        }
                     }
                     else
                     {
