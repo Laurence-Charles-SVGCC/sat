@@ -1197,7 +1197,7 @@
                 if($period->save() == true)
                 {
                      Yii::$app->getSession()->setFlash('success', 'Application period configuration is complete.');
-                     return $this->redirect(['manage-application-period']);
+                     return $this->redirect(['application-periods/view-periods']);
                 }
                 else
                 {
