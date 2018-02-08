@@ -18,8 +18,13 @@
         public function checkLoginStatus()
         {
             $route = Yii::$app->urlManager->parseRequest(Yii::$app->request)[0];
+            $exempted_routes = ['site/index', 'site/request-password-reset', 'site/reset-password'];
 
-            if (Yii::$app->user->isGuest == true && $route != 'site/index'  && $route != 'site/request-password-reset') 
+//            if (Yii::$app->user->isGuest == true 
+//                    && $route != 'site/index'  
+//                    && $route != 'site/request-password-reset'
+//                    && $route != 'site/reset-password') 
+            if (Yii::$app->user->isGuest == true && in_array($route, $exempted_routes) == false) 
             {
                 Yii::$app->getResponse()->redirect(['site/index']);
             }
