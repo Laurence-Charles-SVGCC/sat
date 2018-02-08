@@ -19,7 +19,7 @@
         {
             $route = Yii::$app->urlManager->parseRequest(Yii::$app->request)[0];
 
-            if (Yii::$app->user->isGuest == true && $route != 'site/index') 
+            if (Yii::$app->user->isGuest == true && $route != 'site/index'  && $route != 'site/request-password-reset') 
             {
                 Yii::$app->getResponse()->redirect(['site/index']);
             }
