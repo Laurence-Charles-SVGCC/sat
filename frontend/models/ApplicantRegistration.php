@@ -165,7 +165,7 @@
          */
         public function getUser()
         {
-//            $user = NULL;
+            $user = NULL;
 //            $email = Email::find()
 //                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
 //                    ->one();
@@ -210,9 +210,12 @@
 //             return $user;
              
              $email = $this->getEmail();
-             $user = User::find()
-                         ->where(['personid' => $email->personid])
-                         ->one();
+             if ($email == true)
+             {
+                $user = User::find()
+                            ->where(['personid' => $email->personid])
+                            ->one();
+             }
              return $user;
              
         }
@@ -240,7 +243,7 @@
              }
              else
              {
-                 return NULL;
+                 return false;
              }
         }
         
