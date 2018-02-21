@@ -94,7 +94,7 @@
 //            $email = Email::find()
 //                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
 //                    ->one();
-            $email = getEmail();
+            $email = $this->getEmail();
             if ($email == false)
             {
                 $status = "Account Pending";
@@ -209,7 +209,7 @@
 //             }
 //             return $user;
              
-             $email = getEmail();
+             $email = $this->getEmail();
              $user = User::find()
                          ->where(['personid' => $email->personid])
                          ->one();
