@@ -179,16 +179,6 @@
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         /**
          * Return status of applicant account
          * 
@@ -274,48 +264,6 @@
         public function getUser()
         {
             $user = NULL;
-//            $email = Email::find()
-//                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
-//                    ->one();
-//             if ($email == true)
-//             {
-//                 $user = User::find()
-//                         ->where(['personid' => $email->personid])
-//                         ->one();
-//             }
-//             return $user;
-            
-            
-//            $user =  User::find()
-//                         ->where(['email' => $this->email])
-//                         ->one();
-//            if ($user == false)
-//            {
-//                $possible_emails = Email::find()
-//                        ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
-//                        ->all();
-//                 if ($possible_emails == true)
-//                 {
-//                     $target_email = end($possible_emails);
-//                     $user = User::find()
-//                             ->where(['personid' => $email->personid])
-//                             ->one();
-//                 }
-//            }
-//             return $user;
-            
-            
-//             $possible_emails = Email::find()
-//                        ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
-//                        ->all();
-//             if ($possible_emails == true)
-//             {
-//                 $target_email = end($possible_emails);
-//                 $user = User::find()
-//                         ->where(['personid' => $target_email->personid])
-//                         ->one();
-//             }
-//             return $user;
              
              $email = $this->getEmail();
              if ($email == true)
