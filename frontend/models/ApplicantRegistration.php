@@ -78,6 +78,117 @@
         }
 
         
+        
+        
+        public function getApplicantStatus()
+        {
+            $status = "--";
+            
+            $account_pending_test1 = User::find()
+                        ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+            $account_pending_test2 = Student::find()
+                        ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+            if ($account_pending_test1 == false && $account_pending_test2 == false)
+            {
+                $status = "Account Pending";
+            }
+            else
+            {
+                if ($account_pending_test1 == true)
+                {
+                    $personid = $account_pending_test1->personid;
+                }
+                elseif ($account_pending_test2 == true)
+                {
+                    $personid = $account_pending_test2->personid;
+                }
+                
+                $applications = Application::find()
+                        ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->all();
+                if (empty($applications) == true)
+                {
+                    $status = "Account Created";
+                }
+                else
+                {
+                    if (Applicant::isAbandoned($personid) == true)
+                    {
+                        $status = "Removed";
+                    }
+                    else
+                    {
+                        $processed_applications =  Application::find()
+                            ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                        if (empty($processed_applications) == false)
+                        {
+                            $status = "Processed";
+                        }
+                        else
+                        {
+                            $verified_applications =  Application::find()
+                                ->where(['applicationstatusid' => [3], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
+                                ->all();
+                            if (empty($verified_applications) == false)
+                            {
+                                $status = "Verified";
+                            }
+                            else
+                            {
+                                $submitted_unverified_applications =  Application::find()
+                                    ->where(['applicationstatusid' => [2], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
+                                    ->all();
+                                if (empty($submitted_unverified_applications) == false)
+                                {
+                                    $status = "Submitted";
+                                }
+                                else
+                                {
+                                    $status = "Programme(s) Selected";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return $status;
+        }
+        
+        
+        
+        public function getApplicantUsername()
+        {
+            $account_pending_test1 = User::find()
+                        ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+            $account_pending_test2 = Student::find()
+                        ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+            if ($account_pending_test1 == false && $account_pending_test2 == false)
+            {
+                return "--";
+            }
+            else
+            {
+                return $account_pending_test1->username;
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         /**
          * Return status of applicant account
          * 
@@ -85,15 +196,12 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
-         * Modified: 2017_10_09
+         * Modified: 2018_02_27
          */
         public function getStatus()
         {
             $status = "--";
             
-//            $email = Email::find()
-//                    ->where(['email' => $this->email, 'isactive' => 1, 'isdeleted' =>0])
-//                    ->one();
             $email = $this->getEmail();
             if ($email == false)
             {

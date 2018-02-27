@@ -39,9 +39,11 @@
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
-                    $applicant_record['status'] = $applicant_registration->getStatus();
-                    $user_record = $applicant_registration->getUser();
-                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+//                    $applicant_record['status'] = $applicant_registration->getStatus();
+//                    $user_record = $applicant_registration->getUser();
+//                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+                    $applicant_record['status'] = $applicant_registration->getApplicantStatus();
+                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
                     $records[] =  $applicant_record;
                 }
             }
@@ -87,9 +89,11 @@
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
-                    $applicant_record['status'] = $applicant_registration->getStatus();
-                    $user_record = $applicant_registration->getUser();
-                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+//                    $applicant_record['status'] = $applicant_registration->getStatus();
+//                    $user_record = $applicant_registration->getUser();
+//                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+                    $applicant_record['status'] = $applicant_registration->getApplicantStatus();
+                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
                     $records[] =  $applicant_record;
                 }
             }
@@ -135,9 +139,11 @@
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
-                    $applicant_record['status'] = $applicant_registration->getStatus();
-                    $user_record = $applicant_registration->getUser();
-                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+//                    $applicant_record['status'] = $applicant_registration->getStatus();
+//                    $user_record = $applicant_registration->getUser();
+//                    $applicant_record['username'] = ($user_record == true) ? $user_record->username : "--";
+                    $applicant_record['status'] = $applicant_registration->getApplicantStatus();
+                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
                     $records[] =  $applicant_record;
                 }
             }
