@@ -4,7 +4,7 @@
     use Yii;
     use yii\data\ArrayDataProvider;
     use yii\custom\ModelNotFoundException;
-     use frontend\models\ApplicantRegistration;
+    use frontend\models\ApplicantRegistration;
 
      
     class ApplicantRegistrationProviderBuilder extends \yii\base\Model
@@ -19,7 +19,7 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
-         * Modified: 2017_10_009
+         * Modified: 2018_02_28
          */
         public static function generateApplicantRegistrationByEmail($email, $page_size)
         {
@@ -35,8 +35,10 @@
                 foreach ($applicant_registrations as $applicant_registration)
                 {
                     $applicant_record = array();
+                    $applicant_record['applicantregistrationid'] = $applicant_registration->applicantregistrationid;
                     $applicant_record['email'] = $applicant_registration->email;
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
+                    $applicant_record['token'] = $applicant_registration->token;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();
@@ -66,7 +68,7 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
-         * Modified: 2017_10_09
+         * Modified: 2018_02_28
          */
         public static function generateApplicantRegistrationByApplicantID($applicantid, $page_size)
         {
@@ -82,8 +84,10 @@
                 foreach ($applicant_registrations as $applicant_registration)
                 {
                     $applicant_record = array();
+                    $applicant_record['applicantregistrationid'] = $applicant_registration->applicantregistrationid;
                     $applicant_record['email'] = $applicant_registration->email;
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
+                    $applicant_record['token'] = $applicant_registration->token;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();
@@ -113,7 +117,7 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
-         * Modified: 2017_10_09
+         * Modified: 2018_02_28
          */
         public static function generateApplicantRegistrationByName($search_criteria, $page_size)
         {
@@ -129,8 +133,10 @@
                 foreach ($applicant_registrations as $applicant_registration)
                 {
                     $applicant_record = array();
+                    $applicant_record['applicantregistrationid'] = $applicant_registration->applicantregistrationid;
                     $applicant_record['email'] = $applicant_registration->email;
                     $applicant_record['applicantname'] = $applicant_registration->applicantname;
+                    $applicant_record['token'] = $applicant_registration->token;
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();

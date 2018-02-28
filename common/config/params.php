@@ -1,6 +1,7 @@
 <?php
 return [
     'adminEmail' => 'admin@svgcc.vc',
+    'applicationEmail' => 'applications@svgcc.vc',
     'supportEmail' => 'support@svgcc.vc',
     'user.passwordResetTokenExpire' => 3600,
     'titles' => [

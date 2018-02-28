@@ -4,6 +4,7 @@
     use Yii;
     use yii\filters\VerbFilter;
     use frontend\models\provider_builders\ApplicantRegistrationProviderBuilder;
+    use frontend\models\ApplicantRegistration;
     
      class ReviewApplicationsController extends \yii\web\Controller
     {
@@ -240,6 +241,50 @@
                'dataProvider' => $dataProvider,
                'info_string' => $info_string
            ]);
+       }
+       
+       
+       /**
+        * Resends email with account creation token
+        * 
+        * Author: charles.laurence1@gmil.com
+        * Created: 2018_02_28
+        * Modified: 2018_02_28
+        */
+       public function actionResendVerificationEmail($id)
+       {
+           $applicant_registration = ApplicantRegistration::find()
+                   ->where(['applicantregistrationid' => $id])
+                   ->one();
+           
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                $applicant_registration->token = $applicant_registration->generateToken();
+                if ($applicant_registration->save() == false)
+                {
+                    Yii::$app->getSession()->setFlash('danger', 'Error occured resetting token.');
+                }
+                else
+                {
+                    $email_transmission_feedback = $applicant_registration->sendApplicantAccountRequestEmail();
+                    if ($email_transmission_feedback == false)
+                    {
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('danger', 'Error occured sending email verification.');
+                    }
+                    else
+                    {
+                        Yii::$app->getSession()->setFlash('success ', 'Verification email sent successfully.');
+                        $transaction->commit();
+                    }
+                }
+            }catch (Exception $ex) {
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('danger', 'Error occured processing request.');
+            }
+           
+           return $this->redirect(\Yii::$app->request->getReferrer());
        }
     
     

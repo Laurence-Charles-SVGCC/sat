@@ -5,6 +5,7 @@
     use Yii;
     use common\models\User;
     use yii\custom\ModelNotFoundException;
+    use yii\web\UrlManager;
     
     use frontend\models\Email;
     use frontend\models\Student;
@@ -158,7 +159,15 @@
         }
         
         
-        
+         /**
+         * Return username of applicant
+         * 
+         * @return string
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2018_02_27
+         * Modified: 2018_02_28
+         */
         public function getApplicantUsername()
         {
             $account_pending_test1 = User::find()
@@ -167,14 +176,25 @@
             $account_pending_test2 = Student::find()
                         ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
                         ->one();
-            if ($account_pending_test1 == false && $account_pending_test2 == false)
-            {
-                return "--";
-            }
-            else
+            
+            if ($account_pending_test1 == true && $account_pending_test2 == false)
             {
                 return $account_pending_test1->username;
             }
+            
+            elseif ($account_pending_test1 == false && $account_pending_test2 == true)
+            {
+                $user = User::find()
+                        ->where(['personid' => $account_pending_test2->personid, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                return $user->username;
+            }
+            
+            elseif ($account_pending_test1 == false && $account_pending_test2 == false)
+            {
+                return "--";
+            }
+            
         }
         
         
@@ -302,6 +322,63 @@
                  return false;
              }
         }
+        
+        
+        
+         /**
+        * Generates an applicant token
+        * 
+        * @return string
+        * 
+        * Author: charles.laurence1@gmail.com  
+        * Created: 2018_02_28
+        * Modified: 2017_02_28
+        */
+        public function generateToken()
+       {
+            return Yii::$app->getSecurity()->generateRandomString(15);
+       }
+    
+    
+       /**
+        * Returns full name for record
+        * 
+        * @return string
+        * 
+        * Author: charles.laurence1@gmail.com  
+        * Created: 2018_02_28
+        * Modified: 2018_02_28
+        */
+       public function getFullName()
+       {
+           return $this->title . ' '. $this->firstname . ' ' . $this->lastname;
+       }
+    
+    
+         /**
+        * Send an email verification correspondence to user
+        * 
+        * @return boolean
+        * 
+        * Author: charles.laurence1@gmail.com  
+        * Created: 2018_02_28
+        * Modified: 2017_02_28
+        */
+       public function sendApplicantAccountRequestEmail()
+       {
+           $host = "http://www.svgcc.vc/subdomains/apply2/web";
+           $generated_reset_link = Yii::$app->urlManager->createUrl(['account-management/applicant-account-confirmation', 'id' => $this->applicantname, 'token' => $this->token]);
+           $formatted_reset_link = str_replace("/sat_dev/frontend/web", "", $generated_reset_link);
+           $reset_url = $host . $formatted_reset_link;
+           
+           $feedback = Yii::$app->mailer->compose(['html' => 'applicant_account_request_email'], ['model' => $this, 'reset_url' => $reset_url])
+                   ->setFrom(Yii::$app->params['applicationEmail'])
+                   ->setTo($this->email)
+                   ->setSubject('SVGCC Applicant Account Creation Instructions')
+                   ->send();
+           return $feedback;
+       }
+       
         
         
     }

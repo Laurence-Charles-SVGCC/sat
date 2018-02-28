@@ -139,6 +139,7 @@
                         <ul class="treeview-menu">
                             <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])?>"><i class="fa fa-circle-o"></i> View Periods</a></li>
                             <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-period-statistics'])?>"><i class="fa fa-circle-o"></i> Period Statistics</a></li>
+                            
                             <li class="treeview">
                                 <a href="">
                                   <i class="fa fa-circle-o" aria-hidden="true"></i> <span> Find Applicants</span> <i class="fa fa-angle-left pull-right"></i>

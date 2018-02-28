@@ -2,6 +2,7 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\grid\GridView;
+    use yii\web\UrlManager;
 ?>
 
 <div>
@@ -37,6 +38,39 @@
                 'attribute' => 'username',
                 'format' => 'text',
                 'label' => 'Username'
+            ],
+            [
+                'format' => 'html',
+                'label' => 'Email Verification',
+                'value' => function($row)
+                {
+                    if (true)
+                    {
+                         return Html::a(' Send', ['resend-verification-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-success glyphicon glyphicon-send' ]);
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                  
+                }
+            ],
+            [
+                'format' => 'html',
+                'label' => 'Submission Email',
+                'value' => function($row)
+                {
+                    if (true)
+                    {
+//                         return Html::a(' Send', ['resend-submission-completion-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-success glyphicon glyphicon-send' ]);
+                         return "N/A";
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                  
+                }
             ],
         ],
     ]); ?>     
