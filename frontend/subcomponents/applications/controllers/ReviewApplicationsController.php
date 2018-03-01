@@ -5,6 +5,8 @@
     use yii\filters\VerbFilter;
     use frontend\models\provider_builders\ApplicantRegistrationProviderBuilder;
     use frontend\models\ApplicantRegistration;
+    use frontend\models\Applicant;
+    use common\models\User;
     
      class ReviewApplicationsController extends \yii\web\Controller
     {
@@ -288,6 +290,31 @@
        }
     
     
+       /**
+        * Resends email confirming submission completion
+        * 
+        * Author: charles.laurence1@gmil.com
+        * Created: 2018_03_01
+        * Modified: 2018_03_01
+        */
+       public function actionResendSubmissionConfirmationEmail($id)
+       {
+           $registrant = ApplicantRegistration::find()
+                   ->where(['applicantregistrationid' => $id])
+                   ->one();
+           
+            $user = User::find()
+                    ->where(['username' => $registrant->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                    ->one();
+           
+           $applicant = Applicant::find()
+                    ->where(['personid' => $user->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+           
+           $applicant->processSendSubmissionConfirmationEmail($id);
+
+           return $this->redirect(\Yii::$app->request->getReferrer());
+      }
             
 }
     

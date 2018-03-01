@@ -1768,8 +1768,95 @@ class Application extends \yii\db\ActiveRecord
                 return true;
         }
         return false;
-        
     }
+    
+    
+     /**
+         * Return abbreviation of division that application is associated with.
+         * 
+         * @return string 
+         * 
+         * Author: chalres.laurence1@gmail.com  
+         * Created: 2018_03_01
+         * Modified: 2018_03_01
+         */
+        public function getDivisionAbbreviation()
+        {
+            return Division::find()
+                    ->where(['divisionid' => $this->divisionid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one()
+                    ->abbreviation;
+        }
+
+
+        /**
+         * Return overiew of programme application is related to
+         * 
+         * @return string
+         * 
+         * Author: chalres.laurence1@gmail.com  
+         * Created: 2018_03_01
+         * Modified: 2018_03_01
+         */
+        public function getProgrammeDetails()
+        {
+            $cape_subjects_names = array();
+            $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $this->getAcademicoffering()->one()->programmecatalogid]);
+            $cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $this->applicationid]);
+            foreach ($cape_subjects as $cs)
+            { 
+                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+            }
+            return empty($cape_subjects) ? $programme->getFullName() : $programme->name . ": " . implode(' ,', $cape_subjects_names);
+        }
+        
+        
+        /**
+         * Return associative array of application details
+         * 
+         * @return [["ordering"], ["programme"], ["division"], ["date_of_submission"]]
+         * 
+         * Author: chalres.laurence1@gmail.com  
+         * Created: 2018_03_01
+         * Modified: 2018_03_01
+         */
+        public function formatApplicationInformation()
+        {
+            $row = array();
+            $row["applicationid"] = $this->applicationid;
+            $row["divisionid"] = $this->divisionid;
+            $row["academicofferingid"] = $this->academicofferingid;
+            $row["ordering_as_integer"] = $this->ordering;
+
+            if ($this->ordering == 1)
+            {
+                $row["ordering"] = "First Choice";
+            }
+            elseif ($this->ordering == 2)
+            {
+                $row["ordering"] = "Second Choice";
+            }
+            elseif ($this->ordering == 3)
+            {
+                $row["ordering"] = "Third Choice";
+            }
+
+            $row["programme"] = $this->getProgrammeDetails();
+            $row["division"] = $this->getDivisionAbbreviation();
+
+            if ($this->submissiontimestamp == NULL)
+            {
+                $row["submission_timestamp"] = "N/A";
+            }
+            else
+            {
+                $date = date_create($this->submissiontimestamp);
+                $row["submission_timestamp"] = date_format($date, 'l jS \of F Y h:i:s A');
+            }
+
+            return $row;
+        }
+    
     
     
     

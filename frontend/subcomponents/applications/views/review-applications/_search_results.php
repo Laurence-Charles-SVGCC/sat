@@ -3,6 +3,7 @@
     use yii\helpers\Url;
     use yii\grid\GridView;
     use yii\web\UrlManager;
+    use frontend\models\ApplicantRegistration;
 ?>
 
 <div>
@@ -46,7 +47,7 @@
                 {
                     if (true)
                     {
-                         return Html::a(' Send', ['resend-verification-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-success glyphicon glyphicon-send' ]);
+                         return Html::a(' Resend', ['resend-verification-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-default glyphicon glyphicon-send']);
                     }
                     else
                     {
@@ -60,16 +61,17 @@
                 'label' => 'Submission Email',
                 'value' => function($row)
                 {
-                    if (true)
+                    $registrant = ApplicantRegistration::find()
+                            ->where(['applicantname' => $row['applicantname']])
+                            ->one();
+                    if ($registrant->getStatus() == "Submitted")
                     {
-//                         return Html::a(' Send', ['resend-submission-completion-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-success glyphicon glyphicon-send' ]);
-                         return "N/A";
+                        return Html::a(' Resend', ['resend-submission-confirmation-email', 'id' => $row['applicantregistrationid']], ['class' => 'btn btn-primary glyphicon glyphicon-send' ]);
                     }
                     else
                     {
-                        return "--";
+                         return "--";
                     }
-                  
                 }
             ],
         ],

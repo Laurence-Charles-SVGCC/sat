@@ -6,6 +6,7 @@ use Yii;
 use common\models\User;
 use frontend\models\Application;
 use frontend\models\Applicant;
+use frontend\models\ApplicantRegistration;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapeSubject;
@@ -3323,6 +3324,92 @@ class Applicant extends \yii\db\ActiveRecord
         $duration =  (strtotime($application->submissiontimestamp) - strtotime($user->datecreated))/60;
         return round($duration);
     }
+    
+    
+     /**
+     * Send applicant submission email
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_03_01
+     * Modified: 2017_03_01
+     */
+    public function processSendSubmissionConfirmationEmail($applicantregistrationid)
+    {
+        $applicant_registration = ApplicantRegistration::find()
+                        ->where(['applicantregistrationid' => $applicantregistrationid])
+                        ->one();
+                
+        $application_records = array();
+        $applications = $this->getActiveApplications();
+        foreach ($applications as $application)
+        {
+            $application_records[] = $application->formatApplicationInformation();
+        }
+        
+        $email_file = "application_submission_successful";
+        if ($this->applicantintentid == 1)
+        {
+            $email_file = "dasgs_dtve_full_application_submission_successful";
+        }
+        elseif ($this->applicantintentid == 4)
+        {
+            $email_file = "dte_full_application_submission_successful";
+        }
+        elseif ($this->applicantintentid == 6)
+        {
+            $email_file = "dne_full_application_submission_successful";
+        }
+        
+        Yii::$app->mailer->compose(['html' => $email_file],
+            ['applicant' => $this,
+                'application_records' => $application_records,
+                'username' => $applicant_registration->applicantname])
+           ->setFrom(Yii::$app->params['applicationEmail'])
+           ->setTo($applicant_registration->email)
+           ->setSubject('Application Submission Successful')
+           ->send();
+    }
+    
+    
+    /**
+     * Return all active applicant's applications
+     * 
+     * @return Application[] | []
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2018_03_01
+     * Modified: 2018_03_01
+     */
+    public function getActiveApplications()
+    {
+        return Application::find()
+                ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->orderBy('ordering ASC')
+                ->all();
+    }
+    
+    
+    /**
+     * Returns applicant's fullname
+     * 
+     * @return type
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2018_03_01
+     * Modified: 2018_03_01
+     */
+    public function getFullName()
+    {
+        if ($this->middlename == false)
+        {
+            return  $this->title . " " . $this->firstname . " " . $this->lastname;
+        }
+        else
+        {
+            return  $this->title . " " . $this->firstname . " " . $this->middlename . " " . $this->lastname;
+        }
+    }
+    
     
     
     
