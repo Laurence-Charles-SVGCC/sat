@@ -36,30 +36,127 @@
 </div><br/><br/>
 
 <?php if ($dataProvider) : ?>
-   <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
-        <div class="box-header with-border">
-            <span class="box-title">Applicant Progress Stages</span>
-        </div>
-
-        <div class="box-body">
-            <button type="button" class="btn"> 1. Account Pending</button>--->
-            <button type="button" class="btn"> 2. Account Created</button>--->
-            <button type="button" class="btn"> 3. Programme(s) Selected</button>--->
-            <button type="button" class="btn"> 4. Submitted</button>--->
-            <button type="button" class="btn"> 5. Verified</button>--->
-            <button type="button" class="btn"> 6. Processed</button>--->
-            <button type="button" class="btn"> 7. Removed</button>
-        </div><br/>
-    </div><br/>
-
-
-    <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
-        <div class="box-header with-border">
-            <span class="box-title"><?= "Search results for -  " . $info_string ?></span>
+   <div class="row">
+        <div class="col-md-3">
+            <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+                <div class="box-header with-border">
+                    <span class="box-title">Pre 2018 Stages</span>
+                </div>
+                <ol>
+                    <li>Acc. Pending</li>
+                    <li>Acc. Created</li>
+                    <li>Prog. Selected</li>
+                    <li>Submitted</li>
+                    <li>Verified</li>
+                    <li>Processed</li>
+                    <li>Removed</li>
+                </ol>
+             </div>
         </div>
         
-        <div class="box-body">
-             <?= $this->render('_search_results', ['dataProvider' => $dataProvider]) ?>
+        <div class="col-md-3">
+            <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+                <div class="box-header with-border">
+                    <span class="box-title">DASGS/DTVE Stages</span>
+                </div>
+                <ol>
+                    <li>Acc. Pending</li>
+                    <li>Acc. Created</li>
+                    <li>Prog. Selected</li>
+                    <li>Profile</li>
+                    <li>Extracurricular Activities</li>
+                    <li>Comtacts</li>
+                    <li>Addresses</li>
+                    <li>Relatives</li>
+                    <li>Primary Attendance</li>
+                    <li>Secondary Attendance</li>
+                    <li>Tertiary Attendance</li>
+                    <li>Academic Qualifications</li>
+                    <li>Post Sec. Qualifications</li>
+                     <li>Submitted</li>
+                    <li>Verified</li>
+                    <li>Processed</li>
+                    <li>Removed</li>
+                </ol>
+             </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+                <div class="box-header with-border">
+                    <span class="box-title">DTE Stages</span>
+                </div>
+                <ol>
+                    <li>Acc. Pending</li>
+                    <li>Acc. Created</li>
+                    <li>Prog. Selected</li>
+                    <li>Profile</li>
+                    <li>Extracurricular Activities</li>
+                    <li>Comtacts</li>
+                    <li>Addresses</li>
+                    <li>Relatives</li>
+                    <li>Primary Attendance</li>
+                    <li>Secondary Attendance</li>
+                    <li>Tertiary Attendance</li>
+                    <li>Academic Qualifications</li>
+                    <li>Post Sec. Qualifications</li>
+                    <li>DTE Information</li>
+                    <li>Teaching Experience</li>
+                    <li>General Work Experience</li>
+                    <li>References</li>
+                    <li>Criminal Record</li>
+                    <li>Submitted</li>
+                    <li>Verified</li>
+                    <li>Processed</li>
+                    <li>Removed</li>
+                </ol>
+             </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+                <div class="box-header with-border">
+                    <span class="box-title">DNE Stages</span>
+                </div>
+                <ol>
+                    <li>Acc. Pending</li>
+                    <li>Acc. Created</li>
+                    <li>Prog. Selected</li>
+                    <li>Profile</li>
+                    <li>Extracurricular Activities</li>
+                    <li>Comtacts</li>
+                    <li>Addresses</li>
+                    <li>Relatives</li>
+                    <li>Primary Attendance</li>
+                    <li>Secondary Attendance</li>
+                    <li>Tertiary Attendance</li>
+                    <li>Academic Qualifications</li>
+                    <li>Post Sec. Qualifications</li>
+                    <li>DNE Information</li>
+                    <li>Nursing Experience</li>
+                    <li>General Work Experience</li>
+                    <li>References</li>
+                    <li>Criminal Record</li>
+                    <li>Submitted</li>
+                    <li>Verified</li>
+                    <li>Processed</li>
+                    <li>Removed</li>
+                </ol>
+             </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
+                <div class="box-header with-border">
+                    <span class="box-title"><?= "Search results for -  " . $info_string ?></span>
+                </div>
+
+                <div class="box-body">
+                     <?= $this->render('_search_results', ['dataProvider' => $dataProvider]) ?>
+                </div>
+            </div>
         </div>
     </div>
 <?php endif; ?>

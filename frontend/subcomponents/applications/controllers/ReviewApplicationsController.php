@@ -72,7 +72,7 @@
            elseif ( $email != NULL  && strcmp($email, "") != 0)
            {
                $info_string = $info_string .  " Email: " . $email;
-               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByEmail($email, 50);
+               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByEmail($email, 25);
                if ($dataProvider->count > 0)
                {
                    Yii::$app->getSession()->setFlash('success', $dataProvider->count . ' applicant account(s) found.');
@@ -139,7 +139,7 @@
            elseif ( $applicantid != NULL  && strcmp($applicantid, "") != 0)
            {
                $info_string = $info_string .  " Email: " . $applicantid;
-               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByApplicantID($applicantid, 50);
+               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByApplicantID($applicantid, 25);
                if ($dataProvider->count > 0)
                {
                    Yii::$app->getSession()->setFlash('success', $dataProvider->count . ' applicant account(s) found.');
@@ -228,7 +228,7 @@
                     $info_string = $info_string .  " Last Name: " . $lastname;
                 }
 
-               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByName($search_criteria, 50);
+               $dataProvider = ApplicantRegistrationProviderBuilder::generateApplicantRegistrationByName($search_criteria, 25);
                if ($dataProvider->count > 0)
                {
                    Yii::$app->getSession()->setFlash('success', $dataProvider->count . ' applicant account(s) found.');

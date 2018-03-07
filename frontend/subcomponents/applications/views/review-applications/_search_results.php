@@ -41,6 +41,16 @@
                 'label' => 'Username'
             ],
             [
+                'attribute' => 'start_date',
+                'format' => 'text',
+                'label' => 'Start Date'
+            ],
+            [
+                'attribute' => 'submission_date',
+                'format' => 'text',
+                'label' => 'Submission Date'
+            ],
+            [
                 'format' => 'html',
                 'label' => 'Email Verification',
                 'value' => function($row)

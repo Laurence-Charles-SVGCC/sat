@@ -5,6 +5,8 @@
     use yii\data\ArrayDataProvider;
     use yii\custom\ModelNotFoundException;
     use frontend\models\ApplicantRegistration;
+    use frontend\models\Application;
+    use common\models\User;
 
      
     class ApplicantRegistrationProviderBuilder extends \yii\base\Model
@@ -42,7 +44,49 @@
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();
-                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
+                    
+                    $username = $applicant_registration->getApplicantUsername();
+                    $applicant_record['username'] = $username;
+                    
+                    if ($applicant_registration->created_at == "0000-00-00 00:00:00")
+                    {
+                        $applicant_record['start_date'] = "--";
+                    }
+                    else
+                    {
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                    }
+                    
+                    
+                    $user = User::find()
+                            ->where(['username' => $username, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($user == false)
+                    {
+                        $applicant_record['submission_date'] = "--";
+                    }
+                    else
+                    {
+                        $applications = Application::find()
+                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                        if ($applications == false)
+                        {
+                            $applicant_record['submission_date'] = "--";
+                        }
+                        else
+                        {
+                            $target_application = $applications[0];
+                            if ($target_application->submissiontimestamp == "0000-00-00 00:00:00"  || $target_application->submissiontimestamp == NULL)
+                            {
+                                $applicant_record['submission_date'] = "--";
+                            }
+                            else
+                            {
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                            }
+                        }
+                    }
                     $records[] =  $applicant_record;
                 }
             }
@@ -91,7 +135,49 @@
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();
-                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
+                    
+                    $username = $applicant_registration->getApplicantUsername();
+                    $applicant_record['username'] = $username;
+                    
+                    if ($applicant_registration->created_at == "0000-00-00 00:00:00")
+                    {
+                        $applicant_record['start_date'] = "--";
+                    }
+                    else
+                    {
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                    }
+                    
+                    
+                    $user = User::find()
+                            ->where(['username' => $username, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($user == false)
+                    {
+                        $applicant_record['submission_date'] = "--";
+                    }
+                    else
+                    {
+                        $applications = Application::find()
+                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                        if ($applications == false)
+                        {
+                            $applicant_record['submission_date'] = "--";
+                        }
+                        else
+                        {
+                            $target_application = $applications[0];
+                            if ($target_application->submissiontimestamp == "0000-00-00 00:00:00"  || $target_application->submissiontimestamp == NULL)
+                            {
+                                $applicant_record['submission_date'] = "--";
+                            }
+                            else
+                            {
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                            }
+                        }
+                    }
                     $records[] =  $applicant_record;
                 }
             }
@@ -140,7 +226,49 @@
                     $applicant_record['firstname'] = $applicant_registration->firstname;
                     $applicant_record['lastname'] = $applicant_registration->lastname;
                     $applicant_record['status'] = $applicant_registration->getApplicantStatus();
-                    $applicant_record['username'] = $applicant_registration->getApplicantUsername();
+                    
+                    $username = $applicant_registration->getApplicantUsername();
+                    $applicant_record['username'] = $username;
+                    
+                    if ($applicant_registration->created_at == "0000-00-00 00:00:00")
+                    {
+                        $applicant_record['start_date'] = "--";
+                    }
+                    else
+                    {
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                    }
+                    
+                    
+                    $user = User::find()
+                            ->where(['username' => $username, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($user == false)
+                    {
+                        $applicant_record['submission_date'] = "--";
+                    }
+                    else
+                    {
+                        $applications = Application::find()
+                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                        if ($applications == false)
+                        {
+                            $applicant_record['submission_date'] = "--";
+                        }
+                        else
+                        {
+                            $target_application = $applications[0];
+                            if ($target_application->submissiontimestamp == "0000-00-00 00:00:00"  || $target_application->submissiontimestamp == NULL)
+                            {
+                                $applicant_record['submission_date'] = "--";
+                            }
+                            else
+                            {
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                            }
+                        }
+                    }
                     $records[] =  $applicant_record;
                 }
             }
