@@ -3505,6 +3505,184 @@ class Applicant extends \yii\db\ActiveRecord
        }
        return false;
    }
+   
+   /**
+     * Determines the existence of Early Childhood Education applications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_28
+     * Modified: 2017_11_28
+     */
+    public function hasEarlyChildhoodApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                'programme_catalog.specialisation' => 'Early Childhood Education', 'programme_catalog.name' => 'Teacher Education',
+                                'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+    
+    
+    /**
+     * Determines the existence of Primary School applications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_28
+     * Modified: 2017_11_28
+     */
+    public function hasPrimarySchoolApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                'programme_catalog.specialisation' => 'Primary', 'programme_catalog.name' => 'Teacher Education',
+                                'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+    
+    
+    /**
+     * Determines the existence of Secondary applications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_28
+     * Modified: 2017_11_28
+     */
+    public function hasSecondarySchoolApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                    'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                    'programme_catalog.specialisation' => 'Secondary', 'programme_catalog.name' => 'Teacher Education',
+                                    'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+    
+    /**
+     * Determines the existence of TVET applications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2018_02_07
+     * Modified: 2018_02_07
+     */
+    public function hasTVETApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                    'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                    'programme_catalog.specialisation' => 'TVET - Home Economics & Industrial Arts', 'programme_catalog.name' => 'Teacher Education',
+                                    'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+    
+    
+    /**
+     * Determines if applicant has >= 5 qualifications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_29
+     * Modified: 2017_11_29
+     */
+    public function hasEarlyChildhoodQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+        
+        if ($this->isexternal == 1  || count($records) >= 3)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if applicant has >= 5 qualifications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_29
+     * Modified: 2017_11_29
+     */
+    public function hasPrimarySchoolQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+      
+        if ($this->isexternal == 1  || count($records) >= 5)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if applicant has >= 5 CESE qualifications and unit 1 and unit 2 Cape qualification
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_29
+     * Modified: 2017_11_29
+     */
+    public function hasSecondarySchoolQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+        
+        if ($this->isexternal == 1  || count($records) >= 5)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Determines if applicant has >= 5 CESE qualifications
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com  
+     * Created: 2018_02_07
+     * Modified: 2018_02_07
+     */
+    public function hasTVETQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+        
+        if ($this->isexternal == 1  || count($records) >= 5)
+        {
+            return true;
+        }
+        return false;
+    }
     /*************************************       DasgsDtveFull     *********************************************/
     
     /**
