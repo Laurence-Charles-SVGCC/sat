@@ -182,257 +182,247 @@
                 }
                 else
                 {
-//                    $any_applications = Application::find()
-//                        ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
-//                        ->all();
-//                    if (empty($applications) == true)
-//                    {
-//                        $status = "Account Created";
-//                    }
-//                    else // if applicant has selected programme(s)
-//                    {
-                        $submitted_applications = Application::find()
-                                ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                    $submitted_applications = Application::find()
+                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->all();
+                     if ($submitted_applications == true)   //if applicant has submitted their application
+                     {
+                         if (Applicant::isAbandoned($account_pending_test1->personid) == true)
+                        {
+                            $status = "Removed";
+                        }
+                        else
+                        {
+                            $processed_applications =  Application::find()
+                                ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
                                 ->all();
-                         if ($submitted_applications == true)   //if applicant has submitted their application
-                         {
-                             if (Applicant::isAbandoned($account_pending_test1->personid) == true)
+                            if (empty($processed_applications) == false)
                             {
-                                $status = "Removed";
+                                $status = "Processed";
                             }
                             else
                             {
-                                $processed_applications =  Application::find()
-                                    ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                $verified_applications =  Application::find()
+                                    ->where(['applicationstatusid' => [3], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
                                     ->all();
-                                if (empty($processed_applications) == false)
+                                if (empty($verified_applications) == false)
                                 {
-                                    $status = "Processed";
+                                    $status = "Verified";
                                 }
                                 else
                                 {
-                                    $verified_applications =  Application::find()
-                                        ->where(['applicationstatusid' => [3], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                    $submitted_unverified_applications =  Application::find()
+                                        ->where(['applicationstatusid' => [2], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
                                         ->all();
-                                    if (empty($verified_applications) == false)
+                                    if (empty($submitted_unverified_applications) == false)
                                     {
-                                        $status = "Verified";
-                                    }
-                                    else
-                                    {
-                                        $submitted_unverified_applications =  Application::find()
-                                            ->where(['applicationstatusid' => [2], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
-                                            ->all();
-                                        if (empty($submitted_unverified_applications) == false)
-                                        {
-                                            $status = "Submitted";
-                                        }
-                                        else    //determine stage withing application process before submission
-                                        {
-                                            $applicant = Applicant::find()
-                                                    ->where(['personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' => 0])
-                                                    ->one();
-                                            if ($this->applicantintentid == 1)      // if DasgsDtveFull
-                                            {
-                                               if ($applicant->isDasgsDtveAdditionalQualificationQueryEntryComplete() == true)
-                                               {
-                                                   $status = "Post Sec. Qualifications";
-                                               }
-                                               elseif ($applicant->isDasgsDtveAcademicQualificationsEntryComplete() == true)
-                                               {
-                                                   $status = "Academic Qualifications";
-                                               }
-                                               elseif ($applicant->isDasgsDtveTertiaryInstitutionQueryEntryComplete() == true)
-                                               {
-                                                   $status = "Tertiary Attendance";
-                                               }
-                                               elseif ($applicant->isDasgsDtveSecondaryInstitutionEntryComplete() == true)
-                                               {
-                                                   $status = "Secondary Attendance";
-                                               }
-                                               elseif ($applicant->isDasgsDtvePrimaryInstitutionEntryComplete() == true)
-                                               {
-                                                   $status = "Primary Attendance";
-                                               }
-                                               elseif ($applicant->isDasgsDtveFamilyContactsEntryComplete() == true)
-                                               {
-                                                   $status = "Relatives";
-                                               }
-                                               elseif ($applicant->isDasgsDtveAddressEntryComplete() == true)
-                                               {
-                                                   $status = "Addresses";
-                                               }
-                                               elseif ($applicant->isDasgsDtveContactEntryComplete() == true)
-                                               {
-                                                   $status = "Contacts";
-                                               }
-                                               elseif ($applicant->isDasgsDtveExtracurricularEntryComplete() == true)
-                                               {
-                                                   $status = "Extracurricular Activities";
-                                               }
-                                               elseif ($applicant->isDasgsDtveProfileEntryComplete() == true)
-                                               {
-                                                   $status = "Profile";
-                                               }
-                                               elseif ($applicant->isDasgsDtveProgrammeEntryComplete() == true)
-                                               {
-                                                   $status = "Programme(s) Selected";
-                                               }
-                                               else
-                                                {
-                                                    $status = "Account Created";
-                                                }
-                                            }
-                                            
-                                            elseif ($this->applicantintentid == 4)      // if DteFull
-                                            {
-                                                if ($applicant->isDteCriminalRecordEntryComplete() == true)
-                                                {
-                                                    $status = "Criminal Record";
-                                                }
-                                                elseif ($applicant->isDteReferencesEntryComplete() == true)
-                                                {
-                                                    $status = "References";
-                                                }
-                                                elseif ($applicant->isDteGeneralWorkExperienceEntryComplete() == true)
-                                                {
-                                                    $status = "General Work Experience";
-                                                }
-                                                elseif ($applicant->isDteTeachingExperienceEntryComplete() == true)
-                                                {
-                                                    $status = "Teaching Experience";
-                                                }
-                                                elseif ($applicant->isDteTeachingAdditionalInfoEntryComplete() == true)
-                                                {
-                                                    $status = "DTE Information";
-                                                }
-                                                elseif ($applicant->isDteAdditionalQualificationQueryEntryComplete() == true)
-                                                {
-                                                    $status = "Post Sec. Qualifications";
-                                                }
-                                                elseif ($applicant->isDteAcademicQualificationsEntryComplete() == true)
-                                                {
-                                                    $status = "Academic Qualifications";
-                                                }
-                                                elseif ($applicant->isDteTertiaryInstitutionQueryEntryComplete() == true)
-                                                {
-                                                    $status = "Tertiary Attendance";
-                                                }
-                                                elseif ($applicant->isDteSecondaryInstitutionEntryComplete() == true)
-                                                {
-                                                    $status = "Secondary Attendance";
-                                                }
-                                                elseif ($applicant->isDtePrimaryInstitutionEntryComplete() == true)
-                                                {
-                                                    $status = "Primary Attendance";
-                                                }
-                                                elseif ($applicant->isDteFamilyContactsEntryComplete() == true)
-                                                {
-                                                    $status = "Relatives";
-                                                }
-                                                elseif ($applicant->isDteAddressEntryComplete() == true)
-                                                {
-                                                    $status = "Addresses";
-                                                }
-                                                elseif ($applicant->isDteContactEntryComplete() == true)
-                                                {
-                                                    $status = "Contacts";
-                                                }
-                                                elseif ($applicant->isDteExtracurricularEntryComplete() == true)
-                                                {
-                                                    $status = "Extracurricular Activities";
-                                                }
-                                                elseif ($applicant->isDteProfileEntryComplete() == true)
-                                                {
-                                                    $status = "Profile";
-                                                }
-                                                elseif ($applicant->isDteProgrammeEntryComplete() == true)
-                                                {
-                                                    $status = "Programme(s) Selected";
-                                                }
-                                                else
-                                                {
-                                                    $status = "Account Created";
-                                                }
-                                            }
-                                            
-                                            elseif ($this->applicantintentid == 6)      // if DneFull
-                                            {
-                                               if ($applicant->isDneCriminalRecordEntryComplete() == true)
-                                               {
-                                                   $status = "Criminal Record";
-                                               }
-                                               elseif ($applicant->isDneReferencesEntryComplete() == true)
-                                               {
-                                                   $status = "References";
-                                               }
-                                               elseif ($applicant->isDneGeneralWorkExperienceEntryComplete() == true)
-                                               {
-                                                   $status = "General Work Experience";
-                                               }
-                                               elseif ($applicant->isDneNursingExperienceEntryComplete() == true)
-                                               {
-                                                   $status = "Nursing Experience";
-                                               }
-                                               elseif ($applicant->isDneNursingAdditionalInfoEntryComplete() == true)
-                                               {
-                                                   $status = "DNE Information";
-                                               }
-                                               elseif ($applicant->isDneAdditionalQualificationQueryEntryComplete() == true)
-                                               {
-                                                   $status = "Post Sec. Qualifications";
-                                               }
-                                               elseif ($applicant->isDneAcademicQualificationsEntryComplete() == true)
-                                               {
-                                                   $status = "Academic Qualifications";
-                                               }
-                                               elseif ($applicant->isDneTertiaryInstitutionQueryEntryComplete() == true)
-                                               {
-                                                   $status = "Tertiary Attendance";
-                                               }
-                                               elseif ($applicant->isDneSecondaryInstitutionEntryComplete() == true)
-                                               {
-                                                   $status = "Secondary Attendance";
-                                               }
-                                               elseif ($applicant->isDnePrimaryInstitutionEntryComplete() == true)
-                                               {
-                                                   $status = "Primary Attendance";
-                                               }
-                                               elseif ($applicant->isDneFamilyContactsEntryComplete() == true)
-                                               {
-                                                   $status = "Relatives";
-                                               }
-                                               elseif ($applicant->isDneAddressEntryComplete() == true)
-                                               {
-                                                   $status = "Addresses";
-                                               }
-                                               elseif ($applicant->isDneContactEntryComplete() == true)
-                                               {
-                                                   $status = "Contacts";
-                                               }
-                                               elseif ($applicant->isDneExtracurricularEntryComplete() == true)
-                                               {
-                                                   $status = "Extracurricular Activities";
-                                               }
-                                               elseif ($applicant->isDneProfileEntryComplete() == true)
-                                               {
-                                                   $status = "Profile";
-                                               }
-                                               elseif ($applicant->isDneProgrammeEntryComplete() == true)
-                                               {
-                                                   $status = "Programme(s) Selected";
-                                               }
-                                               else
-                                                {
-                                                    $status = "Account Created";
-                                                }
-                                            }
-                                        }
+                                        $status = "Submitted";
                                     }
                                 }
                             }
-                         }
-//                    }
+                        }
+                     }
+                    else    //determine stage withing application process before submission
+                    {
+                        $applicant = Applicant::find()
+                                ->where(['personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                        if ($this->applicantintentid == 1)      // if DasgsDtveFull
+                        {
+                           if ($applicant->isDasgsDtveAdditionalQualificationQueryEntryComplete() == true)
+                           {
+                               $status = "Post Sec. Qualifications";
+                           }
+                           elseif ($applicant->isDasgsDtveAcademicQualificationsEntryComplete() == true)
+                           {
+                               $status = "Academic Qualifications";
+                           }
+                           elseif ($applicant->isDasgsDtveTertiaryInstitutionQueryEntryComplete() == true)
+                           {
+                               $status = "Tertiary Attendance";
+                           }
+                           elseif ($applicant->isDasgsDtveSecondaryInstitutionEntryComplete() == true)
+                           {
+                               $status = "Secondary Attendance";
+                           }
+                           elseif ($applicant->isDasgsDtvePrimaryInstitutionEntryComplete() == true)
+                           {
+                               $status = "Primary Attendance";
+                           }
+                           elseif ($applicant->isDasgsDtveFamilyContactsEntryComplete() == true)
+                           {
+                               $status = "Relatives";
+                           }
+                           elseif ($applicant->isDasgsDtveAddressEntryComplete() == true)
+                           {
+                               $status = "Addresses";
+                           }
+                           elseif ($applicant->isDasgsDtveContactEntryComplete() == true)
+                           {
+                               $status = "Contacts";
+                           }
+                           elseif ($applicant->isDasgsDtveExtracurricularEntryComplete() == true)
+                           {
+                               $status = "Extracurricular Activities";
+                           }
+                           elseif ($applicant->isDasgsDtveProfileEntryComplete() == true)
+                           {
+                               $status = "Profile";
+                           }
+                           elseif ($applicant->isDasgsDtveProgrammeEntryComplete() == true)
+                           {
+                               $status = "Programme(s) Selected";
+                           }
+                           else
+                            {
+                                $status = "Account Created";
+                            }
+                        }
+
+                        elseif ($this->applicantintentid == 4)      // if DteFull
+                        {
+                            if ($applicant->isDteCriminalRecordEntryComplete() == true)
+                            {
+                                $status = "Criminal Record";
+                            }
+                            elseif ($applicant->isDteReferencesEntryComplete() == true)
+                            {
+                                $status = "References";
+                            }
+                            elseif ($applicant->isDteGeneralWorkExperienceEntryComplete() == true)
+                            {
+                                $status = "General Work Experience";
+                            }
+                            elseif ($applicant->isDteTeachingExperienceEntryComplete() == true)
+                            {
+                                $status = "Teaching Experience";
+                            }
+                            elseif ($applicant->isDteTeachingAdditionalInfoEntryComplete() == true)
+                            {
+                                $status = "DTE Information";
+                            }
+                            elseif ($applicant->isDteAdditionalQualificationQueryEntryComplete() == true)
+                            {
+                                $status = "Post Sec. Qualifications";
+                            }
+                            elseif ($applicant->isDteAcademicQualificationsEntryComplete() == true)
+                            {
+                                $status = "Academic Qualifications";
+                            }
+                            elseif ($applicant->isDteTertiaryInstitutionQueryEntryComplete() == true)
+                            {
+                                $status = "Tertiary Attendance";
+                            }
+                            elseif ($applicant->isDteSecondaryInstitutionEntryComplete() == true)
+                            {
+                                $status = "Secondary Attendance";
+                            }
+                            elseif ($applicant->isDtePrimaryInstitutionEntryComplete() == true)
+                            {
+                                $status = "Primary Attendance";
+                            }
+                            elseif ($applicant->isDteFamilyContactsEntryComplete() == true)
+                            {
+                                $status = "Relatives";
+                            }
+                            elseif ($applicant->isDteAddressEntryComplete() == true)
+                            {
+                                $status = "Addresses";
+                            }
+                            elseif ($applicant->isDteContactEntryComplete() == true)
+                            {
+                                $status = "Contacts";
+                            }
+                            elseif ($applicant->isDteExtracurricularEntryComplete() == true)
+                            {
+                                $status = "Extracurricular Activities";
+                            }
+                            elseif ($applicant->isDteProfileEntryComplete() == true)
+                            {
+                                $status = "Profile";
+                            }
+                            elseif ($applicant->isDteProgrammeEntryComplete() == true)
+                            {
+                                $status = "Programme(s) Selected";
+                            }
+                            else
+                            {
+                                $status = "Account Created";
+                            }
+                        }
+
+                        elseif ($this->applicantintentid == 6)      // if DneFull
+                        {
+                           if ($applicant->isDneCriminalRecordEntryComplete() == true)
+                           {
+                               $status = "Criminal Record";
+                           }
+                           elseif ($applicant->isDneReferencesEntryComplete() == true)
+                           {
+                               $status = "References";
+                           }
+                           elseif ($applicant->isDneGeneralWorkExperienceEntryComplete() == true)
+                           {
+                               $status = "General Work Experience";
+                           }
+                           elseif ($applicant->isDneNursingExperienceEntryComplete() == true)
+                           {
+                               $status = "Nursing Experience";
+                           }
+                           elseif ($applicant->isDneNursingAdditionalInfoEntryComplete() == true)
+                           {
+                               $status = "DNE Information";
+                           }
+                           elseif ($applicant->isDneAdditionalQualificationQueryEntryComplete() == true)
+                           {
+                               $status = "Post Sec. Qualifications";
+                           }
+                           elseif ($applicant->isDneAcademicQualificationsEntryComplete() == true)
+                           {
+                               $status = "Academic Qualifications";
+                           }
+                           elseif ($applicant->isDneTertiaryInstitutionQueryEntryComplete() == true)
+                           {
+                               $status = "Tertiary Attendance";
+                           }
+                           elseif ($applicant->isDneSecondaryInstitutionEntryComplete() == true)
+                           {
+                               $status = "Secondary Attendance";
+                           }
+                           elseif ($applicant->isDnePrimaryInstitutionEntryComplete() == true)
+                           {
+                               $status = "Primary Attendance";
+                           }
+                           elseif ($applicant->isDneFamilyContactsEntryComplete() == true)
+                           {
+                               $status = "Relatives";
+                           }
+                           elseif ($applicant->isDneAddressEntryComplete() == true)
+                           {
+                               $status = "Addresses";
+                           }
+                           elseif ($applicant->isDneContactEntryComplete() == true)
+                           {
+                               $status = "Contacts";
+                           }
+                           elseif ($applicant->isDneExtracurricularEntryComplete() == true)
+                           {
+                               $status = "Extracurricular Activities";
+                           }
+                           elseif ($applicant->isDneProfileEntryComplete() == true)
+                           {
+                               $status = "Profile";
+                           }
+                           elseif ($applicant->isDneProgrammeEntryComplete() == true)
+                           {
+                               $status = "Programme(s) Selected";
+                           }
+                           else
+                            {
+                                $status = "Account Created";
+                            }
+                        }
+                    }
                 }
             }
                  
