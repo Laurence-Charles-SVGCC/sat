@@ -416,18 +416,21 @@
                     $phone = Phone::find()
                             ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' =>0])
                             ->one();
-                    if ($phone == NULL)
+                    if ($phone == false)
                     {
-                        $error_message = "No phone record found for Applicant->PersonID= " . $id;
-                        throw new ModelNotFoundException($error_message);
+                        $phone_contacts = "--";
                     }
-                    $phone_contacts = "";
-                    if ($phone->homephone == true)
-                        $phone_contacts .= $phone->homephone . ", ";
-                    if ($phone->workphone == true)
-                        $phone_contacts .= $phone->workphone . ", ";
-                    if ($phone->cellphone == true)
-                        $phone_contacts .= $phone->cellphone;
+                    else
+                    {
+                        $phone_contacts = "";
+                        if ($phone->homephone == true)
+                            $phone_contacts .= $phone->homephone . ", ";
+                        if ($phone->workphone == true)
+                            $phone_contacts .= $phone->workphone . ", ";
+                        if ($phone->cellphone == true)
+                            $phone_contacts .= $phone->cellphone;
+                    }
+                    
                     $data['phone'] =  $phone_contacts;
 
                     $records[] = $data;
