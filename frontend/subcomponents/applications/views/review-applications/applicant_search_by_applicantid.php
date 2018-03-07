@@ -49,7 +49,6 @@
                     <li>Submitted</li>
                     <li>Verified</li>
                     <li>Processed</li>
-                    <li>Removed</li>
                 </ol>
              </div>
         </div>
@@ -76,7 +75,6 @@
                      <li>Submitted</li>
                     <li>Verified</li>
                     <li>Processed</li>
-                    <li>Removed</li>
                 </ol>
              </div>
         </div>
@@ -108,7 +106,6 @@
                     <li>Submitted</li>
                     <li>Verified</li>
                     <li>Processed</li>
-                    <li>Removed</li>
                 </ol>
              </div>
         </div>
@@ -140,7 +137,6 @@
                     <li>Submitted</li>
                     <li>Verified</li>
                     <li>Processed</li>
-                    <li>Removed</li>
                 </ol>
              </div>
         </div>
