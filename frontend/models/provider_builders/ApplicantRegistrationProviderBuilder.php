@@ -95,7 +95,7 @@
                 'allModels' => $records,
                 'pagination' => ['pageSize' => $page_size],
                 'sort' => [
-                    'defaultOrder' => ['applicantregistrationid' =>  SORT_DESC, 'email' => SORT_ASC],
+                    'defaultOrder' => ['email' => SORT_ASC],
                     'attributes' => ['email', 'firstname', 'lastname']]
                 ]); 
             
@@ -186,7 +186,7 @@
                 'allModels' => $records,
                 'pagination' => ['pageSize' => $page_size],
                 'sort' => [
-                    'defaultOrder' => [ 'applicantregistrationid' =>  SORT_DESC, 'email' => SORT_ASC],
+                    'defaultOrder' => ['email' => SORT_ASC],
                     'attributes' => ['email', 'firstname', 'lastname']]
                 ]); 
             
@@ -277,7 +277,7 @@
                 'allModels' => $records,
                 'pagination' => ['pageSize' => $page_size],
                 'sort' => [
-                    'defaultOrder' => ['applicantname' =>  SORT_DESC, 'email' => SORT_ASC],
+                    'defaultOrder' => ['email' => SORT_ASC],
                     'attributes' => ['email', 'firstname', 'lastname']]
                 ]); 
             
