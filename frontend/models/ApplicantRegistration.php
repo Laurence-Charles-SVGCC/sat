@@ -99,14 +99,16 @@
             $year_as_string = substr($this->applicantname, 0, 4);
             $year = (int)$year_as_string;
             
+            $account_pending_test1 = User::find()
+                        ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+            $account_pending_test2 = Student::find()
+                        ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
+                        ->one();
+                
             if ($year < 2018)
             {
-                $account_pending_test1 = User::find()
-                            ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
-                            ->one();
-                $account_pending_test2 = Student::find()
-                            ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
-                            ->one();
+                
                 if ($account_pending_test1 == false && $account_pending_test2 == false)
                 {
                     $status = "Account Pending";
@@ -174,27 +176,21 @@
             }
             else
             {
-                $account_pending_test1 = User::find()
-                            ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
-                            ->one();
-                $account_pending_test2 = Student::find()
-                            ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
-                            ->one();
                 if ($account_pending_test1 == false && $account_pending_test2 == false)
                 {
                     $status = "Account Pending";
                 }
                 else
                 {
-                    $any_applications = Application::find()
-                        ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
-                        ->all();
-                    if (empty($applications) == true)
-                    {
-                        $status = "Account Created";
-                    }
-                    else // if applicant has selected programme(s)
-                    {
+//                    $any_applications = Application::find()
+//                        ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+//                        ->all();
+//                    if (empty($applications) == true)
+//                    {
+//                        $status = "Account Created";
+//                    }
+//                    else // if applicant has selected programme(s)
+//                    {
                         $submitted_applications = Application::find()
                                 ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
                                 ->all();
@@ -282,6 +278,10 @@
                                                {
                                                    $status = "Programme(s) Selected";
                                                }
+                                               else
+                                                {
+                                                    $status = "Account Created";
+                                                }
                                             }
                                             
                                             elseif ($this->applicantintentid == 4)      // if DteFull
@@ -349,6 +349,10 @@
                                                 elseif ($applicant->isDteProgrammeEntryComplete() == true)
                                                 {
                                                     $status = "Programme(s) Selected";
+                                                }
+                                                else
+                                                {
+                                                    $status = "Account Created";
                                                 }
                                             }
                                             
@@ -418,13 +422,17 @@
                                                {
                                                    $status = "Programme(s) Selected";
                                                }
+                                               else
+                                                {
+                                                    $status = "Account Created";
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                          }
-                    }
+//                    }
                 }
             }
                  
