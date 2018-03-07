@@ -1,0 +1,56 @@
+<?php
+
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
+
+?>
+
+<div class="pending-applicants">
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'options' => ['style' => 'width: 95%; margin: 0 auto;'],
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+            [
+                'format' => 'html',
+                'label' => 'Applicant ID',
+                'value' => function($row)
+                    {
+                       return Html::a($row['username'],  Url::to(['admissions/verify-applicant-documents', 'personid' => $row['personid'],]));
+                    }
+            ],
+            [
+                'attribute' => 'firstname',
+                'format' => 'text',
+                'label' => 'First Name'
+            ],
+            [
+                'attribute' => 'middlename',
+                'format' => 'text',
+                'label' => 'Middle Name(s)'
+            ],
+            [
+                'attribute' => 'lastname',
+                'format' => 'text',
+                'label' => 'Last Name'
+            ],
+            [
+                'attribute' => 'gender',
+                'format' => 'text',
+                'label' => 'Gender'
+            ],
+            [
+                'attribute' => 'dateofbirth',
+                'format' => 'text',
+                'label' => 'Date of Birth'
+            ],
+            [
+                'attribute' => 'division',
+                'format' => 'text',
+                'label' => 'Division'
+            ],
+        ],
+    ]); ?>
+    
+</div>

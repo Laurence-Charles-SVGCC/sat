@@ -11,7 +11,9 @@
         $this->title = 'Applicant Search';
     elseif($search_status == "successful")
         $this->title = 'Successful Applicant Search';
-    
+     elseif($search_status == "submitted-unlimited")
+        $this->title = 'Document Verification Applicant Search';
+     
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -44,6 +46,13 @@
             <span class="box-title">
                 Welcome. This module facilitates the search for applicants who have been 
                 given an offer. 
+            </span>
+        </div>
+     <?php elseif ($search_status == "submitted-unlimited"):?>
+        <div class="box-header with-border">
+            <span class="box-title">
+                Welcome. This module facilitates the search for applicants who have submitted
+                applications.
             </span>
         </div>
     <?php endif;?>
@@ -93,6 +102,18 @@
     <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;">
         <h3><?= "Search results for: " . $info_string ?></h3>
         <?= $this->render('pending_applicants_results', [
+                            'dataProvider' => $dataProvider,
+                            'info_string' => $info_string,
+                            'search_status' => $search_status,
+                            ]
+                        ) 
+        ?>
+   </div>
+
+<?php elseif ($search_status == "submitted-unlimited"  && $dataProvider == true) : ?>
+    <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;">
+        <h3><?= "Search results for: " . $info_string ?></h3>
+        <?= $this->render('unrestricted_applicants_results', [
                             'dataProvider' => $dataProvider,
                             'info_string' => $info_string,
                             'search_status' => $search_status,

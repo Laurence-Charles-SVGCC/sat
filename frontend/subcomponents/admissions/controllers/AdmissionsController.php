@@ -29,6 +29,7 @@
     use frontend\models\Division;
     use frontend\models\ApplicantIntent;
     use frontend\models\Employee;
+    use frontend\models\DocumentSubmitted;
 
 class AdmissionsController extends Controller
 {
@@ -143,9 +144,10 @@ class AdmissionsController extends Controller
 
             $cond_arr['application.isactive'] = 1;
             $cond_arr['application.isdeleted'] = 0;
-            if ($status == "pending" || $status == "pending-unlimited")
+            if ($status == "pending" || $status == "pending-unlimited"  ||  $status == "submitted-unlimited")
+            {
                 $cond_arr['application.applicationstatusid'] = [2,3,4,5,6,7,8,9,10,11];
-
+            }
             elseif ($status == "successful")
             {
                 $cond_arr['application.applicationstatusid'] = 9;
@@ -167,7 +169,7 @@ class AdmissionsController extends Controller
             elseif ($division_id == 6  || $division_id == 7 )
                 $cond_arr['application.divisionid'] = $division_id;
 
-            if ($status == "pending" || $status == "pending-unlimited")
+            if ($status == "pending" || $status == "pending-unlimited"  ||  $status == "submitted-unlimited")
             {
                 $applicants = Applicant::find()
                             ->innerJoin('application', '`applicant`.`personid` = `application`.`personid`')
@@ -198,7 +200,7 @@ class AdmissionsController extends Controller
                 $data = array();
                 foreach ($applicants as $applicant)
                 {
-                    if($status == "pending"  || $status == "pending-unlimited")
+                    if($status == "pending"  || $status == "pending-unlimited"   ||  $status == "submitted-unlimited")
                     {
                         $app = array();
                         $user = $applicant->getPerson()->one();
@@ -251,7 +253,7 @@ class AdmissionsController extends Controller
                         }
 
 
-                        if($status == "pending-unlimited")
+                        if($status == "pending-unlimited"  ||  $status == "submitted-unlimited")
                             $info = Applicant::getApplicantInformation($applicant->personid, true);
                         else
                             $info = Applicant::getApplicantInformation($applicant->personid);
@@ -388,6 +390,126 @@ class AdmissionsController extends Controller
         
         
         echo Json::encode(['academicYearExists' => $academicYearExists, 'applicationPeriodExists' => $applicationPeriodExists]);
+    }
+    
+    
+    
+    
+    
+    /**
+     * @param type $personid
+     * @return type
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Date Created: 2018_03_07
+     * Date Last Modified: 2018_03_07
+     */
+    public function actionVerifyApplicantDocuments($personid)
+    {
+        $applicant = Applicant::find()
+                        ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+                        ->one();
+            
+        $username = $applicant->getPerson()->one()->username;
+
+        $selections = array();
+        foreach (DocumentSubmitted::findAll(['personid' => $personid, 'isdeleted' => 0]) as $doc)
+        {
+            array_push($selections, $doc->documenttypeid);
+        }
+        
+        
+        if (Yii::$app->request->post())
+        {
+            $request = Yii::$app->request;
+            
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            {
+                //Update document submission
+                $submitted = $request->post('documents');
+                $docs = DocumentSubmitted::findAll(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0]);
+
+                //if form has none selected then any documents that were prevously selected must be deleted
+                if (!$submitted)
+                {
+                    foreach ($docs as $doc)
+                    {
+                        $doc->isactive = 0;
+                        $doc->isdeleted = 1;
+                        $document_save_flag = $doc->save();
+                        if ($document_save_flag == false)
+                        {
+                            $transaction->rollBack();
+                            Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                            return self::actionVerifyApplicantDocuments($personid);
+                        }
+                    }
+                }
+                else
+                {
+                    $docs_arr = array();
+                    if ($docs)
+                    {
+                        foreach ($docs as $doc)
+                        { 
+                            $docs_arr[] = $doc->documenttypeid; 
+                        }
+
+                        foreach ($docs as $doc)
+                        {
+                            if (!in_array($doc->documenttypeid, $submitted))
+                            { 
+                                //Document has been unchecked
+                                $doc->isactive = 0;
+                                $doc->isdeleted = 1;
+                                $document_save_flag = $doc->save();
+                                if ($document_save_flag == false)
+                                {
+                                    $transaction->rollBack();
+                                    Yii::$app->getSession()->setFlash('error', 'Error deleting document record.');
+                                    return self::actionVerifyApplicantDocuments($personid);
+                                }
+                            }
+                        }  
+                    }
+                    
+                    foreach ($submitted as $sub)
+                    {
+                        if (!in_array($sub, $docs_arr))
+                        { 
+                           $doc = new DocumentSubmitted();
+                           $doc->documenttypeid = $sub;
+                           $doc->personid = $applicant->personid;
+                           $doc->recepientid = Yii::$app->user->getId();
+                           $doc->documentintentid = 1;
+                           $document_save_flag = $doc->save(); 
+                           if ($document_save_flag == false)
+                           {
+                               $transaction->rollBack();
+                               Yii::$app->session->setFlash('error', 'Document could not be added');
+                               return self::actionVerifyApplicantDocuments($personid);
+                           }
+                        }
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', 'Documents updated successfully');   
+                return $this->redirect(['find-current-applicant', 'status' => 'submitted-unlimited']);
+                
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing request.'); 
+                return $this->redirect(['find-current-applicant', 'status' => 'submitted-unlimited']);
+            }
+        }
+        
+        return $this->render('verify_applicant_documents', [
+                    'personid' => $personid,
+                    'username' => $username,
+                    'applicant' => $applicant,
+                    'selections' => $selections,
+                ]);
     }
     
     

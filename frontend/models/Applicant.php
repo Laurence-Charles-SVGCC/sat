@@ -19,6 +19,14 @@ use frontend\models\PersonInstitution;
 use frontend\models\Institution;
 use frontend\models\data_formatter\ArrayFormatter;
 
+use frontend\models\CompulsoryRelation;
+use frontend\models\Phone;
+use frontend\models\CriminalRecord;
+use frontend\models\Reference;
+use frontend\models\TeachingAdditionalInfo;
+use frontend\models\TeachingExperience;
+use frontend\models\NursingAdditionalInfo;
+use frontend\models\NursingExperience;
 
 /**
  * This is the model class for table "applicant".
@@ -3411,6 +3419,1050 @@ class Applicant extends \yii\db\ActiveRecord
     }
     
     
+    
+    /**
+    * Returns qualification of applicant
+    * 
+    * @return [CsecQualification] || []
+    * 
+    * Author: charles.laurence1@gmail.com  
+     * Created: 2017_11_21
+     * Modified: 2017_11_21
+    */
+   public function getAllQualifications()
+   {
+       return CsecQualification::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+   }
+   
+   
+   /**
+    * Returns true if applicant has attended institution at a particular academic level
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_17
+    */
+   public function checkAttendance($levelid)
+   {
+       $attendances = PersonInstitution::find()
+                    ->innerJoin('institution', '`person_institution`.`institutionid` = `institution`.`institutionid`')
+                    ->where(['person_institution.personid'=> $this->personid, 
+                                    'person_institution.isdeleted'=> 0, 'institution.levelid'=> $levelid])
+                    ->all();
+      if (empty($attendances) == false)
+      {
+          return true;
+      }
+        return false;
+    }
+
+    /**
+    * Returns true if the required fields of an address record has been completed
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_10_26
+    */
+   public function addressValid($addresstypeid)
+   {
+       $address = Address::find()
+                    ->where(['personid' => $this->personid, 'addresstypeid'=> $addresstypeid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->one();
+
+       if ($address == true)
+       {
+           // if country is local must then town field must be investigated
+            if (strcmp($address->country,"st. vincent and the grenadines") == 0)
+            {              
+                if (strcmp($address->town,"") == 0  || $address->town == NULL)
+                { 
+                    return false; 
+                } 
+                else
+                {  
+                    // if user select 'other' town; they must populate 'addressline' field
+                    if (strcmp($address->town,"other") == 0  
+                            && (strcmp($address->addressline, "") == 0 || $address->addressline == NULL))
+                    {                 
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                if(strcmp($address->addressline, "") == 0  || $address->addressline == NULL)
+                {
+                    return false;
+                }
+            }
+            return true;
+       }
+       return false;
+   }
+    /*************************************       DasgsDtveFull     *********************************************/
+    
+    /**
+    * Returns true if applicant has completed post secondary qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_23
+    */
+    public function isDasgsDtveAdditionalQualificationQueryEntryComplete()
+    {
+        if ($this->otheracademics != NULL)
+        {
+            return true;
+        }
+       return false;
+    }
+       
+    /**
+    * Returns true if applicant has completed academic qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_23
+    */
+   public function isDasgsDtveAcademicQualificationsEntryComplete()
+   {
+        if($this->isexternal == 1)
+        {
+            return true;
+        }
+        else
+        {
+             if(count($this->getAllQualifications()) >= 5)
+            {
+                 return true;
+             }
+        }
+       return false;
+   }   
+   
+   /**
+    * Returns true if applicant has completed tertiary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_23
+    */
+    public function isDasgsDtveTertiaryInstitutionQueryEntryComplete()
+    {
+        return $this->checkAttendance(4);
+    }
+    
+    /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_23
+    */
+   public function isDasgsDtveSecondaryInstitutionEntryComplete()
+   {
+        return $this->checkAttendance(3);
+   }
+   
+    /**
+    * Returns true if applicant has completed primary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_23
+    */
+   public function isDasgsDtvePrimaryInstitutionEntryComplete()
+   {
+        return $this->checkAttendance(2);
+   }
+   
+   /**
+    * Returns true if applicant has completed relatives information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_11
+    */
+   public function isDasgsDtveFamilyContactsEntryComplete()
+   {
+        $relations = CompulsoryRelation::find()
+                 ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+         if (count($relations) == 2)
+         {
+             $beneficiery_found = false;
+             $emergency_contact_found = false;
+             foreach($relations as $relation)
+             {
+                 if ($relation->relationtypeid == 4)
+                 {
+                     $emergency_contact_found = true;
+                 }
+                 if ($relation->relationtypeid == 6)
+                 {
+                     $beneficiery_found = true;
+                 }
+             }
+             if ($emergency_contact_found == true && $beneficiery_found == true)
+             {
+                 return true;
+             }
+         }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed addresses form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_10_26
+    */
+   public function isDasgsDtveAddressEntryComplete()
+   {
+        if ($this->addressValid(1) == true && $this->addressValid(2) == true  && $this->addressValid(3) == true)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed contact information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_08
+    */
+   public function isDasgsDtveContactEntryComplete()
+   {
+        $phone= Phone::find()
+             ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+             ->one();
+
+         if ($phone == true && 
+                 (
+                     ($phone->homephone != NULL && strcmp($phone->homephone,"") != 0)
+                     ||  ($phone->cellphone != NULL && strcmp($phone->cellphone,"") != 0)
+                     ||  ($phone->workphone != NULL && strcmp($phone->workphone,"") != 0)
+                 )
+             )
+         {
+             return true;
+         }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed extracirrucular form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_08
+    */
+   public function isDasgsDtveExtracurricularEntryComplete()
+   {
+        /* Fields are set to NULL by default
+         * if applicant indicates they have no extracirrcular activities 
+         *   -> fields should be set to N/A 
+         * else
+         *   -> fields set to empty string
+         */
+        if ($this->nationalsports !== NULL && $this->othersports !== NULL 
+                && $this->otherinterests !== NULL && $this->clubs !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_11_08
+    */
+   public function isDasgsDtveProfileEntryComplete()
+   {
+        if ($this->title != NULL  && strcmp($this->title,"") !=0 
+       && $this->firstname != NULL && strcmp($this->firstname,"") != 0  
+       && $this->lastname != NULL && strcmp($this->lastname,"") != 0
+       && $this->gender != NULL && strcmp($this->gender,"") != 0
+       && $this->dateofbirth != NULL && strcmp($this->dateofbirth,"") != 0
+       && $this->nationality != NULL && strcmp($this->nationality,"") != 0
+       && $this->placeofbirth != NULL && strcmp($this->placeofbirth,"") != 0
+       && $this->maritalstatus != NULL && strcmp($this->maritalstatus,"") != 0
+       && $this->religion != NULL && strcmp($this->religion,"") != 0)
+       {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed programme choice form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_10_26
+    * Modified: 2017_10_26
+    */
+   public function isDasgsDtveProgrammeEntryComplete()
+   {
+       $applications = Application::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+       if (empty($applications) == false)
+       {
+           return true;
+       }
+       return false;
+   }
+       
+    /*************************************           DteFull           *********************************************/
+    
+   /**
+    * Returns true if applicant has completed programme choice form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteProgrammeEntryComplete()
+   {
+       $applications = Application::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+       if (empty($applications) == false)
+       {
+           return true;
+       }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteProfileEntryComplete()
+   {
+        if ($this->title != NULL  && strcmp($this->title,"") !=0 
+       && $this->firstname != NULL && strcmp($this->firstname,"") != 0  
+       && $this->lastname != NULL && strcmp($this->lastname,"") != 0
+       && $this->gender != NULL && strcmp($this->gender,"") != 0
+       && $this->dateofbirth != NULL && strcmp($this->dateofbirth,"") != 0
+       && $this->nationality != NULL && strcmp($this->nationality,"") != 0
+       && $this->placeofbirth != NULL && strcmp($this->placeofbirth,"") != 0
+       && $this->maritalstatus != NULL && strcmp($this->maritalstatus,"") != 0
+       && $this->religion != NULL && strcmp($this->religion,"") != 0)
+       {
+            return true;
+        }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed extracirrucular form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteExtracurricularEntryComplete()
+   {
+        /* Fields are set to NULL by default
+         * if applicant indicates they have no extracirrcular activities 
+         *   -> fields should be set to N/A 
+         * else
+         *   -> fields set to empty string
+         */
+        if ($this->nationalsports !== NULL && $this->othersports !== NULL 
+                && $this->otherinterests !== NULL && $this->clubs !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed contact information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteContactEntryComplete()
+   {
+        $phone= Phone::find()
+             ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+             ->one();
+
+         if ($phone == true && 
+                 (
+                     ($phone->homephone != NULL && strcmp($phone->homephone,"") != 0)
+                     ||  ($phone->cellphone != NULL && strcmp($phone->cellphone,"") != 0)
+                     ||  ($phone->workphone != NULL && strcmp($phone->workphone,"") != 0)
+                 )
+             )
+         {
+             return true;
+         }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed addresses form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteAddressEntryComplete()
+   {
+        if ($this->addressValid(1) == true && $this->addressValid(2) == true  && $this->addressValid(3) == true)
+        {
+            return true;
+        }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed relatives information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteFamilyContactsEntryComplete()
+   {
+        $relations = CompulsoryRelation::find()
+                 ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+         if (count($relations) == 2)
+         {
+             $beneficiery_found = false;
+             $emergency_contact_found = false;
+             foreach($relations as $relation)
+             {
+                 if ($relation->relationtypeid == 4)
+                 {
+                     $emergency_contact_found = true;
+                 }
+                 if ($relation->relationtypeid == 6)
+                 {
+                     $beneficiery_found = true;
+                 }
+             }
+             if ($emergency_contact_found == true && $beneficiery_found == true)
+             {
+                 return true;
+             }
+         }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed primary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDtePrimaryInstitutionEntryComplete()
+   {
+        return $this->checkAttendance(2);
+   }
+
+    /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+    public function isDteSecondaryInstitutionEntryComplete()
+    {
+        return $this->checkAttendance(3);
+    }
+
+    /**
+    * Returns true if applicant has completed tertiary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteTertiaryInstitutionQueryEntryComplete()
+   {
+        return $this->checkAttendance(4);
+   }
+   
+    /**
+    * Returns true if applicant has completed academic qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2018_02_07
+    */
+   public function isDteAcademicQualificationsEntryComplete()
+   {
+       if ($this->hasTVETApplication() == true  && $this->hasTVETQualifications() == true)
+       {
+           return true;
+       }
+       elseif ($this->hasSecondarySchoolApplication() == true  && $this->hasSecondarySchoolQualifications() == true)
+       {
+           return true;
+       }
+       elseif ($this->hasPrimarySchoolApplication() == true  && $this->hasPrimarySchoolQualifications() == true)
+       {
+           return true;
+       }
+       elseif ($this->hasEarlyChildhoodApplication() == true  && $this->hasEarlyChildhoodQualifications() == true)
+       {
+           return true;
+       }
+       return false;
+   }
+
+    /**
+    * Returns true if applicant has completed post secondary qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteAdditionalQualificationQueryEntryComplete()
+   {
+        if ($this->otheracademics != NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+    
+   /**
+    * Returns true if applicant has completed additional teacher profile information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteTeachingAdditionalInfoEntryComplete()
+   {
+       $teaching_additional_info = TeachingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($teaching_additional_info == true)
+        {
+            return true;
+        }
+       return false;
+   }
+    
+    /**
+    * Returns true if applicant has completed teacher work experience information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteTeachingExperienceEntryComplete()
+   {
+       $teaching_additional_info = TeachingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($teaching_additional_info == true  && $teaching_additional_info->hasteachingexperience !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed general work experience information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteGeneralWorkExperienceEntryComplete()
+   {
+       $teaching_additional_info = TeachingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($teaching_additional_info == true  && $teaching_additional_info->hasworked !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed references
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDteReferencesEntryComplete()
+   {
+       $references = Reference::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+        if (count($references) == 2)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   /**
+    * Returns true if applicant has completed criminal record information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_12_01
+    */
+   public function isDteCriminalRecordEntryComplete()
+   {
+       $teaching_additional_info = TeachingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($teaching_additional_info == true  && $teaching_additional_info->hascriminalrecord !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+    
+    /*************************************           DneFull           *********************************************/
+    
+    /**
+    * Returns true if applicant has completed programme choice form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneProgrammeEntryComplete()
+   {
+       $applications = Application::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+       if (empty($applications) == false)
+       {
+           return true;
+       }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneProfileEntryComplete()
+   {
+        if ($this->title != NULL  && strcmp($this->title,"") !=0 
+       && $this->firstname != NULL && strcmp($this->firstname,"") != 0  
+       && $this->lastname != NULL && strcmp($this->lastname,"") != 0
+       && $this->gender != NULL && strcmp($this->gender,"") != 0
+       && $this->dateofbirth != NULL && strcmp($this->dateofbirth,"") != 0
+       && $this->nationality != NULL && strcmp($this->nationality,"") != 0
+       && $this->placeofbirth != NULL && strcmp($this->placeofbirth,"") != 0
+       && $this->maritalstatus != NULL && strcmp($this->maritalstatus,"") != 0
+       && $this->religion != NULL && strcmp($this->religion,"") != 0)
+       {
+            return true;
+        }
+       return false;
+   }
+
+
+
+    /**
+    * Returns true if applicant has completed extracirrucular form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneExtracurricularEntryComplete()
+   {
+        /* Fields are set to NULL by default
+         * if applicant indicates they have no extracirrcular activities 
+         *   -> fields should be set to N/A 
+         * else
+         *   -> fields set to empty string
+         */
+        if ($this->nationalsports !== NULL && $this->othersports !== NULL 
+                && $this->otherinterests !== NULL && $this->clubs !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed contact information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneContactEntryComplete()
+   {
+        $phone= Phone::find()
+             ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+             ->one();
+
+         if ($phone == true && 
+                 (
+                     ($phone->homephone != NULL && strcmp($phone->homephone,"") != 0)
+                     ||  ($phone->cellphone != NULL && strcmp($phone->cellphone,"") != 0)
+                     ||  ($phone->workphone != NULL && strcmp($phone->workphone,"") != 0)
+                 )
+             )
+         {
+             return true;
+         }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed addresses form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneAddressEntryComplete()
+   {
+        if ($this->addressValid(1) == true && $this->addressValid(2) == true  && $this->addressValid(3) == true)
+        {
+            return true;
+        }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed relatives information form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneFamilyContactsEntryComplete()
+   {
+        $relations = CompulsoryRelation::find()
+                 ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+         if (count($relations) == 2)
+         {
+             $beneficiery_found = false;
+             $emergency_contact_found = false;
+             foreach($relations as $relation)
+             {
+                 if ($relation->relationtypeid == 4)
+                 {
+                     $emergency_contact_found = true;
+                 }
+                 if ($relation->relationtypeid == 6)
+                 {
+                     $beneficiery_found = true;
+                 }
+             }
+             if ($emergency_contact_found == true && $beneficiery_found == true)
+             {
+                 return true;
+             }
+         }
+       return false;
+   }
+
+
+    /**
+    * Returns true if applicant has completed primary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDnePrimaryInstitutionEntryComplete()
+   {
+        return $this->checkAttendance(2);
+   }
+
+
+    /**
+    * Returns true if applicant has completed secondary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+    public function isDneSecondaryInstitutionEntryComplete()
+    {
+        return $this->checkAttendance(3);
+    }
+
+
+    /**
+    * Returns true if applicant has completed tertiary institution form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_11_27
+    * Modified: 2017_11_27
+    */
+   public function isDneTertiaryInstitutionQueryEntryComplete()
+   {
+        return $this->checkAttendance(4);
+   }
+   
+
+    /**
+    * Returns true if applicant has completed academic qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneAcademicQualificationsEntryComplete()
+   {
+       if ($this->hasMidwiferyApplication() == true  && $this->hasMidwiferyQualifications() == true)
+       {
+           return true;
+       }
+       elseif ($this->hasRegisteredNurseApplication() == true  && $this->hasRegisteredNursingQualifications() == true)
+       {
+           return true;
+       }
+       elseif ($this->hasNurseAssistantApplication() == true  && $this->hasNursingAssistantQualifications() == true)
+       {
+           return true;
+       }
+       return false;
+   }
+
+   
+    /**
+    * Returns true if applicant has completed post secondary qualifications form
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneAdditionalQualificationQueryEntryComplete()
+   {
+        if ($this->otheracademics != NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+    
+   
+   /**
+    * Returns true if applicant has completed additional nursing profile information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneNursingAdditionalInfoEntryComplete()
+   {
+       $nursing_additional_info = NursingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($nursing_additional_info == true)
+        {
+            return true;
+        }
+       return false;
+   }
+    
+    
+    /**
+    * Returns true if applicant has completed nurse work experience information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneNursingExperienceEntryComplete()
+   {
+       $nursing_additional_info = NursingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($nursing_additional_info == true  && $nursing_additional_info->hasnursingexperience !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   
+   /**
+    * Returns true if applicant has completed general work experience information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneGeneralWorkExperienceEntryComplete()
+   {
+       $nursing_additional_info = NursingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($nursing_additional_info == true  && $nursing_additional_info->hasworked !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   
+   /**
+    * Returns true if applicant has completed references
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneReferencesEntryComplete()
+   {
+       $references = Reference::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->all();
+        if (count($references) == 2)
+        {
+            return true;
+        }
+       return false;
+   }
+   
+   
+   /**
+    * Returns true if applicant has completed criminal record information
+    * 
+    * @return boolean
+    * 
+    * Author: charles.laurence1@gmail.com  
+    * Created: 2017_12_03
+    * Modified: 2017_12_03
+    */
+   public function isDneCriminalRecordEntryComplete()
+   {
+       $nursing_additional_info = NursingAdditionalInfo::find()
+               ->where(['personid' => $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+               ->one();
+        if ($nursing_additional_info == true  && $nursing_additional_info->hascriminalrecord !== NULL)
+        {
+            return true;
+        }
+       return false;
+   }
     
     
 }

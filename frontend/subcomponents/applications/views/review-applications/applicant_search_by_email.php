@@ -43,9 +43,9 @@
                     <span class="box-title">Pre 2018 Stages</span>
                 </div>
                 <ol>
-                    <li>Acc. Pending</li>
-                    <li>Acc. Created</li>
-                    <li>Prog. Selected</li>
+                    <li>Account Pending</li>
+                    <li>Account Created</li>
+                    <li>Programme(s) Selected</li>
                     <li>Submitted</li>
                     <li>Verified</li>
                     <li>Processed</li>
@@ -60,12 +60,12 @@
                     <span class="box-title">DASGS/DTVE Stages</span>
                 </div>
                 <ol>
-                    <li>Acc. Pending</li>
-                    <li>Acc. Created</li>
-                    <li>Prog. Selected</li>
+                    <li>Account Pending</li>
+                    <li>Account Created</li>
+                    <li>Programme(s) Selected</li>
                     <li>Profile</li>
                     <li>Extracurricular Activities</li>
-                    <li>Comtacts</li>
+                    <li>Contacts</li>
                     <li>Addresses</li>
                     <li>Relatives</li>
                     <li>Primary Attendance</li>
@@ -87,12 +87,12 @@
                     <span class="box-title">DTE Stages</span>
                 </div>
                 <ol>
-                    <li>Acc. Pending</li>
-                    <li>Acc. Created</li>
-                    <li>Prog. Selected</li>
+                    <li>Account Pending</li>
+                    <li>Account Created</li>
+                    <li>Programme(s) Selected</li>
                     <li>Profile</li>
                     <li>Extracurricular Activities</li>
-                    <li>Comtacts</li>
+                    <li>Contacts</li>
                     <li>Addresses</li>
                     <li>Relatives</li>
                     <li>Primary Attendance</li>
@@ -119,12 +119,12 @@
                     <span class="box-title">DNE Stages</span>
                 </div>
                 <ol>
-                    <li>Acc. Pending</li>
-                    <li>Acc. Created</li>
-                    <li>Prog. Selected</li>
+                    <li>Account Pending</li>
+                    <li>Account Created</li>
+                    <li>Programme(s) Selected</li>
                     <li>Profile</li>
                     <li>Extracurricular Activities</li>
-                    <li>Comtacts</li>
+                    <li>Contacts</li>
                     <li>Addresses</li>
                     <li>Relatives</li>
                     <li>Primary Attendance</li>

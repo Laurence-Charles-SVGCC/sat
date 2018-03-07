@@ -150,6 +150,13 @@
                                     <li><a href="<?= Url::toRoute(['/subcomponents/applications/review-applications/find-applicant-by-name'])?>"><i class="fa fa-circle-o"></i> By Name</a></li>
                                 </ul>
                              </li>
+                             
+                             <li class="treeview">
+                                <a href=""><i class="fa fa-circle-o"></i><span>Utilities</span><i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/applicant-registration/index'])?>"><i class="fa fa-circle-o"></i>Deactivate Email</a></li>
+                                </ul>
+                            </li>
                         </ul>
                      </li>
                     <?php endif;?>
@@ -194,6 +201,7 @@
                         <?php endif; ?>
 
                         <?php if (Yii::$app->user->can('registerStudent') ): ?>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'submitted-unlimited'])?>"><i class="fa fa-circle-o"></i>Document Verification</a></li>
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Enroll Applicants</a></li>
                         <?php endif; ?>
 

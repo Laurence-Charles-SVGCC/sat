@@ -21,13 +21,14 @@
     
     <?php $form = ActiveForm::begin(['action' => Url::to(['/subcomponents/admissions/applicant-registration/index'])]); ?>
         <div class="box-body">
-            <p>Please select a method by which to begin your search.</p>
-
-            <div id="email">
-                <?= Html::label( 'Email',  'email_label'); ?>
-                <?= Html::input('text', 'email_field'); ?>
-                <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>
-            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="email">Email:</label>
+                <?= Html::input('text', 'email_field', null, ["class" => "no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9"]); ?>
+            </div><br/>
+        </div>
+    
+        <div class="box-footer pull-right">
+           <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right']) ?>
         </div>
     <?php ActiveForm::end(); ?>
 </div><hr>
