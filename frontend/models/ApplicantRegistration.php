@@ -95,7 +95,6 @@
         {
             $status = "--";
             
-            
             $applicant_name = $this->applicantname;
             $year_as_string = substr($this->applicantname, 0, 4);
             $year = (int)$year_as_string;
