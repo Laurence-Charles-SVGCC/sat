@@ -3,7 +3,7 @@
 
     use Yii;
     use frontend\models\ProgrammeCatalog;
-    use frontend\models\ApplicationCapeSubject;
+    use frontend\models\ApplicationCapesubject;
     use frontend\models\Institution;
     use yii\custom\ModelNotFoundException;
 
