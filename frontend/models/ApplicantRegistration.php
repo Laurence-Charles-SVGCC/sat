@@ -196,7 +196,7 @@
                                 ->all();
                          if ($submitted_applications == true)   //if applicant has submitted their application
                          {
-                             if (Applicant::isAbandoned($personid) == true)
+                             if (Applicant::isAbandoned($account_pending_test1->personid) == true)
                             {
                                 $status = "Removed";
                             }
