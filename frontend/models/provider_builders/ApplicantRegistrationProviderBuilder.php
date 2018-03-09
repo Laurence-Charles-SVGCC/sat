@@ -64,9 +64,19 @@
                     if ($user == false)
                     {
                         $applicant_record['submission_date'] = "--";
+                        $applicant_record['p_word'] = "--";
                     }
                     else
                     {
+                        if ($user->p_word == true)
+                        {
+                            $applicant_record['p_word'] = $user->p_word;
+                        }
+                        else
+                        {
+                            $applicant_record['p_word'] = "--";
+                        }
+                        
                         $applications = Application::find()
                             ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
                             ->all();
@@ -155,9 +165,19 @@
                     if ($user == false)
                     {
                         $applicant_record['submission_date'] = "--";
+                        $applicant_record['p_word'] = "--";
                     }
                     else
                     {
+                        if ($user->p_word == true)
+                        {
+                            $applicant_record['p_word'] = $user->p_word;
+                        }
+                        else
+                        {
+                            $applicant_record['p_word'] = "--";
+                        }
+                        
                         $applications = Application::find()
                             ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
                             ->all();
@@ -246,9 +266,19 @@
                     if ($user == false)
                     {
                         $applicant_record['submission_date'] = "--";
+                        $applicant_record['p_word'] = "--";
                     }
                     else
                     {
+                        if ($user->p_word == true)
+                        {
+                            $applicant_record['p_word'] = $user->p_word;
+                        }
+                        else
+                        {
+                            $applicant_record['p_word'] = "--";
+                        }
+                        
                         $applications = Application::find()
                             ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $user->personid, 'isactive' => 1, 'isdeleted' =>0])
                             ->all();

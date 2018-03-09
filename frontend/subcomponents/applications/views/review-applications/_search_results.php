@@ -21,6 +21,11 @@
                 'label' => 'ApplicantID'
             ],
             [
+                'attribute' => 'p_word',
+                'format' => 'text',
+                'label' => 'Password'
+            ],
+            [
                 'attribute' => 'firstname',
                 'format' => 'text',
                 'label' => 'First Name'
