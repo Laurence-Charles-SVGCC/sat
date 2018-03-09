@@ -5,17 +5,14 @@
     use yii\helpers\Url;
     use yii\grid\GridView;
     
-    use frontend\models\Department;
-    
-    $this->title = 'Withdrawal Listing Generation';
-    
+    $this->title = 'Academic Warning Listing Generation';
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
 <div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
-        <h1>Welcome to the Withdrawal Management</h1>
+    <a href="<?= Url::toRoute(['/subcomponents/registry/warning/index']);?>" title="Warning Controller">
+        <h1>Welcome to the Warning Management</h1>
     </a>
 </div>
 
@@ -28,7 +25,7 @@
         <span class="box-title"><?= $this->title?></span>
      </div>
     
-    <?php $form = ActiveForm::begin(['action' => Url::to(['withdrawal/generate-withdrawal-candidates'])]);?>
+    <?php $form = ActiveForm::begin(['action' => Url::to(['warning/generate-warning-candidates'])]);?>
         <div class="box-body">
             <div class="form-group">
                <?= Html::label('Select application period you wish to generate withdrawal candidate list for: ', 'period_id_label'); ?>

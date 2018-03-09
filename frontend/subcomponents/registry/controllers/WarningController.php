@@ -14,6 +14,7 @@
     use frontend\models\ProgrammeCatalog;
     use frontend\models\Application;
     use frontend\models\StudentStatus;
+    use frontend\models\AcademicStatus;
     use frontend\models\EmployeeDepartment;
     use frontend\models\ApplicationCapesubject;
      use frontend\models\Offer;
@@ -25,47 +26,47 @@
     use frontend\models\AcademicYear;
       
 
-    class WithdrawalController extends Controller 
+    class WarningController extends Controller 
     {
         /**
-         * Renders withdrawal candidates search view
+         * Renders academic warning candidates search view
          * 
          * @return type
          * 
          * Author: charles.laurence1@gmail.com
-         * Date Created: 10/09/2016
-         * Date Last Modified: 04/08/2017
+         * Created: 2018_03_09
+         * Modified: 2018_03_09
          */
          public function actionIndex()
          {
-            $periods = ApplicationPeriod::prepareWithdrawalReportPeriods();
+            $periods = ApplicationPeriod::prepareWarningReportPeriods();
              return $this->render('select_candidate_criteria', [ 'periods' => $periods]);
          }
         
         
         /**
-         * Generate withdrawl candidates
+         * Generate academic warning candidates
          * 
          * @return type
          * 
          * Author: charles.laurence1@gmail.com
-         * Date Created: 15/11/2016
-         * Date Last Modified: 04/08/2017 | 2018_03_09
+         * Created: 2018_03_09
+         * Modified: 2018_03_09
          */
-        public function actionGenerateWithdrawalCandidates() 
+        public function actionGenerateWarningCandidates() 
         {
             $dataProvider = array();
+//            $dataProvider = new ArrayDataProvider;
             $data = array();
             $filename = "";
             $title = "";
             
-            $prospective_withdrawals = 0;
-            $probationary_retention = 0;
-            $academic_withdrawal = 0;
-            $voluntary_withdrawal = 0;
-            $current = 0;
+            $good = 0;
+            $academic_warning = 0;
+            $academic_probation = 0;
+            $poor_performers = 0;
             
-            $periods = ApplicationPeriod::prepareWithdrawalReportPeriods();
+            $periods = ApplicationPeriod::prepareWarningReportPeriods();
             
              if (Yii::$app->request->post())
             {
@@ -163,25 +164,20 @@
                         continue;
                     
                     /*************************************************************************/
-                    $prospective_withdrawals ++;
+                    $poor_performers ++;
                     
-                    if ($registration->studentstatusid == 1)
+                    if ($registration->academicstatusid == 1)
                     {
-                        $current++;
+                        $good++;
                     }
-                    elseif ($registration->studentstatusid == 2)
+                    elseif ($registration->academicstatusid == 2)
                     {
-                        $academic_withdrawal++;
+                        $academic_warning++;
                     }
-                    elseif ($registration->studentstatusid == 3)
+                    elseif ($registration->academicstatusid == 3)
                     {
-                        $voluntary_withdrawal++;
-                    }
-                    elseif ($registration->studentstatusid == 11)
-                    {
-                        $probationary_retention++;
-                    }
-                    
+                        $academic_probation++;
+                    }                  
                    
                     $info['student_registrationid'] = $registration->studentregistrationid;
                     $info['offerid'] = $registration->offerid;
@@ -224,8 +220,8 @@
 
                     $info['current_level'] = $registration->currentlevel;
 
-                    $student_status = StudentStatus::find()
-                            ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                    $student_status =AcademicStatus::find()
+                            ->where(['academicstatusid' => $registration->academicstatusid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     if ($student_status == false)
                         $info['student_status'] = "Unknown";
@@ -262,20 +258,21 @@
                     ->where(['applicationperiodid' => $application_periodid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one()
                     ->name;
-                $title = "Title: Withdrawal Candidates for " . $periodname;
+                $title = "Title: Warning Candidates for " . $periodname;
             }
+            
+            
            
-             return $this->render('withdrawal_candidate_result',
+             return $this->render('warning_candidate_result',
                 [
                     'periods' => $periods,
                     'dataProvider' => $dataProvider,
                     'title' => $title,
                     'application_periodid' => $application_periodid, 
-                    'prospective_withdrawals' => $prospective_withdrawals,
-                    'probationary_retention' => $probationary_retention,
-                    'academic_withdrawal' => $academic_withdrawal,
-                    'voluntary_withdrawal' => $voluntary_withdrawal,
-                    'current' => $current,
+                    'good' => $good,
+                    'academic_warning' => $academic_warning,
+                    'academic_probation' => $academic_probation,
+                    'poor_performers' => $poor_performers
                 ]);
         }
         
@@ -285,11 +282,11 @@
         * 
         * @return type
         * 
-        * Author: charles.laurence1@gmail.com
+        * Author: Laurence Charles
         * Date Created: 15/1/2016
-        * Date Last Modified: 04/08/2017 | 2018_03_09
+        * Date Last Modified: 04/08/2017
         */
-       public function actionExportWithdrawalListing($application_periodid)
+       public function actionExportWarningListing($application_periodid)
        {
            $registrations = StudentRegistration::find()
                         ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
@@ -403,8 +400,8 @@
 
                 $info['current_level'] = $registration->currentlevel;
 
-                $student_status = StudentStatus::find()
-                        ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
+                $student_status = AcademicStatus::find()
+                        ->where(['academicstatusid' => $registration->academicstatusid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
                 if ($student_status == false)
                     $info['student_status'] = "Unknown";
@@ -441,141 +438,19 @@
                 ->where(['applicationperiodid' => $application_periodid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one()
                 ->name;
-            $title = "Title: Withdrawal Candidates for " . $periodname;
+            $title = "Title: Warning Candidates for " . $periodname;
             $date = "   Date : " . date('Y-m-d') . "   ";
             $employeeid = Yii::$app->user->identity->personid;
             $generating_officer = "   Generator: " . Employee::getEmployeeName($employeeid);
             $filename = $title . $date . $generating_officer;
            
            
-           return $this->renderPartial('withdrawal_export', [
+           return $this->renderPartial('warning_export', [
                 'dataProvider' => $dataProvider,
                 'filename' => $filename,
             ]);
        }
         
-        
-        /**
-         * Promote students
-         * 
-         * @param type $applicationperiodid
-         * @return type
-         * 
-         * Author: charles.laurence1@gmail.com
-         * Date Created: 12/09/2016
-         * Date Last Modified: 12/09/2016 | 17/11/2016
-         */
-        public function actionPromoteStudents($applicationperiodid)
-        {
-            $registrations = StudentRegistration::find()
-                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
-                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->innerJoin('academic_year', '`application_period`.`academicyearid` = `application_period`.`academicyearid`')
-                        ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
-                                        'offer.isactive' => 1, 'offer.isdeleted' => 0,
-                                        'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                        'application_period.applicationperiodid' => $applicationperiodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                                         'academic_year.iscurrent' => 0, 'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0
-                                    ])
-                        ->all();
-            
-            $transaction = \Yii::$app->db->beginTransaction();
-            try 
-            {
-                foreach ($registrations as $registration)
-                {
-                    $save_flag = false;
-                    if ($registration->currentlevel == 1 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
-                    {
-                        $registration->currentlevel = 2;
-                        $save_flag = $registration->save();
-                        if ($save_flag == false)
-                        {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex();
-                        }
-                    }
-                    elseif (StudentRegistration::getStudentDivision($registration->studentregistrationid) == 7 && $registration->currentlevel == 2 && ($registration->studentstatusid == 1 || $registration->studentstatusid == 11))
-                    {
-                        $registration->currentlevel = 3;
-                        $save_flag = $registration->save();
-                        if ($save_flag == false)
-                        {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex();
-                        }
-                    }
-                }
-                
-                $transaction->commit();
-                return self::actionIndex();
-                
-            } catch (Exception $ex) {
-                $transaction->rollBack();
-                Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
-                 return self::actionIndex();
-            }
-        }
-        
-        
-         /**
-         * Undo student promotion
-         * 
-         * @param type $applicationperiodid
-         * @return type
-         * 
-         * Author: charles.laurence1@gmail.com
-         * Date Created: 12/09/2016
-         * Date Last Modified: 12/09/2016 | 17/11/2016
-         */
-        public function actionUndoPromotions($applicationperiodid)
-        {
-            $registrations = StudentRegistration::find()
-                        ->innerJoin('offer', '`student_registration`.`offerid` = `offer`.`offerid`')
-                        ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
-                        ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                        ->innerJoin('academic_year', '`application_period`.`academicyearid` = `application_period`.`academicyearid`')
-                        ->where(['student_registration.isactive' => 1, 'student_registration.isdeleted' => 0,
-                                        'offer.isactive' => 1, 'offer.isdeleted' => 0,
-                                        'application.isactive' => 1, 'application.isdeleted' => 0,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                        'application_period.applicationperiodid' => $applicationperiodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                                        'academic_year.iscurrent' => 0, 'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0
-                                    ])
-                        ->all();
-            
-            $transaction = \Yii::$app->db->beginTransaction();
-            try 
-            {
-                foreach ($registrations as $registration)
-                {
-                    $save_flag = false;
-                    if ($registration->currentlevel != 1)
-                    {
-                        $registration->currentlevel = $registration->currentlevel-1;
-                        $save_flag = $registration->save();
-                        if ($save_flag == false)
-                        {
-                            $transaction->rollBack();
-                            Yii::$app->getSession()->setFlash('error', 'Error occurred saving registration record.');
-                            return self::actionIndex();
-                        }
-                    }
-                }
-                
-                $transaction->commit();
-                return self::actionIndex();
-                
-            } catch (Exception $ex) {
-                $transaction->rollBack();
-                Yii::$app->getSession()->setFlash('error', 'Error occurred when processing request.');
-            }
-        }
+         
         
     }

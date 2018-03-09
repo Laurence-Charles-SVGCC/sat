@@ -6,18 +6,15 @@
     use yii\grid\GridView;
     use kartik\export\ExportMenu;
     
-    use frontend\models\Department;
-    
-    $this->title = 'Withdrawal Listing Results';
-    
-    $this->params['breadcrumbs'][] = ['label' => 'Withdrawal Listing Generation', 'url' => Url::toRoute(['/subcomponents/registry/withdrawal/index'])];
+    $this->title = 'Warning Listing Results';
+    $this->params['breadcrumbs'][] = ['label' => 'Warning Listing Generation', 'url' => Url::toRoute(['/subcomponents/registry/warning/index'])];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
 <div class="page-header text-center no-padding">
     <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
-        <h1>Welcome to the Withdrawal Management</h1>
+        <h1>Welcome to the Warning Management</h1>
     </a>
 </div>
 
@@ -30,16 +27,18 @@
         <span class="box-title">Generate New Listing</span>
      </div>
     
-    <?php $form = ActiveForm::begin(['action' => Url::to(['withdrawal/generate-withdrawal-candidates'])]);?>
+    <?php $form = ActiveForm::begin(['action' => Url::to(['warning/generate-warning-candidates'])]);?>
         <div class="box-body">
             <div class="form-group">
                <?= Html::label('Select application period you wish to generate withdrawal candidate list for: ', 'period_id_label'); ?>
                <?= Html::dropDownList('period-id',  "Select...", $periods, []) ; ?>                                   
            </div>
-
-             <p class = "pull-right">
+        </div>
+   
+        <div class="box-footer">
+            <span class = "pull-right">
                 <?= Html::submitButton('Generate', ['class' => 'btn btn-md btn-success pull-right', 'style' => 'margin-right:20px;']) ?>
-            </p>
+            </span>
         </div>
     <?php ActiveForm::end(); ?>
 </div><br/>
@@ -55,7 +54,7 @@
         <?php if ($dataProvider == true):?>
             <div>
                 Click the following link to export a copy of the listing.
-                <?= Html::a('Export Listing', ['export-withdrawal-listing', 'application_periodid' => $application_periodid], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a('Export Listing', ['export-warning-listing', 'application_periodid' => $application_periodid], ['class' => 'btn btn-primary']) ?>
             </div><br/>
         <?php endif;?>
         
@@ -123,53 +122,25 @@
                 ]); 
             ?>
         </table>
-        
-        <hr><h2>Withdrawal Application Report</h2>
+        <hr><h2>Academic Poor Performance Report</h2>
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Prospective Withdrawals</th>
-                    <th>Current</th>
-                    <th>Probationary Retention</th>
-                    <th>Withdrawn</th>
-                    <th>Voluntary Withdrawn</th>
+                    <th>Poor Performers</th>
+                    <th>Good</th>
+                    <th>Academic Warning</th>
+                    <th>Academic Probation</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr>
-                    <td><?= $prospective_withdrawals ;?></td>
-                    <td><?= $current ;?></td>
-                    <td><?= $probationary_retention ;?></td>
-                    <td><?= $academic_withdrawal ;?></td>
-                    <td><?= $voluntary_withdrawal ;?></td>
+                    <td><?= $poor_performers ;?></td>
+                    <td><?= $good ;?></td>
+                    <td><?= $academic_warning ;?></td>
+                    <td><?= $academic_probation ;?></td>
                 </tr>
             </tbody>
         </table><br/>
-    </div>
-        
-    <div class="box-footer">
-        <?php if ($dataProvider && (Yii::$app->user->can('System Administrator')  || Yii::$app->user->can('Registrar'))) : ?> 
-            <hr><h2>Student Promotion</h2>
-
-            <ul>
-                <li>
-                    Click the button below to perform the promotion of students to the next level of their respective programmes.
-                </li>
-                <li>
-                    Please ensure you would have updated the statuses of the students appearing
-                    on the above list to <strong>Academic Withdrawal</strong> or <strong>Probationary Retention</strong>.
-                </li>
-                <li>
-                    Clicking the button will ensure that all students that have not been withdrawn;
-                    have their 'Current Level' promoted.
-                </li>
-            </ul><br/>
-
-            <div>
-                <a class="btn btn-success pull-left" style="width: 40%;margin-left:5%;margin-right: 5%;font-size:3 em;" href=<?=Url::toRoute(['/subcomponents/registry/withdrawal/promote-students', 'applicationperiodid' => $application_periodid]);?> role="button">  Promote Students</a>
-                <a class="btn btn-warning" style="width: 40%;font-size:3 em;" href=<?=Url::toRoute(['/subcomponents/registry/withdrawal/undo-promotions', 'applicationperiodid' => $application_periodid]);?> role="button">  Undo Promotions</a>
-            </div>
-        <?php endif; ?>
     </div><br/>
 </div>

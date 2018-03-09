@@ -603,13 +603,13 @@
 
 
 
-        public static function prepareWithdrawlalReportPeriods()
+        public static function prepareWithdrawalReportPeriods()
         {
             $records = ApplicationPeriod::find()
                         ->innerJoin('academic_year' , '`application_period`.`academicyearid` = `academic_year`.`academicyearid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                         ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                        ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                        ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.divisionid' => [4,5],
                                        'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
                                         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                         'application.isactive' => 1, 'application.isdeleted' => 0
@@ -646,6 +646,90 @@
                         $value = strval($record->name);
                         array_push($values, $value);
                     }
+                }
+                $combined = array_combine($keys, $values);
+                return $combined;
+            }
+            return false;
+        }
+        
+        
+        /**
+         * Generates listing of application period for academic warning generation
+         * 
+         * @return type
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2018_03_09
+         * Last Modified: 2018_03_09
+         */
+        public static function prepareWarningReportPeriods()
+        {
+            $records = ApplicationPeriod::find()
+                        ->innerJoin('academic_year' , '`application_period`.`academicyearid` = `academic_year`.`academicyearid`')
+                        ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                        ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                        ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.divisionid' => [4,5],
+                                       'academic_year.isactive' => 1, 'academic_year.isdeleted' => 0,
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                                        'application.isactive' => 1, 'application.isdeleted' => 0
+                                    ])
+                        ->andWhere(['>=', 'applicationperiodstatusid', 5])
+                        ->all();
+            if (count($records) > 0)
+            {
+                $keys = array();
+                array_push($keys, '');
+
+                $values = array();
+                array_push($values, 'Select...');
+
+                foreach($records as $record)
+                {
+                    $academic_year = AcademicYear::find()
+                            ->where(['academicyearid' => $record->academicyearid, 'isactive' => 1, 'isdeleted' => 0])
+                            ->one();
+                    
+                    $today = date('Y-m-d');
+                    $split_today_date = explode("-", $today);
+                    $today_year = $split_today_date[0];
+                    $today_month = $split_today_date[1];
+                    $today_day = $split_today_date[2];
+                    
+                    $split_start_date = explode("-", $academic_year->startdate);
+                    $start_date_year = $split_start_date[0];
+                    $start_date_month = $split_start_date[1];
+                    $start_date_day = $split_start_date[2];
+                    
+                    if ($today_year >  $start_date_year)
+                    {
+                        $key = strval($record->applicationperiodid);
+                        array_push($keys, $key);
+                        $value = strval($record->name);
+                        array_push($values, $value);
+                    }
+                    elseif ($today_year ==  $start_date_year  &&  ($today_month - $start_date_month > 6))
+                    {
+                        $key = strval($record->applicationperiodid);
+                        array_push($keys, $key);
+                        $value = strval($record->name);
+                        array_push($values, $value);
+                    }
+                    /*
+                    $split_date = explode("-", $academic_year->enddate);
+                    $year = $split_date[0];
+                    $month = $split_date[1];
+                    $day = $split_date[2];
+                    $targetDate = date($year . "-" . ($month - 1) . "-" . $day);
+
+                    // if current date equal to or past 1 month prior to end of academic year for application period in question
+                    if (strtotime($today) > strtotime($targetDate))
+                    {
+                        $key = strval($record->applicationperiodid);
+                        array_push($keys, $key);
+                        $value = strval($record->name);
+                        array_push($values, $value);
+                    }*/
                 }
                 $combined = array_combine($keys, $values);
                 return $combined;
