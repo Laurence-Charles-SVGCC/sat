@@ -54,7 +54,7 @@
                     }
                     else
                     {
-                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'g:ia \o\n l jS F Y');
                     }
                     
                     
@@ -93,7 +93,7 @@
                             }
                             else
                             {
-                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'g:ia \o\n l jS F Y');
                             }
                         }
                     }
@@ -155,7 +155,7 @@
                     }
                     else
                     {
-                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'g:ia \o\n l jS F Y');
                     }
                     
                     
@@ -194,7 +194,7 @@
                             }
                             else
                             {
-                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'g:ia \o\n l jS F Y');
                             }
                         }
                     }
@@ -256,7 +256,7 @@
                     }
                     else
                     {
-                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'l jS F Y');
+                        $applicant_record['start_date'] = date_format(new \DateTime($applicant_registration->created_at), 'g:ia \o\n l jS F Y');
                     }
                     
                     
@@ -295,7 +295,7 @@
                             }
                             else
                             {
-                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'l jS F Y');
+                                $applicant_record['submission_date'] = date_format(new \DateTime($target_application->submissiontimestamp), 'g:ia \o\n l jS F Y');
                             }
                         }
                     }
