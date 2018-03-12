@@ -154,12 +154,15 @@
                             $fails++;
                         }
                     }
+                    
+                    if ($fails < 2)
+                        continue;
 
                     $total_courses = count($courses);
                     $percentage_failed = round( (($fails/$total_courses)*100) , 1);
                    
-                    if ($percentage_failed < 33)
-                        continue;
+//                    if ($percentage_failed < 33)
+//                        continue;
                     
                     /*************************************************************************/
                     $poor_performers ++;
@@ -355,16 +358,19 @@
                         $fails++;
                     }
                 }
+                
+                if ($fails < 2)
+                        continue;
 
                 $total_courses = count($courses);
                 $percentage_failed = round( (($fails/$total_courses)*100) , 1);
                         
 //                if ($fails < 4)
 //                    continue;
-                 if ($percentage_failed < 33)
-                        continue;
+//                 if ($percentage_failed < 33)
+//                        continue;
                 /*************************************************************************/
-                 if ($fails == 2)
+                if ($fails == 2)
                 {
                     $info['proposed_status'] = "Warning";
                 }
