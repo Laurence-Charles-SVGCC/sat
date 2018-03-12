@@ -62,14 +62,14 @@
                     'label' => 'Failure Rate (%)'
                 ],  
                 [
-                    'attribute' => 'current_level',
-                    'format' => 'text',
-                    'label' => 'Level'
-                ],
-                [
                     'attribute' => 'student_status',
                     'format' => 'text',
                     'label' => 'Status'
+                ],
+                [
+                    'attribute' => 'proposed_status',
+                    'format' => 'text',
+                    'label' => 'Proposed Status'
                 ],
                 [
                     'attribute' => 'email',

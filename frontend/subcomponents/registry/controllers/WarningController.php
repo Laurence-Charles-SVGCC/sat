@@ -51,17 +51,15 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2018_03_09
-         * Modified: 2018_03_09
+         * Modified: 2018_03_09 | 2018_03_12
          */
         public function actionGenerateWarningCandidates() 
         {
             $dataProvider = array();
-//            $dataProvider = new ArrayDataProvider;
             $data = array();
             $filename = "";
             $title = "";
             
-            $good = 0;
             $academic_warning = 0;
             $academic_probation = 0;
             $poor_performers = 0;
@@ -123,11 +121,9 @@
                     /******************  Checks if applicant is eligible for contract ********************/
                     $is_cape = AcademicOffering::isCape($target_application->academicofferingid);
                     $fails = 0;
-                    if ($is_cape == true)
+                    if ($is_cape == true)       // CAPE students are excluded
                     {
-                        $courses = BatchStudentCape::find()
-                                ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
-                                ->all();
+                        continue;
                     }
                     else
                     {
@@ -136,11 +132,15 @@
                                 ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
                                 ->innerJoin('academic_offering', '`course_offering`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                                ->innerJoin('semester', '`course_offering`.`semesterid` = `semester`.`semesterid`')
                                 ->where(['batch_students.studentregistrationid' => $registration->studentregistrationid, 'batch_students.isactive' => 1, 'batch_students.isdeleted'=> 0,
                                                 'batch.batchtypeid' =>[1], 'batch.isactive' => 1, 'batch.isdeleted'=> 0,
                                                 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
                                                  'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
+                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                                'semester.title' => 1, 'semester.isactive' => 1, 'semester.isdeleted' => 0,
+                                    ])       
+                               ->andWhere(['<>','course_offering.credits', 0])
                                 ->all();
                     }
                     
@@ -158,26 +158,27 @@
                     $total_courses = count($courses);
                     $percentage_failed = round( (($fails/$total_courses)*100) , 1);
                    
-//                    if ($fails < 4)
-//                        continue;
                     if ($percentage_failed < 33)
                         continue;
                     
                     /*************************************************************************/
                     $poor_performers ++;
                     
-                    if ($registration->academicstatusid == 1)
+                    if ($fails == 2)
                     {
-                        $good++;
+                       $academic_warning++;
+                        $info['proposed_status'] = "Warning";
                     }
-                    elseif ($registration->academicstatusid == 2)
+                    elseif ($fails > 2)
                     {
-                        $academic_warning++;
+                      $academic_probation++;
+                       $info['proposed_status'] = "Probation";
                     }
-                    elseif ($registration->academicstatusid == 3)
+                    else
                     {
-                        $academic_probation++;
-                    }                  
+                       $info['proposed_status'] = "Other";
+                    }
+                          
                    
                     $info['student_registrationid'] = $registration->studentregistrationid;
                     $info['offerid'] = $registration->offerid;
@@ -218,16 +219,19 @@
                     $programme = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                     $info['programme'] = $programme;
 
-                    $info['current_level'] = $registration->currentlevel;
-
                     $student_status =AcademicStatus::find()
                             ->where(['academicstatusid' => $registration->academicstatusid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     if ($student_status == false)
+                    {
                         $info['student_status'] = "Unknown";
+                    }
                     else
+                    {
                        $info['student_status'] = $student_status->name;
-
+                    }
+                    
+                   
                     $email = $user->email;
                     if ($email == false)
                     {
@@ -269,7 +273,6 @@
                     'dataProvider' => $dataProvider,
                     'title' => $title,
                     'application_periodid' => $application_periodid, 
-                    'good' => $good,
                     'academic_warning' => $academic_warning,
                     'academic_probation' => $academic_probation,
                     'poor_performers' => $poor_performers
@@ -282,9 +285,9 @@
         * 
         * @return type
         * 
-        * Author: Laurence Charles
+        * Author: charles.laurence1@gmail.com
         * Date Created: 15/1/2016
-        * Date Last Modified: 04/08/2017
+        * Date Last Modified: 04/08/2017 | 2018_03_12
         */
        public function actionExportWarningListing($application_periodid)
        {
@@ -321,9 +324,7 @@
                 $fails = 0;
                 if ($is_cape == true)
                 {
-                    $courses = BatchStudentCape::find()
-                            ->where(['studentregistrationid' => $registration->studentregistrationid, 'isactive' => 1, 'isdeleted'=> 0])
-                            ->all();
+                    continue;
                 }
                 else
                 {
@@ -332,11 +333,15 @@
                                 ->innerJoin('course_offering', '`batch`.`courseofferingid` = `course_offering`.`courseofferingid`')
                                 ->innerJoin('academic_offering', '`course_offering`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+                                ->innerJoin('semester', '`course_offering`.`semesterid` = `semester`.`semesterid`')
                                 ->where(['batch_students.studentregistrationid' => $registration->studentregistrationid, 'batch_students.isactive' => 1, 'batch_students.isdeleted'=> 0,
                                                 'batch.batchtypeid' =>[1], 'batch.isactive' => 1, 'batch.isdeleted'=> 0,
                                                 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
                                                  'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
+                                                'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                                'semester.title' => 1, 'semester.isactive' => 1, 'semester.isdeleted' => 0
+                                    ])       
+                               ->andWhere(['<>','course_offering.credits', 0])
                                 ->all();
                 }
 
@@ -359,6 +364,19 @@
                  if ($percentage_failed < 33)
                         continue;
                 /*************************************************************************/
+                 if ($fails == 2)
+                {
+                    $info['proposed_status'] = "Warning";
+                }
+                elseif ($fails > 2)
+                {
+                   $info['proposed_status'] = "Probation";
+                }
+                else
+                {
+                   $info['proposed_status'] = "---";
+                }
+                    
                 $info['student_registrationid'] = $registration->studentregistrationid;
                 $info['offerid'] = $registration->offerid;
                 $info['personid'] = $registration->personid;

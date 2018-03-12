@@ -140,6 +140,10 @@
                             <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-periods'])?>"><i class="fa fa-circle-o"></i> View Periods</a></li>
                             <li><a href="<?= Url::toRoute(['/subcomponents/applications/application-periods/view-period-statistics'])?>"><i class="fa fa-circle-o"></i> Period Statistics</a></li>
                             
+                            <?php if (Yii::$app->user->can('Registrar')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                                <li><a href="<?= Url::toRoute(['/subcomponents/admissions/package'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>
+                            <?php endif; ?>
+                                
                             <li class="treeview">
                                 <a href="">
                                   <i class="fa fa-circle-o" aria-hidden="true"></i> <span> Find Applicants</span> <i class="fa fa-angle-left pull-right"></i>
@@ -155,6 +159,14 @@
                                 <a href=""><i class="fa fa-circle-o"></i><span>Utilities</span><i class="fa fa-angle-left pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href="<?= Url::toRoute(['/subcomponents/admissions/applicant-registration/index'])?>"><i class="fa fa-circle-o"></i>Deactivate Email</a></li>
+                                    
+                                     <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
+                                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
+                                    <?php endif; ?>
+                                        
+                                    <?php if (Yii::$app->user->can('viewCurrentApplicantsSnapshot')): ?>    
+                                        <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/snapshot'])?>"><i class="fa fa-circle-o"></i>Applications Snapshot</a></li>
+                                    <?php endif; ?>
                                 </ul>
                             </li>
                         </ul>
@@ -169,68 +181,61 @@
                       </a>
                       <ul class="treeview-menu">
                         <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Current Applicant</a></li>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Applicants (Current)</a></li>
                         <?php endif; ?>
-
+                            
+                        <?php if (Yii::$app->user->can('registerStudent') ): ?>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'submitted-unlimited'])?>"><i class="fa fa-circle-o"></i>Verify Supporting Docs.</a></li>    
+                        <?php endif; ?>     
+                            
                         <?php if (Yii::$app->user->can('verifyApplicants')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Applicants</a></li>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants'])?>"><i class="fa fa-circle-o"></i>Verify Certificates</a></li>
                         <?php endif; ?>
 
                         <?php if (Yii::$app->user->can('reviewApplications')  /*&& Yii::$app->user->can('System Administrator')*/   && ApplicationPeriod::incompletePeriodExists()==true): ?>
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications'])?>"><i class="fa fa-circle-o"></i>Process Applications</a></li>
                         <?php endif; ?>
 
-                        <?php if (Yii::$app->user->can('Registrar')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/package'])?>"><i class="fa fa-circle-o"></i>Manage Packages</a></li>
-                        <?php endif; ?>
+                         <li class="treeview">
+                            <a href="">
+                              <i class="fa fa-circle-o" aria-hidden="true"></i> <span>Applicant Results</span> <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Interviews</a></li>
+                                <?php endif; ?>
 
-                        <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2])?>"><i class="fa fa-circle-o"></i>Interviews</a></li>
-                        <?php endif; ?>
+                                <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 1])?>"><i class="fa fa-circle-o"></i>Offers</a></li>
+                                <?php endif; ?>
 
-                        <?php if (Yii::$app->user->can('viewOffer')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 1])?>"><i class="fa fa-circle-o"></i>Offers</a></li>
-                        <?php endif; ?>
+                                <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1])?>"><i class="fa fa-circle-o"></i>Rejections</a></li>
+                                <?php endif; ?> 
 
-                        <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 1])?>"><i class="fa fa-circle-o"></i>Rejections</a></li>
-                        <?php endif; ?> 
-
-                        <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])?>"><i class="fa fa-circle-o"></i>Post-Interview Rejections</a></li>
-                        <?php endif; ?>
-
+                                <?php if (Yii::$app->user->can('viewRejection')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/rejection', 'rejectiontype' => 2])?>"><i class="fa fa-circle-o"></i>Post-Interview Rejections</a></li>
+                                <?php endif; ?>
+                            </ul>
+                         </li>
+                          
                         <?php if (Yii::$app->user->can('registerStudent') ): ?>
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'submitted-unlimited'])?>"><i class="fa fa-circle-o"></i>Document Verification</a></li>
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'successful'])?>"><i class="fa fa-circle-o"></i>Enroll Applicants</a></li>
                         <?php endif; ?>
-
-                        <?php if (Yii::$app->user->can('studentCard')): ?>    
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
-                        <?php endif; ?>
-
-                        <?php if (Yii::$app->user->can('viewCurrentApplicantsSnapshot')): ?>    
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports/snapshot'])?>"><i class="fa fa-circle-o"></i>Current Applicants Snapshot</a></li>
-                        <?php endif; ?>
-
-                        <?php if (Yii::$app->user->can('viewApplicationReports')): ?>    
-                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/reports'])?>"><i class="fa fa-circle-o"></i>Applications Reports</a></li>
-                        <?php endif; ?>
-                            
-                        <?php if (Yii::$app->user->can('System Administrator')): ?>    
+                        
+                         <?php if (Yii::$app->user->can('studentCard')): ?> 
                             <li class="treeview">
-                                <a href=""><i class="fa fa-circle-o"></i><span>Utilities</span><i class="fa fa-angle-left pull-right"></i></a>
+                                <a href=""><i class="fa fa-circle-o"></i><span>Library Utilities</span><i class="fa fa-angle-left pull-right"></i></a>
                                 <ul class="treeview-menu">
-                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/applicant-registration/index'])?>"><i class="fa fa-circle-o"></i>Deactivate Email</a></li>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/card'])?>"><i class="fa fa-circle-o"></i>Student Cards</a></li>
                                 </ul>
                             </li>
                         <?php endif; ?>
                       </ul>
                     </li>
                    <?php endif; ?>
-
-
-
+                    
+                    
                     <?php if (Yii::$app->user->can('registry')): ?>
                         <li class="treeview">
                             <a href="">
@@ -303,7 +308,7 @@
                                 <?php endif; ?>
 
                                 <?php if (Yii::$app->user->can('searchApplicant')): ?>
-                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Past Applicant</a></li>
+                                    <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending-unlimited'])?>"><i class="fa fa-circle-o"></i>Find Applicants (All)</a></li>
                                 <?php endif; ?>
 
                                 <?php if (Yii::$app->user->can('students')  && (Yii::$app->user->can('Assistant Registrar')  || Yii::$app->user->can('Registry Staff'))): ?>

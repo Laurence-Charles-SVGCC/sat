@@ -104,14 +104,14 @@
                             'label' => 'Failure Rate (%)'
                         ],   
                         [
-                            'attribute' => 'current_level',
-                            'format' => 'text',
-                            'label' => 'Level'
-                        ],
-                        [
                             'attribute' => 'student_status',
                             'format' => 'text',
-                            'label' => 'Status'
+                            'label' => 'Current Status'
+                        ],
+                        [
+                            'attribute' => 'proposed_status',
+                            'format' => 'text',
+                            'label' => 'Proposed Status'
                         ],
                         [
                             'attribute' => 'email',
@@ -127,18 +127,18 @@
             <thead>
                 <tr>
                     <th>Poor Performers</th>
-                    <th>Good</th>
-                    <th>Academic Warning</th>
-                    <th>Academic Probation</th>
+                    <th>Proposed Academic Warning</th>
+                    <th>Proposed Academic Probation</th>
+                    <th>Other</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr>
                     <td><?= $poor_performers ;?></td>
-                    <td><?= $good ;?></td>
                     <td><?= $academic_warning ;?></td>
                     <td><?= $academic_probation ;?></td>
+                    <td><?= $poor_performers - ($academic_warning + $academic_probation) ?></td>
                 </tr>
             </tbody>
         </table><br/>

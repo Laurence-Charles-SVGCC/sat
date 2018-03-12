@@ -140,6 +140,7 @@
                                                 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
                                                  'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                                 'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
+                                ->andWhere(['<>','course_offering.credits', 0])
                                 ->all();
                     }
                     
@@ -340,6 +341,7 @@
                                                 'course_offering.isactive' => 1, 'course_offering.isdeleted' => 0,
                                                  'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                                 'application_period.applicationperiodid' => $application_periodid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0 ])
+                                ->andWhere(['<>','course_offering.credits', 0])
                                 ->all();
                 }
 
