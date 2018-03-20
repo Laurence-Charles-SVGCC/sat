@@ -460,8 +460,27 @@
                         ->all());
 
                 $spaces = $ao->spaces;
-//                
             }
+            
+            /* determine Csec Centre Details */
+           $centrename = "None";
+           $cseccentreid = 0;
+           $all_certificates = CsecQualification::find()
+                   ->where(['personid' => $applicant->personid])
+                   ->all();
+           if ($all_certificates == true)
+           {
+               $test_certificate = $all_certificates[0];
+               $centre = CsecCentre::find()
+                       ->where(['cseccentreid' => $test_certificate->cseccentreid])
+                       ->one();
+               if ($centre == true)
+               {
+                    $centrename = $centre->name;
+                    $cseccentreid = $centre->cseccentreid;
+               }
+           }
+            /*****************************/
             
             return $this->render('view_applicant_certificates',
                     [
@@ -481,7 +500,11 @@
                         'spaces' => $spaces,
                         'cape' => $cape,
                         'cape_info' => $cape_info,
-                        'programme_id' => $programme_id
+                        'programme_id' => $programme_id,
+                        
+                        'centrename' => $centrename, 
+                        'cseccentreid' => $cseccentreid,
+                    
                     ]);
         }
         

@@ -23,8 +23,11 @@
     }
 
     $this->title = ' Applicant: ' . $applicant_name;
-    $this->params['breadcrumbs'][] = ['label' => $centrename, 
-        'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
+    
+    if ($centrename!= "None" && $centreid != 0)
+    {
+        $this->params['breadcrumbs'][] = ['label' => $centrename, 'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];
+    }
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 

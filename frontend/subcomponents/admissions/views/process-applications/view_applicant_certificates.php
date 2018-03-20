@@ -92,8 +92,16 @@
     <?php else:?>
         <!-- Applicant's certificates have not been verified-->
         <br/><p id="offer-message" class="alert alert-warning" role="alert" style="width: 95%; margin: 0 auto; font-size:14px;"> 
-            <?= "Applicant's certificates have not been verified yet.";?>
-        </p>    
+            <span>Applicant's certificates have not been verified yet.</span>
+            
+            <?php if (Yii::$app->user->can('verifyApplicants')) :?>
+                <a class="btn btn-danger pull-right" 
+                    href=<?=Url::toRoute(['/subcomponents/admissions/verify-applicants/view-applicant-qualifications', 'applicantid' => $applicant->personid, 'centrename' => $centrename, 'cseccentreid' => $cseccentreid, 'type' => 'Pending']);?>
+                >
+                    Click here to verify this applicant's certificates
+                </a><br/><br/>              
+            <?php endif; ?>
+        </p>
     <?php endif;?>
             
     <div class="box-body">
