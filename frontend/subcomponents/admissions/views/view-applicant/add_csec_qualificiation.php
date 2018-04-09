@@ -34,6 +34,7 @@
      </div>
     
     <?php $form = ActiveForm::begin();?>
+        <?= Html::hiddenInput('addCsecQualification_baseUrl', Url::home(true));?>
         <div class="box-body">
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="cseccentreid">Examination Centre:</label>
