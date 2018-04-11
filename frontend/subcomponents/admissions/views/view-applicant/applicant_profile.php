@@ -2216,7 +2216,14 @@
                     <?php 
                         if(Yii::$app->user->can('viewAcademicQualificationsData'))
                         {
-                            echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Qualifications</h3>";
+                            echo "<h3 style='color:green;font-weight:bold; font-size:1.6em; text-align:center'>Qualifications";
+                                if(Yii::$app->user->can('addQualification'))
+                                {
+                                    echo Html::a('Add Qualification(s)',
+                                                            ['add-qualifications',  'search_status' => $search_status, 'personid' => $applicant->personid, 'applicantusername' => $applicantusername,], 
+                                                            ['class' => 'btn btn-success pull-right', 'style' => 'margin-left:10px; margin-right:10px', ]); 
+                                }
+                            echo "</h3>";
 
                             if ($qualifications==false)
                             {
@@ -2228,25 +2235,19 @@
                                 {
                                     $val = $i+1;
                                     $qualificationid = $qualifications[$i]->csecqualificationid;
-                                    $editlink = Url::toRoute(['/subcomponents/admissions/view-applicant/edit-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
-                                    $deletelink = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $qualificationid]);
-
+                                   
                                     echo "<div class='panel-heading' style='color:green;font-weight:bold; font-size:1.3em'>#$val ";
                                         if(Yii::$app->user->can('deleteQualification'))
                                         {
                                             echo Html::a(' Delete', 
-                                                            ['delete-qualification', 'personid' => $applicant->personid, 'recordid' => $qualificationid], 
-                                                            ['class' => 'btn btn-danger glyphicon glyphicon-remove pull-right',
+                                                            ['delete-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $qualificationid], 
+                                                            ['class' => 'btn btn-danger pull-right',
                                                                 'data' => [
                                                                     'confirm' => 'Are you sure you want to delete this item?',
                                                                     'method' => 'post',
                                                                 ],
                                                              'style' => 'margin-left:10px',
                                                             ]);
-                                        }
-                                        if(Yii::$app->user->can('editQualification'))
-                                        {
-                                                echo "<a class='btn btn-info glyphicon glyphicon-pencil pull-right' href=$editlink role='button'> Edit</a>";
                                         }
                                     echo "</div>";
 
@@ -2277,9 +2278,6 @@
                             }
                         }
                     ?>
-                    <?php if(Yii::$app->user->can('addQualification')):?>
-                        <a class='btn btn-success glyphicon glyphicon-plus pull-right' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification', 'search_status' => $search_status, 'personid' => $applicant->personid]);?> role='button' style='margin-top:30px;'> Add Qualification</a>
-                    <?php endif;?>
                 </div>
 
                 <?php if(Yii::$app->user->can('viewAcademicQualificationsData')):?> 

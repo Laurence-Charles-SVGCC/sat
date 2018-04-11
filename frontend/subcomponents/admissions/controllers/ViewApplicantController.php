@@ -2014,147 +2014,141 @@ class ViewApplicantController extends \yii\web\Controller
             'search_status' => $search_status,
         ]); 
     }
-    
+
     
     /**
      * Creates a qualification record 
      * 
      * @param type $personid
+     * @param type $studentregistrationid
      * @return type
      * 
-     * Author: Laurence Charles
-     * Date Created: 04/01/2016
-     * Date Last Modified: 28/02/2016
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_04_11
+     * odified: 2018_04_11
      */
-    public function actionAddQualification($search_status, $personid)
+    public function actionAddQualifications($search_status, $personid, $applicantusername)
     {
-        $user = User::find()
-                ->where(['personid' => $personid])
-                ->one();
-        
-        $qualification = new CsecQualification();
-        $qualification->personid = $personid;
+        $qualifications = array();
 
-        if ($post_data = Yii::$app->request->post())
+        for ($k=0; $k<10; $k++)
         {
-            $load_flag = false;
-            $validation_flag = false;
-            $save_flag = false;
-
-            $load_flag = $qualification->load($post_data);
-            if($load_flag == true)
-            {
-                $validation_flag = $qualification->validate();
-
-                if($validation_flag == true)
-                {
-                    $save_flag = $qualification->save();
-                    if($save_flag == true)
-                    {
-                        return self::actionApplicantProfile($search_status, $user->username);
-                    }
-                    else
-                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
-                }
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
-            }
-            else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+            $temp = new CsecQualification();
+            $temp->cseccentreid = "";
+            $temp->candidatenumber = "";
+            $temp->examinationbodyid = "";
+            $temp->subjectid = "";
+            $temp->examinationproficiencytypeid = "";
+            $temp->examinationgradeid = "";
+            $temp->year = "";
+            $qualifications[] = $temp;
         }
 
-        return $this->render('add_csec_qualificiation', [
-            'user' => $user,
-            'personid' => $personid,
-            'qualification' => $qualification,
-            'search_status' => $search_status, 
-        ]); 
+        return $this->render('add_qualifications', [
+            'csecqualifications' => $qualifications,
+            'personid' => $personid, 
+            'search_status' => $search_status,
+            'applicantusername' => $applicantusername]);
     }
-    
-    
+
+
     /**
-     * Creates a qualification record from the verification screen
+     * Saves Nes Qualifications
      * 
      * @param type $personid
+     * @param type $studentregistrationid
+     * @param type $record_count
+     * @param type qual_limit
      * @return type
      * 
-     * Author: Laurence Charles
-     * Date Created: 10/03/2016
-     * Date Last Modified: 28/02/2016
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_04_11
+     * Modified: 2018_04_11
      */
-    public function actionAddQualificationFromVerify($applicantusername, $cseccentreid, $centrename, $type)
+    public function actionSaveNewQualifications($search_status, $personid, $applicantusername)
     {
-        $user = User::find()
-                ->where(['username' => $applicantusername, 'isactive' => 1, 'isdeleted' => 0])
-                ->one();
-        
-        $qualification = new CsecQualification();
-        $qualification->personid = $user->personid;
+        $all_qualifications = array();
 
         if ($post_data = Yii::$app->request->post())
         {
-            $load_flag = false;
-            $validation_flag = false;
-            $save_flag = false;
+            for ($i = 0 ; $i < 10 ; $i++)
+            {
+                $temp = new CsecQualification();
+                array_push($all_qualifications, $temp);               
+            }
 
-            $load_flag = $qualification->load($post_data);
+            $load_flag = false;
+
+            $load_flag = Model::loadMultiple($all_qualifications, $post_data);
             if($load_flag == true)
             {
-                $validation_flag = $qualification->validate();
-
-                if($validation_flag == true)
+                $transaction = \Yii::$app->db->beginTransaction();
+                try 
                 {
-                    $save_flag = $qualification->save();
-                    if($save_flag == true)
+                    foreach ($all_qualifications as $qualification) 
                     {
-                        //redirect
-                        if (strcasecmp($type, "pending")==0)
+
+                        $save_flag = false;
+                        if($qualification->isValid() == true)
                         {
-                            return $this->redirect(['verify-applicants/view-pending', 
-                                                    'cseccentreid' => $cseccentreid, 
-                                                    'centrename' => $centrename
-                                                ]);
-                        }
-                        elseif (strcasecmp($type, "queried")==0)
-                        {
-                            return $this->redirect(['verify-applicants/view-queried', 
-                                                    'cseccentreid' => $cseccentreid, 
-                                                    'centrename' => $centrename
-                                                ]);
-                        }
-                        elseif (strcasecmp($type, "all")==0)
-                        {
-                            return $this->redirect(['verify-applicants/view-all', 
-                                                    'cseccentreid' => $cseccentreid, 
-                                                    'centrename' => $centrename
-                                                ]);
-                        }
-                        elseif (strcasecmp($type, "verified")==0)
-                        {
-                            return $this->redirect(['verify-applicants/view-verified', 
-                                                    'cseccentreid' => $cseccentreid, 
-                                                    'centrename' => $centrename
-                                                ]);
+                            $qualification->personid = $personid;
+                            $qualification->isverified = true;
+                            $save_flag = $qualification->save();
+                            if ($save_flag == false)
+                            {
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error saving certificates. Please try again');
+                                return $this->redirect(['add-qualifications', 'search_status' => $search_status, 'personid' => $personid]);
+                            }
                         }
                     }
-                    else
-                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
+                    $transaction->commit();
+                    return $this->redirect(['applicant-profile', 'search_status' => $search_status, 'applicantusername' => $applicantusername]);
+
+                } catch (Exception $ex) 
+                {
+                    $transaction->rollBack();
+                    Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
                 }
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
             }
             else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+            {
+                Yii::$app->getSession()->setFlash('error', 'Error occured loading records. Please try again');
+            }
         }
-
-        return $this->render('add_csec_qualificiation_from_verify', [
-            'user' => $user,
-            'applicantusername' => $applicantusername,
-            'qualification' => $qualification,
-        ]); 
+        return $this->redirect(['add-qualifications', 'search_status' => $search_status, 'personid' => $personid]);
     }
+
+
+    /**
+    * Handles 'examination_body' dropdownlist of 'add_csecqualification' view
+    * 
+    * @param type $exam_body_id
+    * 
+    * Author:  charles.laurence1@gmail.com
+    * Date Created: 2018_04_10
+    * Date Last Modified: 2018_04_10
+    */
+   public function actionExaminationBodyDependants($exam_body_id, $index)
+   {
+       $subjects = Subject::getSubjectList($exam_body_id);      
+       $proficiencies = ExaminationProficiencyType::getExaminationProficiencyList($exam_body_id);
+       $grades = ExaminationGrade::getExaminationGradeList($exam_body_id);
+       $pass = NULL;
+
+       if (count($subjects)>0  && count($proficiencies)>0  && count($grades)>0)    //if subjects related to examination body exist
+       {     
+           $pass = 1;
+           echo Json::encode(['recordid' => $index, 'subjects' => $subjects, 'proficiencies' => $proficiencies, 'grades' => $grades, 'pass' => $pass]);       //return json encoded array of subjects    
+       }
+       else
+       {
+           $pass = 0;
+           echo Json::encode(['recordid' => $index, 'pass'=> $pass]);
+       }    
+   }
     
-    
+
     
     /**
      * Updates 'Technical Qualifications' section of Applicant Profile
@@ -2365,7 +2359,6 @@ class ViewApplicantController extends \yii\web\Controller
     }
     
 
-
     /**
      * Deletes a qualification
      * 
@@ -2405,71 +2398,7 @@ class ViewApplicantController extends \yii\web\Controller
         
         return self::actionApplicantProfile($search_status, $user->username);
     }
-
-
-    /**
-     * Updates a qualification record
-     * 
-     * @param type $personid
-     * @param type $recordid
-     * @return type
-     * 
-     * Author: Laurence Charles
-     * Date Created: 04/01/2016
-     * Date Last Modified: 28/02/2016
-     */
-    public function actionEditQualification($search_status, $personid, $recordid)
-    {
-        $user = User::find()
-                ->where(['personid' => $personid])
-                ->one();
-        
-        $qualification = CsecQualification::find()
-                    ->where(['csecqualificationid' => $recordid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one();
-
-        if ($qualification == false)
-        {          
-            Yii::$app->getSession()->setFlash('error', 'Error occured when trying to retrieve qualification record. Please try again.');
-            return self::actionApplicantProfile($search_status, $user->username);
-        }
-
-        if ($post_data = Yii::$app->request->post())
-        {
-            $load_flag = false;
-            $validation_flag = false;
-            $save_flag = false;
-
-            $load_flag = $qualification->load($post_data);
-            if($load_flag == true)
-            {
-                $validation_flag = $qualification->validate();
-
-                if($validation_flag == true)
-                {
-                    $save_flag = $qualification->save();
-                    if($save_flag == true)
-                    {
-                        return self::actionApplicantProfile($search_status, $user->username);
-                    }
-                    else
-                        Yii::$app->getSession()->setFlash('error', 'Error occured when trying to save qualification record. Please try again.');
-                }
-                else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
-            }
-            else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
-        }
-
-        return $this->render('edit_csec_qualificiation', [
-            'user' => $user,
-            'personid' => $personid, 
-            'qualification' => $qualification,
-            'search_status' => $search_status,
-        ]); 
-    }
-    
+ 
     
     /**
      * Deletes personinstitutiton record

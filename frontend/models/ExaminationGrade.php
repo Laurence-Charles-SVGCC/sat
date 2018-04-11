@@ -144,22 +144,34 @@ class ExaminationGrade extends \yii\db\ActiveRecord
                 ->all();
       
         $arr = array();
-        foreach ($records as $record)
+        
+        if(count($records) == 0)
         {
-            $combined = array();
             $keys = array();
+            array_push($keys, '');
             $values = array();
-            array_push($keys, "id");
-            array_push($keys, "name");
-            $k1 = strval($record->examinationgradeid);
-            $k2 = strval($record->name);
-            array_push($values, $k1);
-            array_push($values, $k2);
-            $combined = array_combine($keys, $values);
-            array_push($arr, $combined);
-            $combined = NULL;
-            $keys = NULL;
-            $values = NULL;        
+            array_push($values, 'Select Grade');
+            $arr = array_combine($keys, $values);
+        }
+        else
+        {
+            foreach ($records as $record)
+            {
+                $combined = array();
+                $keys = array();
+                $values = array();
+                array_push($keys, "id");
+                array_push($keys, "name");
+                $k1 = strval($record->examinationgradeid);
+                $k2 = strval($record->name);
+                array_push($values, $k1);
+                array_push($values, $k2);
+                $combined = array_combine($keys, $values);
+                array_push($arr, $combined);
+                $combined = NULL;
+                $keys = NULL;
+                $values = NULL;        
+            }
         }
         return $arr;  
     }

@@ -246,8 +246,6 @@
                 </fieldset> 
 
                 <div class="form-group pull-right">
-                    <!--<a class='btn btn-success glyphicon glyphicon-plus' href=<?=Url::toRoute(['/subcomponents/admissions/view-applicant/add-qualification-from-verify', 'applicantusername' => $username, 'cseccentreid' => $centreid, 'centrename' => $centrename, 'type' =>$type ]);?> role='button'> Add Certificate</a>-->
-
                     <?php if (Yii::$app->user->can('verifyApplicants') && count($csecqualifications)>0): ?>
                         <?= Html::submitButton('Update Certificates', ['class' => 'btn btn-primary', 'onclick'=>'generateQualificationBlanks();', 'style' => 'margin-right: 20px']) ?>
                     <?php endif; ?>

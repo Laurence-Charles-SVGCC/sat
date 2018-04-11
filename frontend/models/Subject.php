@@ -153,9 +153,9 @@ class Subject extends \yii\db\ActiveRecord
      * @param type $examination_body_id
      * @return array
      * 
-     * Author: Laurence Charles
+     * Author: Lcharles.laurence1@gmail.com
      * Date Created: 04/01/2016
-     * Date Last Modified: 04/01/2016
+     * Date Last Modified: 04/01/2016 | 2018_04_10
      */
     public static function getSubjectList($examination_body_id)
     {  
@@ -164,22 +164,34 @@ class Subject extends \yii\db\ActiveRecord
                 ->all();
         
         $arr = array();
-        foreach ($records as $record)
+        
+        if(count($records) == 0)
         {
-            $combined = array();
             $keys = array();
+            array_push($keys, '');
             $values = array();
-            array_push($keys, "id");
-            array_push($keys, "name");
-            $k1 = strval($record->subjectid);
-            $k2 = strval($record->name);
-            array_push($values, $k1);
-            array_push($values, $k2);
-            $combined = array_combine($keys, $values);
-            array_push($arr, $combined);
-            $combined = NULL;
-            $keys = NULL;
-            $values = NULL;        
+            array_push($values, 'Select Subject');
+            $arr = array_combine($keys, $values);
+        }
+        else
+        {
+            foreach ($records as $record)
+            {
+                $combined = array();
+                $keys = array();
+                $values = array();
+                array_push($keys, "id");
+                array_push($keys, "name");
+                $k1 = strval($record->subjectid);
+                $k2 = strval($record->name);
+                array_push($values, $k1);
+                array_push($values, $k2);
+                $combined = array_combine($keys, $values);
+                array_push($arr, $combined);
+                $combined = NULL;
+                $keys = NULL;
+                $values = NULL;        
+            }
         }
         return $arr;  
     }
