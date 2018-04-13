@@ -3429,7 +3429,7 @@
                 foreach ($applications as $application)
                 {
                     $offer = Offer::find()
-                            ->where(['applicationid' => $application->applicationid, 'isacitve' => 1, 'isdeleted' => 0])
+                            ->where(['applicationid' => $application->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
                     if ($offer == true)
                     {

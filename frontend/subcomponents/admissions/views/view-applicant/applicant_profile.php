@@ -2027,17 +2027,25 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em; height:75px'>$primaryschoolNames[$i]</th>";
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
-                                            if ($primaryschools[$i]->startdate != NULL && strcmp($primaryschools[$i]->startdate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->startdate}</td>";
+                                            if ($primaryschools[$i]->year_of_graduation != NULL)
+                                            {
+                                                echo "<th colspan='1' style='vertical-align:middle; text-align:center; height:75px'>Year of Graduation</th>";
+                                                 echo "<td colspan='3' style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->year_of_graduation}</td>";
+                                            }
                                             else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            {
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
+                                                if ($primaryschools[$i]->startdate != NULL && strcmp($primaryschools[$i]->startdate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->startdate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
 
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
-                                            if ($primaryschools[$i]->enddate != NULL && strcmp($primaryschools[$i]->enddate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->enddate}</td>";
-                                            else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
+                                                if ($primaryschools[$i]->enddate != NULL && strcmp($primaryschools[$i]->enddate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->enddate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            }
                                             $pri_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid]);
                                             $pri_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $primaryschools[$i]->personinstitutionid, 'levelid' => 2]);
 
