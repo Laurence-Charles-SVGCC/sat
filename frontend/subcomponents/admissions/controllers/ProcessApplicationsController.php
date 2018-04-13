@@ -3438,7 +3438,7 @@
                     
                     $rejection = Rejection::find()
                             ->innerJoin('rejection_applications' , '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
-                            ->where(['rejection.isactive' => 1, 'rejection.isdeleted' => 0, 'rejection.applicationid' => $application->applicationid])
+                            ->where(['rejection.isactive' => 1, 'rejection.isdeleted' => 0, 'rejection_applications.applicationid' => $application->applicationid])
                             ->one();
                      if ($rejection == true)
                     {
