@@ -484,6 +484,7 @@
             
             return $this->render('view_applicant_certificates',
                     [
+                        'personid' => $personid,
                         'division_id' => $divisionid,
                         'duplicate_message' => $duplicate_message,
                         'username' => $username,
@@ -3403,7 +3404,111 @@
         
         
         
-        
+        /**
+         * Reset Applicant;
+         * Delete all offer
+         * Delete all rejections
+         * Sets all application choices to Pending
+         * 
+         * Author: charles.laurence1@gmail.com
+         * Created: 2018_04_10
+         * Modified: 2018_04_10
+         */
+        public function actionFullApplicantReset($personid, $programme, $application_status, $programme_id)
+        {
+            $reset_failed = false;
+            $transaction = \Yii::$app->db->beginTransaction();
+            try 
+            { 
+                $offers = array();
+                $rejections = array();
+                
+                $applications = Application::getVerifiedApplications($personid);
+                
+                // retreives offers and rejections
+                foreach ($applications as $application)
+                {
+                    $offer = Offer::find()
+                            ->where(['applicationid' => $application->applicationid, 'isacitve' => 1, 'isdeleted' => 0])
+                            ->one();
+                    if ($offer == true)
+                    {
+                        $offers[] = $offer;
+                    }
+                    
+                    $rejection = Rejection::find()
+                            ->innerJoin('rejection_applications' , '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
+                            ->where(['rejection.isactive' => 1, 'rejection.isdeleted' => 0, 'rejection.applicationid' => $application->applicationid])
+                            ->one();
+                     if ($rejection == true)
+                    {
+                        $rejections[] = $rejection;
+                    }
+                }
+                
+                if (count($offers) > 0)
+                {
+                    foreach ($offers as $offer)
+                    {
+                        if($offer->isactive == 1  &&  $offer->isdeleted == 0)
+                        {
+                            $offer->isactive = 0;
+                            $offer->isdeleted = 1;
+                            if ($offer->save() == false)
+                            {
+                                $reset_failed = true;
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occurred deleting offers.');
+                            }
+                       }
+                    }
+               }
+               
+               if (count($rejections) > 0)
+               {
+                   foreach ($rejections as $rejection)
+                    {
+                       if($rejection->isactive == 1  &&  $rejection->isdeleted == 0)
+                       {
+                            $rejection->isactive = 0;
+                            $rejection->isdeleted = 1;
+                            if ($rejection->save() == false)
+                            {
+                                $reset_failed = true;
+                                $transaction->rollBack();
+                                Yii::$app->getSession()->setFlash('error', 'Error occurred deleting rejections.');
+                            }
+                       }
+                    }
+               }
+                
+                foreach ($applications as $application)
+                {
+                    $application->applicationstatusid = 3;
+                    if ($application->save() == false)
+                    {
+                        $reset_failed = true;
+                        $transaction->rollBack();
+                        Yii::$app->getSession()->setFlash('error', 'Error occurred resetting applications to pending.');
+                    }
+                }
+               
+                if ($reset_failed == false)
+                {
+                    $transaction->commit();
+                    Yii::$app->getSession()->setFlash('success', 'Full applicant reset successful.');
+                }
+            }catch (Exception $e) 
+            {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Error occured processing your request');
+            }
+            
+            return $this->redirect(['view-applicant-certificates', 
+                'personid' => $personid, 
+                'programme' => $programme,
+                'application_status' => $application_status]);
+        }
         
         
         

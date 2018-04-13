@@ -4171,7 +4171,8 @@ class ViewApplicantController extends \yii\web\Controller
                     'applicationcapesubject' =>  $applicationcapesubject,
         ]); 
     }
-        
+    
+    
         
 
 }

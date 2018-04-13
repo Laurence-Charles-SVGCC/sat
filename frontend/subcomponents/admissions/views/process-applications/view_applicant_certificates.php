@@ -239,9 +239,17 @@
 
             <h2 class="custom_h2">
                 Applications
+                <?php if (Yii::$app->user->can('System Administrator') == true):?>
+                    <div class="pull-right">
+                        <?=Html::a('Admin. Reset', 
+                                    ['process-applications/full-applicant-reset', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status, 'programme_id' => $programme_id], 
+                                    ['class' => 'btn btn-danger', 'data' => ['confirm' => 'Are you sure you want to reset application back to verified status?']]);?>
+                    </div>
+                <?php endif;?>
+                
                 <?php if (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == false):?>
-                    <div class="pull-right" style="margin-right:5%">
-                        <?=Html::a(' Create Custom Offer', 
+                    <div class="pull-right" style="margin-right:10px">
+                        <?=Html::a('Custom Offer', 
                                     ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                                     ['class' => 'btn btn-warning',
                                         'style' => '',
@@ -253,8 +261,8 @@
                     </div>
 
                 <?php elseif (Applicant::isRejected($applicant->personid) == true  && Applicant::hasBeenIssuedRejection($applicant->personid) == true  && Yii::$app->user->can('Registrar')):?>
-                    <div class="pull-right" style="margin-right:5%">
-                        <?=Html::a(' Create Custom Offer', 
+                    <div class="pull-right" style="margin-right:10px">
+                        <?=Html::a('Custom Offer', 
                                     ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                                     ['class' => 'btn btn-warning',
                                         'style' => '',
@@ -286,9 +294,9 @@
                         </div>
                     <?php endif;?>
 
-                    <div class="pull-right" style="margin-right:5%">
+                    <div class="pull-right" style="margin-right:10px">
                         <?php if ( Yii::$app->user->can('Dean')  ||  Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Admission Team Adjuster') ):?>
-                            <?=Html::a(' Create Custom Offer', 
+                            <?=Html::a(' Custom Offer', 
                                         ['process-applications/custom-offer', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status], 
                                         ['class' => 'btn btn-warning',
                                             'style' => '',
