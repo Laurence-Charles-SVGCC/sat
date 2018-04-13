@@ -2110,7 +2110,7 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>$secondaryschoolNames[$i]</th>";
-                                            if ($secondarychools[$i]->year_of_graduation != NULL)
+                                            if ($secondaryschools[$i]->year_of_graduation != NULL)
                                             {
                                                 echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
                                                  echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->year_of_graduation}</td>";
@@ -2184,10 +2184,10 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>$tertiaryschoolNames[$i]</th>";
-                                            if ($preschools[$i]->year_of_graduation != NULL)
+                                            if ($tertiaryschools[$i]->year_of_graduation != NULL)
                                             {
                                                 echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
-                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->year_of_graduation}</td>";
+                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->year_of_graduation}</td>";
                                             }
                                             else
                                             {
