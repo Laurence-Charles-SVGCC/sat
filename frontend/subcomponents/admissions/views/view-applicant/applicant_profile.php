@@ -1960,17 +1960,26 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>$preschoolNames[$i]</th>";
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
-                                            if ($preschools[$i]->startdate != NULL && strcmp($preschools[$i]->startdate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->startdate}</td>";
+                                            if ($preschools[$i]->year_of_graduation != NULL)
+                                            {
+                                                echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
+                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->year_of_graduation}</td>";
+                                            }
                                             else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            {
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
+                                                if ($preschools[$i]->startdate != NULL && strcmp($preschools[$i]->startdate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->startdate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
 
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
-                                            if ($preschools[$i]->enddate != NULL && strcmp($preschools[$i]->enddate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->enddate}</td>";
-                                            else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
+                                                if ($preschools[$i]->enddate != NULL && strcmp($preschools[$i]->enddate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->enddate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            }
+                                                
                                             $pre_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid]);
                                             $pre_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $preschools[$i]->personinstitutionid, 'levelid' => 1]);
 
@@ -2029,8 +2038,8 @@
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em; height:75px'>$primaryschoolNames[$i]</th>";
                                             if ($primaryschools[$i]->year_of_graduation != NULL)
                                             {
-                                                echo "<th colspan='1' style='vertical-align:middle; text-align:center; height:75px'>Year of Graduation</th>";
-                                                 echo "<td colspan='3' style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->year_of_graduation}</td>";
+                                                echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
+                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$primaryschools[$i]->year_of_graduation}</td>";
                                             }
                                             else
                                             {
@@ -2101,17 +2110,25 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>$secondaryschoolNames[$i]</th>";
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
-                                            if ($secondaryschools[$i]->startdate != NULL && strcmp($secondaryschools[$i]->startdate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->startdate}</td>";
+                                            if ($secondarychools[$i]->year_of_graduation != NULL)
+                                            {
+                                                echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
+                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->year_of_graduation}</td>";
+                                            }
                                             else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            {
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
+                                                if ($secondaryschools[$i]->startdate != NULL && strcmp($secondaryschools[$i]->startdate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->startdate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
 
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
-                                            if ($secondaryschools[$i]->enddate != NULL && strcmp($secondaryschools[$i]->enddate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->enddate}</td>";
-                                            else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
+                                                if ($secondaryschools[$i]->enddate != NULL && strcmp($secondaryschools[$i]->enddate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$secondaryschools[$i]->enddate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            }
                                             $sec_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid]);
                                             $sec_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $secondaryschools[$i]->personinstitutionid, 'levelid' => 3]);
 
@@ -2167,17 +2184,26 @@
                                     {
                                         echo "<tr>";
                                             echo "<th rowspan='2' style='vertical-align:middle; text-align:center; font-size:1.2em;'>$tertiaryschoolNames[$i]</th>";
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
-                                            if ($tertiaryschools[$i]->startdate != NULL && strcmp($tertiaryschools[$i]->startdate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->startdate}</td>";
+                                            if ($preschools[$i]->year_of_graduation != NULL)
+                                            {
+                                                echo "<th colspan='3' style='vertical-align:middle; height:75px'>Year of Graduation</th>";
+                                                 echo "<td colspan='1' style='vertical-align:middle; text-align:center; height:75px'>{$preschools[$i]->year_of_graduation}</td>";
+                                            }
                                             else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            {
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>Start Date</th>";
+                                                if ($tertiaryschools[$i]->startdate != NULL && strcmp($tertiaryschools[$i]->startdate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->startdate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
 
-                                            echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
-                                            if ($tertiaryschools[$i]->enddate != NULL && strcmp($tertiaryschools[$i]->enddate,"0000-00-00")!=0)
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->enddate}</td>";
-                                            else
-                                                echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                                echo "<th style='vertical-align:middle; text-align:center; height:75px'>End Date</th>";                                                      
+                                                if ($tertiaryschools[$i]->enddate != NULL && strcmp($tertiaryschools[$i]->enddate,"0000-00-00")!=0)
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>{$tertiaryschools[$i]->enddate}</td>";
+                                                else
+                                                    echo "<td style='vertical-align:middle; text-align:center; height:75px'>--</td>";
+                                            }
+                                            
                                             $ter_delete_link = Url::toRoute(['/subcomponents/admissions/view-applicant/delete-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid]);
                                             $ter_edit_link =  Url::toRoute(['/subcomponents/admissions/view-applicant/edit-school', 'search_status' => $search_status, 'personid' => $applicant->personid, 'recordid' => $tertiaryschools[$i]->personinstitutionid, 'levelid' => 4]);
 
