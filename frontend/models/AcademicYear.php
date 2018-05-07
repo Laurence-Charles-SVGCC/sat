@@ -328,4 +328,23 @@ class AcademicYear extends \yii\db\ActiveRecord
         return $academic_years;
     }
     
+    
+    /**
+     * Determines if record is valid to save
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_05_07
+     * Modified: 2018_05_07
+     */
+    public function isValid()
+    {
+        if (strcmp($this->title, "default") == 0  &&  strcmp($this->startdate,"1990-01-01") == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    
 }

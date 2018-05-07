@@ -1163,7 +1163,7 @@
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2017_09_13
-         * Modified: 2017_09_13
+         * Modified: 2017_05_04
          */
         public static function calculateApplicantIntent($divisionid, $applicationperiodtypeid)
         {
@@ -1174,7 +1174,7 @@
                 {
                     $applicantintentid = 1;
                 }
-                else
+                elseif ($applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 2;
                 }
@@ -1185,7 +1185,7 @@
                 {
                     $applicantintentid = 1;
                 }
-                else
+                elseif ($applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 3;
                 }
@@ -1196,7 +1196,7 @@
                 {
                     $applicantintentid = 4;
                 }
-                else
+                elseif ($applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 5;
                 }
@@ -1207,9 +1207,13 @@
                 {
                     $applicantintentid = 6;
                 }
-                else
+                elseif($applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 7;
+                }
+                elseif($applicationperiodtypeid == 3)
+                {
+                    $applicantintentid = 10;
                 }
             }
             return $applicantintentid;

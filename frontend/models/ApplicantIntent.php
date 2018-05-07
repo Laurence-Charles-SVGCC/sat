@@ -97,9 +97,9 @@ class ApplicantIntent extends \yii\db\ActiveRecord
      * @param type $applicationperiodtypeid
      * @return int
      * 
-     * Author: Laurence Charles
-     * Date Created: 12/08/2016
-     * Date Last Modifieid: 12/08/2016
+     * Author: charles.laurence1@gmail.com
+     * Created: 12/08/2016_08_12
+     * Modifieid: 2018_05_07
      */
     public static function getApplicantIntent($divisionid, $applicationperiodtypeid)
     {
@@ -117,6 +117,7 @@ class ApplicantIntent extends \yii\db\ActiveRecord
         {
            $applicantintentid = 3;
         }
+        
         else if ($divisionid == 6 && $applicationperiodtypeid == 1 )
         {
            $applicantintentid = 4;
@@ -125,13 +126,18 @@ class ApplicantIntent extends \yii\db\ActiveRecord
         {
            $applicantintentid = 5;
         }
-            else if ($divisionid == 7 && $applicationperiodtypeid == 1 )
+        
+        else if ($divisionid == 7 && $applicationperiodtypeid == 1 )
         {
            $applicantintentid = 6;
         }
-        else if ($divisionid == 7 && $applicationperiodtypeid == 1 )
+        else if ($divisionid == 7 && $applicationperiodtypeid == 2 )
         {
            $applicantintentid = 7;
+        }
+        else if ($divisionid == 7 && $applicationperiodtypeid == 3 )
+        {
+           $applicantintentid = 10;
         }
         
         return $applicantintentid;

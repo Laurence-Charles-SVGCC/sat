@@ -202,15 +202,60 @@ function calculateApplicantIntent(e)
 }
 
 
+//function generateAcademicYearBlanks()
+//{
+//    var title = document.getElementById("academicyear-title").value;
+//    if (title == null || title == false || title == " ")
+//    {
+//        document.getElementById("academicyear-title").value = "default";
+//        document.getElementById("academicyear-startdate").value = "1990-01-01";
+//    }
+//}
+
 function generateAcademicYearBlanks()
 {
     var title = document.getElementById("academicyear-title").value;
-    if (title == null || title == false || title == " ")
+    var startdate = document.getElementById("academicyear-startdate").value;
+    var enddate = document.getElementById("academicyear-enddate").value;
+    if ((title == null || title == false || title == " " || title == "")
+            && (startdate == null || startdate == false || startdate == "")
+            && (enddate == null || enddate == false || enddate == ""))
     {
         document.getElementById("academicyear-title").value = "default";
         document.getElementById("academicyear-startdate").value = "1990-01-01";
     }
 }
+
+
+function generateAcademicSemesterBlanks()
+{
+    var i;
+    for(i=0; i<3; i++)
+    {
+        var title = document.getElementById("semester-" + i +"-title").value;
+//        var temp = document.getElementById("semester-" + i +"-title");
+//        var title = temp.options[temp.selectedIndex].value;
+        
+        var period = document.getElementById("semester-" + i +"-period").value;
+        var startdate = document.getElementById("semester-" + i +"-startdate").value;
+        var enddate = document.getElementById("semester-" + i + "-enddate").value;
+        
+        if ((title == "0")    //(title == null || title == false || title == " " || title == "")  
+                && (period == null || period == false || period == " " || period == "")  
+                && (startdate == null || startdate == false || startdate == " " || startdate == "")  
+                && (enddate == null || enddate == false || enddate == " " || enddate == "")
+                )
+        {
+            document.getElementById("semester-" + i +"-title").value = "0";
+            document.getElementById("semester-" + i +"-period").value = "default";
+            document.getElementById("semester-" + i +"-startdate").value = "1990-01-01";
+            document.getElementById("semester-" + i +"-enddate").value = "1990-01-01";
+        }
+    }
+}
+
+
+
     
 
 

@@ -108,8 +108,9 @@
                     </table> 
             <?php endif;?>
         </div>
-
-        <?= Html::a('Approve Programme Catalog', ['manage-application-periods/period-setup-step-three', 'approve' => true], ['class' => 'btn btn-block btn-lg btn-success',  'style' => 'width: 95%; margin-left: 5%;']);?>
-       
+        
+        <?php if($programmes == true):?>
+            <?= Html::a('Approve Programme Catalog', ['manage-application-periods/period-setup-step-three', 'approve' => true], ['class' => 'btn btn-block btn-lg btn-success']);?>
+       <?php endif;?>
     </div>
 </div>

@@ -12,7 +12,7 @@
     use frontend\models\Employee;
     use frontend\models\ApplicationPeriodType;
     use frontend\models\ApplicationperiodStatus;
-    
+     use frontend\models\Semester;
     use frontend\models\ProgrammeCatalog;
     use frontend\models\AcademicOffering;
      use frontend\models\CapeGroup;
@@ -601,13 +601,13 @@
         
         
         /**
-         * Renders the Application Period Setup Year Verification view
+         * Renders the Application Period Setup Year Setup view
          * 
          * @return view 'period_setup_step_one'
          * 
          * Author: charles.laurence1@gmail.com
          * Created: 2016_02_10
-         * Modified: 2017_10_12
+         * Modified: 2018_05_07
          */
         public function actionPeriodSetupStepOne($divisionid = NULL, $applicationperiodtypeid = NULL)
         {
@@ -617,6 +617,11 @@
             }
             
             $new_year = new AcademicYear();
+            $semesters = array();
+            $semesters = Semester::addNewSemester($semesters);
+            $semesters = Semester::addNewSemester($semesters);
+            $semesters = Semester::addNewSemester($semesters);
+            
             $period = ApplicationPeriod::getUnconfiguredAppplicationPeriod();
             $result_set = array();
             
@@ -652,29 +657,63 @@
                                 $new_year->applicantintentid =  $applicantintentid; 
                                 $new_year->iscurrent = 1;
                                 $year_save_flag = $new_year->save();
-                                if ($new_year->save() == false)
+                                if ($new_year->isValid() == true)
                                 {
-                                    $transaction->rollBack();
-                                    Yii::$app->getSession()->setFlash('error', 'Error occured saving new academic year.');
-                                    $operation_successful = false;
-                                }
-                                else
-                                {
-                                    $period->divisionid = $submitted_divisionid;
-                                    $period->applicationperiodtypeid = $submitted_applicationperiodtypeid;
-                                    $period->academicyearid = $new_year->academicyearid;
-                                    $period->applicationperiodstatusid = 2;
-                                    if ($period->save() == false)
+                                    if ($new_year->save() == false)
                                     {
                                         $transaction->rollBack();
-                                        Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                                        Yii::$app->getSession()->setFlash('error', 'Error occured saving new academic year.');
                                         $operation_successful = false;
                                     }
-                                    
-                                    if ($operation_successful == true)
+                                    else
                                     {
-                                        $transaction->commit();
-                                        return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                                        $load_flag = Model::loadMultiple($semesters, $post_data);
+                                        if($load_flag == false)
+                                        {
+                                            $transaction->rollBack();
+                                            Yii::$app->getSession()->setFlash('error', 'Error loading semester records.');
+                                            $operation_successful = false;
+                                        }
+                                        else
+                                        {
+                                            foreach($semesters as $key=>$semester)
+                                            {
+                                                if ($semester->isValid() == true)
+                                                {
+                                                    $semester->academicyearid = $new_year->academicyearid;
+                                                    if ($key == 0)
+                                                    {
+                                                        $semester->iscurrent == 1;
+                                                    }
+                                                    if ($semester->save() == false)
+                                                    {
+                                                        $transaction->rollBack();
+                                                        Yii::$app->getSession()->setFlash('error', 'Error occured saving semester.');
+                                                        $operation_successful = false;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if ($operation_successful == true)
+                                            {
+                                                $period->divisionid = $submitted_divisionid;
+                                                $period->applicationperiodtypeid = $submitted_applicationperiodtypeid;
+                                                $period->academicyearid = $new_year->academicyearid;
+                                                $period->applicationperiodstatusid = 2;
+                                                if ($period->save() == false)
+                                                {
+                                                    $transaction->rollBack();
+                                                    Yii::$app->getSession()->setFlash('error', 'Error occured updating application period.');
+                                                    $operation_successful = false;
+                                                }
+
+                                                if ($operation_successful == true)
+                                                {
+                                                    $transaction->commit();
+                                                    return $this->redirect(['initiate-period', 'id' => $period->applicationperiodid]);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -683,7 +722,8 @@
                                 Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load records.');  
                             }
                         }
-                        else        //only executes when DASGS  OR DTVE full time application period is is being creatd and its counterpart already exists
+                         //only executes when DASGS  OR DTVE full time application period is is being creatd and its counterpart already exists
+                        else       
                         {
                             $new_year = AcademicYear::find()
                                     ->where(['applicantintentid' => 1,  'iscurrent' => 1, 'isactive' => 1, 'isdeleted' => 0])
@@ -715,6 +755,7 @@
 
             return $this->render('period_setup_step_one', [
                 'new_year' => $new_year,
+                'semesters' => $semesters,
                 'period' => $period,
                 'divisionid' => $divisionid,
                 'applicationperiodtypeid' => $applicationperiodtypeid,

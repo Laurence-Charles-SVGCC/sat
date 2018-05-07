@@ -15,9 +15,10 @@ use frontend\models\AcademicYear;
  * @property string $period
  * @property string $startdate
  * @property string $enddate
- * @property boolean $iscurrent
- * @property boolean $isactive
- * @property boolean $isdeleted
+ * @property integer $iscurrent
+ * @property integer $isactive
+ * @property integer $isdeleted
+ * @property integer $publishgradesdate
  *
  * @property CapeCourse[] $capeCourses
  * @property CourseOffering[] $courseOfferings
@@ -41,9 +42,8 @@ class Semester extends \yii\db\ActiveRecord
     {
         return [
             [['academicyearid', 'title', 'startdate', 'enddate', 'period'], 'required'],
-            [['academicyearid'], 'integer'],
+            [['academicyearid', 'iscurrent', 'isactive', 'isdeleted'], 'integer'],
             [['startdate', 'enddate'], 'safe'],
-            [['iscurrent', 'isactive', 'isdeleted'], 'boolean'],
             [['title'], 'string', 'max' => 15],
             [['period'], 'string', 'max' => 45]
         ];
@@ -153,5 +153,45 @@ class Semester extends \yii\db\ActiveRecord
             $values = NULL;
         }
         return $semester_listing;
+    }
+    
+    
+    /**
+     * Adds new semester record to array of semesters
+     * 
+     * @param type $collection
+     * @param type $semester
+     * @return type Array
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_05_07
+     * Modified: 2018_05_07
+     */
+    public static function addNewSemester($collection)
+    {
+        array_push($collection, new Semester());
+        return $collection;
+    }
+    
+    
+    /**
+     * Determines if record is valid to save
+     * 
+     * @return boolean
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_05_07
+     * Modified: 2018_05_07
+     */
+    public function isValid()
+    {
+        if (strcmp($this->title, "default") == 0  
+                &&  strcmp($this->period, "default") == 0
+                &&  strcmp($this->startdate,"1990-01-01") == 0  
+                && strcmp($this->enddate,"1990-01-01") ==0)
+        {
+            return false;
+        }
+        return true;
     }
 }

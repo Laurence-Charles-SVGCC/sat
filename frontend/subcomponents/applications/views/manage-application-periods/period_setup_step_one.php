@@ -62,14 +62,10 @@
                         <ul class="dropdown-menu"  aria-labelledby="dropdownMenu1">
                             <li><a href="<?= Url::toRoute(['period-setup-step-one', 'divisionid' => $divisionid, 'applicationperiodtypeid' => 1])?>">Full time</a></li>
                             <li><a href="<?= Url::toRoute(['period-setup-step-one', 'divisionid' => $divisionid, 'applicationperiodtypeid' => 2])?>">Part time</a></li>
+                            <li><a href="<?= Url::toRoute(['period-setup-step-one', 'divisionid' => $divisionid, 'applicationperiodtypeid' => 3])?>">*Conditional</a></li>
                         </ul>
                     </span>
                 </div>
-            <?php endif;?>
-
-            <?php if($divisionid != NULL && $applicationperiodtypeid != NULL  && empty($result_set) == false):?>
-<!--              <div>Academic Year Exists: <?= $result_set[0] ?></div>
-              <div>Application Period Exists: <?= $result_set[1] ?></div>-->
             <?php endif;?>
               
             <?php if($divisionid != NULL && $applicationperiodtypeid != NULL  && empty($result_set) == false):?>
@@ -84,40 +80,70 @@
                
                <!-- If neither academic year application period exist -->
                 <?php elseif ($result_set[0] == 0 && $result_set[1] == 0):?><br/><br/>
-                    <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em; width:98%; margin: 0 auto; font-size: 20px;">
-                        <div class="alert alert-info">
-                            You are required to initialize a new academic year.  Please complete the form below.
+                    <div class="box box-primary table-responsive no-padding">
+                        <div class="box-body">
+                            <div class="alert alert-info text-center"> Enter academic year details below.</div>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                      <th>Title</th>
+                                      <th>Start Date </th>
+                                      <th>End Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                     <td>
+                                        <?= $form->field($new_year, 'title')->label(false)->textInput();?>
+                                    </td>
+                                    <td>
+                                        <?= $form->field($new_year, 'startdate')->label("")->widget(DatePicker::classname(), ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
+                                    </td>
+                                    <td>
+                                        <?= $form->field($new_year, 'enddate')->label("")->widget(DatePicker::classname(), ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
+                                    </td>
+                                </tbody>
+                            </table>
                         </div>
                         
                         <div class="box-body">
-                            <div class="form-group">
-                                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="name">Title:</label>
-                                <?= $form->field($new_year, 'title')
-                                                ->label("")
-                                                ->textInput(['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
-                             </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="start_date">Start Date:</label>
-                               <?= $form->field($new_year, 'startdate')
-                                                ->label("")
-                                                ->widget(DatePicker::classname(), 
-                                                        ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
-                             </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="end_date">End Date:</label>
-                               <?= $form->field($new_year, 'enddate')
-                                                ->label("")
-                                                ->widget(DatePicker::classname(), 
-                                                        ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
-                             </div>
+                            <div class="alert alert-info text-center"> Enter semester details below.</div>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                      <th>Title</th>
+                                      <th>Period</th>
+                                      <th>Start Date </th>
+                                      <th>End Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php for ($i = 0 ; $i < count($semesters)  ; $i++):?>
+                                        <tr>
+                                            <td>
+                                                <?= $form->field($semesters[$i], "[{$i}]title")->label(false)->dropDownList(["0" => "Select...", "1" => "1", "2" => "2", "3" =>"3"]);?>
+                                            </td>
+                                            <td>
+                                                <?= $form->field($semesters[$i], "[{$i}]period")->label(false)->textInput() ?>
+                                            </td>
+                                            <td>
+                                                <?= $form->field($semesters[$i], "[{$i}]startdate")->label(false)->widget(DatePicker::classname(), ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
+                                            </td>
+                                            <td>
+                                                <?= $form->field($semesters[$i], "[{$i}]enddate")->label(false)->widget(DatePicker::classname(), ['clientOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']]) ?>
+                                            </td>
+                                        </tr>
+                                    <?php endfor;?>
+                                </tbody>
+
+                            </table>
                         </div>
+                        
+                        
                     </div>
                
                     <div class="box-footer">
                         <span class = "pull-right">
-                            <?= Html::submitButton(' Update', ['class' => 'btn btn-success', 'style' => 'margin-right:20px', 'onclick' => 'generateAcademicYearBlanks();']);?>
+                            <?= Html::submitButton(' Update', ['class' => 'btn btn-success', 'style' => 'margin-right:20px', 'onclick' => 'generateAcademicYearBlanks();generateAcademicSemesterBlanks();']);?>
                             <?= Html::a(' Cancel', ['initiate-period', 'id' => $period->applicationperiodid], ['class' => 'btn  btn-danger', ]);?>
                         </span>
                     </div>
@@ -126,7 +152,7 @@
                 <?php elseif ($result_set[0] == 1 && $result_set[1] == 0):?>
                     <div class="box-footer">
                         <span class = "pull-right">
-                            <?= Html::submitButton(' Update', ['class' => 'btn btn-success', 'style' => 'margin-right:20px', 'onclick' => 'generateAcademicYearBlanks();']);?>
+                            <?= Html::submitButton(' Update', ['class' => 'btn btn-success', 'style' => 'margin-right:20px', 'onclick' => 'generateAcademicYearBlanks();generateAcademicSemesterBlanks();']);?>
                             <?= Html::a(' Cancel', ['initiate-period', 'id' => $period->applicationperiodid], ['class' => 'btn  btn-danger']);?>
                         </span>
                     </div>
