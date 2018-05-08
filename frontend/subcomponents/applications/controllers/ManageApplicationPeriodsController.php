@@ -639,6 +639,7 @@
                 $request = Yii::$app->request;
                 $submitted_divisionid = $request->post('divisionid');
                 $submitted_applicationperiodtypeid = $request->post('applicationperiodtypeid');
+                $applicationperiodtypeid = $request->post('applicationperiodtypeid');
                 
                 $transaction = \Yii::$app->db->beginTransaction();
                 try 
@@ -653,7 +654,8 @@
                         {
                             if($new_year->load($post_data) == true)
                             {
-                                $applicantintentid = ApplicantIntent::getApplicantIntent($divisionid, $applicationperiodtypeid);
+//                                $applicantintentid = ApplicantIntent::getApplicantIntent($divisionid, $applicationperiodtypeid);
+                                $applicantintentid = ApplicantIntent::getApplicantIntent($submitted_divisionid, $submitted_applicationperiodtypeid);
                                 $new_year->applicantintentid =  $applicantintentid; 
                                 $new_year->iscurrent = 1;
                                 $year_save_flag = $new_year->save();
