@@ -1114,42 +1114,49 @@
                 {
                     $applicantintentid = 1;
                 }
-                else
+                elseif ($this->applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 2;
                 }
             }
+            
             elseif ($this->divisionid == 5)
             {
                 if ($this->applicationperiodtypeid == 1)
                 {
                     $applicantintentid = 1;
                 }
-                else
+                elseif ($this->applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 3;
                 }
             }
+            
             elseif ($this->divisionid == 6)
             {
                 if ($this->applicationperiodtypeid == 1)
                 {
                     $applicantintentid = 4;
                 }
-                else
+                elseif ($this->applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 5;
                 }
             }
+            
             elseif ($this->divisionid == 7)
             {
                 if ($this->applicationperiodtypeid == 1)
                 {
                     $applicantintentid = 6;
                 }
-                else
+               elseif ($this->applicationperiodtypeid == 2)
                 {
                     $applicantintentid = 7;
+                }
+                elseif ($this->applicationperiodtypeid == 3)
+                {
+                    $applicantintentid = 10;
                 }
             }
             return $applicantintentid;
