@@ -1374,18 +1374,21 @@ class ViewApplicantController extends \yii\web\Controller
                 
                 if ($phone_load_flag == true && $email_load_flag == true)
                 {
+                    $user->email = $email->email;
                     $phone_valid_flag = $phone->validate();
                     $email_valid_flag = $email->validate();
+                    $user_valid_flag = $user->validate();
 
-                    if ($phone_valid_flag == true && $email_valid_flag == true)
+                    if ($phone_valid_flag == true && $email_valid_flag == true  && $user_valid_flag == true)
                     {
                         $transaction = \Yii::$app->db->beginTransaction();
                         try 
                         {
                             $phone_save_flag = $phone->save();
                             $email_save_flag = $email->save();
+                            $user_save_flag = $user->save();
 
-                            if ($phone_save_flag == true && $email_save_flag == true)
+                            if ($phone_save_flag == true && $email_save_flag == true  && $user_save_flag == true)
                             {
                                 $transaction->commit();
                                 return self::actionApplicantProfile( $search_status, $user->username);
