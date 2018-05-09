@@ -121,8 +121,26 @@ class AdmissionsController extends Controller
         //if user initiates search based on applicant email
         if ($email)
         {
-            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
-            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+//            $email_add = Email::findOne(['email' => $email, 'isdeleted' => 0]);
+//            $cond_arr['applicant.personid'] = $email_add? $email_add->personid: null;
+//            $info_string = $info_string .  " Email: " . $email;
+            
+            $email_records = Email::find()
+                    ->where(['email' => $email, 'isdeleted' => 0])
+                    ->all();
+            if ($email_records == true)
+            {
+                $ids = array();
+                foreach($email_records as $address)
+                {
+                    $ids[] = $address->personid;
+                }
+                 $cond_arr['applicant.personid'] = $ids;
+            }
+            else
+            {
+                $cond_arr['applicant.personid'] = null;
+            }
             $info_string = $info_string .  " Email: " . $email;
         }
 
