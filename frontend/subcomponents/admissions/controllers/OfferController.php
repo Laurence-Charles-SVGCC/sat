@@ -65,7 +65,7 @@ class OfferController extends Controller
         foreach ($incomplete_periods as $incomplete_period)
         {
             $current_user = User::findOne(['personid' => Yii::$app->user->identity->personid]);
-            if ($current_user->getUserDivision() == 1 || $current_user->getUserDivision() == $incomplete_period->divisionid)
+            if ($current_user->getUserDivision() == 1 /*|| $current_user->getUserDivision() == $incomplete_period->divisionid*/)
             {
                 $authorized_periods[] = $incomplete_period;
             }
