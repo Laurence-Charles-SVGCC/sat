@@ -62,7 +62,7 @@ class OfferController extends Controller
         if ($division_id && $division_id != 1)
         {
             $incomplete_periods = ApplicationPeriod::find()
-                                    ->where(['division_id' => $division_id, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                    ->where(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
                                     ->all();
         }
         else
