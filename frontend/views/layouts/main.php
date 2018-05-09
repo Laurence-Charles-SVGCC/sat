@@ -180,6 +180,10 @@
                         <i class="fa fa-institution"></i> <span>Admissions</span> <i class="fa fa-angle-left pull-right"></i>
                       </a>
                       <ul class="treeview-menu">
+                          <?php if (/*Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::incompletePeriodExists()==*/true): ?>
+                            <li><a href="<?= Url::toRoute(['/subcomponents/admissions/offer/schedule-interviews-by-programme/'])?>"><i class="fa fa-circle-o"></i>Interview Appointments</a></li>
+                        <?php endif; ?>
+                          
                         <?php if (Yii::$app->user->can('searchApplicant')  && ApplicationPeriod::incompletePeriodExists()==true): ?>
                             <li><a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => 'pending'])?>"><i class="fa fa-circle-o"></i>Find Applicants (Current)</a></li>
                         <?php endif; ?>
