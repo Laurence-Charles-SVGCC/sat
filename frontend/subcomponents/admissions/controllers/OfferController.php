@@ -58,17 +58,18 @@ class OfferController extends Controller
     public function actionIndex($offertype, $criteria = NULL)
     {
         $division_id = EmployeeDepartment::getUserDivision();
-        $incomplete_periods = ApplicationPeriod::find()
-                                    ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
-                                    ->all();
-        $authorized_periods = array();
-        foreach ($incomplete_periods as $incomplete_period)
+        
+        if ($division_id && $division_id != 1)
         {
-            $current_user = User::findOne(['personid' => Yii::$app->user->identity->personid]);
-            if ($current_user->getUserDivision() == 1 /*|| $current_user->getUserDivision() == $incomplete_period->divisionid*/)
-            {
-                $authorized_periods[] = $incomplete_period;
-            }
+            $incomplete_periods = ApplicationPeriod::find()
+                                    ->where(['division_id' => $division_id, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                    ->all();
+        }
+        else
+        {
+            $incomplete_periods = ApplicationPeriod::find()
+                                        ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                        ->all();
         }
         
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
@@ -320,8 +321,8 @@ class OfferController extends Controller
             'dne_science_req' => $dne_science_req,
             'offertype' => $offertype,
             'division_id' => $division_id,
-//            'incomplete_periods' => $incomplete_periods,
-            'authorized_periods' => $authorized_periods
+            'incomplete_periods' => $incomplete_periods,
+//            'authorized_periods' => $authorized_periods
         ]);
     }
     

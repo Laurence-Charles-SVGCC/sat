@@ -134,7 +134,7 @@
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <div class="box-header with-border">
         <div class="box-title">
-            <?php if ($offertype == 2 && $authorized_periods == true) : ?>
+            <?php if ($offertype == 2 && $incomplete_periods == true) : ?>
                  <span>Interview Scheduling , Report Generation & Publishing</span>
             <?php else: ?>
                 <span> Report Generation & Publishing</span>
@@ -144,7 +144,7 @@
     
     <?php if($dataProvider->getTotalCount() > 0):?>
         <br/><div style="margin-left:0.5%">
-             <?php if ($offertype == 2 && $authorized_periods == true) : ?>
+             <?php if ($offertype == 2 && $incomplete_periods == true) : ?>
                 <div><strong>Prepare interview schedule by name:</strong><br/>
                     <span>Select the application period you wish to prepare interview schedule for?</span>
                     <span class='dropdown' style="margin-left:2%">
@@ -154,7 +154,7 @@
                         </button>
                         <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
                             <?php
-                                foreach ($authorized_periods as $period)
+                                foreach ($incomplete_periods as $period)
                                 {
                                     $label_a_g = $period->name . " - Surnames (A-G)";
                                     $label_h_n = $period->name . " - Surnames (H-N)";
@@ -191,7 +191,7 @@
                         </button>
                         <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
                             <?php
-                                foreach ($authorized_periods as $period)
+                                foreach ($incomplete_periods as $period)
                                 {
                                     foreach( $programme_objects as $prog)
                                     {
