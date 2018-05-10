@@ -72,7 +72,7 @@
             $prog_cond['programme_catalog.isdeleted'] = 0;
 
             if ($user_divisionid && $user_divisionid != 1)
-                $prog_cond['application_period.divisionid'] = $division_id;
+                $prog_cond['application_period.divisionid'] = $user_divisionid;
 
             $programmes = ProgrammeCatalog::find()
                     ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
