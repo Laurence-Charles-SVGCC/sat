@@ -90,10 +90,10 @@
             
             $permission_dataProvider = NULL;
             $permission_container = array();
+             $permissions = array();
             
             if ($type == 1)
             {
-                $permissions = array();
                 $direct_permissions = AuthItemChild::find()
                     ->innerJoin('auth_item' , '`auth_item_child`.`child` = `auth_item`.`name`')
                      ->where(['auth_item_child.parent' => $name, 'auth_item.type' => 2])
