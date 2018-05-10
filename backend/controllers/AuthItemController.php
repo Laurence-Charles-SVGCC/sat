@@ -90,7 +90,8 @@
             
             $permission_dataProvider = NULL;
             $permission_container = array();
-             $permissions = array();
+            $permissions = array();
+            $new_permission = new AuthItemChild();
             
             if ($type == 1)
             {
@@ -152,7 +153,7 @@
                             ]
                     ]);
                 
-                $new_permission = new AuthItemChild();
+//                $new_permission = new AuthItemChild();
                 $new_permission->parent = $name;
             }
             
