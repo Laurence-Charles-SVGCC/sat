@@ -322,7 +322,6 @@ class OfferController extends Controller
             'offertype' => $offertype,
             'division_id' => $division_id,
             'incomplete_periods' => $incomplete_periods,
-//            'authorized_periods' => $authorized_periods
         ]);
     }
     
@@ -1098,6 +1097,19 @@ class OfferController extends Controller
         
         $division_id = EmployeeDepartment::getUserDivision();
         
+        if ($division_id && $division_id != 1)
+        {
+            $incomplete_periods = ApplicationPeriod::find()
+                                    ->where(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                    ->all();
+        }
+        else
+        {
+            $incomplete_periods = ApplicationPeriod::find()
+                                        ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
+                                        ->all();
+        }
+        
         $division = Division::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0]);
         $division_abbr = $division ? $division->abbreviation : 'Undefined Division';
         $app_period = ApplicationPeriod::findOne(['divisionid' => $division_id, 'isactive' => 1, 'isdeleted' => 0/*, 'iscomplete' => 0*/]);
@@ -1226,6 +1238,7 @@ class OfferController extends Controller
             $offer_data['revokedby'] = $revokername;
             $offer_data['revokedate'] = $offer->revokedate ? $offer->revokedate : 'N/A' ;
             $offer_data['ispublished'] = $offer->ispublished;
+            $offer_data['appointment'] = $offer->appointment;
 
             $data[] = $offer_data;
         }
@@ -1334,6 +1347,7 @@ class OfferController extends Controller
             'progs_with_pending_offers' => $progs_with_pending_offers,
             'divisions' => $divisions,
             'programmes' => $progs,
+            'programme_objects' => $programmes,
             'cape_subjects' => $capes,
             'offer_issues' => $offer_issues,
             'multiple_offers' => $multiple_offers,
@@ -1341,6 +1355,7 @@ class OfferController extends Controller
             'subjects_req' => $subjects_req,
             'offertype' => $offertype,
             'division_id' => $division_id,
+            'incomplete_periods' => $incomplete_periods,
         ]);
     } 
     
