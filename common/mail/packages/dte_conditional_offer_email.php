@@ -6,18 +6,13 @@
     <div id="introduction">
         <p><?= date("l F j, Y"); ?></p>
         <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
-    </div><br/>
+    </div>
 
-    <div id="body" style="white-space: pre-wrap;">
-        <p>
-            You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the 
-            <?= $division_name ?>.
-        </p>
+    <div id="body">
+        <p>You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the <?= $division_name ?>.</p><br/>
     
         <?php if ($offer != false && $offer->appointment == true):?>
-            <br/>
-            <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p>
-            <br/>
+            <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p><br/>
         <?php endif; ?>
             
         <?= $package->emailcontent?>
