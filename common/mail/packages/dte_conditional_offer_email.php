@@ -9,7 +9,10 @@
     </div>
 
     <div id="body" style="white-space: pre-wrap;">
-        <?= $package->emailcontent?>
+        <p>
+            You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the 
+            <?= $division_name ?>.
+        </p>
 
         <?php if ($offer != false && $offer->appointment == true):?>
             <br/>
