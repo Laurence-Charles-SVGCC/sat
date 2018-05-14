@@ -9,7 +9,7 @@
     </div>
 
     <div id="body">
-        <p>You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the <?= $division_name ?>.</p><br/>
+        <p>You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the <?= $division_name ?>.</p>
     
         <?php if ($offer != false && $offer->appointment == true):?>
             <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p><br/>
