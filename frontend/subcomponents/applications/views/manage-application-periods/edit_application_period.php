@@ -66,7 +66,7 @@
             
             <div class="form-group">
                <label class="control-label col-xs-6 col-sm-5 col-md-5 col-lg-3" for="applicationperiodtypeid">Type:</label>
-               <?= $form->field($period, 'applicationperiodtypeid')->label('')->dropDownList([1 => 'Full-time Enrollment', 2 => 'Part-time Enrollment'], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
+               <?= $form->field($period, 'applicationperiodtypeid')->label('')->dropDownList([1 => 'Full-time Enrollment', 2 => 'Part-time Enrollment', 3 => "Conditional"], ['class'=> 'no-padding col-xs-6 col-sm-7 col-md-7 col-lg-9']);?>
             </div>
             
             <div class="form-group">
