@@ -2,13 +2,7 @@
     use yii\helpers\Url;
 ?>
 
-<div class="dte_conditional_offer_email">
-    <?php if (stripos(Url::home(true), "localhost") == false) :?>
-        <img src="http://www.svgcc.vc/subdomains/sat/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:175px;">
-    <?php else: ?>
-        <img src="http://localhost/sat_dev/frontend/images/header.png" alt="header" class="img-rounded" style="width:100%; height:175px;">
-    <?php endif; ?>
-
+<div>
     <div id="introduction">
         <p><?= date("l F j, Y"); ?></p>
         <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
