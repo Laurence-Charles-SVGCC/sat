@@ -1139,8 +1139,18 @@
                     ->where($offer_cond)
                     ->all();
                      
-                foreach ($offers as $offer) 
+//                foreach ($offers as $offer) 
+                foreach ($offers as $key => $offer) 
                 {
+                    /* Sleeps for 5 seconds to avoid SwiftMailer throwing the following error.
+                     * Expected response code 250 but got code "421", with message "421 too many messages in this connection
+                     * Apparently service provider has recently implemented mandatory maximum email batch sizes of 50.
+                     */
+                    if ($key>0  &&  $key % 50 == 0)
+                    {
+                        sleep(5);
+                    }
+                    
                     $cape_subjects_names = array();
                     $application = Application::find()
                             ->where(['applicationid' => $offer->applicationid, 'isactive' => 1, 'isdeleted' => 0])
