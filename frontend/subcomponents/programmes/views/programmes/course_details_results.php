@@ -1,14 +1,7 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 13/06/2016
- */
-    
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
-
 ?>
 
     <div class="course_details_result">

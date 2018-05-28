@@ -33,16 +33,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/index']);?>" title="Admission Home">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary" style="font-size:1.1em">
     <div class="box-header with-border">
         <span class="box-title"><?= $this->title?></span>

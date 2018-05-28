@@ -25,16 +25,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-programme-intake']);?>" title="Intake Report">
-        <h1>Welcome to the Student Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary" style="font-size:1.1em">
     <div class="box-header with-border">
         <span class="box-title"><?= $this->title?></span>

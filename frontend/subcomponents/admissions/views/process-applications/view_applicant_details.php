@@ -18,7 +18,6 @@
     $this->title = 'Applicant Supporting Information';
     
     $this->params['breadcrumbs'][] = ['label' => 'Review Applicants', 'url' => Url::toRoute(['/subcomponents/admissions/process-applications'])];
-//    $this->params['breadcrumbs'][] = ['label' => ApplicationStatus::find()->where(['applicationstatusid' => $application_status])->one()->name, 'url' => Url::to(['process-applications/view-by-status', 'division_id' => $division_id, 'application_status' => $application_status])];
     $this->params['breadcrumbs'][] = ['label' => 'Application Dashboard', 'url' => Url::toRoute(['/subcomponents/admissions/process-applications/view-applicant-certificates', 'personid' => $applicant->personid, 'programme' => $programme, 'application_status' => $application_status])];
     $this->params['breadcrumbs'][] = $this->title;
     
@@ -52,16 +51,6 @@
                 ];
 ?>
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/process-applications']);?>" title="Process Applications">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <h2 class="text-center"><?= $this->title;?></h2>
 

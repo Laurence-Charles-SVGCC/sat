@@ -1,9 +1,9 @@
 <?php
-use yii\helpers\Html;
+    use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-$this->title = 'SVGCC Administrative Terminal';
+    $this->title = 'SVGCC Administrative Terminal';
 ?>
+
 <div class="site-index">
 
     <div class="jumbotron">

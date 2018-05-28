@@ -1,12 +1,11 @@
 <?php
+    use yii\helpers\Html;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use yii\helpers\Url;
-
-$this->title = 'Applicant Search';
-$this->params['breadcrumbs'][] = ['label' => 'Applicant Search', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Applicant Search';
+    $this->params['breadcrumbs'][] = ['label' => 'Applicant Search', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="application-period-form">

@@ -20,9 +20,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <h2 class="text-center"><?= $period->getDivision()->name ?> Offerings</h2>
 

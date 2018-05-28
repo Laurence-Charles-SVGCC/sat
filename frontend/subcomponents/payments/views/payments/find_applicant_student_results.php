@@ -18,7 +18,6 @@
                                                      'id' => $row['personid'],
                                                     'status' => $row['status'],
                                               ]));
-
                       }
                 ],
                 [

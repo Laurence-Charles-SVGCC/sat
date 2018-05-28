@@ -108,16 +108,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'status' => $search_status]);?>" title="Find Applicant">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <h2 class="text-center"><?=$applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname ;?></h2>
     

@@ -1,5 +1,4 @@
 <?php
-
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
@@ -8,13 +7,10 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\Division;
 
-    /* @var $this yii\web\View */
-    /* @var $dataProvider yii\data\ActiveDataProvider */
-
-
     $this->title = "Package Management Dashboard";
     $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="body-content">
     <div class = "custom_wrapper">
         <div class="custom_header">

@@ -11,10 +11,6 @@
 ?>
 
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="alert alert-info" style = "font-size:1.1em">
     The following presents a summary of all configured application periods. <br/>
     <strong>Please Note:</strong> 

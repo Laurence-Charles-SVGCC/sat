@@ -1,6 +1,5 @@
 <?php
     
-    
     \app\components\ExcelGrid::widget([
             'dataProvider' => $dataProvider,
             //'filterModel' => $searchModel,

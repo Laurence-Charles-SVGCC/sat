@@ -33,9 +33,6 @@
     <?php endif;?>
 </div>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <h2 class="text-center"><?= $this->title?></h2>
 

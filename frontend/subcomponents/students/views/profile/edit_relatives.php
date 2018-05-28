@@ -1,11 +1,4 @@
 <?php
-
-/* 
- * 'edit_relatives' view.  Used for modifying information in the 'General' section of 'Profile' tab
- * Author: Laurence Charles
- * Date Created: 25/12/2015
- */
-
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -25,13 +18,6 @@
 
     <div class="site-index">
         <div class = "custom_wrapper" style="min-height:3400px">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/students/student/find-a-student']);?>" title="Find A Student">     
-                    <img class="custom_logo_students" src ="css/dist/img/header_images/sms_4.png" alt="student avatar">
-                    <span class="custom_module_label">Welcome to the Student Management System</span> 
-                    <img src ="css/dist/img/header_images/sms_4.png" alt="student avatar" class="pull-right">
-                </a>    
-            </div>
             
             <div class="custom_body" style="min-height:3250px">
                 <h1 class="custom_h1">Edit Relative Details</h1>

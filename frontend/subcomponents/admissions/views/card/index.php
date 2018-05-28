@@ -13,12 +13,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/card']);?>" title="Student Card Home">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:60%; margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>
     

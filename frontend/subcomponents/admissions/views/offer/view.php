@@ -1,16 +1,14 @@
 <?php
+    use yii\helpers\Html;
+    use yii\widgets\DetailView;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\widgets\DetailView;
-use yii\helpers\Url;
 
-/* @var $this yii\web\View */
-/* @var $model frontend\models\Offer */
-
-$this->title = $model->offerid;
-$this->params['breadcrumbs'][] = ['label' => 'Offers', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = $model->offerid;
+    $this->params['breadcrumbs'][] = ['label' => 'Offers', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="offer-view">
     <div class = "custom_wrapper">
         <div class="custom_header">

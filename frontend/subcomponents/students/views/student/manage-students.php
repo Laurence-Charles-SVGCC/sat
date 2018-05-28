@@ -1,15 +1,11 @@
 <?php
+    use yii\helpers\Html;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\helpers\Url;
-
-/* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Students ';
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Students ';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="verif-applicants-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

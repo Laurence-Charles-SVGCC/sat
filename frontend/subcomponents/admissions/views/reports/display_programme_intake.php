@@ -14,16 +14,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/reports/find-unregistered-applicants']);?>" title="Unregister Students">
-        <h1>Welcome to the Student Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <?= Html::hiddenInput('application_periodid', $application_periodid); ?>
 <?= Html::hiddenInput('programmeid', $programmeid); ?>
 <?= Html::hiddenInput('criteria', $criteria); ?>

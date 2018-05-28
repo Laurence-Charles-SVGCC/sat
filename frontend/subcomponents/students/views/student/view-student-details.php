@@ -1,16 +1,12 @@
 <?php
+    use yii\helpers\Html;
+    use frontend\models\Institution;
+    use frontend\models\AddressType;
+    use frontend\models\RelationType;
 
-use yii\helpers\Html;
-//use yii\widgets\ActiveForm;
-//use yii\grid\GridView;
-//use yii\helpers\Url;
-use frontend\models\Institution;
-use frontend\models\AddressType;
-use frontend\models\RelationType;
-
-$this->title = 'Student Details';
-$this->params['breadcrumbs'][] = ['label' => 'Students', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Student Details';
+    $this->params['breadcrumbs'][] = ['label' => 'Students', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="application-period-form">

@@ -14,22 +14,12 @@
     use frontend\models\EmployeeDepartment;
     use frontend\models\DocumentType;
 
-
     $this->title = 'Verify Document Submission';
     $this->params['breadcrumbs'][] = ['label' => 'Applicant:' . $applicant->firstname . " " . $applicant->lastname, 
         'url' => ['view-applicant-qualifications', 'applicantid' => $applicantid,  'centrename' => $centrename, 'cseccentreid' => $centreid, 'type' => $type]];
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/verify-applicants']);?>" title="Process Applications">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <h2 class="text-center"><?= $this->title;?></h2>
 

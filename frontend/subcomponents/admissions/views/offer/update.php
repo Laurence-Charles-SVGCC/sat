@@ -1,15 +1,11 @@
 <?php
+    use yii\helpers\Html;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\helpers\Url;
-
-/* @var $this yii\web\View */
-/* @var $model frontend\models\Offer */
-
-$this->title = 'Update Offer: ' . ' ' . $model->offerid;
-$this->params['breadcrumbs'][] = ['label' => 'Offers', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->offerid, 'url' => ['view', 'id' => $model->offerid]];
-$this->params['breadcrumbs'][] = 'Update';
+    $this->title = 'Update Offer: ' . ' ' . $model->offerid;
+    $this->params['breadcrumbs'][] = ['label' => 'Offers', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = ['label' => $model->offerid, 'url' => ['view', 'id' => $model->offerid]];
+    $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="offer-update">
     <div class = "custom_wrapper">

@@ -1,15 +1,12 @@
 <?php
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
-
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Offer Issues';
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Offer Issues';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="body-content">
     <div class = "custom_wrapper">
         <div class="custom_header">

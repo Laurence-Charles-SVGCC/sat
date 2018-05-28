@@ -1,21 +1,14 @@
 <?php
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
+    use common\models\User;
 
-use common\models\User;
-
-/* @var $this yii\web\View */
-/* @var $searchModel frontend\models\CsecCentreSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Students';
-/*$this->params['breadcrumbs'][] = ['label' => $centrename, 
-    'url' => ['verify-applicants/centre-details', 'centre_id' => $centreid, 'centre_name' => $centrename]];*/
-$this->params['breadcrumbs'][] = $this->title;
-
+    $this->title = 'Students';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="verify-applicants-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

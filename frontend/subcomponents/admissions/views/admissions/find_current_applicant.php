@@ -1,5 +1,4 @@
 <?php
-
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
     use yii\helpers\Url;
@@ -17,12 +16,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/admissions/admissions/find-current-applicant', 'search_status' => $search_status]);?>" title="Find  Past Applicant">
-        <h1>Welcome to the Admissions Management System</h1>
-    </a>
-</div>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:60%; margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>

@@ -1,30 +1,14 @@
 <?php
-
-/* 
- * 'Edit Assessment' view of any course [Associate || CAPE] for users with authorization to edit assessments
- * Author: Laurence Charles
- * Date Created: 16/12/2015
- */
-
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     
-    
     use frontend\models\AcademicStatus;
     use frontend\models\BatchStudent;
-
 ?>
 
     <div class="site-index">
         <div class = "custom_wrapper">
-            <div class="custom_header">
-                <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Gradebook Home">     
-                    <img class="custom_logo" src ="css/dist/img/header_images/grade_a+.png" alt="A+">
-                    <span class="custom_module_label">Welcome to the SVGCC Grade Management System</span> 
-                    <img src ="css/dist/img/header_images/grade_a+.png" alt="A+">
-                </a>        
-            </div>
             
             <div class="custom_body">
                 <h1 class="custom_h1">Edit Assessment</h1>

@@ -41,21 +41,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="page-header text-center no-padding">
-    <?php if ($offertype == 1):?>
-        <a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 1]);?>" title="Offer Management">
-            <h1>Welcome to the Admissions Management System</h1>
-        </a>
-    <?php elseif ($offertype == 2):?>
-        <a href="<?= Url::toRoute(['/subcomponents/admissions/offer', 'offertype' => 2]);?>" title="Offer Management">
-            <h1>Welcome to the Admissions Management System</h1>
-        </a>
-    <?php endif;?>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <h2 class="text-center"><?= $this->title?></h2>
 

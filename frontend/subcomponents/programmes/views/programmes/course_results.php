@@ -1,10 +1,5 @@
 <?php
 
-/* 
- * Author: Laurence Charles
- * Date Created: 27/04/2016
- */
-
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;

@@ -8,13 +8,7 @@
 
     $this->title = 'Student Search';
 ?>
-    
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Grade Management Home">
-        <h1>Welcome to the SVGCC Grade Management System</h1>
-    </a>
-</div>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:60%; margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>

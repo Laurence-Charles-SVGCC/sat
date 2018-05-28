@@ -23,9 +23,6 @@ use yii\widgets\Breadcrumbs;
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
 
 <div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
     <div class="box-header with-border">

@@ -17,9 +17,6 @@
     </a>
 </div>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/>
 
 <div class="content-wrapper" style="margin: 0 auto">
         <!-- Main content -->

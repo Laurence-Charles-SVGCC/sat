@@ -14,13 +14,6 @@
 ?>
 <div class="body-content">
     <div class = "custom_wrapper">
-        <div class="custom_header">
-            <a href="<?= Url::toRoute(['/subcomponents/payments/reports/find-beneficieries']);?>" title="Beneficiery Listing Criteria">     
-                <img class="custom_logo_students" src ="css/dist/img/header_images/bursary.png" alt="bursary-avatar">
-                <span class="custom_module_label">Welcome to the Bursary Management System</span> 
-                <img src ="css/dist/img/header_images/bursary.png" alt="bursary-avatar" class="pull-right">
-            </a>    
-        </div>
         
         <div class="custom_body">
             <h1 class="custom_h1"><?= Html::encode($this->title) ?></h1>

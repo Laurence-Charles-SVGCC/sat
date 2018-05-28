@@ -1,11 +1,8 @@
 <?php
-    
-    
     use yii\helpers\Html;
     
     use frontend\models\CapeSubject;
 
-    
     $this->title = 'Application Review';
     $this->params['breadcrumbs'][] = ['label' => 'Search Applicant', 'url' => ['index']];
     $this->params['breadcrumbs'][] = $this->title;

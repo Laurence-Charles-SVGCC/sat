@@ -1,10 +1,4 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 16/06/2016
- */
-    
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;

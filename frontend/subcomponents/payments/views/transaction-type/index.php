@@ -11,16 +11,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/payments/transaction-type/index']);?>" title="Transaction Type Home">
-        <h1>Welcome to the Payment Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
      <div class="box-header with-border">
          <span class="box-title"><?= $this->title?></span>

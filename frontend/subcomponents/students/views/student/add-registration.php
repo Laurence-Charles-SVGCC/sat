@@ -1,13 +1,11 @@
 <?php
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
+    use yii\widgets\ActiveForm;
 
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
-use yii\widgets\ActiveForm;
-//use yii\helpers\ArrayHelper;
-
-$this->title = 'Add Registration';
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Add Registration';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="alternate-offer">

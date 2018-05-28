@@ -1,5 +1,4 @@
 <?php
-
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
@@ -14,12 +13,6 @@
     $this->title = 'Programme Control Panel';
 ?>
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">
-        <h1>Welcome to the Programme Management System</h1>
-    </a>
-</div>
 
 <?php if(Yii::$app->user->can('powerCordinator')):?>
     <div id="cordinaor-access">

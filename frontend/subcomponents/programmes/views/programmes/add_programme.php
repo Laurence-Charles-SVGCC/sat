@@ -26,15 +26,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/index']);?>" title="Programme Management">
-        <h1>Welcome to the Programme Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
 
 <div class="box box-primary" style="font-size:1.1em">
     <div class="box-header with-border">

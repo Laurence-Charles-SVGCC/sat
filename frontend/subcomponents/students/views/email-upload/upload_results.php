@@ -11,16 +11,6 @@
     $this->title = 'File Upload Report';
 ?>
 
-<div class="page-header text-center no-padding">
-     <a href="<?= Url::toRoute(['/subcomponents/students/email-upload/index']);?>" title="Email Management">     
-        <h1>Welcome to the Email Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em">
      <div class="box-header with-border">

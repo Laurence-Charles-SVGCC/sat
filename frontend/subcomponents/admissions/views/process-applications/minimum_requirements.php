@@ -1,6 +1,4 @@
 <?php
-    
-    
     \app\components\ExcelGrid::widget([
             'dataProvider' => $dataProvider,
             'filename'=> $filename,

@@ -1,14 +1,7 @@
 <?php
-
-/* 
- * Author: Laurence Charles
- * Date Created: 08/06/2016
- */
-    
     use yii\helpers\Html;
     use yii\grid\GridView;
     use yii\helpers\Url;
-  
 ?>
 
     <div class="cape_course_outline_result">

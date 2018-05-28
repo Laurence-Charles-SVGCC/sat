@@ -28,9 +28,6 @@
     <span class="pull-right"><strong>Transaction Item: <?= TransactionItem::find()->where(['transactionitemid' => $transaction->transactionitemid])->one()->name; ?></strong></span><br/>
 </div>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
 
 <div class="box box-primary" style="font-size:1.1em">
     <div class="box-header with-border">

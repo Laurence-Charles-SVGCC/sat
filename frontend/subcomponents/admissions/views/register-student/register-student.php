@@ -1,13 +1,12 @@
 <?php
+    use yii\helpers\Html;
+    use yii\helpers\Url;
+    use yii\widgets\ActiveForm;
+    use yii\helpers\ArrayHelper;
+    use frontend\models\DocumentType;
 
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
-use frontend\models\DocumentType;
-
-$this->title = 'Applicant Details';
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Applicant Details';
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="offer-form">

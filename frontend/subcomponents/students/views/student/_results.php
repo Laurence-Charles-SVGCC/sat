@@ -1,10 +1,9 @@
 <?php
-
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\helpers\Url;
-
+    use yii\helpers\Html;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 ?>
+
 <div class="verify-applicants-index">
     
     <?= GridView::widget([

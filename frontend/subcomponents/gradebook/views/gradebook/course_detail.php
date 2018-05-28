@@ -25,17 +25,6 @@
 ?>
 
 
-
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Grade Management Home">
-        <h1>Welcome to the SVGCC Grade Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <h2 class="text-center"><?=$code?>: <?=$name?></h2>
 
 <div class="box box-primary table-responsive no-padding" style="font-size:1.1em">

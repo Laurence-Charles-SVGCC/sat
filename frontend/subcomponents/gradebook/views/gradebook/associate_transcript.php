@@ -26,16 +26,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/gradebook/gradebook/index']);?>" title="Grade Management Home">
-        <h1>Welcome to the SVGCC Grade Management System</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;">
     <h2 class="text-center">Academic Transcript : <?= $student->firstname . " " . $student->lastname?></h2>
     

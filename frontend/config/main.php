@@ -37,35 +37,35 @@ return [
         'subcomponents' => [
             'class' => 'app\subcomponents\SubcomponentsModule',
             'modules' =>[
-                'applications' => [
-                    'class' => 'app\subcomponents\applications\ApplicationsModule'
-                 ],
                 'admissions' => [
                     'class' => 'app\subcomponents\admissions\AdmissionsModule'
+                 ],
+                'applications' => [
+                    'class' => 'app\subcomponents\applications\ApplicationsModule'
                  ],
                 'general' => [
                     'class' => 'app\subcomponents\general\General'
                  ],
+                'gradebook' => [
+                    'class' => 'app\subcomponents\gradebook\GradebookModule',
+                ],
+                'graduation' => [
+                    'class' => 'app\subcomponents\graduation\GraduationModule',
+                ],
+                'legacy' => [
+                    'class' => 'app\subcomponents\legacy\Module',
+                ],
                 'payments' => [
                     'class' => 'app\subcomponents\payments\PaymentsModule',
                 ],
                 'programmes' => [
                     'class' => 'app\subcomponents\programmes\ProgrammesModule',
                 ],
-                'students' => [
-                    'class' => 'app\subcomponents\students\StudentsModule',
-                ],
-                'gradebook' => [
-                    'class' => 'app\subcomponents\gradebook\GradebookModule',
-                ],
                 'registry' => [
                     'class' => 'app\subcomponents\registry\RegistryModule',
                 ],
-                 'legacy' => [
-                    'class' => 'app\subcomponents\legacy\LegacyModule',
-                ],
-                'graduation' => [
-                    'class' => 'app\subcomponents\graduation\GraduationModule',
+                'students' => [
+                    'class' => 'app\subcomponents\students\StudentsModule',
                 ],
               ]
           ]

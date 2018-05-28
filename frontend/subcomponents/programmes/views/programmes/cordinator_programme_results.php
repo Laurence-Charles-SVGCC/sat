@@ -13,11 +13,6 @@
     $this->title = 'Cordinator  Control Panel';
 ?>
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/programmes/programmes/programme-cordinator']);?>" title="Programme Management">
-        <h1>Welcome to the Programme Management System</h1>
-    </a>
-</div>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>

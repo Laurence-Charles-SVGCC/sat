@@ -1,13 +1,12 @@
 <?php
+    use yii\helpers\Html;
+    use yii\widgets\ActiveForm;
+    use yii\grid\GridView;
+    use yii\helpers\Url;
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use yii\grid\GridView;
-use yii\helpers\Url;
-
-$this->title = 'Student View';
-$this->params['breadcrumbs'][] = ['label' => 'Students', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+    $this->title = 'Student View';
+    $this->params['breadcrumbs'][] = ['label' => 'Students', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="application-period-form">

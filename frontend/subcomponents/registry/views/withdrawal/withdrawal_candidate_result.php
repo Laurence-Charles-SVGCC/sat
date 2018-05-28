@@ -15,16 +15,6 @@
 ?>
 
 
-<div class="page-header text-center no-padding">
-    <a href="<?= Url::toRoute(['/subcomponents/registry/withdrawal/index']);?>" title="Withdrawl Controller">
-        <h1>Welcome to the Withdrawal Management</h1>
-    </a>
-</div>
-
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
-
 <div class="box box-primary table-responsive no-padding" style="font-size:1.1em">
     <div class="box-header with-border">
         <span class="box-title">Generate New Listing</span>

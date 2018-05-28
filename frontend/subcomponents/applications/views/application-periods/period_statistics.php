@@ -10,9 +10,6 @@
     $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<section class="content-header">
-    <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-</section><br/><br/>
 
 <div class="alert alert-info" style = "font-size:1.1em">
     The following presents application statistics for each application period. <br/>
