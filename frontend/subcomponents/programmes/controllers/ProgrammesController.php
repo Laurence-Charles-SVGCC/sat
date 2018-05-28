@@ -1514,7 +1514,8 @@ class ProgrammesController extends Controller
                      batch_student_cape.courseworktotal AS 'coursework',
                      batch_student_cape.examtotal As 'exam',
                      batch_student_cape.final AS 'final',
-                     programme_catalog.name AS 'programme'
+                     programme_catalog.name AS 'programme',
+                     batch_cape.batchcapeid AS 'batchcapeid'
                      FROM batch_student_cape
                      JOIN batch_cape
                      ON batch_student_cape.batchcapeid = batch_cape.batchcapeid
@@ -1562,6 +1563,36 @@ class ProgrammesController extends Controller
                            $broadsheet_info['exam'] = $record['exam'];
                            $broadsheet_info['final'] = $record['final'];
                            $broadsheet_info['programme'] = $record['programme'];
+                            
+                           $lecs = EmployeeBatch::find()
+                                   ->where(['batchcapeid' => $record['batchcapeid']])
+                                    ->all();
+                           if($lecs)
+                               $has_lecs = true;
+                           else
+                               $has_lecs = false;
+                           $lecturers = "";
+
+                            if($has_lecs)
+                            {
+                                $lec_count = count($lecs);
+                                foreach($lecs as $key=>$lec)
+                                {
+                                    if($lec_count - $key == 1 )     //if last lecturer
+                                    {
+                                        $lecturers .= Employee::getEmployeeName($lec->personid);
+                                    }
+                                    else       //not last lecturer
+                                    {
+                                        $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                                    }
+                                }
+                                  $broadsheet_info['lecturer'] = $lecturers;
+                            }
+                            else
+                            {
+                                  $broadsheet_info['lecturer'] = "Unavailable"; 
+                            }
 
                            $broadsheet_container[] =  $broadsheet_info;
                        }
@@ -1583,7 +1614,8 @@ class ProgrammesController extends Controller
                      batch_students.final AS 'final',
                      batch_students.grade AS 'grade',
                      course_status.name AS 'status',
-                     programme_catalog.name AS 'programme'
+                     programme_catalog.name AS 'programme',
+                     batch.batchid AS 'batchid'
                      FROM batch_students
                      JOIN batch
                      ON batch_students.batchid = batch.batchid
@@ -1632,7 +1664,37 @@ class ProgrammesController extends Controller
                         $broadsheet_info['grade'] = $record['grade'];
                         $broadsheet_info['status'] = $record['status'];
                         $broadsheet_info['programme'] = $record['programme'];
+                        
+                        $lecs = EmployeeBatch::find()
+                               ->where(['batchid' => $record['batchid']])
+                                ->all();
+                       if($lecs)
+                           $has_lecs = true;
+                       else
+                           $has_lecs = false;
+                       $lecturers = "";
 
+                        if($has_lecs)
+                        {
+                            $lec_count = count($lecs);
+                            foreach($lecs as $key=>$lec)
+                            {
+                                if($lec_count - $key == 1 )     //if last lecturer
+                                {
+                                    $lecturers .= Employee::getEmployeeName($lec->personid);
+                                }
+                                else       //not last lecturer
+                                {
+                                    $lecturers .= Employee::getEmployeeName($lec->personid) . ",   ";
+                                }
+                            }
+                              $broadsheet_info['lecturer'] = $lecturers;
+                        }
+                        else
+                        {
+                              $broadsheet_info['lecturer'] = "Unavailable"; 
+                        }
+                            
                         $broadsheet_container[] =  $broadsheet_info;
                     }
                 }

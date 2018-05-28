@@ -261,6 +261,11 @@
                                                'label' => 'Semester'
                                            ],
                                            [
+                                               'attribute' => 'lecturer',
+                                               'format' => 'text',
+                                               'label' => 'Lecturer'
+                                           ],
+                                           [
                                                'attribute' => 'coursework',
                                                'format' => 'text',
                                                'label' => 'Cousework'
