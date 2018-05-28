@@ -1515,7 +1515,9 @@ class ProgrammesController extends Controller
                      batch_student_cape.examtotal As 'exam',
                      batch_student_cape.final AS 'final',
                      programme_catalog.name AS 'programme',
-                     batch_cape.batchcapeid AS 'batchcapeid'
+                     batch_cape.batchcapeid AS 'batchcapeid',
+                     cape_course.courseworkweight AS 'courseworkweight',
+                     cape_course.examweight AS 'examweight'
                      FROM batch_student_cape
                      JOIN batch_cape
                      ON batch_student_cape.batchcapeid = batch_cape.batchcapeid
@@ -1557,6 +1559,8 @@ class ProgrammesController extends Controller
                            $broadsheet_info['lastname'] = $record['lastname'];
                            $broadsheet_info['coursecode'] = $record['coursecode'];
                            $broadsheet_info['coursename'] = $record['coursename'];
+                           $broadsheet_info['courseworkweight'] = $record['courseworkweight'];
+                            $broadsheet_info['examweight'] = $record['examweight'];
                            $broadsheet_info['subject'] = $record['subject'];
                            $broadsheet_info['semester'] = $record['semester'];
                            $broadsheet_info['coursework'] = $record['coursework'];
@@ -1593,6 +1597,8 @@ class ProgrammesController extends Controller
                             {
                                   $broadsheet_info['lecturer'] = "Unavailable"; 
                             }
+                            
+                            
 
                            $broadsheet_container[] =  $broadsheet_info;
                        }
@@ -1615,7 +1621,9 @@ class ProgrammesController extends Controller
                      batch_students.grade AS 'grade',
                      course_status.name AS 'status',
                      programme_catalog.name AS 'programme',
-                     batch.batchid AS 'batchid'
+                     batch.batchid AS 'batchid',
+                     course_offering.courseworkweight AS 'courseworkweight',
+                     course_offering.examweight AS 'examweight'
                      FROM batch_students
                      JOIN batch
                      ON batch_students.batchid = batch.batchid
@@ -1657,6 +1665,8 @@ class ProgrammesController extends Controller
                         $broadsheet_info['lastname'] = $record['lastname'];
                         $broadsheet_info['coursecode'] = $record['coursecode'];
                         $broadsheet_info['coursename'] = $record['coursename'];
+                        $broadsheet_info['courseworkweight'] = $record['courseworkweight'];
+                        $broadsheet_info['examweight'] = $record['examweight'];
                         $broadsheet_info['semester'] = $record['semester'];
                         $broadsheet_info['coursework'] = $record['coursework'];
                         $broadsheet_info['exam'] = $record['exam'];

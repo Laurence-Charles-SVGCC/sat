@@ -266,6 +266,16 @@
                                                'label' => 'Lecturer'
                                            ],
                                            [
+                                               'attribute' => 'courseworkweight',
+                                               'format' => 'text',
+                                               'label' => 'CW. Weight'
+                                           ],
+                                           [
+                                               'attribute' => 'examweight',
+                                               'format' => 'text',
+                                               'label' => 'Exam Weight'
+                                           ],
+                                           [
                                                'attribute' => 'coursework',
                                                'format' => 'text',
                                                'label' => 'Cousework'
@@ -357,6 +367,21 @@
                                            'attribute' => 'semester',
                                            'format' => 'text',
                                            'label' => 'Semester'
+                                       ],
+                                       [
+                                           'attribute' => 'lecturer',
+                                           'format' => 'text',
+                                           'label' => 'Lecturer'
+                                       ],
+                                       [
+                                           'attribute' => 'courseworkweight',
+                                           'format' => 'text',
+                                           'label' => 'CW. Weight'
+                                       ],
+                                       [
+                                           'attribute' => 'examweight',
+                                           'format' => 'text',
+                                           'label' => 'Exam Weight'
                                        ],
                                        [
                                            'attribute' => 'coursework',
