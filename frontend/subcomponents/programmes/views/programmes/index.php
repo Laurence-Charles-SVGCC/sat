@@ -105,8 +105,22 @@
 <?php if ($programme_dataprovider) : ?>
     <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em;" id="programme_results">
         <div id="programme-header">
-            <h2><?= "Search results for: " . $info_string ?></h2>
-            <a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/create-programme', 'divisionid' => $divisionid]);?> role="button"> Create Programme</a>
+            <h2>
+                <span><?= "Search results for: " . $info_string ?></span>
+                <!--<span><a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/create-programme', 'divisionid' => $divisionid]);?> role="button"> Create Programme</a></span>-->
+               
+                <div class="dropdown pull-right">
+                    <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+                       <span>Select Action...</span>
+                       <span class='caret'></span>
+                    </button>
+                    <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
+                         <li><a href=<?=Url::toRoute(['/subcomponents/programmes/programmes/create-programme', 'divisionid' => $divisionid]);?>>Create Programme</a></li>
+                         <li><a href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-batch-offering-report', 'divisionid' => $divisionid]);?>>Generate Batch Offering Report</a></li>
+                    </ul>
+                </div>
+            </h2>
+            
         </div><br/>
         <?= $this->render('programme_results', [
             'dataProvider' => $programme_dataprovider,

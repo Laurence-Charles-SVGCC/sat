@@ -51,6 +51,175 @@ use frontend\models\Student;
 
 class ProgrammesController extends Controller
 {
+    /**
+     * Generates report for all batches offered by a particular division
+     * 
+     * @return type
+     * 
+     * Author: charles.laurence1@gmail.com
+     * Created: 2018_05_30
+     * Modified: 2018_05_30
+     */
+    public function actionGenerateBatchOfferingReport($divisionid)
+    {
+        $dataprovider = array();
+        
+        $info_string = "";
+        $division_name = Division::getDivisionAbbreviation($divisionid);
+        $info_string .= " Division - " . $division_name;
+        
+        $associate_batches = Yii::$app->db->createCommand(
+                "SELECT batch.name AS 'batch_name',"
+                ." CONCAT(employee.title, ' ', employee.firstname, ' ', employee.lastname)  AS 'lecturer',"
+                ." batch_type.name AS 'batch_type',"
+                ." course_offering.credits AS 'credits',"
+                ." course_offering.courseworkweight AS 'courseworkweight',"
+                ." course_offering.examweight AS 'examweight',"
+                ." course_catalog.name AS 'name',"
+                ." course_catalog.coursecode AS 'code',"
+                ." semester.title AS 'semester',"
+                ." academic_year.title AS 'year',"
+                ." course_type.name AS 'course_type',"
+                ." pass_criteria.name AS 'pass_criteria',"
+                ." pass_fail_type.description AS 'pass_fail_status',"
+                ." CONCAT(qualification_type.abbreviation, '. ', programme_catalog.name, '( ', programme_catalog.specialisation, ' )')  AS 'programme_name'"
+                ." FROM batch" 
+                 ." JOIN employee_batch" 
+                ." ON batch.batchid = employee_batch.batchid"
+                ." JOIN employee" 
+                ." ON employee_batch.personid = employee.personid"
+                ." JOIN batch_type" 
+                ." ON batch.batchtypeid = batch_type.batchtypeid"
+                ." JOIN course_offering" 
+                ." ON batch.courseofferingid = course_offering.courseofferingid"                        
+                ." JOIN course_catalog"
+                ." ON course_offering.coursecatalogid = course_catalog.coursecatalogid"      
+                ." JOIN semester"
+                ." ON course_offering.semesterid = semester.semesterid"
+                 ." JOIN academic_year"
+                ." ON semester.academicyearid = academic_year.academicyearid"
+                ." JOIN academic_offering"
+                ." ON course_offering.academicofferingid = academic_offering.academicofferingid"        
+                ." JOIN programme_catalog"
+                ." ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"   
+                 ." JOIN qualification_type"
+                ." ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"          
+                ." JOIN course_type"
+                ." ON course_offering.coursetypeid = course_type.coursetypeid"
+                ." JOIN pass_criteria"
+                ." ON course_offering.passcriteriaid = pass_criteria.passcriteriaid"
+                ." JOIN pass_fail_type"
+                ." ON course_offering.passfailtypeid = pass_fail_type.passfailtypeid"
+                ." JOIN application_period"
+                ." ON academic_offering.applicationperiodid =  application_period.applicationperiodid"
+                ." WHERE batch.isactive = 1"
+                ." AND batch.isdeleted = 0"
+                ." AND application_period.divisionid = " . $divisionid
+                )
+                ->queryAll();
+
+        $batch_container = array();
+        $batch_info = array();
+        $cape_batch_info = array();
+
+        foreach ($associate_batches as $batch)
+        {
+            $batch_info['batch_name'] = $batch['batch_name'];
+            $batch_info['lecturer'] = $batch['lecturer'];
+            $batch_info['batch_type'] = $batch['batch_type'];
+            $batch_info['credits'] = $batch['credits'];
+            $batch_info['courseworkweight'] = $batch['courseworkweight'];
+            $batch_info['examweight'] = $batch['examweight'];
+            $batch_info['name'] = $batch['name'];
+            $batch_info['code'] = $batch['code'];
+            $batch_info['semester'] = $batch['semester'];
+            $batch_info['year'] = $batch['year'];
+            $batch_info['course_type'] = $batch['course_type'];
+            $batch_info['pass_criteria'] = $batch['pass_criteria'];
+            $batch_info['pass_fail_status'] = $batch['pass_fail_status'];
+            $batch_info['programme_name'] = $batch['programme_name'];
+            $batch_container[] = $batch_info;
+        }
+        
+        if ($divisionid == 4)
+        {
+            $cape_batches = Yii::$app->db->createCommand(
+                "SELECT batch_cape.name AS 'batch_name',"
+                ." CONCAT(employee.title, ' ', employee.firstname, ' ', employee.lastname)  AS 'lecturer',"
+                ." cape_course.courseworkweight AS 'courseworkweight',"
+                ." cape_course.examweight AS 'examweight',"
+                ." cape_course.name AS 'name',"
+                ." cape_course.coursecode AS 'code',"
+                ." semester.title AS 'semester',"
+                ." academic_year.title AS 'year',"
+                ." programme_catalog.name AS 'programme_name'"
+                ." FROM batch_cape" 
+                 ." JOIN employee_batch_cape" 
+                ." ON batch_cape.batchcapeid = employee_batch_cape.batchcapeid"
+                ." JOIN employee" 
+                ." ON employee_batch_cape.personid = employee.personid"
+                ." JOIN cape_course" 
+                ." ON batch_cape.capecourseid = cape_course.capecourseid"
+                ." JOIN cape_unit"
+                ." ON cape_course.capeunitid = cape_unit.capeunitid"
+                ." JOIN cape_subject"
+                ." ON cape_unit.capesubjectid = cape_subject.capesubjectid"
+                ." JOIN semester"
+                ." ON cape_course.semesterid = semester.semesterid"
+                 ." JOIN academic_year"
+                ." ON semester.academicyearid = academic_year.academicyearid"
+                ." JOIN academic_offering"
+                ." ON cape_subject.academicofferingid = academic_offering.academicofferingid"        
+                ." JOIN programme_catalog"
+                ." ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"             
+                ." JOIN application_period"
+                ." ON academic_offering.applicationperiodid =  application_period.applicationperiodid"
+                ." WHERE batch_cape.isactive = 1"
+                ." AND batch_cape.isdeleted = 0"
+                ." AND application_period.divisionid = " . $divisionid
+                )
+                ->queryAll();
+            
+            foreach ($cape_batches as $batch)
+            {
+                $cape_batch_info['batch_name'] = $batch['batch_name'];
+                $cape_batch_info['lecturer'] = $batch['lecturer'];
+                $cape_batch_info['credits'] = "N/A";
+                $cape_batch_info['courseworkweight'] = $batch['courseworkweight'];
+                $cape_batch_info['examweight'] = $batch['examweight'];
+                $cape_batch_info['name'] = $batch['name'];
+                $cape_batch_info['code'] = $batch['code'];
+                $cape_batch_info['semester'] = $batch['semester'];
+                $cape_batch_info['year'] = $batch['year'];
+                $cape_batch_info['course_type'] ="N/A";
+                $cape_batch_info['pass_criteria'] = "N/A";
+                $cape_batch_info['pass_fail_status'] = "N/A";
+                $cape_batch_info['programme_name'] = $batch['programme_name'];
+                $batch_container[] = $cape_batch_info;
+            }
+        }
+        
+        $dataprovider = new ArrayDataProvider([
+                'allModels' => $batch_container,
+                'pagination' => [
+                    'pageSize' => 20,
+                ],
+                'sort' => [
+                    'defaultOrder' => ['batch_name' =>SORT_ASC],
+                    'attributes' => ['batch_name'],
+                ]
+        ]);
+                
+        $filename = "Batch Offering Report for " . $division_name;
+        
+        return $this->render('batch_offerings_report',[
+            'info_string' => $info_string,
+            'dataprovider' => $dataprovider,
+            'divisionid' => $divisionid,
+            'filename' => $filename
+        ]);
+    }
+    
     
     /**
      * Renders the main programme control dashboard
