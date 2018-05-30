@@ -202,7 +202,7 @@ class ProgrammesController extends Controller
         $dataprovider = new ArrayDataProvider([
                 'allModels' => $batch_container,
                 'pagination' => [
-                    'pageSize' => 20,
+                    'pageSize' => 100000,
                 ],
                 'sort' => [
                     'defaultOrder' => ['batch_name' =>SORT_ASC],
