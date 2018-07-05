@@ -43,9 +43,6 @@ return [
                 'applications' => [
                     'class' => 'app\subcomponents\applications\ApplicationsModule'
                  ],
-                'general' => [
-                    'class' => 'app\subcomponents\general\General'
-                 ],
                 'gradebook' => [
                     'class' => 'app\subcomponents\gradebook\GradebookModule',
                 ],

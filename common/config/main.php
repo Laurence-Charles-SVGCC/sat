@@ -9,10 +9,6 @@ return [
             'class' => 'yii\rbac\DbManager',
             'defaultRoles' => ['guest'],
           ],
-//        'urlManager' => [
-//            'enablePrettyUrl' => false,
-//            'showScriptName' => false,
-//          ]
     ],
     'as beforeRequest' => [
         'class' => 'frontend\components\CheckApplicationSettings',
