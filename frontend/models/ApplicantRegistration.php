@@ -5,7 +5,7 @@
     use Yii;
     use yii\custom\ModelNotFoundException;
     use yii\web\UrlManager;
-    
+
      use common\models\User;
     use frontend\models\Email;
     use frontend\models\Student;
@@ -80,13 +80,13 @@
             return $this->hasOne(ApplicantIntent::className(), ['applicantintentid' => 'applicantintentid']);
         }
 
-        
-        
+
+
         /**
          * Return applicant status
-         * 
+         *
          * @return string
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_03_07
          * Modified: 2018_03_07
@@ -94,21 +94,21 @@
         public function getApplicantStatus()
         {
             $status = "--";
-            
+
             $applicant_name = $this->applicantname;
             $year_as_string = substr($this->applicantname, 0, 4);
             $year = (int)$year_as_string;
-            
+
             $account_pending_test1 = User::find()
                         ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
                         ->one();
             $account_pending_test2 = Student::find()
                         ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
                         ->one();
-                
+
             if ($year < 2018)
             {
-                
+
                 if ($account_pending_test1 == false && $account_pending_test2 == false)
                 {
                     $status = "Account Pending";
@@ -425,9 +425,9 @@
                     }
                 }
             }
-                 
-            
-            
+
+
+
 //            $account_pending_test1 = User::find()
 //                        ->where(['username' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
 //                        ->one();
@@ -448,7 +448,7 @@
 //                {
 //                    $personid = $account_pending_test2->personid;
 //                }
-//                
+//
 //                $applications = Application::find()
 //                        ->where(['applicationstatusid' => [1,2,3,4,5,6,7,8,9,10,11], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
 //                        ->all();
@@ -500,13 +500,13 @@
 //            }
             return $status;
         }
-        
-        
+
+
          /**
          * Return username of applicant
-         * 
+         *
          * @return string
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_02_27
          * Modified: 2018_02_28
@@ -519,12 +519,12 @@
             $account_pending_test2 = Student::find()
                         ->where(['applicantname' => $this->applicantname, 'isactive' => 1, 'isdeleted' =>0])
                         ->one();
-            
+
             if ($account_pending_test1 == true && $account_pending_test2 == false)
             {
                 return $account_pending_test1->username;
             }
-            
+
             elseif ($account_pending_test1 == false && $account_pending_test2 == true)
             {
                 $user = User::find()
@@ -532,21 +532,21 @@
                         ->one();
                 return $user->username;
             }
-            
+
             elseif ($account_pending_test1 == false && $account_pending_test2 == false)
             {
                 return "--";
             }
-            
+
         }
-        
-        
-        
+
+
+
         /**
          * Return status of applicant account
-         * 
+         *
          * @return string
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
          * Modified: 2018_02_27
@@ -554,7 +554,7 @@
         public function getStatus()
         {
             $status = "--";
-            
+
             $email = $this->getEmail();
             if ($email == false)
             {
@@ -613,13 +613,13 @@
             }
             return $status;
         }
-        
-        
+
+
         /**
          * Return User record that is associated with ApplicantRegristration record
-         * 
+         *
          * @return User
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2017_10_06
          * Modified: 2017_10_06
@@ -627,7 +627,7 @@
         public function getUser()
         {
             $user = NULL;
-             
+
              $email = $this->getEmail();
              if ($email == true)
              {
@@ -636,17 +636,17 @@
                             ->one();
              }
              return $user;
-             
+
         }
-        
-        
+
+
          /**
          * Return most recent Email record associated with ApplicantRegistration account
          * Needed to account for cases with reapplicants that have mulitple Email records...
          * this ensures the most recent is utilized as a basis for finding most recent User record.
-         * 
+         *
          * @return Email
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_02_21
          * Modified: 2018_02_21
@@ -665,15 +665,15 @@
                  return false;
              }
         }
-        
-        
-        
+
+
+
          /**
         * Generates an applicant token
-        * 
+        *
         * @return string
-        * 
-        * Author: charles.laurence1@gmail.com  
+        *
+        * Author: charles.laurence1@gmail.com
         * Created: 2018_02_28
         * Modified: 2017_02_28
         */
@@ -681,14 +681,14 @@
        {
             return Yii::$app->getSecurity()->generateRandomString(15);
        }
-    
-    
+
+
        /**
         * Returns full name for record
-        * 
+        *
         * @return string
-        * 
-        * Author: charles.laurence1@gmail.com  
+        *
+        * Author: charles.laurence1@gmail.com
         * Created: 2018_02_28
         * Modified: 2018_02_28
         */
@@ -696,24 +696,25 @@
        {
            return $this->title . ' '. $this->firstname . ' ' . $this->lastname;
        }
-    
-    
+
+
          /**
         * Send an email verification correspondence to user
-        * 
+        *
         * @return boolean
-        * 
-        * Author: charles.laurence1@gmail.com  
+        *
+        * Author: charles.laurence1@gmail.com
         * Created: 2018_02_28
         * Modified: 2017_02_28
         */
        public function sendApplicantAccountRequestEmail()
        {
-           $host = "http://www.svgcc.vc/subdomains/apply2/web";
-           $generated_reset_link = Yii::$app->urlManager->createUrl(['account-management/applicant-account-confirmation', 'id' => $this->applicantname, 'token' => $this->token]);
-           $formatted_reset_link = str_replace("/sat_dev/frontend/web", "", $generated_reset_link);
-           $reset_url = $host . $formatted_reset_link;
-           
+           // $host = "http://www.svgcc.vc/subdomains/apply2/web";
+           // $generated_reset_link = Yii::$app->urlManager->createUrl(['account-management/applicant-account-confirmation', 'id' => $this->applicantname, 'token' => $this->token]);
+           // $formatted_reset_link = str_replace("/sat_dev/frontend/web", "", $generated_reset_link);
+           // $reset_url = $host . $formatted_reset_link;
+           $reset_url =  "https://apply.svgcc.vc/index.php?r=account-management%2Fapplicant-account-confirmation&" . "id=" . $this->applicantname . "&token=" . $this->token;
+
            $feedback = Yii::$app->mailer->compose(['html' => 'applicant_account_request_email'], ['model' => $this, 'reset_url' => $reset_url])
                    ->setFrom(Yii::$app->params['applicationEmail'])
                    ->setTo($this->email)
@@ -721,7 +722,7 @@
                    ->send();
            return $feedback;
        }
-       
-        
-        
+
+
+
     }
