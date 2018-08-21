@@ -5,18 +5,18 @@ return [
     'supportEmail' => 'support@svgcc.vc',
     'user.passwordResetTokenExpire' => 3600,
     'titles' => [
-        ''=>'Title', 
+        ''=>'Title',
         'Mr'=>'Mr',
-        'Ms'=>'Ms', 
+        'Ms'=>'Ms',
         'Mrs'=>'Mrs'
     ],
     'femaleTitles' => [
-        ''=>'Title', 
-        'Ms'=>'Ms', 
+        ''=>'Title',
+        'Ms'=>'Ms',
         'Mrs'=>'Mrs'
     ],
     'maleTitles' => [
-        ''=>'Title', 
+        ''=>'Title',
         'Mr'=>'Mr'
     ],
     'gender' => [
@@ -25,13 +25,13 @@ return [
     ],
     'maritalstatus' => [
         'single'=>'Single',
-        'married'=>'Married', 
+        'married'=>'Married',
         'divorced'=>'Divorced',
-        'widow'=>'Widow', 
+        'widow'=>'Widow',
         'widower'=>'Widower'
     ],
     'external' => [
-        1=>'Yes', 
+        1=>'Yes',
         0=> 'No'
     ],
     'placeofbirth' => [
@@ -503,7 +503,7 @@ return [
         'yemen' => 'Yemen',
         'zambia' => 'Zambia',
         'zimbabwe' => 'Zimbabwe'
-    ],   
+    ],
     'nationality' => [
         ''=>'Nationality',
         'vincentian'=>'Vincentian',
@@ -744,7 +744,7 @@ return [
         'zimbabwean' => 'Zimbabwean'
     ],
     'religion' => [
-        ''=>'Religion', 
+        ''=>'Religion',
         'catholic'=>'Christian-Catholic',
         'anglican'=>'Christian-Anglican',
         'methodist'=>'Christian-Methodist',
@@ -759,9 +759,9 @@ return [
         'muslim'=>'Muslim',
         'none'=>'None',
         'other'=>'Other'
-    ],       
+    ],
     'towns' => [
-        ''=>'Town', 
+        ''=>'Town',
         'adelphi'=>'Adelphi',
         'arnos vale'=>'Arnos Vale',
         'ashton'=>'Ashton',
@@ -862,6 +862,9 @@ return [
     ],
     'years' =>[
         '' => 'Select Year',
+        '2020' => '2020',
+        '2019' => '2019',
+        '2018' => '2018',
         '2017' => '2017',
         '2016' => '2016',
         '2015' => '2015',
@@ -909,7 +912,7 @@ return [
         '1973' => '1973',
         '1972' => '1972',
         '1971' => '1971',
-        '1970' => '1970',    
+        '1970' => '1970',
     ],
-    
+
 ];
