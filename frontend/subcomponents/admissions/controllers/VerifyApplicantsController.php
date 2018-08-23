@@ -276,8 +276,8 @@ class VerifyApplicantsController extends \yii\web\Controller
 
                 $container["related_accounts"] = $duplicate_message;
                 /**************************************************************/
-                
-                $container["verifier"] = $verifier;
+
+                $container["verifier"] = "N/A";
 
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
@@ -361,7 +361,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["related_accounts"] = $duplicate_message;
                     /**************************************************************/
 
-                    $container["verifier"] = $verifier;
+                    $container["verifier"] = "N/A";
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;
