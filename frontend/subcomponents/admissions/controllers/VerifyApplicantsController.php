@@ -249,6 +249,36 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
 
+                /**************     flags possible duplicates    **************/
+                $duplicate_message = false;
+                $possible_applicant_matches = Applicant::find()
+                  ->where(['firstname' => $applicant->firstname, 'lastname' => $applicant->lastname])
+                  ->all();
+
+                if (empty($possible_applicant_matches) == true)
+                {
+                  $duplicate_message = "N/A";
+                }
+                else
+                {
+                  foreach($possible_applicant_matches as $match)
+                  {
+                    $matches_application = Application::find()
+                      ->where(['personid' => $match->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                      ->all();
+                    if (empty($matches_application) == false && $match->personid != $applicant->personid)
+                    {
+                      $user = User::findOne(['personid' => $match->personid, 'isdeleted' => 0]);
+                      $duplicate_message .= ' ' . $user->username . ', ';
+                    }
+                  }
+                }
+
+                $container["related_accounts"] = $duplicate_message;
+                /**************************************************************/
+                
+                $container["verifier"] = $verifier;
+
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
                 $division = Division::getDivisionAbbreviation($divisionid);
@@ -295,6 +325,43 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+
+                    /**************     flags possible duplicates    **************/
+                    $duplicate_message = false;
+                    $certificates = CsecQualification::getSubjects($application->personid);
+                    if (empty($certificates) == true)
+                    {
+                      $duplicate_message = "N/A";
+                    }
+                    else
+                    {
+                      $dups = CsecQualification::getPossibleDuplicate($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      $message = '';
+                      if ($dups)
+                      {
+                          $dupes = '';
+                          foreach($dups as $dup)
+                          {
+                              $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                              $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
+                          }
+                          $message .= $dupes;
+
+                      }
+                      $reapp = CsecQualification::getPossibleReapplicant($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      if ($reapp)
+                      {
+                          $message .= ' pre-2015/2016 applicant';
+                      }
+                      if ($dups || $reapp)
+                      {
+                          $duplicate_message = $message;
+                      }
+                    }
+                    $container["related_accounts"] = $duplicate_message;
+                    /**************************************************************/
+
+                    $container["verifier"] = $verifier;
 
                     $applications = Application::getApplications($applicant->personid);
                     $divisionid = $applications[0]->divisionid;
