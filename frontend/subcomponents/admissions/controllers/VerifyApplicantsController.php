@@ -35,7 +35,7 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionIndex()
     {
         $data = array();
-        
+
         $has_external = count(Application::getExternal());
         if($has_external > 0)
         {
@@ -51,15 +51,15 @@ class VerifyApplicantsController extends \yii\web\Controller
             $centre_row['percentage_completed'] = $amt_received == 0 ? 0 : round(($external_amt_verified/$amt_received) * 100, 2);
             array_push($data, $centre_row);
         }
-        
-        
-        
+
+
+
         $current_centres = CsecCentre::getCurrentCentres();
-        
+
         /*
          *  If there is an active application the associated csec centres are retreived
          */
-        if ($current_centres == true)      
+        if ($current_centres == true)
         {
             foreach ($current_centres as $centre)
             {
@@ -99,7 +99,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                ],
 //            ]);
         }
-        
+
         if (!empty($data))
         {
             $dataProvider = new ArrayDataProvider([
@@ -115,19 +115,19 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         else
             $dataProvider = false;
-        
+
         return $this->render('index',
                 ['dataProvider' => $dataProvider]
                 );
     }
-    
-    
-    
+
+
+
     /**
      * Renders the "Abandoned Application Index"
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
@@ -136,11 +136,11 @@ class VerifyApplicantsController extends \yii\web\Controller
     {
         $data = array();
         $current_centres = CsecCentre::getAbandonedCurrentCentres();
-        
+
         /*
          *  If there is an abanadoned applications the associated csec centres are retreived
          */
-        if ($current_centres == true)      
+        if ($current_centres == true)
         {
             foreach ($current_centres as $centre)
             {
@@ -176,13 +176,13 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         else
             $dataProvider = false;
-        
+
         return $this->render('index_abandoned',
                 ['dataProvider' => $dataProvider]
                 );
     }
-    
-    
+
+
     /*
     * Purpose: Displays verification dashboard of a centre
     * Created: 15/07/2015 by Gii
@@ -219,15 +219,15 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'total' => $amt_received,
                 ]);
     }
-    
-    
+
+
     /**
      * Displays verification dashboard of a centre
-     * 
+     *
      * @param type $centre_id
      * @param type $centre_name
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
@@ -238,7 +238,7 @@ class VerifyApplicantsController extends \yii\web\Controller
         {
             $applicants = Application::getAbandonedExternal();
             $data = array();
-            
+
             foreach($applicants as $applicant)
             {
                 $container = array();
@@ -276,7 +276,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
                 $data[] = $container;
             }
-            
+
         }
         else
         {
@@ -287,7 +287,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container = array();
 
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-                
+
                 if($applicant->isexternal == 0)
                 {
                     $container["personid"] = $applicant->personid;
@@ -325,7 +325,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -336,8 +336,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
-        
-        
+
+
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -347,7 +347,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
-    
+
     /*
     * Purpose: Displays all applicants from a given centre
     * Created: 15/07/2015 by Gii
@@ -379,13 +379,13 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
 //            ],
 //        ]);
-        
-        
+
+
         if (strcasecmp($centrename, "external") == 0)
         {
             $applicants = Application::getExternal();
             $data = array();
-            
+
             foreach($applicants as $applicant)
             {
                 $container = array();
@@ -395,7 +395,35 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
-                
+
+                /**************     flags possible duplicates    **************/
+                $duplicate_message = false;
+                $possible_applicant_matches = Applicant::find()
+                  ->where(['firstname' => $applicant->firstname, 'lastname' => $applicant->lastname])
+                  ->all();
+
+                if (empty($possible_applicant_matches) == true)
+                {
+                  $duplicate_message = "N/A";
+                }
+                else
+                {
+                  foreach($possible_applicant_matches as $match)
+                  {
+                    $matches_application = Application::find()
+                      ->where(['personid' => $match->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                      ->all();
+                    if (empty($matches_application) == false && $match->personid != $applicant->personid)
+                    {
+                      $user = User::findOne(['personid' => $match->personid, 'isdeleted' => 0]);
+                      $duplicate_message .= ' ' . $user->username . ', ';
+                    }
+                  }
+                }
+
+                $container["related_accounts"] = $duplicate_message;
+                /**************************************************************/
+
                  if (!Applicant::isVerified($applicant->personid))
                  {
                     $verifier = "N/A";
@@ -413,7 +441,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                      $verifier = Employee::getEmployeeName($applicant->verifier);
                  }
                  $container["verifier"] = $verifier;
-                    
+
                 $applications = Application::getApplications($applicant->personid);
                 $divisionid = $applications[0]->divisionid;
                 $division = Division::getDivisionAbbreviation($divisionid);
@@ -441,7 +469,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
                 $data[] = $container;
             }
-            
+
         }
         else
         {
@@ -452,7 +480,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container = array();
 
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-                
+
                 if($applicant->isexternal == 0)
                 {
                     $container["personid"] = $applicant->personid;
@@ -460,7 +488,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
-                    
+
+                    /**************     flags possible duplicates    **************/
+                    $duplicate_message = false;
+                    $certificates = CsecQualification::getSubjects($application->personid);
+                    if (empty($certificates) == true)
+                    {
+                      $duplicate_message = "N/A";
+                    }
+                    else
+                    {
+                      $dups = CsecQualification::getPossibleDuplicate($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      $message = '';
+                      if ($dups)
+                      {
+                          $dupes = '';
+                          foreach($dups as $dup)
+                          {
+                              $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                              $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
+                          }
+                          $message .= $dupes;
+
+                      }
+                      $reapp = CsecQualification::getPossibleReapplicant($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      if ($reapp)
+                      {
+                          $message .= ' pre-2015/2016 applicant';
+                      }
+                      if ($dups || $reapp)
+                      {
+                          $duplicate_message = $message;
+                      }
+                    }
+                    $container["related_accounts"] = $duplicate_message;
+                    /**************************************************************/
+
                     if (!Applicant::isVerified($applicant->personid))
                     {
                        $verifier = "N/A";
@@ -507,7 +570,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -518,8 +581,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
-        
-        
+
+
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -551,15 +614,15 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
 //            ],
 //        ]);
-        
+
         if (strcasecmp($centrename, "external") == 0)
         {
             $data = array();
-            
+
             foreach(Application::centreApplicantsPending($cseccentreid, true) as $application)
             {
                 $container = array();
-                
+
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
 
                 $container["personid"] = $applicant->personid;
@@ -567,6 +630,35 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
+
+                /**************     flags possible duplicates    **************/
+                $duplicate_message = false;
+                $possible_applicant_matches = Applicant::find()
+                  ->where(['firstname' => $applicant->firstname, 'lastname' => $applicant->lastname])
+                  ->all();
+
+                if (empty($possible_applicant_matches) == true)
+                {
+                  $duplicate_message = "N/A";
+                }
+                else
+                {
+                  foreach($possible_applicant_matches as $match)
+                  {
+                    $matches_application = Application::find()
+                      ->where(['personid' => $match->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                      ->all();
+                    if (empty($matches_application) == false && $match->personid != $applicant->personid)
+                    {
+                      $user = User::findOne(['personid' => $match->personid, 'isdeleted' => 0]);
+                      $duplicate_message .= ' ' . $user->username . ', ';
+                    }
+                  }
+                }
+
+                $container["related_accounts"] = $duplicate_message;
+                /**************************************************************/
+
                 $container["verifier"] = "N/A";
 
                 $applications = Application::getApplications($applicant->personid);
@@ -615,6 +707,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+
+                    /**************     flags possible duplicates    **************/
+                    $duplicate_message = false;
+                    $certificates = CsecQualification::getSubjects($application->personid);
+                    if (empty($certificates) == true)
+                    {
+                      $duplicate_message = "N/A";
+                    }
+                    else
+                    {
+                      $dups = CsecQualification::getPossibleDuplicate($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      $message = '';
+                      if ($dups)
+                      {
+                          $dupes = '';
+                          foreach($dups as $dup)
+                          {
+                              $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                              $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
+                          }
+                          $message .= $dupes;
+
+                      }
+                      $reapp = CsecQualification::getPossibleReapplicant($application->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      if ($reapp)
+                      {
+                          $message .= ' pre-2015/2016 applicant';
+                      }
+                      if ($dups || $reapp)
+                      {
+                          $duplicate_message = $message;
+                      }
+                    }
+                    $container["related_accounts"] = $duplicate_message;
+                    /**************************************************************/
+
                     $container["verifier"] = "N/A";
 
                     $applications = Application::getApplications($applicant->personid);
@@ -647,7 +775,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -658,7 +786,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
-        
+
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -668,7 +796,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 ]);
     }
 
-    
+
     /*
     * Purpose: Displays verified applicants from a given centre
     * Created: 15/07/2015 by Gii
@@ -691,17 +819,17 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
 //            ],
 //        ]);
-        
-       
-        
+
+
+
         if (strcasecmp($centrename, "external") == 0)
         {
             $data = array();
-            
+
             foreach(Application::centreApplicantsVerified($cseccentreid, true) as $application)
             {
                 $container = array();
-                
+
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
 
                 $container["personid"] = $applicant->personid;
@@ -709,7 +837,35 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
-                
+
+                /**************     flags possible duplicates    **************/
+                $duplicate_message = false;
+                $possible_applicant_matches = Applicant::find()
+                  ->where(['firstname' => $applicant->firstname, 'lastname' => $applicant->lastname])
+                  ->all();
+
+                if (empty($possible_applicant_matches) == true)
+                {
+                  $duplicate_message = "N/A";
+                }
+                else
+                {
+                  foreach($possible_applicant_matches as $match)
+                  {
+                    $matches_application = Application::find()
+                      ->where(['personid' => $match->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                      ->all();
+                    if (empty($matches_application) == false && $match->personid != $applicant->personid)
+                    {
+                      $user = User::findOne(['personid' => $match->personid, 'isdeleted' => 0]);
+                      $duplicate_message .= ' ' . $user->username . ', ';
+                    }
+                  }
+                }
+
+                $container["related_accounts"] = $duplicate_message;
+                /**************************************************************/
+
                 if (!$applicant->verifier)
                 {
                     $verifier = "Unknown";
@@ -750,13 +906,13 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         else
         {
-             $data = array();
+            $data = array();
             foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
             {
                 $container = array();
 
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-                
+
                 if($applicant->isexternal == 0)
                 {
                     $container["personid"] = $applicant->personid;
@@ -764,7 +920,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
-                    
+
+                    /**************     flags possible duplicates    **************/
+                    $duplicate_message = false;
+                    $certificates = CsecQualification::getSubjects($applicant->personid);
+                    if (empty($certificates) == true)
+                    {
+                      $duplicate_message = "N/A";
+                    }
+                    else
+                    {
+                      $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      $message = '';
+                      if ($dups)
+                      {
+                          $dupes = '';
+                          foreach($dups as $dup)
+                          {
+                              $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                              $dupes = $user ? $dupes . ' ' . $user->username . ', ': $dupes;
+                          }
+                          $message .= $dupes;
+
+                      }
+                      $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      if ($reapp)
+                      {
+                          $message .= ' pre-2015/2016 applicant';
+                      }
+                      if ($dups || $reapp)
+                      {
+                          $duplicate_message = $message;
+                      }
+                    }
+                    $container["related_accounts"] = $duplicate_message;
+                    /**************************************************************/
+
                     if (!$applicant->verifier)
                     {
                         $verifier = "Unknown";
@@ -805,7 +996,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -816,7 +1007,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
-        
+
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -825,7 +1016,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'centreid' => $cseccentreid,
                 ]);
     }
-    
+
     /*
     * Purpose: Displays queried applicants from a given centre
     * Created: 15/07/2015 by Gii
@@ -838,7 +1029,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //        {
 //            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
 //        }
-//        
+//
 //        $dataProvider = new ArrayDataProvider([
 //            'allModels' => $data,
 //            'pagination' => [
@@ -852,11 +1043,11 @@ class VerifyApplicantsController extends \yii\web\Controller
         if (strcasecmp($centrename, "external") == 0)
         {
             $data = array();
-            
+
             foreach(Application::centreApplicantsQueried($cseccentreid, true) as $application)
             {
                 $container = array();
-                
+
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
 
                 $container["personid"] = $applicant->personid;
@@ -864,6 +1055,35 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $container["middlename"] = $applicant->middlename;
                 $container["lastname"] = $applicant->lastname;
                 $container["gender"] = $applicant->gender;
+
+                /**************     flags possible duplicates    **************/
+                $duplicate_message = false;
+                $possible_applicant_matches = Applicant::find()
+                  ->where(['firstname' => $applicant->firstname, 'lastname' => $applicant->lastname])
+                  ->all();
+
+                if (empty($possible_applicant_matches) == true)
+                {
+                  $duplicate_message = "N/A";
+                }
+                else
+                {
+                  foreach($possible_applicant_matches as $match)
+                  {
+                    $matches_application = Application::find()
+                      ->where(['personid' => $match->personid, 'applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
+                      ->all();
+                    if (empty($matches_application) == false && $match->personid != $applicant->personid)
+                    {
+                      $user = User::findOne(['personid' => $match->personid, 'isdeleted' => 0]);
+                      $duplicate_message .= ' ' . $user->username . ', ';
+                    }
+                  }
+                }
+
+                $container["related_accounts"] = $duplicate_message;
+                /**************************************************************/
+
                 $container["verifier"] = "N/A";
 
                 $applications = Application::getApplications($applicant->personid);
@@ -911,6 +1131,42 @@ class VerifyApplicantsController extends \yii\web\Controller
                     $container["middlename"] = $applicant->middlename;
                     $container["lastname"] = $applicant->lastname;
                     $container["gender"] = $applicant->gender;
+
+                    /**************     flags possible duplicates    **************/
+                    $duplicate_message = false;
+                    $certificates = CsecQualification::getSubjects($applicant->personid);
+                    if (empty($certificates) == true)
+                    {
+                      $duplicate_message = "N/A";
+                    }
+                    else
+                    {
+                      $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      $message = '';
+                      if ($dups)
+                      {
+                          $dupes = '';
+                          foreach($dups as $dup)
+                          {
+                              $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
+                              $dupes = $user ? $dupes . ' ' . $user->username . ', ': $dupes;
+                          }
+                          $message .= $dupes;
+
+                      }
+                      $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
+                      if ($reapp)
+                      {
+                          $message .= ' pre-2015/2016 applicant';
+                      }
+                      if ($dups || $reapp)
+                      {
+                          $duplicate_message = $message;
+                      }
+                    }
+                    $container["related_accounts"] = $duplicate_message;
+                    /**************************************************************/
+
                     $container["verifier"] = "N/A";
 
                     $applications = Application::getApplications($applicant->personid);
@@ -942,7 +1198,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 }
             }
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -953,7 +1209,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 'attributes' => ['personid', 'firstname', 'lastname', 'gender', 'division'],
             ],
         ]);
-        
+
         return $this->render('view-applicant',
                 [
                     'dataProvider' => $dataProvider,
@@ -962,8 +1218,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                     'centreid' => $cseccentreid,
                 ]);
     }
-    
-    
+
+
     /*
     * Purpose: Displays all certificates for a given applicant from a given centre.
      * Handles actions from the display: add more certificates, save all as verified
@@ -974,13 +1230,13 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type)
     {
         $request = Yii::$app->request;
-        
+
         if ($post_data = Yii::$app->request->post())
         {
             $post_qualification = PostSecondaryQualification::find()
                 ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-            
+
             /*
              * Updates Post Qualification Record
              */
@@ -1005,11 +1261,11 @@ class VerifyApplicantsController extends \yii\web\Controller
                     return $this->redirect(\Yii::$app->request->getReferrer());
                 }
             }
-            
+
             $external_qualification = ExternalQualification::find()
                 ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-            
+
             /*
              * Updates ExternalQualification Record if it exists
              */
@@ -1034,12 +1290,12 @@ class VerifyApplicantsController extends \yii\web\Controller
                     return $this->redirect(\Yii::$app->request->getReferrer());
                 }
             }
-            
+
             $qualifications = CsecQualification::find()
                             ->where(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                             ->all();
-            
-            
+
+
             /*
              * For applicants with external qualifications, their status is updated to pending
              * i. if they only have external_qualifications and it is verified
@@ -1052,7 +1308,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             }
 //            elseif ($external_qualification == false &&  $post_qualification == true  && $qualifications == false)
 //            {
-//                
+//
 //            }
             elseif ($external_qualification == true &&  $post_qualification == false  && $qualifications == false)
             {
@@ -1064,7 +1320,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         $application->applicationstatusid = 3;
                         $application->save();
                     }
-                } 
+                }
             }
             elseif ($external_qualification == true &&  $post_qualification == true  && $qualifications == false)
             {
@@ -1079,7 +1335,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         }
                     }
             }
-            
+
             elseif ($request->post('CsecQualification'))
             {
                 $verify_all = $request->post('verified') === '' ? true : false;
@@ -1089,7 +1345,7 @@ class VerifyApplicantsController extends \yii\web\Controller
 //                            ->all();
                 $current_count = count($qualifications);
                 $loaded_count = count($request->post('CsecQualification'));
-                
+
                 for ($j = 0 ; $j<$loaded_count ; $j++)
                 {
                     if ($j>=$current_count)
@@ -1098,9 +1354,9 @@ class VerifyApplicantsController extends \yii\web\Controller
                         $qualifications[] = $temp;
                     }
                 }
-               
+
                 $load_flag = false;
-                
+
                 $load_flag = Model::loadMultiple($qualifications, $post_data);
                 if($load_flag == false)
                 {
@@ -1131,14 +1387,14 @@ class VerifyApplicantsController extends \yii\web\Controller
                                     $external_qualification->save();
                                 }
                             }
-                            
+
                             if (!$qual->save())
                             {
                                 Yii::$app->getSession()->setFlash('error', 'Could not add Certificate: ' . $qual['subjectid'] . ' ' . $qual['grade']);
                             }
                         }
                     }
-                    
+
                     $all_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0]));
                     $verified_certs = count(CsecQualification::findAll(['personid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0, 'isverified' => 1]));
 
@@ -1151,7 +1407,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         if ($post_qualification->isverified == 1  && $post_qualification->isqueried == 0)
                             $verified_certs++;
                     }
-                    
+
                     /*
                      * If post secondary qualification exists then both previous counts must take it into consideration
                      */
@@ -1173,7 +1429,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                                 ->one();
                         $target_applicant->verifier = Yii::$app->user->identity->personid;
                         $target_applicant->save();
-                        
+
                         $pending = ApplicationStatus::findOne(['name' => 'Pending']);
                         if ($pending)
                         {
@@ -1202,7 +1458,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         }
                     }
                 }
-            } 
+            }
 
             //redirect
             if (strcasecmp($type, "pending")==0)
@@ -1253,7 +1509,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                             ->one();
 
             $username = $applicant_model->getPerson()->one()->username;
-            
+
             $external_qualification = ExternalQualification::getExternalQualifications($applicant_model->personid);
 
             return $this->render('view-applicant-qualifications',
@@ -1261,7 +1517,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                         'csecqualifications' => $qualifications,
                         'applicant' => $applicant_model,
                         'username' => $username,
-                        'applicantid' => $applicantid, 
+                        'applicantid' => $applicantid,
                         'centrename' => $centrename,
                         'centreid' => $cseccentreid,
                         'type' => $type,
@@ -1272,8 +1528,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                     ]);
         }
     }
-   
-    
+
+
     /*
     * Purpose: Soft deletes a given certificate.
     * Created: 18/07/2015 by Gamal Crichton
@@ -1296,16 +1552,16 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         else
             Yii::$app->session->setFlash('error', 'Error retrieving certificate');
-      
+
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
-    
-    
+
+
     /**
      * Deletes 'Post Secondary Qualification' qualification
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 02/03/2016
      * Date Last Modified: 10/03/2016
@@ -1330,14 +1586,14 @@ class VerifyApplicantsController extends \yii\web\Controller
 
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
-    
-    
+
+
     /**
      * Saves "PostSecondaryQualification' record
-     * 
+     *
      * @param type $personid
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 15/03/2016
      * Date Last Modified: 25/05/2016
@@ -1347,11 +1603,11 @@ class VerifyApplicantsController extends \yii\web\Controller
         $user = User::find()
                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        
+
         $applicant = Applicant::find()
                  ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        
+
         $qualification = new PostSecondaryQualification();
 
         if ($post_data = Yii::$app->request->post())
@@ -1363,7 +1619,7 @@ class VerifyApplicantsController extends \yii\web\Controller
             $load_flag = $qualification->load($post_data);
             if($load_flag == true)
             {
-                
+
                 $qualification->personid = $user->personid;
                 $validation_flag = $qualification->validate();
 
@@ -1398,7 +1654,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
             }
             else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');
         }
 
         return $this->render('add_post_secondary_qualificiation', [
@@ -1406,51 +1662,51 @@ class VerifyApplicantsController extends \yii\web\Controller
             'qualification' => $qualification,
             'applicant' => $applicant,
             'centrename' => $centrename,
-            'centreid' => $cseccentreid,  
+            'centreid' => $cseccentreid,
             'type' => $type
-        ]); 
+        ]);
     }
-    
-    
+
+
     /**
      * Handles 'examination_body' dropdownlist of 'add_csecqualification' view
-     * 
+     *
      * @param type $exam_body_id
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 18/03/2016
      * Date Last Modified: 18/03/2016
      */
     public function actionExaminationBodyDependants($exam_body_id, $index)
     {
-        $subjects = Subject::getSubjectList($exam_body_id);      
+        $subjects = Subject::getSubjectList($exam_body_id);
         $proficiencies = ExaminationProficiencyType::getExaminationProficiencyList($exam_body_id);
         $grades = ExaminationGrade::getExaminationGradeList($exam_body_id);
         $pass = NULL;
 
         if (count($subjects)>0  && count($proficiencies)>0  && count($grades)>0)    //if subjects related to examination body exist
-        {     
+        {
             $pass = 1;
-            echo Json::encode(['recordid' => $index, 'subjects' => $subjects, 'proficiencies' => $proficiencies, 'grades' => $grades, 'pass' => $pass]);       //return json encoded array of subjects    
+            echo Json::encode(['recordid' => $index, 'subjects' => $subjects, 'proficiencies' => $proficiencies, 'grades' => $grades, 'pass' => $pass]);       //return json encoded array of subjects
         }
         else
         {
             $pass = 0;
             echo Json::encode(['recordid' => $index, 'pass'=> $pass]);
-        }    
+        }
     }
-    
-    
+
+
     /**
      * Saves CsecQualifcation
-     * 
+     *
      * @param type $personid
      * @param type $centrename
      * @param type $centreid
      * @param type $type
      * @param type $record_count
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 18/03/2016
      * Date Last Modified: 20/03/2016 | 26/03/2016
@@ -1458,18 +1714,18 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionSaveNewQualifications($personid, $centrename, $centreid, $type, $record_count, $qual_limit)
     {
         $all_qualifications = array();
-        
+
         //creates CsecQualification record containers
         for ($i = 0 ; $i < $qual_limit ; $i++)
         {
             $temp = new CsecQualification();
-            array_push($all_qualifications, $temp);               
+            array_push($all_qualifications, $temp);
         }
-        
+
         if ($post_data = Yii::$app->request->post())
         {
             $load_flag = false;
-               
+
             $load_flag = Model::loadMultiple($all_qualifications, $post_data);
             if($load_flag == true)
             {
@@ -1480,13 +1736,13 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     unset($all_qualifications[$i]);
                 }
-                
+
                 $transaction = \Yii::$app->db->beginTransaction();
-                try 
+                try
                 {
-                    foreach ($all_qualifications as $qualification) 
+                    foreach ($all_qualifications as $qualification)
                     {
-                        
+
                         $save_flag = false;
                         if($qualification->isValid() == true)
                         {
@@ -1510,8 +1766,8 @@ class VerifyApplicantsController extends \yii\web\Controller
                         }
                     }
                     $transaction->commit();
-                  
-                } catch (Exception $ex) 
+
+                } catch (Exception $ex)
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
@@ -1524,14 +1780,14 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         return $this->redirect(\Yii::$app->request->getReferrer());
     }
-    
-    
+
+
     /**
      * Adds/Edits/Deletes "ExternalQualification' record
-     * 
+     *
      * @param type $personid
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 03/04/2016
      * Date Last Modified: 03/04/2016 | 30/01/2017
@@ -1541,11 +1797,11 @@ class VerifyApplicantsController extends \yii\web\Controller
         $user = User::find()
                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        
+
         $applicant = Applicant::find()
                  ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        
+
         if ($action == "delete")
         {
             $qualification = ExternalQualification::getExternalQualifications($personid);
@@ -1566,7 +1822,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 return $this->redirect(\Yii::$app->request->getReferrer());
             }
         }
-        
+
         elseif ($action == "add")
             $qualification = new ExternalQualification();
 
@@ -1612,7 +1868,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                     Yii::$app->getSession()->setFlash('error', 'Error occured when trying to validate qualification  record. Please try again.');
             }
             else
-                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');              
+                    Yii::$app->getSession()->setFlash('error', 'Error occured when trying to load qualification  record. Please try again.');
         }
 
         return $this->render('external_qualification', [
@@ -1620,18 +1876,18 @@ class VerifyApplicantsController extends \yii\web\Controller
             'qualification' => $qualification,
             'applicant' => $applicant,
             'centrename' => $centrename,
-            'centreid' => $cseccentreid,  
+            'centreid' => $cseccentreid,
             'type' => $type
-        ]); 
+        ]);
     }
-    
-    
+
+
     /**
      * Set all the applications of a particular applicant to "Abandoned"
-     * 
+     *
      * @param type $personid
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
@@ -1641,9 +1897,9 @@ class VerifyApplicantsController extends \yii\web\Controller
         $applications = Application::getApplicantApplications($personid);
         $save_flag = true;
         $test_flag = true;
-        
+
         $transaction = \Yii::$app->db->beginTransaction();
-        try 
+        try
         {
             foreach($applications as $application)
             {
@@ -1664,21 +1920,21 @@ class VerifyApplicantsController extends \yii\web\Controller
             {
                 $transaction->commit();
             }
-        } catch (Exception $ex) 
+        } catch (Exception $ex)
         {
             $transaction->rollBack();
             Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
         }
         return self::actionViewPending($centreid, $centrename);
     }
-    
-    
+
+
     /**
      * Set all the applications of a particular applicant to "Unverified"
-     * 
+     *
      * @param type $personid
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/05/2016
      * Date Last Modified: 04/05/2016
@@ -1688,9 +1944,9 @@ class VerifyApplicantsController extends \yii\web\Controller
         $save_flag = true;
         $test_flag = true;
         $i = -1;
-        
+
         $applications = Application::getAbandonedApplicantApplications($personid);
-        
+
         if($applications == false)
         {
             Yii::$app->getSession()->setFlash('error', 'Error retrieving records. Please try again');
@@ -1698,7 +1954,7 @@ class VerifyApplicantsController extends \yii\web\Controller
         else
         {
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
+            try
             {
                 foreach($applications as $key=>$application)
                 {
@@ -1722,7 +1978,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                 {
                     $transaction->commit();
                 }
-            } catch (Exception $ex) 
+            } catch (Exception $ex)
             {
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
@@ -1730,56 +1986,56 @@ class VerifyApplicantsController extends \yii\web\Controller
         }
         return self::actionIndexAbandoned();
     }
-    
-    
-    
+
+
+
     public function actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid)
     {
         $applicant = Applicant::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
-            
+
         $username = $applicant->getPerson()->one()->username;
-        
+
         //Get documents already submitted
         $selections = array();
         foreach (DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]) as $doc)
         {
             array_push($selections, $doc->documenttypeid);
         }
-        
+
         return $this->render('prospective_student',
                     [
                         'username' => $username,
                         'applicant' => $applicant,
-                        
-                        'applicantid' => $applicantid, 
+
+                        'applicantid' => $applicantid,
                         'centrename' => $centrename,
                         'centreid' => $cseccentreid,
                         'type' => $type,
                         'selections' => $selections,
-                        
+
                         'personid' => $personid,
                     ]);
     }
-    
-    
-    
+
+
+
     public function actionVerifyDocuments($applicantid, $centrename, $cseccentreid, $type, $personid)
     {
         $document_save_flag = false;
-        
+
         if (Yii::$app->request->post())
         {
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
+            try
             {
                 $request = Yii::$app->request;
                 //Update document submission
                 $submitted = $request->post('documents');
-                
+
                 $docs = DocumentSubmitted::findAll(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0]);
-                
+
                  //if form has non selected then any documents that were prevously selected must be deleted
                 if (!$submitted)
                 {
@@ -1800,21 +2056,21 @@ class VerifyApplicantsController extends \yii\web\Controller
                     Yii::$app->session->setFlash('success', 'Document update was successful.  You can now return to Applicant Certificate using Breadcrumbs or Back button.');
                     return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
                 }
-                
-                
+
+
                 $docs_arr = array();
                 if ($docs)
                 {
                     foreach ($docs as $doc)
-                    { 
-                        $docs_arr[] = $doc->documenttypeid; 
+                    {
+                        $docs_arr[] = $doc->documenttypeid;
                     }
 
 //                    foreach ($docs as $doc)
                     foreach ($docs as $doc)
                     {
                         if (!in_array($doc->documenttypeid, $submitted))
-                        { 
+                        {
                             //Document has been unchecked
                             $doc->isactive = 0;
                             $doc->isdeleted = 1;
@@ -1826,7 +2082,7 @@ class VerifyApplicantsController extends \yii\web\Controller
                                 return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid );
                             }
                         }
-                    }  
+                    }
                 }
 
                 if($submitted)
@@ -1834,13 +2090,13 @@ class VerifyApplicantsController extends \yii\web\Controller
                     foreach ($submitted as $sub)
                     {
                         if (!in_array($sub, $docs_arr))
-                        { 
+                        {
                            $doc = new DocumentSubmitted();
                            $doc->documenttypeid = $sub;
                            $doc->personid = $personid;
                            $doc->recepientid = Yii::$app->user->getId();
                            $doc->documentintentid = 1;
-                           $document_save_flag = $doc->save(); 
+                           $document_save_flag = $doc->save();
                            if ($document_save_flag == false)
                            {
                                $transaction->rollBack();
@@ -1853,17 +2109,17 @@ class VerifyApplicantsController extends \yii\web\Controller
                 $transaction->commit();
 //                return self::actionViewApplicantQualifications($applicantid, $centrename, $cseccentreid, $type);
                 Yii::$app->session->setFlash('success', 'Document update was successful.  You can now return to Applicant Certificate using Breadcrumbs or Back button.');
-                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);                
-                
+                return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
+
             } catch (Exception $e) {
                 $transaction->rollBack();
-                Yii::$app->session->setFlash('error', 'Error occured processing request.');   
+                Yii::$app->session->setFlash('error', 'Error occured processing request.');
                 return self::actionViewDocuments( $applicantid, $centrename,  $cseccentreid, $type,  $personid);
             }
         }
     }
-            
-       
-    
-    
+
+
+
+
 }
