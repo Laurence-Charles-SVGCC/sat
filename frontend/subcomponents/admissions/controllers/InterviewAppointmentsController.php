@@ -16,8 +16,8 @@
     use frontend\models\ProgrammeCatalog;
     use frontend\models\Applicant;
     use frontend\models\EmployeeDepartment;
-    
-    
+
+
     class InterviewAppointmentsController extends Controller
     {
         public function behaviors()
@@ -32,12 +32,12 @@
             ];
         }
 
-        
+
         /**
          * Interview Schedule control panel
-         * 
+         *
          * @return type
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_05_09
          * Modified: 2018_05_09
@@ -45,7 +45,7 @@
         public function actionIndex()
         {
             $user_divisionid = EmployeeDepartment::getUserDivision();
-            
+
             if ($user_divisionid && $user_divisionid != 1)
             {
                 $application_periods = ApplicationPeriod::find()
@@ -58,7 +58,7 @@
                                             ->where(['isactive' => 1, 'isdeleted' => 0, 'iscomplete' => 0])
                                             ->all();
             }
-            
+
             foreach ($application_periods as $period)
             {
                 $divisions[$period->divisionid] = $period->getDivisionName();
@@ -84,17 +84,17 @@
                 'application_periods' => $application_periods,
                 'programme_objects' => $programmes]);
         }
-        
-        
+
+
         /**
          * Schedule Interviews By Lastname
-         * 
+         *
          * @param type $applicationperiod_id
          * @param type $offertype
          * @param type $lower_bound
          * @param type $upper_bound
          * @return type
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_05_09
          * Modified: 2018_05_09
@@ -151,7 +151,7 @@
             if ($post_data = Yii::$app->request->post())
             {
                 $transaction = \Yii::$app->db->beginTransaction();
-                try 
+                try
                 {
                     $load_flag = Model::loadMultiple($offers, $post_data);
                     if ($load_flag == false)
@@ -175,8 +175,8 @@
                         }
                         $transaction->commit();
                         return $this->redirect(['index']);
-                    }                
-                } catch (Exception $ex) 
+                    }
+                } catch (Exception $ex)
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
@@ -184,22 +184,22 @@
             }
 
             return $this->render('schedule_interviews_by_lastname', [
-                'applicationperiod_id' => $applicationperiod_id, 
+                'applicationperiod_id' => $applicationperiod_id,
                   'offertype' => $offertype,
                   'lower_bound' => $lower_bound,
                   'upper_bound' => $upper_bound,
                   'application_period' => $application_period,
                   'offers' => $offers]);
          }
-         
-         
+
+
          /**
           * Schedule Interviews By Programme
-          * 
+          *
           * @param type $academic_offering_id
           * @param type $offertype
           * @return type
-          * 
+          *
           * Author: charles.laurence1@gmail.com
          * Created: 2018_05_09
          * Modified: 2018_05_09
@@ -213,6 +213,7 @@
                     ->one();
              $programme_name = $programme->getFullName();
 
+            $offer_cond['offer.offertypeid'] = $offertype;
             $offer_cond['offer.isdeleted'] = 0;
             $offer_cond['academic_offering.academicofferingid'] = $academic_offering_id;
             $offer_cond['academic_offering.interviewneeded'] = 1;
@@ -230,7 +231,7 @@
             if ($post_data = Yii::$app->request->post())
             {
                 $transaction = \Yii::$app->db->beginTransaction();
-                try 
+                try
                 {
                     $load_flag = Model::loadMultiple($offers, $post_data);
                     if ($load_flag == false)
@@ -254,8 +255,8 @@
                         }
                         $transaction->commit();
                         return $this->redirect(['index']);
-                    }                
-                } catch (Exception $ex) 
+                    }
+                } catch (Exception $ex)
                 {
                     $transaction->rollBack();
                     Yii::$app->getSession()->setFlash('error', 'Error occured processing your request. Please try again');
@@ -271,4 +272,3 @@
 
 
     }
-
