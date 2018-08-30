@@ -82,7 +82,7 @@ class Applicant extends \yii\db\ActiveRecord
             [['personid', 'potentialstudentid', 'applicantintentid', 'bursarystatus', 'isactive', 'isdeleted', 'isexternal', 'verifier', 'hasduplicate', 'isprimary', 'hasdeferred'], 'integer'],
             [['dateofbirth'], 'safe'],
             [['clubs', 'otherinterests', 'nationalsports', 'othersports', 'otheracademics'], 'string'],
-            [['title'], 'string', 'max' => 3],
+            [['title'], 'string', 'max' => 4],
             [['firstname', 'middlename', 'lastname', 'nationality', 'religion', 'placeofbirth'], 'string', 'max' => 45],
             [['gender'], 'string', 'max' => 6],
             [['photopath', 'sponsorname'], 'string', 'max' => 100],
