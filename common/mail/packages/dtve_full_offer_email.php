@@ -18,7 +18,7 @@
                 </p>
             </div>
 
-            <div id="body" style="white-space: pre;">
+            <div id="body">
                 <?= $package->emailcontent?>
             </div>
 
@@ -29,7 +29,7 @@
                 <?php else: ?>
                      <p><img src="http://localhost/sat_dev/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>
                 <?php endif; ?>
-                
+
                 <p>
                     Samantha Minors-Rouse
                     <br/>Registrar
