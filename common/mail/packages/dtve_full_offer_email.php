@@ -18,7 +18,7 @@
                 </p>
             </div>
 
-            <div id="body">
+            <div id="body" style="white-space: pre;">
                 <?= $package->emailcontent?>
             </div>
 
