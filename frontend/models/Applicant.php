@@ -4517,6 +4517,137 @@ class Applicant extends \yii\db\ActiveRecord
        return false;
    }
 
+   /**
+     * Determines the existence of Midwifery applications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasMidwiferyApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                'programme_catalog.name' => 'Midwifery', 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+
+
+    /**
+     * Determines the existence of Registered Nurse applications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasRegisteredNurseApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                'programme_catalog.name' => 'Registered Nursing', 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+
+
+    /**
+     * Determines the existence of Nursing Assistant applications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasNurseAssistantApplication()
+    {
+        return Application::find()
+                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+                ->innerJoin('programme_catalog', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
+                ->where(['application.personid'=> $this->personid, 'application.isactive' => 1,  'application.isdeleted'=> 0,
+                                'academic_offering.isactive' => 1,  'academic_offering.isdeleted'=> 0,
+                                'programme_catalog.name' => 'Nursing Assistant', 'programme_catalog.isactive' => 1, 'programme_catalog.isdeleted' => 0])
+                ->all();
+    }
+
+
+    /**
+     * Determines if applicant has >= 5 qualifications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasMidwiferyQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+
+        if (count($records) >= 5)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Determines if applicant has >= 5 qualifications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasRegisteredNursingQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+
+        if ($this->isexternal == 1  || count($records) >= 5)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Determines if applicant has >= 3 qualifications
+     *
+     * @return boolean
+     *
+     * Author: charles.laurence1@gmail.com
+     * Created: 2017_12_03
+     * Modified: 2017_12_03
+     */
+    public function hasNursingAssistantQualifications()
+    {
+        $records = CsecQualification::find()
+                 ->where(['personid'=> $this->personid, 'isactive' => 1, 'isdeleted' => 0])
+                 ->all();
+
+        if ($this->isexternal == 1  || count($records) >= 3)
+        {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
     * Returns true if applicant has completed post secondary qualifications form
