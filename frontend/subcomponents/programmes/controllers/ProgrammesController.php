@@ -1248,7 +1248,7 @@ class ProgrammesController extends Controller
         $programme = ProgrammeCatalog::find()
                 ->where(['programmecatalogid' =>$programmecatalogid])
                 ->one();
-        $programme_name =  str_replace(ProgrammeCatalog::getProgrammeFullName($programme->programmecatalogid), ",", " ");
+        $programme_name =  str_replace(",", " ", ProgrammeCatalog::getProgrammeFullName($programme->programmecatalogid));
 
         $programme_info = NULL;
 
