@@ -48,7 +48,7 @@ class Student extends \yii\db\ActiveRecord
             [['personid'], 'integer'],
             [['admissiondate', 'dateofbirth'], 'safe'],
             [['applicantname', 'firstname', 'middlename', 'lastname', 'email'], 'string', 'max' => 45],
-            [['title'], 'string', 'max' => 3],
+            [['title'], 'string', 'max' => 4],
             [['gender'], 'string', 'max' => 6]
         ];
     }
@@ -82,14 +82,14 @@ class Student extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
-    
-    
+
+
     /**
      * Returns a 'Student' record based on $personid
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 09/12/2015
      * Date Last Modified: 09/12/2015
@@ -103,13 +103,13 @@ class Student extends \yii\db\ActiveRecord
             return $student;
         return false;
     }
-    
-    
+
+
     /**
      * Load Student model with data from 'General' view
-     * 
+     *
      * @param type $student_profile
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 28/12/2015
      * Date Last Modified: 28/12/2015
@@ -117,17 +117,17 @@ class Student extends \yii\db\ActiveRecord
     public function loadGeneral($student_profile)
     {
         $this->title = $student_profile->title;
-        $this->firstname = $student_profile->firstname;       
-        $this->middlename = $student_profile->middlename;   
+        $this->firstname = $student_profile->firstname;
+        $this->middlename = $student_profile->middlename;
         $this->lastname = $student_profile->lastname;
         $this->dateofbirth = $student_profile->dateofbirth;
         $this->gender = $student_profile->gender;
     }
-   
+
    /**
     * Given an array of Student records, function returns true if any of those student
     * are enrolled at the requested division
-    * 
+    *
     * @param type $students
     * @param type $divisionid
     * @return boolean
@@ -145,6 +145,6 @@ class Student extends \yii\db\ActiveRecord
             return false;
         return true;
    }
-    
+
 
 }
