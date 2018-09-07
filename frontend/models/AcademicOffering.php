@@ -8,7 +8,7 @@
     use frontend\models\ApplicationPeriod;
     use frontend\models\QualificationType;
     use frontend\models\CapeSubject;
-    
+
     /**
      * This is the model class for table "academic_offering".
      *
@@ -21,13 +21,13 @@
      * @property integer $credits_required
      * @property integer $isactive
      * @property integer $isdeleted
-     * @property ProgrammeCatalog $programmecatalog 
-      * @property AcademicYear $academicyear 
-      * @property ApplicationPeriod $applicationperiod 
-      * @property Application[] $applications 
-      * @property CapeSubject[] $capeSubjects 
-      * @property CourseOffering[] $courseOfferings 
-      * @property StudentRegistration[] $studentRegistrations 
+     * @property ProgrammeCatalog $programmecatalog
+      * @property AcademicYear $academicyear
+      * @property ApplicationPeriod $applicationperiod
+      * @property Application[] $applications
+      * @property CapeSubject[] $capeSubjects
+      * @property CourseOffering[] $courseOfferings
+      * @property StudentRegistration[] $studentRegistrations
       */
     class AcademicOffering extends \yii\db\ActiveRecord
     {
@@ -67,69 +67,69 @@
             ];
         }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getProgrammecatalog() 
-           { 
-               return $this->hasOne(ProgrammeCatalog::className(), ['programmecatalogid' => 'programmecatalogid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getProgrammecatalog()
+           {
+               return $this->hasOne(ProgrammeCatalog::className(), ['programmecatalogid' => 'programmecatalogid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getacademic_year() 
-           { 
-               return $this->hasOne(AcademicYear::className(), ['academicyearid' => 'academicyearid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getacademic_year()
+           {
+               return $this->hasOne(AcademicYear::className(), ['academicyearid' => 'academicyearid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getApplicationperiod() 
-           { 
-               return $this->hasOne(ApplicationPeriod::className(), ['applicationperiodid' => 'applicationperiodid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getApplicationperiod()
+           {
+               return $this->hasOne(ApplicationPeriod::className(), ['applicationperiodid' => 'applicationperiodid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getApplications() 
-           { 
-               return $this->hasMany(Application::className(), ['academicofferingid' => 'academicofferingid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getApplications()
+           {
+               return $this->hasMany(Application::className(), ['academicofferingid' => 'academicofferingid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getCapeSubjects() 
-           { 
-               return $this->hasMany(CapeSubject::className(), ['academicofferingid' => 'academicofferingid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getCapeSubjects()
+           {
+               return $this->hasMany(CapeSubject::className(), ['academicofferingid' => 'academicofferingid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getCourseOfferings() 
-           { 
-               return $this->hasMany(CourseOffering::className(), ['academicofferingid' => 'academicofferingid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getCourseOfferings()
+           {
+               return $this->hasMany(CourseOffering::className(), ['academicofferingid' => 'academicofferingid']);
+           }
 
-           /** 
-            * @return \yii\db\ActiveQuery 
-            */ 
-           public function getStudentRegistrations() 
-           { 
-               return $this->hasMany(StudentRegistration::className(), ['academicofferingid' => 'academicofferingid']); 
-           } 
+           /**
+            * @return \yii\db\ActiveQuery
+            */
+           public function getStudentRegistrations()
+           {
+               return $this->hasMany(StudentRegistration::className(), ['academicofferingid' => 'academicofferingid']);
+           }
 
 
            /**
             * Returns an array of cohorts for a particular programme
-            * 
+            *
             * @param type $programmecatalogid
             * @return type
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 06/12/2015
             * Date Last Modified: 09/12/2015
@@ -145,10 +145,10 @@
 
            /**
             * Returns an count of the cohorts for a particular programme
-            * 
+            *
             * @param type $programmecatalogid
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 06/12/2015
             * Date Last Modified: 09/12/2015
@@ -167,9 +167,9 @@
 
            /**
             * Returns an array of uniqe academicoffering records associated with a cordinator
-            * 
+            *
             * @return type
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 29/06/2016
             * Date LAst Modified: 29/.6/2016
@@ -227,7 +227,7 @@
                                 $cordinated_programme_academicofferings[] = $offering;
                             }
                         }
-                    } 
+                    }
                 }
                 return $cordinated_programme_academicofferings;
            }
@@ -235,9 +235,9 @@
 
            /**
             * Returns an array of uniqe academicofferingids associated with a cordinator
-            * 
+            *
             * @return type
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 29/06/2016
             * Date LAst Modified: 29/06/2016
@@ -287,7 +287,7 @@
                                 $cordinated_programme_academicofferingids[] = $offering->academicofferingid;
                             }
                         }
-                    } 
+                    }
                 }
                 return $cordinated_programme_academicofferingids;
            }
@@ -295,10 +295,10 @@
 
            /**
             * Determines if a CAPE offering has been created for a particular application period
-            * 
+            *
             * @param type $applicationperiodid
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 14/02/2016
             * Date Last Modified: 13/08/2016
@@ -308,7 +308,7 @@
     //            $db = Yii::$app->db;
     //            $records = $db->createCommand(
     //                    "SELECT *"
-    //                    . " FROM academic_offering" 
+    //                    . " FROM academic_offering"
     //                    . " JOIN programme_catalog"
     //                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
     //                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
@@ -332,10 +332,10 @@
 
             /**
             * Retrieves the CAPE offering has been created for a particular appolication period
-            * 
+            *
             * @param type $applicationperiodid
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 15/02/2016
             * Date Last Modified: 13/08/2016
@@ -356,10 +356,10 @@
 
             /**
             * Determines of any none CAPE offering has been created for a particular appolication period
-            * 
+            *
             * @param type $applicationperiodid
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 14/02/2016
             * Date Last Modified: 13/08/2016
@@ -369,7 +369,7 @@
     //            $db = Yii::$app->db;
     //            $records = $db->createCommand(
     //                    "SELECT *"
-    //                    . " FROM academic_offering" 
+    //                    . " FROM academic_offering"
     //                    . " JOIN programme_catalog"
     //                    . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
     //                    . " WHERE academic_offering.applicationperiodid =" . $applicationperiodid
@@ -396,10 +396,10 @@
 
             /**
             * Retrieves any none CAPE offering has been created for a particular appolication period
-            * 
+            *
             * @param type $applicationperiodid
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 15/02/2016
             * Date Last Modified: 13/08/2016
@@ -421,10 +421,10 @@
 
          /**
          * Creates backup of a collection of AcademicOffering records
-         * 
+         *
          * @param type $experinences
          * @return array
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 15/02/2016
          * Date Last Modified: 15/02/2016
@@ -443,7 +443,7 @@
                 $temp->spaces = $offering->interviewneeded;
                 $temp->isactive = $offering->isactive;
                 $temp->isdeleted = $offering->isdeleted;
-                array_push($saved, $temp);      
+                array_push($saved, $temp);
             }
             return $saved;
         }
@@ -451,9 +451,9 @@
 
         /**
          * Saves the backed up AcademicOffering to the databases
-         * 
+         *
          * @param type $experiences
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 15/02/2016
          * Date Last Modified: 15/02/2016
@@ -462,17 +462,17 @@
         {
             foreach ($offerings as $offering)
             {
-                $offering->save();     
+                $offering->save();
             }
         }
 
 
         /**
          * Creates backup of a single AcademicOffering record
-         * 
+         *
          * @param type $experinences
          * @return array
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 15/02/2016
          * Date Last Modified: 15/02/2016
@@ -494,25 +494,25 @@
 
         /**
          * Saves the backed up AcademicOffering to the databases
-         * 
+         *
          * @param type $experiences
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 15/02/2016
          * Date Last Modified: 15/02/2016
          */
         public static function restoreSingle($offering)
         {
-            $offering->save();     
+            $offering->save();
         }
 
 
         /**
          * Returns true is programme requires interview
-         * 
+         *
          * @param type $applicationid
          * @return boolean
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 05/03/2016
          * Date Last Modified: 05/03/2016
@@ -522,7 +522,7 @@
             $record = AcademicOffering::find()
                     ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->where(['academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 'academic_offering.interviewneeded' => 1,
-                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationid' => $applicationid, 
+                            'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationid' => $applicationid,
                             ])
                     ->one();
             if ($record)
@@ -533,10 +533,10 @@
 
         /**
          * Returns true is academicoffering correspondes to a CAPE programme
-         * 
+         *
          * @param type $academicofferingid
          * @return type
-         * 
+         *
          * Author: Gamal Crichton
          * Date Created: ??
          * Date Last Modified: 27/042016 [L.Charles]
@@ -551,9 +551,9 @@
 
         /**
          * Returns the academicofferingid of current CAPE offfering
-         * 
+         *
          * @return boolean
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 25/02/2016
          * Date Last Modified: 25/02/2016 | 24/08/2016
@@ -576,9 +576,9 @@
 
         /**
          * Returns tha academicoffering of the most recent DASGS application period
-         * 
+         *
          * @return boolean
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 17/09/2016
          * Date Last Modified: 17/09/2016
@@ -609,10 +609,10 @@
 
         /**
          * Returns the CAPE academic offering for the specified application period
-         * 
+         *
          * @param type $periodid
          * @return boolean
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 14/05/2016
          * Date Last Modified: 14/05/2016
@@ -634,10 +634,10 @@
 
         /**
          * Returns an associative array of ['academicofferingid' => 'programme_name']
-         * 
+         *
          * @param type $academicyearid
          * @return array
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 24/06/2016
          * Date Last Modified: 24/06/2016
@@ -649,7 +649,7 @@
                         ->all();
 
             $listing = array();
-            foreach ($records as $record) 
+            foreach ($records as $record)
             {
                 $combined = array();
                 $keys = array();
@@ -681,7 +681,7 @@
             $highest_gpa = 0;
             foreach ($enrolled_students as $student)
             {
-                if ($student->studentstatusid == 1 || $student->studentstatusid == 11)
+                if ($student->studentstatusid == 1 || $student->studentstatusid == 10 || $student->studentstatusid == 11)
                 {
                     $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
                     if($gpa > $highest_gpa)
@@ -692,7 +692,7 @@
             }
             foreach ($enrolled_students as $student)
             {
-                if ($student->studentstatusid == 1 || $student->studentstatusid == 11)
+                if ($student->studentstatusid == 1 || $student->studentstatusid == 10 || $student->studentstatusid == 11)
                 {
                     $gpa = StudentRegistration::calculateCumulativeGPA($student->studentregistrationid);
                     if($gpa == $highest_gpa)
@@ -704,12 +704,12 @@
             return $top_performers;
         }
 
-        
+
          /**
          * Returns theformal name of academic offering record
-         * 
+         *
          * @return string
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2017_09_07
          * Modified: 2017_09_07
@@ -738,13 +738,13 @@
                 return $qualification_type . ". " . $programme->name;
             }
         }
-        
-        
+
+
         /**
          * Returns collection of Applicants that have been accepted to pursue this AcademicOffering
-         * 
+         *
          * @return [Applicant] | []
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2017_09_08
          * Modified: 2017_09_08
@@ -759,13 +759,13 @@
                                         'offer.ispublished' => 1, 'offer.isactive' => 1, 'offer.isdeleted' => 0])
                     ->all();
         }
-        
-        
+
+
         /**
          * Soft deletes the academic offering
-         * 
+         *
          * @return boolean
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2017_09_29
          * Modified: 2017_09_29
@@ -776,12 +776,12 @@
             $this->isdeleted = 1;
             return $this->save();
         }
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
 
 
     }
