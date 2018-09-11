@@ -182,8 +182,17 @@
                 }
                 else
                 {
+                    if ($account_pending_test1 == true)
+                    {
+                        $personid = $account_pending_test1->personid;
+                    }
+                    elseif ($account_pending_test2 == true)
+                    {
+                        $personid = $account_pending_test2->personid;
+                    }
+
                     $submitted_applications = Application::find()
-                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                            ->where(['applicationstatusid' => [2,3,4,5,6,7,8,9,10,11], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
                             ->all();
                      if ($submitted_applications == true)   //if applicant has submitted their application
                      {
@@ -194,7 +203,7 @@
                         else
                         {
                             $processed_applications =  Application::find()
-                                ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                ->where(['applicationstatusid' => [4,5,6,7,8,9,10], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
                                 ->all();
                             if (empty($processed_applications) == false)
                             {
@@ -203,7 +212,7 @@
                             else
                             {
                                 $verified_applications =  Application::find()
-                                    ->where(['applicationstatusid' => [3], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                    ->where(['applicationstatusid' => [3], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
                                     ->all();
                                 if (empty($verified_applications) == false)
                                 {
@@ -212,7 +221,7 @@
                                 else
                                 {
                                     $submitted_unverified_applications =  Application::find()
-                                        ->where(['applicationstatusid' => [2], 'personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' =>0])
+                                        ->where(['applicationstatusid' => [2], 'personid' => $personid, 'isactive' => 1, 'isdeleted' =>0])
                                         ->all();
                                     if (empty($submitted_unverified_applications) == false)
                                     {
@@ -225,7 +234,7 @@
                     else    //determine stage withing application process before submission
                     {
                         $applicant = Applicant::find()
-                                ->where(['personid' => $account_pending_test1->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                                 ->one();
                         if ($this->applicantintentid == 1)      // if DasgsDtveFull
                         {
