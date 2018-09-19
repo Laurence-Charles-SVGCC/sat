@@ -15,7 +15,7 @@
     use yii\web\Request;
     use yii\helpers\FileHelper;
     use yii\base\Model;
-    
+
     use common\models\User;
     use frontend\models\ProgrammeCatalog;
     use frontend\models\AcademicOffering;
@@ -46,7 +46,7 @@
     use frontend\models\Subject;
     use frontend\models\ExaminationProficiencyType;
     use frontend\models\ExaminationGrade;
-    use frontend\models\Division;  
+    use frontend\models\Division;
     use frontend\models\NursingAdditionalInfo;
     use frontend\models\GeneralWorkExperience;
     use frontend\models\Reference;
@@ -60,15 +60,15 @@
     use frontend\models\RejectionApplications;
     use frontend\models\ApplicationPeriod;
 
-    
+
     class ProcessApplicationsController extends \yii\web\Controller
-    { 
-        
+    {
+
         /**
          * Renders the Application Dashboard
-         * 
+         *
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016
@@ -76,7 +76,7 @@
         public function actionIndex()
         {
             $division_id = EmployeeDepartment::getUserDivision();
-            
+
 //            $sorted_applicants = Applicant::getAuhtorizedStatusCollection($division_id);
 //            $authorized_pending_count = count($sorted_applicants["pending"]);
 //            $authorized_shortlist_count = count($sorted_applicants["shortlist"]);
@@ -86,7 +86,7 @@
 //            $authorized_rejected_count = count($sorted_applicants["pre_interview_rejects"]);
 //            $authorized_conditional_reject_count = count($sorted_applicants["post_interview_rejects"]);
 //            $exceptions = count($sorted_applicants["exceptions"]);
-            
+
             $application_count_collection = Applicant::getAuhtorizedStatusCollectionCounts($division_id);
             $authorized_pending_count = $application_count_collection["pending"];
             $authorized_shortlist_count = $application_count_collection["shortlist"];
@@ -96,11 +96,11 @@
             $authorized_rejected_count = $application_count_collection["pre_interview_rejects"];
             $authorized_conditional_reject_count = $application_count_collection["post_interview_rejects"];
             $exceptions = $application_count_collection["exceptions"];
-            
-            return $this->render('index', 
+
+            return $this->render('index',
                         [
                             'division_id' => $division_id,
-                            
+
                             'authorized_pending' => $authorized_pending_count,
                             'authorized_shortlist' => $authorized_shortlist_count,
                             'authorized_borderline' => $authorized_borderline_count,
@@ -109,20 +109,20 @@
                             'authorized_rejected' => $authorized_rejected_count,
                             'authorized_conditionalofferreject' => $authorized_conditional_reject_count,
                             'exceptions' => $exceptions
-                            
+
                         ]);
         }
-    
-       
-        
+
+
+
         /**
          * Reneders the aplicant list
-         * 
+         *
          * @param type $division_id
          * @param type $application_status
          * @param type $programme
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 20/02/2016
          * Date Last Modified: 20/02/2016
@@ -132,38 +132,38 @@
             //set session variables to facilitate their use in UpdateView functionality
             Yii::$app->session->set('division_id', $division_id);
             Yii::$app->session->set('application_status', $application_status);
-            
+
             $applicants = Applicant::getByStatus($application_status, $division_id);
-            
+
             $data = array();
             foreach($applicants as $applicant)
             {
                 $app_details = array();
-                
+
                 $app_details['username'] = $applicant->getPerson()->one()->username;
                 $app_details['firstname'] = $applicant->firstname;
                 $app_details['middlename'] = $applicant->middlename;
                 $app_details['lastname'] = $applicant->lastname;
-                
-                
+
+
                 $applications = Application::find()
                                 ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
                                 ->orderBy('ordering ASC')
                                 ->all();
                 $count = count($applications);
-                
+
                 $target_application = Application::getTarget($applications, $application_status);
                 $programme_record = ProgrammeCatalog::find()
                             ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                             ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->where(['application.applicationid' => $target_application->applicationid])
                             ->one();
-               
-                
+
+
                 /* Used to facilitate filtering of result set by 'application_status AND 'programme'
                  * Results are not constrained on inital view load and when a criteria of "None" is selected
                  */
-                if ($programme != 0) 
+                if ($programme != 0)
                 {
                     $offering = AcademicOffering::find()
                                 ->where(['academicofferingid' => $target_application->academicofferingid])
@@ -171,9 +171,9 @@
                     if ($offering->programmecatalogid != $programme)
                         continue;
                 }
-                
+
                 $app_details['personid'] = $applicant->personid;
-                
+
                 $cape_subjects_names = array();
                 $cape_subjects = ApplicationCapesubject::find()
                             ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
@@ -182,25 +182,25 @@
                                     'application.isdeleted' => 0]
                                     )
                             ->all();
-                
-                foreach ($cape_subjects as $cs) 
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+
+                foreach ($cape_subjects as $cs)
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
-                
+
                 $app_details['programme'] = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
-                
+
                 $app_details['subjects_no'] = CsecQualification::getSubjectsPassedCount($applicant->personid);
                 $app_details['ones_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 1);
                 $app_details['twos_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 2);
                 $app_details['threes_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 3);
-                
+
                 $edittable = ($division_id == 1 || $target_application->divisionid == $division_id) ?  "Editable": "View-Only";
                 $app_details['can_edit'] = $edittable;
-                        
+
                 $data[] = $app_details;
             }
-            
+
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $data,
                 'pagination' => [
@@ -211,20 +211,20 @@
                     'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no', 'programme', 'can_edit'],
                     ]
             ]);
-            
+
             //Retrieve programmes for current application periods
             $programmes = ProgrammeCatalog::getCurrentProgrammes($division_id);
-            
+
             $progs = array(0 => 'None');
             foreach ($programmes as $prog)
             {
                 $progs[$prog->programmecatalogid] = $prog->getFullName();
             }
-            
+
             $status = ApplicationStatus::find()->where(['applicationstatusid' => $application_status])->one();
             $status_name = ($status)? $status->name : "Exceptions";
-            
-            
+
+
             //format filename
             $title = "Title: " . $status_name . " Listing   ";
             $date = "Date Generated: " . date('Y-m-d') . "   ";
@@ -244,8 +244,8 @@
                     'programme_id' => $programme
                 ]);
         }
-        
-        
+
+
         /*
         * Purpose: Updates view of applications by selected criteria
         * Created: 27/07/2015 by Gamal Crichton
@@ -253,9 +253,9 @@
         */
         /**
          * Updates view of applications by selected criteria (application_status + programme)
-         * 
+         *
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016
@@ -268,31 +268,31 @@
 //                $application_status = $request->post('application_status');
 //                $division_id = $request->post('division_id');
                 $programme = $request->post('programme');
-                
+
                 $division_id = Yii::$app->session->get('division_id');
                 $application_status = Yii::$app->session->get('application_status');
-               
+
             }
             return $this->redirect(['view-by-status', 'division_id' => $division_id, 'application_status' => $application_status, 'programme' => $programme]);
 //            return self::actionViewByStatus($division_id, $application_status, $programme);
         }
-        
-        
+
+
         /*
-        * Purpose: Prepares Applications and applicants info for displaying 
+        * Purpose: Prepares Applications and applicants info for displaying
         * Created: 27/07/2015 by Gamal Crichton
         * Last Modified: 27/07/2015 by Gamal Crichton | Laurence Charles (20/02/2016) | 24/08/2016
         */
         public function actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id = 0)
         {
             $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
-             
+
             $duplicate_message = false;
-            
+
             $applicant = Applicant::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
-            
+
             $username = $applicant->getPerson()->one()->username;
 
             $applications = Application::find()
@@ -302,39 +302,39 @@
                                 /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $personid])
                         ->orderBy('application.ordering ASC')
                         ->all();
-            
+
             $certificates = CsecQualification::getSubjects($personid);
-            
+
             $application_container = array();
-            
+
             $target_application = null;
-            
+
             foreach($applications as $application)
             {
-                
+
                 $combined = array();
                 $keys = array();
                 $values = array();
-                
+
                 array_push($keys, "application");
                 array_push($keys, "istarget");
                 array_push($keys, "division");
                 array_push($keys, "programme");
                 array_push($keys, "status");
-                
+
                 array_push($values, $application);
-                
+
                 $istarget = Application::isTarget($applications, $application_status, $application);
                 if ($istarget == true)
                     $target_application = $application;
                 array_push($values, $istarget);
-                
+
                 $division = Division::find()
                             ->where(['divisionid' => $application->divisionid])
                             ->one()
                             ->abbreviation;
                 array_push($values, $division);
-                
+
                 $cape_subjects_names = array();
                 $cape_subjects = ApplicationCapesubject::find()
                             ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
@@ -343,33 +343,33 @@
                                     'application.isdeleted' => 0]
                                     )
                             ->all();
-                
+
                 $programme_record = ProgrammeCatalog::find()
                             ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                             ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->where(['application.applicationid' => $application->applicationid])
                             ->one();
-                
-                foreach ($cape_subjects as $cs) 
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+
+                foreach ($cape_subjects as $cs)
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
-                
+
                 $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                 array_push($values, $programme_name);
-                
+
                 $status = ApplicationStatus::find()
                         ->where(['applicationstatusid' => $application->applicationstatusid])
                         ->one()
                         ->name;
                 array_push($values, $status);
-                
+
                 $combined = array_combine($keys, $values);
                 array_push($application_container, $combined);
             }
-           
 
-            /*Get possible duplicates. needs work to deal with multiple years of certificates, 
+
+            /*Get possible duplicates. needs work to deal with multiple years of certificates,
              * but should catch majority
              */
             if ($certificates)
@@ -385,7 +385,7 @@
                         $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                     }
                     $message = 'Possible Duplicate of applicant(s) ' . $dupes;
-                    
+
                 }
                 $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
                 if ($reapp)
@@ -408,8 +408,8 @@
                     'pageSize' => 50,
                 ],
             ]);
-            
-            
+
+
             $offers_made = 0;
             $spaces = 0;
             $cape_info = array();
@@ -433,8 +433,8 @@
                                                                                                         ->joinWith('application')
                                                                                                         ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                                                                                                         ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                                                                                                        ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')    
-                                                                                                        ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid, 
+                                                                                                        ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
+                                                                                                        ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid,
                                                                                                                 'application_period.isactive' => 1, 'application_period.iscomplete' => 0,
                                                                                                                 'offer.isdeleted' => 0
                                                                                                                 ])
@@ -442,7 +442,7 @@
                         $cape_info[$cape->subjectname]['capacity'] = $cape->capacity;
                     }
                 }
-//               
+//
                 $offers_made = count(Offer::find()
                         ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -461,7 +461,7 @@
 
                 $spaces = $ao->spaces;
             }
-            
+
             /* determine Csec Centre Details */
            $centrename = "None";
            $cseccentreid = 0;
@@ -481,7 +481,7 @@
                }
            }
             /*****************************/
-            
+
             return $this->render('view_applicant_certificates',
                     [
                         'personid' => $personid,
@@ -502,23 +502,23 @@
                         'cape' => $cape,
                         'cape_info' => $cape_info,
                         'programme_id' => $programme_id,
-                        
-                        'centrename' => $centrename, 
+
+                        'centrename' => $centrename,
                         'cseccentreid' => $cseccentreid,
-                    
+
                     ]);
         }
-        
-      
+
+
         /**
          * Renders the qualification and programme choices of an 'exception' applicant
-         * 
+         *
          * @param type $personid
          * @param type $programme
          * @param type $application_status
          * @param type $programme_id
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 25/08/2016
          * Date Last Modified: 25/08/2016
@@ -526,13 +526,13 @@
         public function actionViewExceptionApplicantCertificates($personid)
         {
             $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
-             
+
             $duplicate_message = false;
-            
+
             $applicant = Applicant::find()
                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
-            
+
             $username = $applicant->getPerson()->one()->username;
 
             $applications = Application::find()
@@ -542,33 +542,33 @@
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid])
                         ->orderBy('application.ordering ASC')
                         ->all();
-            
+
             $certificates = CsecQualification::getSubjects($personid);
-            
+
             $application_container = array();
-            
+
             $target_application = null;
-            
+
             foreach($applications as $application)
             {
-                
+
                 $combined = array();
                 $keys = array();
                 $values = array();
-                
+
                 array_push($keys, "application");
                 array_push($keys, "division");
                 array_push($keys, "programme");
                 array_push($keys, "status");
-                
+
                 array_push($values, $application);
-               
+
                 $division = Division::find()
                             ->where(['divisionid' => $application->divisionid])
                             ->one()
                             ->abbreviation;
                 array_push($values, $division);
-                
+
                 $cape_subjects_names = array();
                 $cape_subjects = ApplicationCapesubject::find()
                             ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
@@ -577,33 +577,33 @@
                                     'application.isdeleted' => 0]
                                     )
                             ->all();
-                
+
                 $programme_record = ProgrammeCatalog::find()
                             ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                             ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->where(['application.applicationid' => $application->applicationid])
                             ->one();
-                
-                foreach ($cape_subjects as $cs) 
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+
+                foreach ($cape_subjects as $cs)
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
-                
+
                 $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
                 array_push($values, $programme_name);
-                
+
                 $status = ApplicationStatus::find()
                         ->where(['applicationstatusid' => $application->applicationstatusid])
                         ->one()
                         ->name;
                 array_push($values, $status);
-                
+
                 $combined = array_combine($keys, $values);
                 array_push($application_container, $combined);
             }
-           
 
-            /*Get possible duplicates. needs work to deal with multiple years of certificates, 
+
+            /*Get possible duplicates. needs work to deal with multiple years of certificates,
              * but should catch majority
              */
             if ($certificates)
@@ -619,7 +619,7 @@
                         $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
                     }
                     $message = 'Possible Duplicate of applicant(s) ' . $dupes;
-                    
+
                 }
                 $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
                 if ($reapp)
@@ -642,7 +642,7 @@
                     'pageSize' => 50,
                 ],
             ]);
-            
+
             return $this->render('view_exception_applicant_certificates',
                     [
                         'division_id' => $divisionid,
@@ -654,16 +654,16 @@
                         'dataProvider' => $dataProvider,
                     ]);
         }
-        
-        
+
+
         /**
          * Updates an applicants appropriately
-         * 
+         *
          * @param type $applicationid
          * @param type $new_status
          * @param type $old_status
          * @param type $divisionid
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 19/02/2016
          * Date Last Modified: 19/02/2016 |   2017_08_28
@@ -673,29 +673,29 @@
             $update_candidate = Application::find()
                             ->where(['applicationid' => $applicationid])
                             ->one();
-            
+
             $applications = Application::find()
                             ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
                             ->orderBy('ordering ASC')
                             ->all();
             $count = count($applications);
-            
+
             $position = Application::getPosition($applications, $update_candidate);
-            
+
             $update_candidate_save_flag = false;
             $applications_save_flag = false;
             $offer_save_flag = false;
             $rejection_save_flag = false;
             $miscellaneous_save_flag = false;
-            
+
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
-            { 
+            try
+            {
                 /*
                  * If user is a member of "DTE" of "DNE", many condiseration can be negated such as application spanning multiple divsions
                  * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7 
+                if (EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7
                         || ( EmployeeDepartment::getUserDivision() == 1  && ApplicationPeriod::isDteOrDneApplicationPeriodUnderReview() == true ))
                 {
                     /*
@@ -868,7 +868,7 @@
                             }
                         }
                     }
-                    
+
 
                     /*
                      * If an application is interviewoffer;
@@ -912,10 +912,10 @@
                                 }
                             }
                         }
-                        
+
                         /**
                          * this should prevent the creation of multiple offers,
-                         * which is suspected to occur when internet timeout 
+                         * which is suspected to occur when internet timeout
                          * during request submission
                          */
                         $existing_current_offer = Offer::find()
@@ -1006,16 +1006,16 @@
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                     ->where(['rejection.rejectiontypeid' => 2, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                             'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
-                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1])
                                     ->all();
-                            
+
                             // Pre-Interview Rejection is only created if no Post Interview Rejections exist
                             if ($post_interview_rejections == false)
                             {
                                 /**
                                 * this should prevent the creation of multiple rejections,
-                                * which is suspected to occur when internet timeout 
+                                * which is suspected to occur when internet timeout
                                 * during request submission
                                 */
                                 $rejection = Rejection::find()
@@ -1024,7 +1024,7 @@
                                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                         ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                                 'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
-                                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                                 ])
                                         ->one();
@@ -1128,13 +1128,13 @@
                             {
                                 /**
                                 * this should prevent the creation of multiple offers,
-                                * which is suspected to occur when internet timeout 
+                                * which is suspected to occur when internet timeout
                                 * during request submission
                                 */
                                $existing_current_offer = Offer::find()
                                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                                ->all();
-                               
+
                                 /*
                                 * If conditional exists;
                                 * it must be published before applicant can be given a full offer
@@ -1156,7 +1156,7 @@
                                             }
                                         }
                                     }
-                                    
+
                                     // create offer
                                     $offer = new Offer();
                                     $offer->applicationid = $applicationid;
@@ -1189,7 +1189,7 @@
                                 }
                             }
                         }
-                        
+
                         /*
                         * If previous status was "post interview rejection";
                         * -> that rejection is rescinded
@@ -1208,13 +1208,13 @@
                             {
                                  /**
                                 * this should prevent the creation of multiple offers,
-                                * which is suspected to occur when internet timeout 
+                                * which is suspected to occur when internet timeout
                                 * during request submission
                                 */
                                $existing_current_offer = Offer::find()
                                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                                ->all();
-                               
+
                                if ($existing_current_offer == false)
                                {
                                     // create offer
@@ -1243,7 +1243,7 @@
                                }
                             }
                        }
-                       
+
                        /*
                         * If previous status was  "pre-interview-rejection";
                         * -> that rejection is rescinded
@@ -1254,7 +1254,7 @@
                             $rejection = Rejection::find()
                                     ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
                                     ->one();
-                            
+
                             if($rejection)
                             {
                                 $result = Rejection::rescindRejection($update_candidate->personid);
@@ -1265,10 +1265,10 @@
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
-                            
+
                             /**
                             * this should prevent the creation of multiple offers,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                            $existing_current_offer = Offer::find()
@@ -1355,7 +1355,7 @@
 
                         /**
                         * this should prevent the creation of multiple rejections,
-                        * which is suspected to occur when internet timeout 
+                        * which is suspected to occur when internet timeout
                         * during request submission
                         */
                         $rejection = Rejection::find()
@@ -1365,14 +1365,14 @@
                                 ->innerJoin('rejection_applications', '`application`.`applicationid` = `rejection_applications`.`applicationid`')     // added by L.Charles (21/06/2017)
                                 ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                         'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
                                          'rejection_applications.applicationid' =>  $update_candidate->applicationid, 'rejection_applications.isactive' => 1             // added by L.Charles (21/06/2017)
                                         ])
                                 ->one();
                         if($rejection == false)
                         {
-                            
+
                             /***********   Removed by L.Charles as the logice is flawed.  There should be rejection for each post interview rejection decision
                             //Rejection should only be created if this is the last progrmme choice
                             if (Application::istLastChosenApplication($update_candidate) == true)
@@ -1406,7 +1406,7 @@
                                     }
                                 }
                             }**************************************************************************************************************/
-                            
+
                             // Post-Interview rejection is created for every application that applicant receive rejection after interview for
                             //create Rejection record
                             $rejection = new Rejection();
@@ -1421,7 +1421,7 @@
                                 Yii::$app->session->setFlash('error', 'Error occured when creating rejection');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
-                            
+
                             $temp = new RejectionApplications();
                             $temp->rejectionid = $rejection->rejectionid;
                             $temp->applicationid = $update_candidate->applicationid;
@@ -1434,7 +1434,7 @@
                             }
                         }
                     }
-                    
+
                     $update_candidate->applicationstatusid = $new_status;
                     $update_candidate_save_flag = $update_candidate->save();
                     if($update_candidate_save_flag == false)
@@ -1448,15 +1448,15 @@
                         $transaction->commit();
                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
-                    
+
                 }
-                
-                
+
+
                 /*
                  * If user is a member of "DASGS" of "DTVE" many additional considerations have to be  accounted for such as application spanning multiple divisions
                  * Also, System Admin is takein into consideration an functionality is dependant on which applicant period is still "Under Review"
                  */
-                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5  
+                elseif (EmployeeDepartment::getUserDivision() == 4  || EmployeeDepartment::getUserDivision() == 5
                         ||  ( EmployeeDepartment::getUserDivision() == 1  && ApplicationPeriod::isDasgsOrDtveApplicationPeriodUnderReview() == true ))
                 {
                     /*
@@ -1577,7 +1577,7 @@
                                  }
                             }
                         }
-                        
+
                         /*
                         * If previous status was "pre interview rejection"
                         * then that rejection is rescinded
@@ -1631,7 +1631,7 @@
                             }
                         }
                     }
-                    
+
 
                     /*
                      * If an application is interviewoffer;
@@ -1675,10 +1675,10 @@
                                 }
                             }
                         }
-                            
+
                         /**
                          * this should prevent the creation of multiple offers,
-                         * which is suspected to occur when internet timeout 
+                         * which is suspected to occur when internet timeout
                          * during request submission
                          */
                         $existing_current_offer = Offer::find()
@@ -1741,7 +1741,7 @@
                                 }
                             }
                         }
-                        
+
                        //if  not last application -> updates subsequent applications
                         if($count - $position > 1)
                         {
@@ -1765,7 +1765,7 @@
                         {
                             /**
                             * this should prevent the creation of multiple rejections,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                             $rejection = Rejection::find()
@@ -1774,7 +1774,7 @@
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                     ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                             'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
-                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                             ])
                                     ->one();
@@ -1872,7 +1872,7 @@
                                 }
                             }
                         }
-                        
+
                         //rejects all preceeding applications
                         if($position > 0)
                         {
@@ -1891,7 +1891,7 @@
                                 }
                             }
                         }
-                        
+
                         if($old_status == 8)
                         {
                             $old_offer = Offer::find()
@@ -1907,13 +1907,13 @@
                             {
                                 /**
                                 * this should prevent the creation of multiple offers,
-                                * which is suspected to occur when internet timeout 
+                                * which is suspected to occur when internet timeout
                                 * during request submission
                                 */
                                $existing_current_offer = Offer::find()
                                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                                ->all();
-                               
+
                                 /*
                                 * If conditional exists;
                                 * it must be published before applicant can be given a full offer
@@ -1952,7 +1952,7 @@
                                 }
                             }
                         }
-                        
+
                         /*
                         * If previous status was "post interview rejection",
                         * -> that rejection is rescinded
@@ -1971,13 +1971,13 @@
                             {
                                 /**
                                 * this should prevent the creation of multiple offers,
-                                * which is suspected to occur when internet timeout 
+                                * which is suspected to occur when internet timeout
                                 * during request submission
                                 */
                                $existing_current_offer = Offer::find()
                                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                                ->all();
-                              
+
                                 if($existing_current_offer == false)
                                 {
                                     // create offer
@@ -2006,7 +2006,7 @@
                                 }
                             }
                        }
-                       
+
                        /*
                         * If previous status was  "pre-interview-rejection";
                         * -> that rejection is rescinded
@@ -2017,7 +2017,7 @@
                             $rejection = Rejection::find()
                                     ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
                                     ->one();
-                            
+
                             if($rejection)
                             {
                                 $result = Rejection::rescindRejection($update_candidate->personid);
@@ -2028,10 +2028,10 @@
                                     return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                                 }
                             }
-                            
+
                             /**
                             * this should prevent the creation of multiple offers,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                            $existing_current_offer = Offer::find()
@@ -2069,13 +2069,13 @@
                        {
                             /**
                             * this should prevent the creation of multiple offers,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                            $existing_current_offer = Offer::find()
                                            ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                                            ->all();
-                           
+
                            if ($existing_current_offer == false)
                            {
                                 // create offer
@@ -2127,7 +2127,7 @@
                                 }
                             }
                         }
-                        
+
                         /*
                          * If previous status was "offer",
                          * then that offer is revoked
@@ -2154,7 +2154,7 @@
 
                         /**
                         * this should prevent the creation of multiple rejections,
-                        * which is suspected to occur when internet timeout 
+                        * which is suspected to occur when internet timeout
                         * during request submission
                         */
                         $rejection = Rejection::find()
@@ -2163,7 +2163,7 @@
                                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                 ->where(['rejection.rejectiontypeid' => 2,  'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                         'application.isdeleted' => 0, 'application.personid' => $update_candidate->personid,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                         ])
                                 ->one();
@@ -2203,7 +2203,7 @@
                             }
                         }
                     }
-                    
+
                     $update_candidate->applicationstatusid = $new_status;
                     $update_candidate_save_flag = $update_candidate->save();
                     if($update_candidate_save_flag == false)
@@ -2219,31 +2219,31 @@
                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                     }
                 }
-                
-            }catch (Exception $e) 
+
+            }catch (Exception $e)
             {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
             }
         }
-        
-        
+
+
         /**
          * Prepares data that is to be displayed on the "View Applicant Details" view
-         * 
+         *
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date created: 23/02/2016
          * Date Last Modified: 23/02/2016
          */
         public function actionViewApplicantDetails($personid, $programme, $application_status)
-        {  
+        {
             $id = $personid;
-            $applicant= Applicant::findByPersonID($id); 
+            $applicant= Applicant::findByPersonID($id);
 
-            $permanentaddress = Address::getAddress($id, 1);            
+            $permanentaddress = Address::getAddress($id, 1);
             $residentaladdress = Address::getAddress($id, 2);
             $postaladdress = Address::getAddress($id, 3);
             $addresses = [$permanentaddress, $residentaladdress, $postaladdress];
@@ -2398,9 +2398,9 @@
                     $record = NULL;
                     $record = Institution::find()
                             ->where(['institutionid' => $preschool->institutionid])
-                            ->one();     
+                            ->one();
                     $name = $record->name;
-                    array_push($preschoolNames, $name);          
+                    array_push($preschoolNames, $name);
                 }
             }
 
@@ -2414,9 +2414,9 @@
                     $record = NULL;
                     $record = Institution::find()
                             ->where(['institutionid' => $primaryschool->institutionid])
-                            ->one();     
+                            ->one();
                     $name = $record->name;
-                    array_push($primaryschoolNames, $name); 
+                    array_push($primaryschoolNames, $name);
                 }
             }
 
@@ -2430,9 +2430,9 @@
                     $record = NULL;
                     $record = Institution::find()
                             ->where(['institutionid' => $secondaryschool->institutionid])
-                            ->one();       
+                            ->one();
                     $name = $record->name;
-                    array_push($secondaryschoolNames, $name); 
+                    array_push($secondaryschoolNames, $name);
                 }
             }
 
@@ -2446,9 +2446,9 @@
                     $record = NULL;
                     $record = Institution::find()
                             ->where(['institutionid' => $tertieryschool->institutionid])
-                            ->one();  
+                            ->one();
                     $name = $record->name;
-                    array_push($tertieryschoolNames, $name); 
+                    array_push($tertieryschoolNames, $name);
                 }
             }
 
@@ -2491,13 +2491,13 @@
 
             $certificates = NursePriorCertification::getCertifications($id);
             $nursinginfo = NursingAdditionalInfo::getNursingInfo($id);
-            $teaching_info = TeachingAdditionalInfo::getTeachingInfo($id); 
+            $teaching_info = TeachingAdditionalInfo::getTeachingInfo($id);
             $generalExperiences = GeneralWorkExperience::getGeneralWorkExperiences($id);
             $references = Reference::getReferences($id);
             $criminalrecord = CriminalRecord::getCriminalRecord($id);
             $nurseExperience = NurseWorkExperience::getNurseWorkExperience($id);
             $teachingExperiences = TeachingExperience::getTeachingExperiences($id);
-            
+
             $qualification = PostSecondaryQualification::find()
                         ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
                         ->one();
@@ -2511,7 +2511,7 @@
                 'father' => $father,
                 'nextofkin' => $nextofkin,
                 'emergencycontact' => $emergencycontact,
-                'guardian' =>  $guardian,                   
+                'guardian' =>  $guardian,
                 'spouse' => $spouse,
                 'medicalConditions' => $medicalConditions,
                 'applicantDetails' => $applicantDetails,
@@ -2540,58 +2540,58 @@
                 'teachingExperiences' => $teachingExperiences,
                 'certificates' => $certificates,
                 'qualification' => $qualification,
-                
+
                 'programme' => $programme,
                 'application_status' => $application_status,
             ]);
         }
-        
-        
-        
+
+
+
         /*
          * Encodes the academic offergins; essential for the dependant dropdown widget
          *
-         * 
+         *
          * @param type $personid
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 06/11/2015
          * Date Last Modified:06/11/2015 | 06/05/2016
          */
-        public function actionAcademicOffering($personid) 
+        public function actionAcademicOffering($personid)
         {
             $out = [];
-            if (isset($_POST['depdrop_parents'])) 
+            if (isset($_POST['depdrop_parents']))
             {
                 $parents = $_POST['depdrop_parents'];
                 if ($parents != null) {
                     $division_id = $parents[0];
-                    $out = self::getAcademicOfferingList($division_id, $personid); 
+                    $out = self::getAcademicOfferingList($division_id, $personid);
                     echo Json::encode(['output'=>$out, 'selected'=>'']);
                     return;
                 }
             }
 //            echo Json::encode(['output'=>'', 'selected'=>'']);
         }
-        
-        
-        
+
+
+
         /**
          * Retrieves the academic offerins; essential for the dependant dropdown widget
-         * 
+         *
          * @param type $division_id
          * @return array
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 06/11/2015
          * Date Last Modified:06/11/2015 | 06/05/2016 | 31/05/2016
          */
         public static function getAcademicOfferingList($division_id, $personid)
-        { 
+        {
             $intent = Applicant::getApplicantIntent($personid);
             $db = Yii::$app->db;
-            
+
             if($intent == NULL)
             {
                 $records = $db->createCommand(
@@ -2602,9 +2602,9 @@
                     . " JOIN qualification_type"
                     . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
                     . " JOIN application_period"
-                    . " ON academic_offering.applicationperiodid = application_period.applicationperiodid" 
+                    . " ON academic_offering.applicationperiodid = application_period.applicationperiodid"
                     . " JOIN intent_type"
-                    . " ON programme_catalog.programmetypeid = intent_type.intenttypeid" 
+                    . " ON programme_catalog.programmetypeid = intent_type.intenttypeid"
                     . " WHERE academic_offering.isactive=1"
                     . " AND academic_offering.isdeleted=0"
                     . " AND application_period.iscomplete = 0"
@@ -2616,7 +2616,7 @@
                     . " WHERE divisionid = ". $division_id
                     . " );"
                     )
-                    ->queryAll();  
+                    ->queryAll();
             }
             else
             {
@@ -2628,7 +2628,7 @@
                 elseif ($intent == 2 || $intent ==3  || $intent ==5  || $intent ==7)      //if user is applying for part time
                 {
                     $programmetypeid = 2;  //will be used to identify part time programmes
-                } 
+                }
 
                 $records = $db->createCommand(
                         "SELECT academic_offering.academicofferingid, programme_catalog.name, programme_catalog.specialisation, qualification_type.abbreviation, intent_type.name AS 'programmetype'"
@@ -2638,9 +2638,9 @@
                         . " JOIN qualification_type"
                         . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
                         . " JOIN application_period"
-                        . " ON academic_offering.applicationperiodid = application_period.applicationperiodid" 
+                        . " ON academic_offering.applicationperiodid = application_period.applicationperiodid"
                         . " JOIN intent_type"
-                        . " ON programme_catalog.programmetypeid = intent_type.intenttypeid" 
+                        . " ON programme_catalog.programmetypeid = intent_type.intenttypeid"
                         . " WHERE academic_offering.isactive=1"
                         . " AND academic_offering.isdeleted=0"
                         . " AND application_period.iscomplete = 0"
@@ -2653,9 +2653,9 @@
                         . " WHERE divisionid = ". $division_id
                         . " );"
                         )
-                        ->queryAll(); 
+                        ->queryAll();
             }
-            
+
 
             $arr = array();
             foreach ($records as $record){
@@ -2665,7 +2665,7 @@
                 array_push($keys, "id");
                 array_push($keys, "name");
                 $k1 = strval($record["academicofferingid"]);
-                
+
                 if ($record["programmetype"] == "part")
                 {
                     $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"] . "(Part-Time)" );
@@ -2674,45 +2674,45 @@
                 {
                     $k2 = strval($record["abbreviation"] . " " . $record["name"] . " " . $record["specialisation"]);
                 }
-                
+
                 array_push($values, $k1);
                 array_push($values, $k2);
                 $combined = array_combine($keys, $values);
                 array_push($arr, $combined);
                 $combined = NULL;
                 $keys = NULL;
-                $values = NULL;        
+                $values = NULL;
             }
-            return $arr;  
+            return $arr;
         }
-        
-        
+
+
         /**
          * Generates an alternative application and offer for an applicant
-         * 
+         *
          * @param type $personid
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 07/05/2016
          * Date Last Modified: 07/05/2016
          */
         public function actionCustomOffer($personid, $programme, $application_status)
-        { 
+        {
             date_default_timezone_set('America/St_Vincent');
-            
+
             $application_save_flag = false;
             $applicationcapesubject_save_flag = false;
             $rejectionapplications_save_flag = false;
             $rejection_save_flag = false;
-            
+
             $id = $personid;
             $capegroups = CapeGroup::getGroups();
             $applicationcapesubject = array();
             $groups = CapeGroup::getGroups();
             $groupCount = count($groups);
             $application = new Application();
-            
+
             //Create blank records to accommodate capesubject-application associations
             for ($i = 0; $i < $groupCount; $i++)
             {
@@ -2722,27 +2722,27 @@
                 $temp->applicationid = 0;
                 array_push($applicationcapesubject, $temp);
             }
-            
+
             //Flags
             $application_load_flag = false;
             $application_save_flag = false;
             $capesubject_load_flag = false;
             $capesubject_validation_flag = false;
-            $capesubject_save_flag = false; 
-            
+            $capesubject_save_flag = false;
+
             if ($post_data = Yii::$app->request->post())              //if post request made
             {
-                $application_load_flag = $application->load($post_data); 
-                
+                $application_load_flag = $application->load($post_data);
+
                 if ($application_load_flag == true)       //if application load operation is successful
                 {
-                    $application->personid = $id;    
+                    $application->personid = $id;
                     $application->applicationtimestamp = date('Y-m-d H:i:s' );
                     $application->submissiontimestamp = date('Y-m-d H:i:s' );
-            
+
                     $current_applications = Application::getVerifiedApplications($personid);
-                    
-                    /* if applicant has less than three applications; 
+
+                    /* if applicant has less than three applications;
                      * -> the first alternative offer has an ordering of 4
                      * else
                      * -> it have an ordering 1 higher than the last active application
@@ -2754,13 +2754,13 @@
                         $last_priority = end($current_applications)->ordering;
                         $application->ordering = $last_priority + 1;
                     }
-                    
+
                     $application->ipaddress = Yii::$app->request->getUserIP();
                     $application->browseragent = Yii::$app->request->getUserAgent();
                     $application->applicationstatusid = 9;
-                    
+
                     $transaction = \Yii::$app->db->beginTransaction();
-                    try 
+                    try
                     {
                         $application_save_flag = $application->save();
                         if ($application_save_flag == false)
@@ -2788,7 +2788,7 @@
                                     }
                                 }
                             }
-                            
+
                             if($save_flag == false)
                             {
                                 $transaction->rollBack();
@@ -2801,7 +2801,7 @@
                                 {
                                     $application_ids[] = $record->applicationid;
                                 }
-                                
+
                                  /* If offer has been issued it must be rescinded */
                                 $offers = Offer::find()
                                         ->where(['applicationid' => $application_ids, 'isactive' => 1, 'isdeleted' => 0])
@@ -2826,7 +2826,7 @@
                                         return self::actionCustomOffer($personid, $programme, $application_status);
                                     }
                                 }
-                                
+
                                 /*If rejections exist they must also be rescinded*/
                                 $rejection = Rejection::find()
                                             ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
@@ -2842,11 +2842,11 @@
                                         return self::actionCustomOffer($personid, $programme, $application_status);
                                     }
                                 }
-                                        
-                                
+
+
                                 $isCape = Application::isCAPEApplication($application->academicofferingid);
                                 if ($isCape == true)       //if application is for CAPE programme
-                                {       
+                                {
                                     $capesubject_load_flag = Model::loadMultiple($applicationcapesubject, $post_data);
                                     if ($capesubject_load_flag == false)
                                     {
@@ -2861,52 +2861,52 @@
                                             $transaction->rollBack();
                                             Yii::$app->getSession()->setFlash('error', 'Error occurred when validating capesubjects.');
                                         }
-                                        else        
+                                        else
                                         {
                                             //CAPE subject selection is only updated if 3-4 subjects have been selected
                                             $selected = 0;
-                                            foreach ($applicationcapesubject as $subject) 
+                                            foreach ($applicationcapesubject as $subject)
                                             {
                                                 if ($subject->capesubjectid != 0)           //if valid subject is selected
-                                                {        
+                                                {
                                                     $selected++;
                                                 }
                                             }
 
                                             if($selected >= 2 && $selected <= 4)            //if valid number of CAPE subjects have been selected
-                                            {       
+                                            {
                                                 $temp_status = true;
-                                                foreach ($applicationcapesubject as $subject) 
+                                                foreach ($applicationcapesubject as $subject)
                                                 {
                                                     $subject->applicationid = $application->applicationid;      //updates applicationid
 
                                                     if ($subject->capesubjectid != 0 && $subject->applicationid != 0 )       //if none is selected then reocrd should not be saved
-                                                    {        
+                                                    {
                                                         $capesubject_save_flag = $subject->save();
                                                         if ($capesubject_save_flag == false)          //CapeApplicationSubject save operation fails
                                                         {
                                                             $temp_status = false;
                                                             break;
-                                                        }                                                   
+                                                        }
                                                     }
                                                 }
 
-                                                if ($temp_status == false)  
+                                                if ($temp_status == false)
                                                 {
                                                     $transaction->rollBack();
-                                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving capesubject associations.'); 
+                                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving capesubject associations.');
                                                 }
                                             }
                                             else         //if incorrect number of CAPE subjects selected.
-                                            { 
+                                            {
                                                 $transaction->rollBack();
-                                                Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 2(min) to 4(max) CAPE subjects.'); 
+                                                Yii::$app->getSession()->setFlash('error', 'CAPE subject selection has not been saved. You must select 2(min) to 4(max) CAPE subjects.');
                                                 return self::actionViewApplicantCertificates($personid, $programme, 9);
-                                            } 
-                                        }  
-                                    }  
-                                }//endif isCape 
-                                
+                                            }
+                                        }
+                                    }
+                                }//endif isCape
+
                                 // create offer
                                 $offer = new Offer();
                                 $offer->applicationid = $application->applicationid;
@@ -2917,7 +2917,7 @@
                                 if($new_offer_save_flag == false)
                                 {
                                     $transaction->rollBack();
-                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving new offer.'); 
+                                    Yii::$app->getSession()->setFlash('error', 'Error occured when saving new offer.');
                                 }
                                 else
                                 {
@@ -2929,15 +2929,15 @@
                                     $generated_id = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "generate");
                                     $applicant->potentialstudentid = $generated_id;
                                     $applicant_save_flag = $applicant->save();
-                                    
+
                                     if($applicant_save_flag == false)
                                     {
                                         $transaction->rollBack();
-                                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving applicant record.'); 
+                                        Yii::$app->getSession()->setFlash('error', 'Error occured when saving applicant record.');
                                     }
                                     else
                                     {
-                                        $transaction->commit(); 
+                                        $transaction->commit();
                                         return self::actionViewApplicantCertificates($personid, $programme, $application_status);
                                     }
                                 }
@@ -2953,7 +2953,7 @@
                     Yii::$app->getSession()->setFlash('error', 'Error occurred loading application record.');
                 }
             }   //end-if POST operation
-           
+
             return $this->render('custom_offer', [
                         'application' => $application,
                         'applicationcapesubject' =>  $applicationcapesubject,
@@ -2961,15 +2961,15 @@
                         'personid' => $personid,
                     ]);
         }
-        
-        
-        
+
+
+
         /**
          * Resets all programme choices to Pending
-         * 
+         *
          * @param type $personid
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 31/08/2016
          * Date Last Modified: 31/08/2016
@@ -2977,9 +2977,9 @@
         public function actionResetApplications($personid)
         {
             $applications = Application::getVerifiedApplications($personid);
-                
+
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
+            try
             {
                 foreach ($applications as $application)
                 {
@@ -2993,49 +2993,49 @@
                         return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
                     }
                 }
-                
+
                 $transaction->commit();
                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
-            }catch (Exception $e) 
+            }catch (Exception $e)
             {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
             }
         }
-        
-        
-        
+
+
+
         /**
          * Rejects target application and other consecutive applications belonging to the same division
-         * 
+         *
          * @param type $target_application
          * @param type $personid
          * @param type $programme
          * @param type $application_status
          * @param type $programme_id
          * @return type
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 31/08/2016
          * Date Last Modified: 31/08/2016
          */
         public function actionPowerRejection($personid, $programme, $application_status, $programme_id)
-        { 
+        {
             if (EmployeeDepartment::getUserDivision() == 1)
             {
                 Yii::$app->session->setFlash('error', 'Error occured retreiving active applications.');
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
-                
+
             $current_applications = Application::getVerifiedApplications($personid);
             if ($current_applications == false)
             {
                 Yii::$app->session->setFlash('error', 'Error occured retreiving active applications.');
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
-                
-            
+
+
             $target_application = false;
             foreach($current_applications as $app)
             {
@@ -3048,24 +3048,24 @@
                 Yii::$app->session->setFlash('error', 'Error occured retreiving target application.');
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
-              
-            
+
+
             $application_count = count($current_applications);
             $position = Application::getPosition($current_applications, $target_application);
-            
+
             //if only one programme choice exists or there are no subsequent application, exit funciton
             if ($application_count == 1  || $application_count-$position <=1)
             {
                 Yii::$app->session->setFlash('error', 'No subsequent application are present for rejection');
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
              }
-            
-             
+
+
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
+            try
             {
                 $application_save_flag = false;
-                
+
                 if ($application_count == 2)
                 {
                     $last_application = $current_applications[$position+1];
@@ -3079,7 +3079,7 @@
                             Yii::$app->session->setFlash('error', 'Error occured saving target application');
                             return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
                         }
-                        
+
                         $last_application->applicationstatusid = 6;
                         $application_save_flag = $last_application->save();
                         if ($application_save_flag == false)
@@ -3088,10 +3088,10 @@
                             Yii::$app->session->setFlash('error', 'Error occured saving last application');
                             return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
                         }
-                        
+
                         /**
                         * this should prevent the creation of multiple rejections,
-                        * which is suspected to occur when internet timeout 
+                        * which is suspected to occur when internet timeout
                         * during request submission
                         */
                         $rejection = Rejection::find()
@@ -3100,7 +3100,7 @@
                                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                 ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                         'application.isdeleted' => 0, 'application.personid' => $personid,
-                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                         'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                         ])
                                 ->one();
@@ -3137,17 +3137,17 @@
                         }
                     }
                 }
-                
-                
+
+
                 elseif ($application_count == 3)
                 {
                     if ($position == 0)
                     {
                         $second_application =  $current_applications[$position+1];
                         $last_application =  $current_applications[$position+2];
-                        
+
                         //if all three application belong to the same division all are rejected
-                        if ($target_application->divisionid == $second_application->divisionid)  
+                        if ($target_application->divisionid == $second_application->divisionid)
                         {
                             $target_application->applicationstatusid = 6;
                             $application_save_flag = $target_application->save();
@@ -3157,7 +3157,7 @@
                                 Yii::$app->session->setFlash('error', 'Error occured saving application');
                                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
                             }
-                            
+
                             $second_application->applicationstatusid = 6;
                             $application_save_flag = $second_application->save();
                             if ($application_save_flag == false)
@@ -3167,7 +3167,7 @@
                                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
                             }
                         }
-                          
+
                         if ($second_application->divisionid == $last_application->divisionid)
                         {
                             $last_application->applicationstatusid = 6;
@@ -3181,7 +3181,7 @@
 
                             /**
                             * this should prevent the creation of multiple rejections,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                             $rejection = Rejection::find()
@@ -3190,7 +3190,7 @@
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                     ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                             'application.isdeleted' => 0, 'application.personid' => $personid,
-                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                             ])
                                     ->one();
@@ -3227,8 +3227,8 @@
                             }
                         }
                     }
-                    
-                    
+
+
                     elseif($position == 1)
                     {
                         $last_application = $current_applications[$position+1];
@@ -3254,7 +3254,7 @@
 
                             /**
                             * this should prevent the creation of multiple rejections,
-                            * which is suspected to occur when internet timeout 
+                            * which is suspected to occur when internet timeout
                             * during request submission
                             */
                             $rejection = Rejection::find()
@@ -3263,7 +3263,7 @@
                                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                                     ->where(['rejection.rejectiontypeid' => 1, 'rejection.isactive' => 1, 'rejection.isdeleted' => 0,
                                             'application.isdeleted' => 0, 'application.personid' => $personid,
-                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0, 
+                                            'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
                                             'application_period.iscomplete' => 0, 'application_period.isactive' => 1
                                             ])
                                     ->one();
@@ -3301,60 +3301,69 @@
                         }
                     }
                 }
-                
+
                 $transaction->commit();
 //                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 0);
                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), 3);
-                
-            }catch (Exception $e) 
+
+            }catch (Exception $e)
             {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
                 return self::actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id);
             }
         }
-        
-        
-        
+
+
+
         public function actionGenerateEligibleListing($status)
         {
             $dataProvider = false;
-            
-            if ($status == "Pending")
+
+            if ($status == "Pending") {
                 $application_status = 3;
-            
+            }
+            elseif($status == "Borderline")
+            {
+              $application_status = 7;
+            }
+            elseif($status == "Shortlist")
+            {
+              $application_status = 4;
+            }
+
             $applicants = Applicant::getByStatus($application_status, 1);
-            
+
             $data = array();
             foreach($applicants as $applicant)
             {
                 $app_details = array();
-                
+
                 $minimum_subjects_passed = CsecQualification::hasFiveCsecPasses($applicant->personid);
                 $has_english = CsecQualification::hasCsecEnglish($applicant->personid);
                 if ($minimum_subjects_passed == false  || $has_english == false)
                     continue;
-                
+
                 $app_details['username'] = $applicant->getPerson()->one()->username;
                 $app_details['firstname'] = $applicant->firstname;
                 $app_details['middlename'] = $applicant->middlename;
                 $app_details['lastname'] = $applicant->lastname;
-                
+
                 $applications = Application::find()
                                 ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
                                 ->orderBy('ordering ASC')
                                 ->all();
                 $count = count($applications);
-                
+
                 $target_application = Application::getTarget($applications, $application_status);
                 $programme_record = ProgrammeCatalog::find()
                             ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
                             ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                             ->where(['application.applicationid' => $target_application->applicationid])
                             ->one();
-                
+
                 $app_details['personid'] = $applicant->personid;
-                
+
                 $cape_subjects_names = array();
                 $cape_subjects = ApplicationCapesubject::find()
                             ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
@@ -3363,22 +3372,22 @@
                                     'application.isdeleted' => 0]
                                     )
                             ->all();
-                
-                foreach ($cape_subjects as $cs) 
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+
+                foreach ($cape_subjects as $cs)
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
-                
+
                 $app_details['programme'] = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
-                
+
                 $app_details['subjects_no'] = CsecQualification::getSubjectsPassedCount($applicant->personid);
                 $app_details['ones_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 1);
                 $app_details['twos_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 2);
                 $app_details['threes_no'] = CsecQualification::getSubjectGradesCount($applicant->personid, 3);
-                        
+
                 $data[] = $app_details;
             }
-            
+
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $data,
                 'pagination' => [
@@ -3389,7 +3398,7 @@
                     'attributes' => ['subjects_no', 'ones_no', 'twos_no', 'threes_no', 'programme'],
                     ]
             ]);
-            
+
             $title = "Title: " . $status . " Applicants With 5 CSEC Pases Including English Language";
             $date =  "  Date Generated: " . date('Y-m-d') . "     ";
             $employeeid = Yii::$app->user->identity->personid;
@@ -3401,15 +3410,14 @@
                 'filename' => $filename,
             ]);
         }
-        
-        
-        
+
+
         /**
          * Reset Applicant;
          * Delete all offer
          * Delete all rejections
          * Sets all application choices to Pending
-         * 
+         *
          * Author: charles.laurence1@gmail.com
          * Created: 2018_04_10
          * Modified: 2018_04_10
@@ -3418,13 +3426,13 @@
         {
             $reset_failed = false;
             $transaction = \Yii::$app->db->beginTransaction();
-            try 
-            { 
+            try
+            {
                 $offers = array();
                 $rejections = array();
-                
+
                 $applications = Application::getVerifiedApplications($personid);
-                
+
                 // retreives offers and rejections
                 foreach ($applications as $application)
                 {
@@ -3435,7 +3443,7 @@
                     {
                         $offers[] = $offer;
                     }
-                    
+
                     $rejection = Rejection::find()
                             ->innerJoin('rejection_applications' , '`rejection`.`rejectionid` = `rejection_applications`.`rejectionid`')
                             ->where(['rejection.isactive' => 1, 'rejection.isdeleted' => 0, 'rejection_applications.applicationid' => $application->applicationid])
@@ -3445,7 +3453,7 @@
                         $rejections[] = $rejection;
                     }
                 }
-                
+
                 if (count($offers) > 0)
                 {
                     foreach ($offers as $offer)
@@ -3463,7 +3471,7 @@
                        }
                     }
                }
-               
+
                if (count($rejections) > 0)
                {
                    foreach ($rejections as $rejection)
@@ -3481,7 +3489,7 @@
                        }
                     }
                }
-                
+
                 foreach ($applications as $application)
                 {
                     $application->applicationstatusid = 3;
@@ -3492,29 +3500,28 @@
                         Yii::$app->getSession()->setFlash('error', 'Error occurred resetting applications to pending.');
                     }
                 }
-               
+
                 if ($reset_failed == false)
                 {
                     $transaction->commit();
                     Yii::$app->getSession()->setFlash('success', 'Full applicant reset successful.');
                 }
-            }catch (Exception $e) 
+            }catch (Exception $e)
             {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Error occured processing your request');
             }
-            
-            return $this->redirect(['view-applicant-certificates', 
-                'personid' => $personid, 
+
+            return $this->redirect(['view-applicant-certificates',
+                'personid' => $personid,
                 'programme' => $programme,
                 'application_status' => $application_status]);
         }
-        
-        
-        
-        
-        
 
-        
+
+
+
+
+
+
     }
-

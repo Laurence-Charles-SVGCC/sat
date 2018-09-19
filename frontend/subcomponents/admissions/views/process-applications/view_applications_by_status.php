@@ -6,7 +6,7 @@
     use yii\helpers\ArrayHelper;
     use kartik\grid\GridView;
     use kartik\export\ExportMenu;
-    
+
     use frontend\models\EmployeeDepartment;
 
     $this->title = $status_name;
@@ -18,21 +18,21 @@
 <h2 class="text-center"><?= $this->title;?></h2>
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.1em">
-    <?php if ($status_name == "Pending" &&  EmployeeDepartment::getUserDivision() == 1):?>
+    <?php if (in_array($status_name, ["Pending","Shortlist", "Borderline"]) &&  EmployeeDepartment::getUserDivision() == 1):?>
         <div class="box-header with-border">
             <span class="box-title">
                 <div class="pull-right" style="margin-right:2.5%">
-                    <?=Html::a(' Generate  Eligible Listing', 
-                                ['process-applications/generate-eligible-listing',  'status' => $status_name], 
+                    <?=Html::a(' Generate  Eligible Listing',
+                                ['process-applications/generate-eligible-listing', 'status' => $status_name],
                                 ['class' => 'btn btn-info']);
                     ?>
                 </div>
             </span>
         </div>
     <?php endif;?>
-    
+
     <div class="box-body">
-         <?php 
+         <?php
             $gridColumns = [
 //                ['class' => 'kartik\grid\SerialColumn'],
                 [
@@ -42,17 +42,17 @@
                         {
                             if($application_status == 0)
                             {
-                                return Html::a($row['username'], 
+                                return Html::a($row['username'],
                                        Url::to(['process-applications/view-exception-applicant-certificates',
                                                 'personid' => $row['personid'],
                                                ]));
                             }
                             else
                             {
-                                return Html::a($row['username'], 
+                                return Html::a($row['username'],
                                        Url::to(['process-applications/view-applicant-certificates',
                                                 'personid' => $row['personid'],
-                                                'programme' => $row['programme'], 
+                                                'programme' => $row['programme'],
                                                 'application_status' => $application_status,
                                                 'programme_id' => $programme_id,
                                                ]));
@@ -107,9 +107,9 @@
             ];
         ?>
 
-        <?php if ($status_name == "InterviewOffer"  ||  $status_name == "Offer"  
+        <?php if ($status_name == "InterviewOffer"  ||  $status_name == "Offer"
             ||  $status_name == "Rejected"  || $status_name == "RejectedConditionalOffer"
-                ):?>  
+                ):?>
             <div>
                 <p><strong>Click one of the following links to download a copy of the listing shown below.</strong></p>
                 <?= ExportMenu::widget([
@@ -151,7 +151,7 @@
 
                         <div class="col-lg-4">
                             <?= Html::submitButton('Update View', ['class' => 'btn btn-success']) ?>
-                        </div> <br/> 
+                        </div> <br/>
                     </div>
                 <?php endif;?>
             </div><br/>
@@ -162,7 +162,7 @@
                 'dataProvider' => $dataProvider,
                 'options' => [],
                 'columns' => $gridColumns,
-            ]); 
+            ]);
         ?>
     </div>
 </div>
