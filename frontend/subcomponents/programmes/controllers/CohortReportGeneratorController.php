@@ -141,8 +141,8 @@ class CohortReportGeneratorController extends \yii\web\Controller
         ]
       ]);
 
-      $title = "Cohort GPA Report__";
-      $date =  date('Y-m-d') . "__";
+      $title = "{$selected_division} {$selected_cohort} Cohort GPA Report_";
+      $date =  date('Y-m-d') . "_";
       $officer = Employee::getEmployeeName(Yii::$app->user->identity->personid);
       $filename = $title . $date . $officer;
 
@@ -154,7 +154,10 @@ class CohortReportGeneratorController extends \yii\web\Controller
       }
       else {
         Yii::$app->getSession()->setFlash('error', 'No records found.');
-        return $this->redirect(['cumulative-gpa-report']);
+        return $this->redirect(['cumulative-gpa-report',
+        'division_id' => $division_id,
+        'cohort_id' => $cohort_id,
+        ]);
       }
     }
 
