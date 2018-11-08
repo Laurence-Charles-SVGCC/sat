@@ -8,19 +8,19 @@
     <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
   </div><br/>
 
-  <p>
-    You have been shortlisted to interview for entry into the <?= $programme; ?>
-    programme at the <?= $division_name ?>.
-  </p>
-
-  <span id="body" style="white-space: pre-wrap;">
-    <?= $package->emailcontent?>
+  <span id="body">
+    <p>
+      You have been shortlisted to interview for entry into the <?= $programme; ?>
+      programme at the <?= $division_name ?>.
+    </p>
 
     <?php if ($offer != false && $offer->appointment == true): ?>
       <p>
         <strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.
       </p>
     <?php endif; ?>
+
+    <?= $package->emailcontent?>
   </span>
 
   <div id="salutations">
