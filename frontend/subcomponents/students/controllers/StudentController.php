@@ -46,11 +46,11 @@ use frontend\models\ApplicantDeferral;
 
 class StudentController extends Controller
 {
-    
+
     /**
      * Redirect to Find-A-Student page
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: ??
      * Date LAst Modified: 31/01/2017
@@ -59,39 +59,39 @@ class StudentController extends Controller
     {
         return $this->redirect(['student/find-a-student']);
     }
-    
-    
-    
+
+
+
     public function actionManageStudents()
     {
         $dasgs = Division::findOne(['abbreviation' => 'DASGS']);
         $dtve = Division::findOne(['abbreviation' => 'DTVE']);
         $dasgsid = $dasgs ? $dasgs->divisionid : Null;
         $dtveid = $dtve ? $dtve->divisionid : Null;
-        
+
         return $this->render('manage-students',
                 [
                     'dasgsid' => $dasgsid,
                     'dtveid' => $dtveid,
                 ]);
     }
-    
+
     public function actionViewStudents($divisionid)
     {
-        $stu_cond = array('student.isdeleted' => 0, 'student.isactive' => 1, 'student_registration.isdeleted' => 0, 
+        $stu_cond = array('student.isdeleted' => 0, 'student.isactive' => 1, 'student_registration.isdeleted' => 0,
             'student_registration.isactive' => 1);
         if ($divisionid && $divisionid != 1)
         {
             $stu_cond['application_period.divisionid'] = $divisionid;
         }
-        
+
         $students = Student::find()
                 ->innerJoin('student_registration', '`student`.`personid` = `student_registration`.`personid`')
                 ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `student_registration`.`academicofferingid`')
                 ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                 ->where($stu_cond)
                 ->all();
-        
+
         $data = array();
         foreach ($students as $student)
         {
@@ -110,7 +110,7 @@ class StudentController extends Controller
             $student_data['studentid'] = $student->studentid;
             $data[] = $student_data;
         }
-        
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'pagination' => [
@@ -126,8 +126,8 @@ class StudentController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    
-    
+
+
     /*
     * Purpose: Collect search parameters and display results of an applicant search.
     * Created: 1/08/2015 by Gamal Crichton
@@ -161,7 +161,7 @@ class StudentController extends Controller
                 $lastname = Yii::$app->session->get('lastname');
                 $email = Yii::$app->session->get('email');
             }
-            
+
             if ($stu_id)
             {
                 $user = User::findOne(['username' => $stu_id, 'isdeleted' => 0]);
@@ -171,7 +171,7 @@ class StudentController extends Controller
             if ($firstname)
             {
                 $cond_arr['firstname'] = $firstname;
-                $info_string = $info_string .  " First Name: " . $firstname; 
+                $info_string = $info_string .  " First Name: " . $firstname;
             }
             if ($lastname)
             {
@@ -184,15 +184,15 @@ class StudentController extends Controller
                  $cond_arr['personid'] = $email_add ? $email_add->personid : NULL;
                  $info_string = $info_string .  " Email: " . $email;
             }
-            
+
             if (empty($cond_arr))
             {
                 Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
             }
             else
             {
-                $cond_arr['isdeleted'] = 0;  
-            
+                $cond_arr['isdeleted'] = 0;
+
                 $students = Student::find()->where($cond_arr)->all();
                 if (empty($students))
                 {
@@ -205,7 +205,7 @@ class StudentController extends Controller
                     {
                         $stu = array();
                         $user = $student->getPerson()->one();
-                        
+
                         $stu['studentno'] = $user ? $user->username : '';
                         $stu['studentid'] = $student->studentid;
                         $stu['firstname'] = $student->firstname;
@@ -231,13 +231,13 @@ class StudentController extends Controller
                 }
         }
     }
-    return $this->render('search-screen', 
+    return $this->render('search-screen',
         [
             'results' => $dataProvider,
             'info_string' => $info_string,
         ]);
   }
-  
+
   /*
     * Purpose: Retrieve information necessary to display results of a student search.
     * Created: 1/08/2015 by Gamal Crichton
@@ -273,17 +273,17 @@ class StudentController extends Controller
                     ->where(['personid' => $personid, 'application.academicofferingid' => $acad_off->academicofferingid])
                     ->all();
             $latest = NULL;
-            
+
             if (count($applications) > 1)
             {
-               
+
                 $latest = Application::find()
                     ->innerJoin('offer', '`offer`.`applicationid` = `application`.`applicationid`')
                     ->where(['personid' => $personid, 'application.academicofferingid' => $acad_off->academicofferingid])
                     ->orderby('applicationid desc', 'DESC')
                     ->one();
                 $reg_details['active'] = False;
-                 
+
             }
             $active_reg = StudentRegistration::findAll(['academicofferingid' => $registration->academicofferingid, 'personid' => $personid,
                     'isactive' => 1]);
@@ -308,15 +308,15 @@ class StudentController extends Controller
                 'pageSize' => 5,
             ],
         ]);
-      
-      return $this->render('view-student', 
+
+      return $this->render('view-student',
               [
                   'student' => $student,
                   'dataProvider' => $dataProvider,
                   'username' => $username,
               ]);
   }
-  
+
   /*
     * Purpose: Junction for various actions to be done to an student after an applicant search.
     * Created: 7/09/2015 by Gamal Crichton
@@ -342,7 +342,7 @@ class StudentController extends Controller
           }
       }
   }
-  
+
   /*
     * Purpose: Prepares student personal information for viewing only
     * Created: 7/09/2015 by Gamal Crichton
@@ -357,12 +357,12 @@ class StudentController extends Controller
       $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
       $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
       $addresses = $user ? Address::findAll(['personid' =>$user->personid]) : NULL;
-      
+
       if (!$student)
       {
           Yii::$app->session->setFlash('error', 'No details found for this student.');
       }
-      
+
       return $this->render('view-student-details',
               [
                   'username' => $user ? $user->username : '',
@@ -374,7 +374,7 @@ class StudentController extends Controller
                   'addresses' => $addresses,
               ]);
   }
-  
+
   /*
     * Purpose: Prepares student personal information for editing
     * Created: 7/09/2015 by Gamal Crichton
@@ -385,7 +385,7 @@ class StudentController extends Controller
       if (Yii::$app->request->post())
       {
           $request = Yii::$app->request;
-          
+
           $student = Student::findOne(['studentid' => $request->post('studentid')]);
           $institutions = $student ? PersonInstitution::findAll(['personid' => $student->personid, 'isdeleted' => 0]) : array();
           $phone = $student ? Phone::findOne(['personid' =>$student->personid]) : NULL;
@@ -393,7 +393,7 @@ class StudentController extends Controller
           $relations = $student ? Relation::findAll(['personid' =>$student->personid]) : NULL;
           if ($student->load(Yii::$app->request->post()) && $phone->load(Yii::$app->request->post()) &&
                   $email->load(Yii::$app->request->post()))
-          { 
+          {
               if (!$student->save() && $phone->save() && $email->save())
               {
                   Yii::$app->session->setFlash('error', 'Student could not be saved');
@@ -401,7 +401,7 @@ class StudentController extends Controller
           }
 
           foreach($request->post('Relation') as $key =>$rel)
-          { 
+          {
               $relation = Relation::findOne(['relationid' =>$key]);
               if ($relation)
               {
@@ -413,17 +413,17 @@ class StudentController extends Controller
                   if (!$relation->save())
                   {
                       Yii::$app->session->setFlash('error', 'Relation could not be saved');
-                  } 
+                  }
               }
           }
-          
+
           foreach($request->post('PersonInstitution') as $key =>$pins)
-          { 
+          {
               $pi = PersonInstitution::findOne(['personinstitutionid' =>$key]);
               if ($pi)
               {
                   $ins = $request->post('Institution');
-                          
+
                   $pi->institutionid = $ins ? $ins[$key]['institutionid'] : NULL;
                   $pi->startdate = $pins['startdate'];
                   $pi->enddate = $pins['enddate'];
@@ -442,12 +442,12 @@ class StudentController extends Controller
       $phone = $user ? Phone::findOne(['personid' =>$user->personid]) : NULL;
       $email = $user ? Email::findOne(['personid' =>$user->personid]) : NULL;
       $relations = $user ? Relation::findAll(['personid' =>$user->personid]) : NULL;
-      
+
       if (!$student)
       {
           Yii::$app->session->setFlash('error', 'No details found for this student.');
       }
-      
+
       return $this->render('edit-student-details',
               [
                   'username' => $user ? $user->username : '',
@@ -458,7 +458,7 @@ class StudentController extends Controller
                   'relations' => $relations,
               ]);
   }
-  
+
   /*
     * Purpose: Prepares student personal information for editing
     * Created: 7/09/2015 by Gamal Crichton
@@ -466,9 +466,9 @@ class StudentController extends Controller
     */
   public function actionEditRegistration($username)
   {
-      
+
   }
-  
+
   /*
     * Purpose: Adds a regsitration to a student
     * Created: 14/09/2015 by Gamal Crichton
@@ -478,7 +478,7 @@ class StudentController extends Controller
   {
       //Get user's division_id from session
       $division_id = Yii::$app->session->get('divisionid');
-            
+
       if (Yii::$app->request->post())
         {
             $request = Yii::$app->request;
@@ -490,7 +490,7 @@ class StudentController extends Controller
             $app_count = Application::find()->where(['personid' => $student_personid])->count();
 
             $programme = ProgrammeCatalog::findOne(['programmecatalogid' => $request->post('programme')]);
-            $prog_name = $programme ? $programme->name : Yii::$app->session->setFlash('error', 'Programme not found');   
+            $prog_name = $programme ? $programme->name : Yii::$app->session->setFlash('error', 'Programme not found');
             $application = new Application();
             $application->personid =  $student_personid;
             $ac_off = AcademicOffering::findOne(['programmecatalogid' => $request->post('programme'), 'isactive' =>1]);
@@ -546,7 +546,7 @@ class StudentController extends Controller
                         if ($application->save())
                         {
                            $registrations = StudentRegistration::findAll(['personid' => $student_personid, 'isdeleted' => 0]);
-                        
+
                            $reg = new StudentRegistration();
                            $reg_type = RegistrationType::findOne(['name' => 'fulltime', 'isdeleted' => 0]);
 
@@ -566,7 +566,7 @@ class StudentController extends Controller
                                    $offers = Offer::find()
                                            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                                            ->innerJoin('student_registration', '`student_registration`.`personid` = `application`.`personid`')
-                                           ->where(['student_registration.studentregistrationid' => $prev_reg->studentregistrationid, 
+                                           ->where(['student_registration.studentregistrationid' => $prev_reg->studentregistrationid,
                                                    'student_registration.isdeleted' => 0])
                                            ->all();
                                    foreach ($offers as $offer)
@@ -625,7 +625,7 @@ class StudentController extends Controller
                 ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
                 ->where($prog_cond)
                 ->all();
-            
+
             $programmes = array();
             foreach($progs as $prog)
             {
@@ -639,9 +639,9 @@ class StudentController extends Controller
             {
                 $cape_data[$grp->name] = CapeSubjectGroup::findAll(['capegroupid' => $grp->capegroupid]);
             }
-            return $this->render('add-registration', 
-               [        
-                    'dataProvider' => $dataProvider, 
+            return $this->render('add-registration',
+               [
+                    'dataProvider' => $dataProvider,
                     'programmes' => $programmes,
                    'cape_data' => $cape_data,
                    'division_id' => $division_id,
@@ -653,14 +653,14 @@ class StudentController extends Controller
             );
        }
     }
-    
-    
-    
+
+
+
     /**
      * Renders the Student find_a_student view and process form submission
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/12/2015
      * Date Last Modified: 10/12/2015
@@ -668,7 +668,7 @@ class StudentController extends Controller
     public function actionFindAStudent($id = NULL)
     {
         $info_string = "";
-        
+
         $all_student_data_container = array();
         $all_students_provider = array();
         $all_students_info = array();
@@ -684,13 +684,13 @@ class StudentController extends Controller
 
         $s_z_provider = array();
         $s_z_info = array();
-        
+
         $divisionid = NULL;
         $studentid = NULL;
         $firstname = NULL;
         $lastname = NULL;
-            
-            
+
+
         //need to facilitate breadcrumb navigation from 'student_listing' to 'programme_listing' of source division
         if ($id)
         {
@@ -713,7 +713,7 @@ class StudentController extends Controller
                 $programmes = ProgrammeCatalog::getProgrammes($divisionid);
                 if ($programmes)
                 {
-                    foreach ($programmes as $programme) 
+                    foreach ($programmes as $programme)
                     {
                         $temp_array = array();
 
@@ -755,45 +755,45 @@ class StudentController extends Controller
                     Yii::$app->getSession()->setFlash('error', 'No programmes found.');
             }
             else
-                Yii::$app->getSession()->setFlash('error', 'Please select a divsion.');                
+                Yii::$app->getSession()->setFlash('error', 'Please select a divsion.');
         }
-        
-        
+
+
         if (Yii::$app->request->post())
         {
             //Everytime a new search is initiated session variable must be removed
              if (Yii::$app->session->get('studentid'))
                 Yii::$app->session->remove('studentid');
-             
+
             if (Yii::$app->session->get('firstname'))
                 Yii::$app->session->remove('firstname');
-            
+
             if (Yii::$app->session->get('lastname'))
                 Yii::$app->session->remove('lastname');
-            
-            
+
+
             $request = Yii::$app->request;
             $divisionid = $request->post('division');
             $studentid = $request->post('id_field');
             $firstname = $request->post('fname_field');
             $lastname = $request->post('lname_field');
-            
+
              if(Yii::$app->session->get('studentid') == null  && $studentid == true)
                 Yii::$app->session->set('studentid', $studentid);
-            
+
             if(Yii::$app->session->get('firstname') == null  && $firstname == true)
                 Yii::$app->session->set('firstname', $firstname);
-            
+
             if(Yii::$app->session->get('lastname') == null  && $lastname == true)
                 Yii::$app->session->set('lastname', $lastname);
         }
-        else    
+        else
         {
             $studentid = Yii::$app->session->get('studentid');
             $firstname = Yii::$app->session->get('firstname');
             $lastname = Yii::$app->session->get('lastname');
         }
-            
+
 
         //if user initiates search based on programme
         if ($divisionid != NULL  && $divisionid != 0 && strcmp($divisionid, "0") != 0)
@@ -812,7 +812,7 @@ class StudentController extends Controller
             $programmes = ProgrammeCatalog::getProgrammes($divisionid);
             if ($programmes)
             {
-                foreach ($programmes as $programme) 
+                foreach ($programmes as $programme)
                 {
                     $temp_array = array();
 
@@ -861,10 +861,10 @@ class StudentController extends Controller
             $user = User::findOne(['username' => $studentid, 'isdeleted' => 0]);
 
             if ($user)
-            { 
+            {
                 //if system user is a Dean or Deputy Dean then their search is contrained by their division
 //                if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff'))  && !Yii::$app->user->can('System Administrator'))
-                
+
                 // if user is contrained to one single division one
                 if (EmployeeDepartment::getUserDivision() != 1)
                 {
@@ -889,9 +889,9 @@ class StudentController extends Controller
                                 ->all();
                 }
                 if (count($registrations) > 0)
-                {    
-                    foreach ($registrations as $registration) 
-                    { 
+                {
+                    foreach ($registrations as $registration)
+                    {
                         $student = Student::getStudent($user->personid);
                         if ($student)
                         {
@@ -914,8 +914,8 @@ class StudentController extends Controller
                             $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                             $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                             foreach ($current_cape_subjects as $cs)
-                            { 
-                                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                            {
+                                $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                             }
                             $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
                             $all_students_info['current_programme'] = $currentprogramme;
@@ -940,7 +940,7 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'No students found matching this criteria.');
-                }                    
+                }
 
                 $all_students_provider = new ArrayDataProvider([
                         'allModels' => $all_student_data_container,
@@ -956,7 +956,7 @@ class StudentController extends Controller
             else
             {
                 Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-            }                     
+            }
         }
 
         //if user initiates search based student name
@@ -967,7 +967,7 @@ class StudentController extends Controller
             if ($firstname)
             {
                 $cond_arr['firstname'] = $firstname;
-                $info_string = $info_string .  " First Name: " . $firstname; 
+                $info_string = $info_string .  " First Name: " . $firstname;
             }
             if ($lastname)
             {
@@ -997,7 +997,7 @@ class StudentController extends Controller
                     //if system user is Dean or Deputy Dean then student_registration records are filtered by divisionid
                     $eligible_students_found = false; //students within correct division
 //                    if ((Yii::$app->user->can('Deputy Dean') || Yii::$app->user->can('Dean')  || Yii::$app->user->can('Divisional Staff')) &&  !Yii::$app->user->can('System Administrator'))
-                    
+
                     // if user is contrained to one single division one
                      if (EmployeeDepartment::getUserDivision() != 1)
                     {
@@ -1033,8 +1033,8 @@ class StudentController extends Controller
                                         $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                                         $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                                         foreach ($current_cape_subjects as $cs)
-                                        { 
-                                            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                        {
+                                            $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                                         }
                                         $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
                                         $all_students_info['current_programme'] = $currentprogramme;
@@ -1051,7 +1051,7 @@ class StudentController extends Controller
                                         $all_student_data_container[] = $all_students_info;
                                     }
                                 }
-                            }  
+                            }
                         }
 
                         //if among the possible matching 'student' records there are no 'student_registration' records related to the user's division
@@ -1068,10 +1068,10 @@ class StudentController extends Controller
                     else
                     {
                         foreach ($students as $student)
-                        {   
+                        {
                             $registration = StudentRegistration::find()
                                     ->where(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0])
-                                    ->one();    
+                                    ->one();
                             $user = User::findOne(['personid' => $student->personid, 'isactive' => 1, 'isdeleted' => 0]);
                             if ($registration && $user)
                             {
@@ -1094,8 +1094,8 @@ class StudentController extends Controller
                                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                                 foreach ($current_cape_subjects as $cs)
-                                { 
-                                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                                {
+                                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                                 }
                                 $currentprogramme = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
                                 $all_students_info['current_programme'] = $currentprogramme;
@@ -1114,7 +1114,7 @@ class StudentController extends Controller
                             else
                             {
                                 Yii::$app->session->setFlash('error', 'No user found matching this criteria.');
-                            }                  
+                            }
                         }
                     }
 
@@ -1127,8 +1127,8 @@ class StudentController extends Controller
                                 'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                                 'attributes' => ['firstname', 'lastname'],
                             ]
-                    ]);  
-                } 
+                    ]);
+                }
             }
         }
 
@@ -1137,14 +1137,14 @@ class StudentController extends Controller
             'info_string' => $info_string,
         ]);
     }
-    
-    
-    
+
+
+
     /**
      * Renders the 'Student Listing' view and process form submission
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 20/12/2015
      * Date Last Modified: 20/12/2015
@@ -1181,11 +1181,11 @@ class StudentController extends Controller
                $name = Employee::getEmployeeName($cordinators[$key]->personid);
                if(count($cordinators) - 1 == 0)
                 $cordinator_details .= $name;
-                else 
+                else
                     $cordinator_details .= $name . ", ";
            }
        }
-        
+
         $registrations = StudentRegistration::getStudentRegistration($academicofferingid);
         if ($registrations)
         {
@@ -1194,7 +1194,7 @@ class StudentController extends Controller
             {
                 $user = $registration->getPerson()->one();
                 if ($user)
-                {                 
+                {
                     $personid = $registration->personid;
                     $student = Student::getStudent($personid);
                     if ($student)
@@ -1221,7 +1221,7 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'User not found');
-                }                    
+                }
             }
             $all_students_provider = new ArrayDataProvider([
                     'allModels' => $all_student_data_container,
@@ -1240,7 +1240,7 @@ class StudentController extends Controller
             {
                 $user = $registration->getPerson()->one();
                 if ($user)
-                {                 
+                {
                     $personid = $registration->personid;
                     $student = Student::getStudent($personid);
 
@@ -1275,8 +1275,8 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'User not found');
-                }                    
-            } 
+                }
+            }
             $a_f_provider = new ArrayDataProvider([
                     'allModels' => $a_f_data_container,
                     'pagination' => [
@@ -1294,7 +1294,7 @@ class StudentController extends Controller
             {
                 $user = $registration->getPerson()->one();
                 if ($user)
-                {                 
+                {
                     $personid = $registration->personid;
                     $student = Student::getStudent($personid);
 
@@ -1329,8 +1329,8 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'User not found');
-                }                    
-            } 
+                }
+            }
             $g_l_provider = new ArrayDataProvider([
                     'allModels' => $g_l_data_container,
                     'pagination' => [
@@ -1341,14 +1341,14 @@ class StudentController extends Controller
                         'attributes' => ['firstname', 'lastname'],
                     ]
             ]);
-            /***************************************************************************************************************/ 
+            /***************************************************************************************************************/
 
             /*************************************Prepares data for 'm_r' tab **********************************************/
             foreach ($registrations as $registration)
             {
                 $user = $registration->getPerson()->one();
                 if ($user)
-                {                 
+                {
                     $personid = $registration->personid;
                     $student = Student::getStudent($personid);
 
@@ -1372,7 +1372,7 @@ class StudentController extends Controller
                                             ->where(['studentstatusid' => $registration->studentstatusid, 'isactive' => 1, 'isdeleted' => 0])
                                             ->one();
                             $m_r_info['studentstatus'] = $student_status->name;
-                            $m_r_data_container[] = $m_r_info;                       
+                            $m_r_data_container[] = $m_r_info;
                         }
                     }
                     else
@@ -1383,8 +1383,8 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'User not found');
-                }                    
-            } 
+                }
+            }
             $m_r_provider = new ArrayDataProvider([
                     'allModels' => $m_r_data_container,
                     'pagination' => [
@@ -1402,7 +1402,7 @@ class StudentController extends Controller
             {
                 $user = $registration->getPerson()->one();
                 if ($user)
-                {                 
+                {
                     $personid = $registration->personid;
                     $student = Student::getStudent($personid);
 
@@ -1437,8 +1437,8 @@ class StudentController extends Controller
                 else
                 {
                     Yii::$app->session->setFlash('error', 'User not found');
-                }                    
-            } 
+                }
+            }
             $s_z_provider = new ArrayDataProvider([
                     'allModels' => $s_z_data_container,
                     'pagination' => [
@@ -1448,7 +1448,7 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                     ]
-            ]); 
+            ]);
             /***************************************************************************************************************/
         }
         else
@@ -1468,16 +1468,16 @@ class StudentController extends Controller
             'a_f_provider' => $a_f_provider,
             'g_l_provider' => $g_l_provider,
             'm_r_provider' => $m_r_provider,
-            's_z_provider' => $s_z_provider,      
+            's_z_provider' => $s_z_provider,
         ]);
     }
-    
-    
+
+
     /**
      * Renders the 'Academic Holds' view and process form submission
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 07/01/2015
      * Date Last Modified: 07/01/2015
@@ -1503,37 +1503,37 @@ class StudentController extends Controller
                 }
             }
         }
-        
+
         $divisions = Division::find()
                     ->where(['isactive' => 1, 'isdeleted' => 0])
                     ->andWhere(['not in', 'divisionid', [1, 8]])
                     ->all();
-        
+
         $all_holds = NULL;
         $all_provider = NULL;
         $all_info = array();
         $all_holds_data_container = array();
-        
+
         $dasgs_holds = NULL;
         $dasgs_provider = NULL;
         $dasgs_info = array();
         $dasgs_holds_data_container = array();
-        
+
         $dtve_holds = NULL;
         $dtve_provider = NULL;
         $dtve_info = array();
         $dtve_holds_data_container = array();
-        
+
         $dte_holds =  NULL;
         $dte_provider = NULL;
         $dte_info = array();
         $dte_holds_data_container = array();
-        
+
         $dne_holds = NULL;
         $dne_provider = NULL;
         $dne_info = array();
         $dne_holds_data_container = array();
-        
+
         $all_holds = StudentRegistration::getAcademicActiveHolds(1);
         foreach ($all_holds as $all_hold)
         {
@@ -1546,7 +1546,7 @@ class StudentController extends Controller
             $all_info['programme'] = $all_hold['programme'];
             $all_info['holdtype'] = $all_hold['holdtype'];
             $all_info['wasnotified'] = $all_hold['wasnotified'];
-            $all_holds_data_container[] = $all_info; 
+            $all_holds_data_container[] = $all_info;
         }
         $all_provider = new ArrayDataProvider([
                     'allModels' => $all_holds_data_container,
@@ -1557,9 +1557,9 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                         ]
-            ]); 
-                  
-        
+            ]);
+
+
         $dasgs_holds = StudentRegistration::getAcademicActiveHolds(4);
         foreach ($dasgs_holds as $dasgs_hold)
         {
@@ -1572,7 +1572,7 @@ class StudentController extends Controller
             $dasgs_info['programme'] = $dasgs_hold['programme'];
             $dasgs_info['holdtype'] = $dasgs_hold['holdtype'];
             $dasgs_info['wasnotified'] = $dasgs_hold['wasnotified'];
-            $dasgs_holds_data_container[] = $dasgs_info; 
+            $dasgs_holds_data_container[] = $dasgs_info;
         }
         $dasgs_provider = new ArrayDataProvider([
                     'allModels' => $dasgs_holds_data_container,
@@ -1583,9 +1583,9 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                         ]
-            ]); 
-        
-        
+            ]);
+
+
         $dtve_holds = StudentRegistration::getAcademicActiveHolds(5);
         foreach ($dtve_holds as $dtve_hold)
         {
@@ -1598,7 +1598,7 @@ class StudentController extends Controller
             $dtve_info['programme'] = $dtve_hold['programme'];
             $dtve_info['holdtype'] = $dtve_hold['holdtype'];
             $dtve_info['wasnotified'] = $dtve_hold['wasnotified'];
-            $dtve_holds_data_container[] = $dtve_info; 
+            $dtve_holds_data_container[] = $dtve_info;
         }
         $dtve_provider = new ArrayDataProvider([
                     'allModels' => $dtve_holds_data_container,
@@ -1609,9 +1609,9 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                         ]
-            ]); 
-        
-        
+            ]);
+
+
         $dte_holds =  StudentRegistration::getAcademicActiveHolds(6);
         foreach ($dte_holds as $dte_hold)
         {
@@ -1624,7 +1624,7 @@ class StudentController extends Controller
             $dte_info['programme'] = $dte_hold['programme'];
             $dte_info['holdtype'] = $dte_hold['holdtype'];
             $dte_info['wasnotified'] = $dte_hold['wasnotified'];
-            $dte_holds_data_container[] = $dte_info; 
+            $dte_holds_data_container[] = $dte_info;
         }
         $dte_provider = new ArrayDataProvider([
                     'allModels' => $dte_holds_data_container,
@@ -1635,9 +1635,9 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                         ]
-            ]); 
-        
-        
+            ]);
+
+
         $dne_holds = StudentRegistration::getAcademicActiveHolds(7);
         foreach ($dne_holds as $dne_hold)
         {
@@ -1650,7 +1650,7 @@ class StudentController extends Controller
             $dne_info['programme'] = $dne_hold['programme'];
             $dne_info['holdtype'] = $dne_hold['holdtype'];
             $dne_info['wasnotified'] = $dne_hold['wasnotified'];
-            $dne_holds_data_container[] = $dne_info; 
+            $dne_holds_data_container[] = $dne_info;
         }
         $dne_provider = new ArrayDataProvider([
                     'allModels' => $dne_holds_data_container,
@@ -1661,9 +1661,9 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['firstname', 'lastname'],
                         ]
-            ]); 
-   
-        
+            ]);
+
+
         return $this->render('active_academic_holds', [
             'divisions' => $divisions,
             'all_provider' => $all_provider,
@@ -1673,13 +1673,13 @@ class StudentController extends Controller
             'dne_provider' => $dne_provider,
         ]);
     }
-    
-    
+
+
     /**
      * Returns listing of transfers and deferrals
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 09/09/2016
      * Date LAst Modified: 09/09/2016
@@ -1689,34 +1689,34 @@ class StudentController extends Controller
         $transfers_data = NULL;
         $pre_registration_deferrals_data = NULL;
         $post_registration_deferrals_data = NULL;
-        
+
         $transfers_provider = array();
         $pre_registration_deferrals_provider = array();
         $post_registration_deferrals_provider = array();
-        
+
         $transfer_info = array();
         $pre_registration_deferrals_info = array();
         $post_registration_deferral_info = array();
-        
+
         $transfers = StudentTransfer::find()
                 ->where(['isdeleted' => 0])
                 ->all();
-        
+
         if($transfers)
         {
             foreach ($transfers as $transfer)
             {
-                
+
                 $transfer_info["studentregistrationid"] = $transfer->studentregistrationid;
                 $transfer_info["personid"] = $transfer->personid;
-                
+
                 $user = User::find()
                         ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $transfer_info["username"] = $user->username;
-                
+
                 $student = Student::find()
                         ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
@@ -1725,52 +1725,52 @@ class StudentController extends Controller
                 $transfer_info["title"] = $student->title;
                 $transfer_info["firstname"] = $student->firstname;
                 $transfer_info["lastname"] = $student->lastname;
-                
+
                 $transfer_info["date"] = $transfer->transferdate;
-                
+
                 $offer_from = Offer::find()
                         ->where(['offerid' => $transfer->offerfrom, 'isdeleted' => 0])
                         ->one();
                 if($offer_from == false)
                     continue;
                 $transfer_info["offer_from_id"] = $offer_from->offerid;
-                
+
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
                 $previous_application = $offer_from->getApplication()->one();
                 $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
                 $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
                 foreach ($previous_cape_subjects as $cs)
-                { 
-                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $previous_cape_subjects_names);
-           
+
                  $offer_to = Offer::find()
                         ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
                         ->one();
                 if($offer_to == false)
                     continue;
                 $transfer_info["offer_to_id"] = $offer_to->offerid;
-                $current_cape_subjects_names = array();                
+                $current_cape_subjects_names = array();
                 $current_cape_subjects = array();
                 $current_application = $offer_to->getApplication()->one();
                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                 foreach ($current_cape_subjects as $cs)
-                { 
-                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $transfer_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
-                
+
                 $transfer_info["transfer_officerid"] = $transfer->transferofficer;
-                
+
                 $employee_name = Employee::getEmployeeName($transfer->transferofficer);
                 $transfer_info["transfer_officer_name"] = $employee_name;
-                
+
                 $transfers_data[] =  $transfer_info;
             }
-            
+
             $transfers_provider = new ArrayDataProvider([
                     'allModels' => $transfers_data,
                     'pagination' => [
@@ -1780,10 +1780,10 @@ class StudentController extends Controller
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['username', 'firstname', 'lastname', 'date'],
                         ]
-            ]); 
+            ]);
         }
-        
-        
+
+
          $applicant_deferrals = ApplicantDeferral::find()
                 ->where([ 'isdeleted' => 0])
                 ->all();
@@ -1795,14 +1795,14 @@ class StudentController extends Controller
                 $pre_registration_deferral_info["applicantid"] = $applicant_deferral->applicantid;
                 $pre_registration_deferral_info["personid"] = $applicant_deferral->personid;
                 $pre_registration_deferral_info["details"] = $applicant_deferral->details;
-                
+
                 $user = User::find()
                         ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $pre_registration_deferral_info["username"] = $user->username;
-                
+
                 $applicant = Student::find()
                         ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
                         ->one();
@@ -1811,11 +1811,11 @@ class StudentController extends Controller
                 $pre_registration_deferral_info["title"] = $applicant->title;
                 $pre_registration_deferral_info["firstname"] = $applicant->firstname;
                 $pre_registration_deferral_info["lastname"] = $applicant->lastname;
-                
+
                 $pre_registration_deferral_info["deferraldate"] = $applicant_deferral->deferraldate;
                 $pre_registration_deferral_info["deferredby"] = Employee::getEmployeeName($applicant_deferral->deferredby);
-                 
-                if ($applicant_deferral->dateresumed == NULL) 
+
+                if ($applicant_deferral->dateresumed == NULL)
                 {
                     $pre_registration_deferral_info["dateresumed"] = "N/A";
                     $pre_registration_deferral_info["resumedby"] = "N/A";
@@ -1825,10 +1825,10 @@ class StudentController extends Controller
                     $pre_registration_deferral_info["dateresumed"] = $applicant_deferral->dateresumed;
                     $pre_registration_deferral_info["resumedby"] = Employee::getEmployeeName($applicant_deferral->resumedby);
                 }
-                
+
                 $pre_registration_deferrals_data[] =  $pre_registration_deferral_info;
             }
-            
+
             $pre_registration_deferrals_provider = new ArrayDataProvider([
                     'allModels' => $pre_registration_deferrals_data,
                     'pagination' => [
@@ -1838,10 +1838,10 @@ class StudentController extends Controller
                         'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['username', 'firstname', 'lastname', 'deferraldate'],
                         ]
-            ]); 
+            ]);
         }
-        
-         
+
+
         $post_registration_deferrals = StudentDeferral::find()
                 ->where(['isdeleted' => 0])
                 ->all();
@@ -1852,14 +1852,14 @@ class StudentController extends Controller
                 $post_registration_deferral_info["studentdeferralid"] = $post_registration_deferral->studentdeferralid;
                 $post_registration_deferral_info["studentregistrationid"] = $post_registration_deferral->registrationto;
                 $post_registration_deferral_info["personid"] = $post_registration_deferral->personid;
-                
+
                 $user = User::find()
                         ->where(['personid' => $post_registration_deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $post_registration_deferral_info["username"] = $user->username;
-                
+
                 $student = Student::find()
                         ->where(['personid' => $post_registration_deferral->personid, 'isdeleted' => 0])
                         ->one();
@@ -1868,17 +1868,17 @@ class StudentController extends Controller
                 $post_registration_deferral_info["title"] = $student->title;
                 $post_registration_deferral_info["firstname"] = $student->firstname;
                 $post_registration_deferral_info["lastname"] = $student->lastname;
-                
+
                 $post_registration_deferral_info["date"] = $post_registration_deferral->deferraldate;
                 $post_registration_deferral_info["iscurrent"] = $post_registration_deferral->isactive;
-                
+
                 $post_registration_deferral_info["registration_from_id"] = $post_registration_deferral->registrationfrom;
                 $registration_from = StudentRegistration::find()
                         ->where(['studentregistrationid' => $post_registration_deferral->registrationfrom, 'isdeleted' => 0])
                         ->one();
                 if($registration_from == false)
                     continue;
-                
+
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
                 $previous_application = Offer::find()
@@ -1889,8 +1889,8 @@ class StudentController extends Controller
                 $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
                 $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
                 foreach ($previous_cape_subjects as $cs)
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $previous_programme_name = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
                 $post_registration_deferral_info['previous_programme'] = $previous_programme_name;
@@ -1904,14 +1904,14 @@ class StudentController extends Controller
                     continue;
                 $post_registration_deferral_info["previous_year"] = $previous_year->title;
                 $post_registration_deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
-                
+
                 $registration_to = StudentRegistration::find()
                         ->where(['studentregistrationid' => $post_registration_deferral->registrationto, 'isdeleted' => 0])
                         ->one();
                 if($registration_to == false)
                     continue;
                 $post_registration_deferral_info["registration_to_id"] = $post_registration_deferral->registrationto;
-                $current_cape_subjects_names = array();                
+                $current_cape_subjects_names = array();
                 $current_cape_subjects = array();
                 $current_application = Offer::find()
                         ->where(['offerid' => $registration_to->offerid, 'isdeleted' => 0])
@@ -1921,14 +1921,14 @@ class StudentController extends Controller
                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                 foreach ($current_cape_subjects as $cs)
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $current_programme_name = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
                 $post_registration_deferral_info['current_programme'] = $current_programme_name;
-                
+
                 $post_registration_deferral_info["deferral_officerid"] = $post_registration_deferral->deferralofficer;
-                
+
                 $employee_name = Employee::getEmployeeName($post_registration_deferral->deferralofficer);
                 $post_registration_deferral_info["deferral_officer_name"] = $employee_name;
                 $current_year = AcademicYear::find()
@@ -1940,10 +1940,10 @@ class StudentController extends Controller
                     continue;
                 $post_registration_deferral_info["current_year"] = $current_year->title;
                 $post_registration_deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
-                
+
                 $post_registration_deferrals_data[] =  $post_registration_deferral_info;
             }
-            
+
             $post_registration_deferrals_provider = new ArrayDataProvider([
                     'allModels' => $post_registration_deferrals_data,
                     'pagination' => [
@@ -1953,23 +1953,23 @@ class StudentController extends Controller
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['username', 'firstname', 'lastname', 'date'],
                         ]
-            ]); 
+            ]);
         }
-       
-        
+
+
         return $this->render('transfers_and_deferrals', [
             'transfers_provider' => $transfers_provider,
             'pre_registration_deferrals_provider' => $pre_registration_deferrals_provider,
             'post_registration_deferrals_provider' => $post_registration_deferrals_provider,
         ]);
     }
-    
-    
+
+
     /**
      * Exports Transfers Listing
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date CreatedL 21/09/2016
      * Date Last Modified: 21/09/2016 | 22/11/2016
@@ -1979,25 +1979,25 @@ class StudentController extends Controller
         $transfers_data = NULL;
         $transfers_provider = array();
         $transfer_info = array();
-        
+
         $transfers = StudentTransfer::find()
                 ->where(['isdeleted' => 0])
                 ->all();
-        
+
         if($transfers)
         {
             foreach ($transfers as $transfer)
             {
                 $transfer_info["studentregistrationid"] = $transfer->studentregistrationid;
                 $transfer_info["personid"] = $transfer->personid;
-                
+
                 $user = User::find()
                         ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $transfer_info["username"] = $user->username;
-                
+
                 $student = Student::find()
                         ->where(['personid' => $transfer->personid, 'isdeleted' => 0])
                         ->one();
@@ -2006,52 +2006,52 @@ class StudentController extends Controller
                 $transfer_info["title"] = $student->title;
                 $transfer_info["firstname"] = $student->firstname;
                 $transfer_info["lastname"] = $student->lastname;
-                
+
                 $transfer_info["date"] = $transfer->transferdate;
-                
+
                 $offer_from = Offer::find()
                         ->where(['offerid' => $transfer->offerfrom, 'isdeleted' => 0])
                         ->one();
                 if($offer_from == false)
                     continue;
                 $transfer_info["offer_from_id"] = $offer_from->offerid;
-                
+
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
                 $previous_application = $offer_from->getApplication()->one();
                 $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
                 $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
                 foreach ($previous_cape_subjects as $cs)
-                { 
-                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $previous_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $transfer_info['previous_programme'] = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $previous_cape_subjects_names);
-           
+
                  $offer_to = Offer::find()
                         ->where(['offerid' => $transfer->offerto, 'isdeleted' => 0])
                         ->one();
                 if($offer_to == false)
                     continue;
                 $transfer_info["offer_to_id"] = $offer_to->offerid;
-                $current_cape_subjects_names = array();                
+                $current_cape_subjects_names = array();
                 $current_cape_subjects = array();
                 $current_application = $offer_to->getApplication()->one();
                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                 foreach ($current_cape_subjects as $cs)
-                { 
-                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $current_cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $transfer_info['current_programme'] = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $current_cape_subjects_names);
-                
+
                 $transfer_info["transfer_officerid"] = $transfer->transferofficer;
-                
+
                 $employee_name = Employee::getEmployeeName($transfer->transferofficer);
                 $transfer_info["transfer_officer_name"] = $employee_name;
-                
+
                 $transfers_data[] =  $transfer_info;
             }
-            
+
             $transfers_provider = new ArrayDataProvider([
                     'allModels' => $transfers_data,
                     'pagination' => [
@@ -2061,27 +2061,27 @@ class StudentController extends Controller
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['username', 'firstname', 'lastname', 'date'],
                         ]
-            ]); 
+            ]);
         }
-               
+
         $title = "Title: Transfers";
         $date =  "  Date: " . date('Y-m-d') . "     ";
         $employeeid = Yii::$app->user->identity->personid;
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
         $filename = $title . $date . $generating_officer;
-        
+
         return $this->renderPartial('export_transfers', [
             'dataProvider' => $transfers_provider,
             'filename' => $filename,
         ]);
     }
-    
-    
+
+
     /**
      * Exports Pre Registration Deferrals Listing
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 22/11/2016
      * Date Last Modified: 22/11/2016
@@ -2091,7 +2091,7 @@ class StudentController extends Controller
         $pre_registration_deferrals_data = NULL;
         $pre_registration_deferrals_provider = array();
         $pre_registration_deferral_info = array();
-        
+
          $applicant_deferrals = ApplicantDeferral::find()
                 ->where([ 'isdeleted' => 0])
                 ->all();
@@ -2103,14 +2103,14 @@ class StudentController extends Controller
                 $pre_registration_deferral_info["applicantid"] = $applicant_deferral->applicantid;
                 $pre_registration_deferral_info["personid"] = $applicant_deferral->personid;
                 $pre_registration_deferral_info["details"] = $applicant_deferral->details;
-                
+
                 $user = User::find()
                         ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $pre_registration_deferral_info["username"] = $user->username;
-                
+
                 $applicant = Student::find()
                         ->where(['personid' => $applicant_deferral->personid, 'isdeleted' => 0])
                         ->one();
@@ -2119,11 +2119,11 @@ class StudentController extends Controller
                 $pre_registration_deferral_info["title"] = $applicant->title;
                 $pre_registration_deferral_info["firstname"] = $applicant->firstname;
                 $pre_registration_deferral_info["lastname"] = $applicant->lastname;
-                
+
                 $pre_registration_deferral_info["deferraldate"] = $applicant_deferral->deferraldate;
                 $pre_registration_deferral_info["deferredby"] = Employee::getEmployeeName($applicant_deferral->deferredby);
-                 
-                if ($applicant_deferral->dateresumed == NULL) 
+
+                if ($applicant_deferral->dateresumed == NULL)
                 {
                     $pre_registration_deferral_info["dateresumed"] = "N/A";
                     $pre_registration_deferral_info["resumedby"] = "N/A";
@@ -2133,36 +2133,36 @@ class StudentController extends Controller
                     $pre_registration_deferral_info["dateresumed"] = $applicant_deferral->dateresumed;
                     $pre_registration_deferral_info["resumedby"] = Employee::getEmployeeName($applicant_deferral->resumedby);
                 }
-                
+
                 $pre_registration_deferrals_data[] =  $pre_registration_deferral_info;
             }
-            
+
             $pre_registration_deferrals_provider = new ArrayDataProvider([
                     'allModels' => $pre_registration_deferrals_data,
                     'pagination' => [
                         'pageSize' => 1000,
                     ]
-            ]); 
+            ]);
         }
-       
+
         $title = "Title: Pre-Registration Deferrals";
         $date =  "  Date: " . date('Y-m-d') . "     ";
         $employeeid = Yii::$app->user->identity->personid;
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
         $filename = $title . $date . $generating_officer;
-        
+
         return $this->renderPartial('export_pre_registration_deferrals', [
             'dataProvider' => $pre_registration_deferrals_provider,
             'filename' => $filename,
         ]);
     }
-    
-    
+
+
     /**
      * Exports Post Registration Deferrals Listing
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 21/09/2016
      * Date Last Modified: 21/09/2016 | 22/11/2016
@@ -2172,7 +2172,7 @@ class StudentController extends Controller
         $deferrals_data = NULL;
         $deferrals_provider = array();
         $deferral_info = array();
-        
+
         $deferrals = StudentDeferral::find()
                 ->where(['isdeleted' => 0])
                 ->all();
@@ -2180,18 +2180,18 @@ class StudentController extends Controller
         {
             foreach ($deferrals as $deferral)
             {
-                
+
                 $deferral_info["studentdeferralid"] = $deferral->studentdeferralid;
                 $deferral_info["studentregistrationid"] = $deferral->registrationto;
                 $deferral_info["personid"] = $deferral->personid;
-                
+
                 $user = User::find()
                         ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
                         ->one();
                 if ($user == false)
                     continue;
                 $deferral_info["username"] = $user->username;
-                
+
                 $student = Student::find()
                         ->where(['personid' => $deferral->personid, 'isdeleted' => 0])
                         ->one();
@@ -2200,17 +2200,17 @@ class StudentController extends Controller
                 $deferral_info["title"] = $student->title;
                 $deferral_info["firstname"] = $student->firstname;
                 $deferral_info["lastname"] = $student->lastname;
-                
+
                 $deferral_info["date"] = $deferral->deferraldate;
                 $deferral_info["iscurrent"] = $deferral->isactive;
-                
+
                 $deferral_info["registration_from_id"] = $deferral->registrationfrom;
                 $registration_from = StudentRegistration::find()
                         ->where(['studentregistrationid' => $deferral->registrationfrom, 'isdeleted' => 0])
                         ->one();
                 if($registration_from == false)
                     continue;
-                
+
                 $previous_cape_subjects_names = array();
                 $previous_cape_subjects = array();
                 $previous_application = Offer::find()
@@ -2221,8 +2221,8 @@ class StudentController extends Controller
                 $previous_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $previous_application->getAcademicoffering()->one()->programmecatalogid]);
                 $previous_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $previous_application->applicationid]);
                 foreach ($previous_cape_subjects as $cs)
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $previous_programme_name = empty($previous_cape_subjects) ? $previous_programme->getFullName() : $previous_programme->name . ": " . implode(' ,', $cape_subjects_names);
                 $deferral_info['previous_programme'] = $previous_programme_name;
@@ -2236,14 +2236,14 @@ class StudentController extends Controller
                     continue;
                 $deferral_info["previous_year"] = $previous_year->title;
                 $deferral_info["previous_year_programme"] = "(" . $previous_year->title . ") " .  $previous_programme_name;
-                
+
                 $registration_to = StudentRegistration::find()
                         ->where(['studentregistrationid' => $deferral->registrationto, 'isdeleted' => 0])
                         ->one();
                 if($registration_to == false)
                     continue;
                 $deferral_info["registration_to_id"] = $deferral->registrationto;
-                $current_cape_subjects_names = array();                
+                $current_cape_subjects_names = array();
                 $current_cape_subjects = array();
                 $current_application = Offer::find()
                         ->where(['offerid' => $registration_to->offerid, 'isdeleted' => 0])
@@ -2253,14 +2253,14 @@ class StudentController extends Controller
                 $current_programme = ProgrammeCatalog::findOne(['programmecatalogid' => $current_application->getAcademicoffering()->one()->programmecatalogid]);
                 $current_cape_subjects = ApplicationCapesubject::findAll(['applicationid' => $current_application->applicationid]);
                 foreach ($current_cape_subjects as $cs)
-                { 
-                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname; 
+                {
+                    $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
                 }
                 $current_programme_name = empty($current_cape_subjects) ? $current_programme->getFullName() : $current_programme->name . ": " . implode(' ,', $cape_subjects_names);
                 $deferral_info['current_programme'] = $current_programme_name;
-                
+
                 $deferral_info["deferral_officerid"] = $deferral->deferralofficer;
-                
+
                 $employee_name = Employee::getEmployeeName($deferral->deferralofficer);
                 $deferral_info["deferral_officer_name"] = $employee_name;
                 $current_year = AcademicYear::find()
@@ -2272,10 +2272,10 @@ class StudentController extends Controller
                     continue;
                 $deferral_info["current_year"] = $current_year->title;
                 $deferral_info["current_year_programme"] = "(" . $current_year->title . ") " .  $current_programme_name;
-                
+
                 $deferrals_data[] =  $deferral_info;
             }
-            
+
             $deferrals_provider = new ArrayDataProvider([
                     'allModels' => $deferrals_data,
                     'pagination' => [
@@ -2285,23 +2285,23 @@ class StudentController extends Controller
                         'defaultOrder' => ['date' => SORT_DESC, 'lastname' => SORT_ASC, 'firstname' => SORT_ASC],
                         'attributes' => ['username', 'firstname', 'lastname', 'date'],
                         ]
-            ]); 
+            ]);
         }
-       
-        
+
+
         $title = "Title: Post Registration Deferrals";
         $date =  "  Date: " . date('Y-m-d') . "     ";
         $employeeid = Yii::$app->user->identity->personid;
         $generating_officer = " Generator: " . Employee::getEmployeeName($employeeid);
         $filename = $title . $date . $generating_officer;
-        
+
         return $this->renderPartial('export_post_registration_deferrals', [
             'dataProvider' => $deferrals_provider,
             'filename' => $filename,
         ]);
     }
-    
-    
-    
-    
+
+
+
+
 }

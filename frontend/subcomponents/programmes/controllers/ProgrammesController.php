@@ -1962,7 +1962,7 @@ class ProgrammesController extends Controller
                                 'attributes' => ['final'],
                             ]
                     ]);
-            $cumulative_grade_filename = "Title: " . $programme_name. " (" . $academic_year->title . ") Cumulative GPA Summary " . $date ."  " .  $generating_officer;
+            $cumulative_grade_filename = "Title " . $programme_name. " (" . $academic_year->title . ") Cumulative GPA Summary " . $date ."  " .  $generating_officer;
 
 
 

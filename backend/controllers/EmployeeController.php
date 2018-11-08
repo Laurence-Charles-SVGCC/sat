@@ -8,7 +8,7 @@
     use yii\web\NotFoundHttpException;
     use yii\filters\VerbFilter;
     use yii\data\ArrayDataProvider;
-    
+
     use backend\models\AssignEmployeePassword;
     use common\models\User;
     use frontend\models\Employee;
@@ -18,7 +18,7 @@
     use backend\models\AuthAssignment;
     use backend\models\AuthItemChild;
     use backend\models\AuthItem;
-    
+
 
     /**
      * EmployeeController implements the CRUD actions for Employee model.
@@ -62,7 +62,7 @@
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
             }
-            
+
             $employee_title = "";
             $user = User::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
@@ -77,10 +77,10 @@
                     ->one()
                     ->name;
             }
-            
+
             $employee_division ="N/A";
             $employee_department = "N/A";
-            
+
             $department = Department::find()
                     ->innerJoin('employee_department' , '`department`.`departmentid` = `employee_department`.`departmentid`')
                     ->where(['department.isactive' => 1, 'department.isdeleted' => 0,
@@ -95,11 +95,11 @@
                         ->one()
                         ->abbreviation;
             }
-            
+
             $descendants = array();
             $ancestors = array();
             $roles = AuthAssignment::getUserRoleDetails($personid);
-            
+
             if (empty($roles) == false)
             {
                 foreach ($roles as $role)
@@ -113,7 +113,7 @@
                         }
                     }
                 }
-                
+
                 foreach ($roles as $role)
                 {
                     $children = AuthItemChild::getRoleDescendants($role["name"]);
@@ -126,21 +126,21 @@
                     }
                 }
             }
-            
+
             $permission_dataProvider = NULL;
             $permission_container = array();
             $permissions = AuthItemChild::getEmployeePermissionDetails($personid);
             if (empty($permissions) == false)
             {
                 foreach ($permissions as $permission)
-                { 
+                {
                     $permission_info = array();
                     $permission_info['name'] = $permission["name"];
                     $permission_info['description'] = $permission["description"];
                     $permission_container[] = $permission_info;
                 }
             }
-            
+
             $permission_dataProvider = new ArrayDataProvider([
                         'allModels' => $permission_container,
                         'pagination' => [
@@ -151,7 +151,7 @@
                             'attributes' => ['name']
                         ]
                 ]);
-            
+
             return $this->render('employee_profile',
                                             ['user' => $user,
                                                 'employee' => $employee,
@@ -165,8 +165,8 @@
                                                 'permission_dataProvider' => $permission_dataProvider,
                                             ]);
         }
-        
-        
+
+
         // (laurence_charles) - Update/Edit employee's profile
         public function actionEditProfile($personid)
         {
@@ -175,21 +175,21 @@
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
             }
-            
+
             $user = User::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            
+
             $employee = Employee::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            
+
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = false;
                 $save_flag = false;
-                $load_flag = $employee->load($post_data); 
-                
+                $load_flag = $employee->load($post_data);
+
                 if ($load_flag == true)
                 {
                     $save_flag = $employee->save();
@@ -207,13 +207,13 @@
                     Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
                 }
             }
-            return $this->render('edit_profile', 
+            return $this->render('edit_profile',
                                             ['employee' => $employee,
                                                 'username' => $user->username,
                                             ]);
         }
 
-        
+
         // (laurence_charles) - Assign password to employee; will generally be used when upgrading a user from
         // Lecturuer to FullUser.
         public function actionAssignPassword()
@@ -224,14 +224,14 @@
                 return $this->redirect(['/site/index']);
             }
 
-            $model = new AssignEmployeePassword(); 
+            $model = new AssignEmployeePassword();
             $employees = Employee::getAllEmployees();
 
              if ($post_data = Yii::$app->request->post())
-            { 
+            {
                 $save_flag = false;
                 $load_flag = false;
-                
+
                 $load_flag = $model->load($post_data);
                 if($load_flag == false)
                 {
@@ -247,7 +247,7 @@
                         Yii::$app->getSession()->setFlash('error', 'Employee record not found.');
                     }
                     $name = Employee::getEmployeeName($model->userid);
-                    
+
                     $user = User::find()
                             ->where(['personid' => $model->userid,  'isactive' => 1, 'isdeleted' => 0])
                             ->one();
@@ -277,8 +277,8 @@
                                     'employees' => $employees
                                     ]);
         }
-        
-        
+
+
         // (laurence_charles) - Edit user role
         // A user can only have one role therefor current role is deleted before new role is assigned
         public function actionEditRole($personid)
@@ -288,21 +288,21 @@
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
             }
-            
+
             $current_role = AuthAssignment::find()
                     ->where(['user_id' => $personid])
                     ->one();
-                
+
             $new_role = new AuthAssignment();
-            
+
             $employee_full_name = User::getFullName($personid);
-            
+
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = false;
                 $save_flag = false;
-                $load_flag = $new_role->load($post_data); 
-                
+                $load_flag = $new_role->load($post_data);
+
                 if ($load_flag == true)
                 {
                     $new_role->user_id = $personid;
@@ -323,15 +323,15 @@
                     Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
                 }
             }
-            
+
             return $this->render('edit_role',
                                             ['current_role' => $current_role,
                                                 'new_role' => $new_role,
                                                 'employee_full_name' => $employee_full_name,
                                             ]);
         }
-        
-        
+
+
         // (laurence_charles) - Assign role to new user
         public function actionAssignRole($personid)
         {
@@ -340,25 +340,25 @@
                 Yii::$app->getSession()->setFlash('error', 'You are not authorized to perform the selected action. Please contact System Administrator.');
                 return $this->redirect(['/site/index']);
             }
-            
+
             $roles = AuthItem::find()
                     ->where(['type' => 1])
                     ->all();
-            
+
             $new_role = new AuthAssignment();
-            
+
             $employee = Employee::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            
+
             $employee_full_name = User::getFullName($personid);
-            
+
             if ($post_data = Yii::$app->request->post())
             {
                 $load_flag = false;
                 $save_flag = false;
-                $load_flag = $new_role->load($post_data); 
-                
+                $load_flag = $new_role->load($post_data);
+
                 if ($load_flag == true)
                 {
                     $new_role->user_id = $personid;
@@ -378,7 +378,7 @@
                     Yii::$app->getSession()->setFlash('error', 'Error occured when loading record.');
                 }
             }
-            
+
             return $this->render('new_role',  [
                 'roles' => $roles,
                 'employee' => $employee,

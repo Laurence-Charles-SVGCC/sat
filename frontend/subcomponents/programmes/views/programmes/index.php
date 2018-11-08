@@ -3,34 +3,39 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
-    
+
     use frontend\models\Division;
     use frontend\models\AcademicYear;
     use frontend\models\Semester;
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
-    
+
     $this->title = 'Programme Control Panel';
 ?>
 
 
 <?php if(Yii::$app->user->can('powerCordinator')):?>
     <div id="cordinaor-access">
+        <a class="btn btn-success pull-left"
+        href=<?=Url::toRoute(['/subcomponents/programmes/cohort-report-generator/index']);?>
+        role="button">
+          Cohort Report Generation
+        </a>
         <a class="btn btn-info pull-right"
             href=<?=Url::toRoute(['/subcomponents/programmes/cordinator/index']);?> role="button"> Manage Co-ordinators
         </a>
     </div><br/><br/>
 <?php endif;?>
-        
+
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>
-    
+
      <div class="box-header with-border">
         <span class="box-title">
             Welcome. This application facilitates the management of the institution's programme catalog.
         </span>
     </div>
-    
+
     <?php $form = ActiveForm::begin(); ?>
         <div class="box-body">
             <div>
@@ -41,7 +46,7 @@
                     <!--<li>You may begin your search based on course.</li>-->
                 </ol>
             </div>
-            
+
             <p>
                 Please select a method by which to begin your search.
                 <?= Html::radioList('overall_search_type', null, ['division' => 'By Division' , 'programme' => 'By Programme'/*, 'course' => 'By Course'*/], ['class'=> 'form_field', 'onclick'=> 'overallSearchType();']);?>
@@ -50,7 +55,7 @@
 
             <div id="div" style="display:none">
                 <?= Html::dropDownList('division_search', null, Division::getDivisionsInScope());?>
-                <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
+                <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>
             </div>
 
 
@@ -80,11 +85,11 @@
                 </div>
                 <div id="by-course-division"  style="display:none;margin-left:5%">
                     <?= Html::dropDownList('course-division', null, Division::getDivisionsWithCourses());?>
-                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
+                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>
                 </div>
                 <div id="by-course-department"  style="display:none; margin-left:5%">
                     <?= Html::dropDownList('course-department', null, Department::getDepartmentsWithCourses());?>
-                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>                               
+                    <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:25%;']) ?>
                 </div>
                 <div id="by-course-code" style="display:none">
                     <?= Html::label( 'Course Code',  'course_label', ['style' => 'margin-left:5%;']); ?>
@@ -96,7 +101,7 @@
                     <?= Html::input('text', 'course-name-field', null, ['style' => 'width:50%;']); ?>
                     <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:10%;']) ?>
                 </div>
-            </div> 
+            </div>
         </div>
     <?php ActiveForm::end(); ?>
 </div><hr>
@@ -108,7 +113,7 @@
             <h2>
                 <span><?= "Search results for: " . $info_string ?></span>
                 <!--<span><a class="btn btn-info pull-right" href=<?=Url::toRoute(['/subcomponents/programmes/programmes/create-programme', 'divisionid' => $divisionid]);?> role="button"> Create Programme</a></span>-->
-               
+
                 <div class="dropdown pull-right">
                     <button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
                        <span>Select Action...</span>
@@ -120,7 +125,7 @@
                     </ul>
                 </div>
             </h2>
-            
+
         </div><br/>
         <?= $this->render('programme_results', [
             'dataProvider' => $programme_dataprovider,
