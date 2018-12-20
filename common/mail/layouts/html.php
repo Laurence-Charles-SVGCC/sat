@@ -11,18 +11,22 @@
             <title><?= Html::encode($this->title) ?></title>
             <?php $this->head() ?>
         </head>
-        
+
         <body>
             <?php $this->beginBody() ?>
 
                 <?php if (stripos(Url::home(true), "localhost") == false) :?>
-                    <img src="http://www.svgcc.vc/subdomains/images/email_header.png" alt="email_header" class="img-rounded" style="width:100%"/>
+                  <img src="http://www.svgcc.vc/subdomains/images/email_header.png"
+                  alt="email_header" class="img-rounded"
+                  style="max-width:700px; max-height:150px"/>
                 <?php else: ?>
-                    <img src="http://localhost/apply2/web/img/email_header.png" alt="email_header" class="img-rounded" style="width:100%"/>
+                  <img src="http://localhost/sat2/web/img/email_header.png"
+                  alt="email_header" class="img-rounded"
+                  style="max-width:700px; max-height:150px"/>
                 <?php endif; ?>
 
                 <?= $content ?>
-                    
+
             <?php $this->endBody() ?>
         </body>
     </html>
