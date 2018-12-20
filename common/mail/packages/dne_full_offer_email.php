@@ -12,7 +12,7 @@
 
     <p>
       <strong>
-        Your Student Number is: <?= $applicant->potentialstudentid; ?>.
+        Your Student Number is: <?= $studentno; ?>.
       </strong>
     </p>
   </div>
