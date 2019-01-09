@@ -79,13 +79,13 @@ class Offer extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Application::className(), ['applicationid' => 'applicationid']);
     }
-    
-    
+
+
     /**
      * Returns the most current offer information
-     * 
+     *
      * @param type $studentregistrationid
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 28/02/2016
      * Date Last Modified: 28/02/2016
@@ -122,8 +122,8 @@ class Offer extends \yii\db\ActiveRecord
             return $records;
         return false;
     }
-    
-    
+
+
     public static function getOffers($personid)
     {
         $db = Yii::$app->db;
@@ -151,19 +151,19 @@ class Offer extends \yii\db\ActiveRecord
                 . " AND offer.ispublished = 1;"
                 )
                 ->queryAll();
-    
+
         if (count($records)>0)
             return $records;
         return false;
     }
-    
-    
+
+
     /**
     * Returns programme details
-    * 
+    *
     * @param type $offerid
     * @return string
-    * 
+    *
     * Author: Laurence Charles
     * Date Created:10/01/2016
     * Date Last Modified: 10/01/2016
@@ -193,14 +193,14 @@ class Offer extends \yii\db\ActiveRecord
             return $record;
         return false;
    }
-   
-   
+
+
    /**
      * Determines if a 'offer' record is associated with a CAPE programme
-     * 
+     *
      * @param type $offerid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 10/01/2016
      * Date Last Modified: 10/01/2016
@@ -225,14 +225,14 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns the current active offer
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 28/02/2016
      * Date Last Modified: 28/02/2016
@@ -249,14 +249,14 @@ class Offer extends \yii\db\ActiveRecord
             return $offer;
         return false;
     }
-    
-    
+
+
     /**
      * Returns the current fulltime offer
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 28/02/2016
      * Date Last Modified: 28/02/2016
@@ -273,14 +273,14 @@ class Offer extends \yii\db\ActiveRecord
             return $offer;
         return false;
     }
-    
-    
+
+
     /**
      * Returns an array of offers
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 03/03/2016
      * Date Last Modified: 03/03/2016
@@ -297,13 +297,13 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns the username of applicant
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 29/03/2016
      * Date Last Modified: 29/03/2016
@@ -313,18 +313,18 @@ class Offer extends \yii\db\ActiveRecord
         $user = User::find()
                 ->innerJoin('application' , '`application`.`personid` = `person`.`personid`')
                 ->where(['person.isactive' => 1, 'person.isdeleted' => 0,
-                        'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0 
+                        'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0
                         ])
                 ->one();
         return $user->username;
     }
-    
+
 
     /**
      * Returns the fullname of applicant
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/11/2016
      * Date Last Modified: 04/11/2016
@@ -332,7 +332,7 @@ class Offer extends \yii\db\ActiveRecord
     public function getApplicantFullName()
     {
         $name = "Unknown";
-        
+
         $applicant = Applicant::find()
                 ->innerJoin('application' , '`application`.`personid` = `applicant`.`personid`')
                  ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
@@ -345,13 +345,13 @@ class Offer extends \yii\db\ActiveRecord
         }
         return $name;
     }
-    
-    
+
+
     /**
      * Returns the address of applicant
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/11/2016
      * Date Last Modified: 04/11/2016
@@ -359,7 +359,7 @@ class Offer extends \yii\db\ActiveRecord
     public function getApplicantAddress()
     {
         $address = "Unknown";
-        
+
         $application = Application::find()
                 ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
@@ -383,13 +383,13 @@ class Offer extends \yii\db\ActiveRecord
         }
         return $address;
     }
-    
-    
+
+
     /**
      * Returns the contact numbers of  applicant
-     * 
+     *
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 04/11/2016
      * Date Last Modified: 04/11/2016
@@ -397,7 +397,7 @@ class Offer extends \yii\db\ActiveRecord
     public function getApplicantContact()
     {
         $contact = "Unknown";
-        
+
         $application = Application::find()
                 ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
@@ -413,16 +413,16 @@ class Offer extends \yii\db\ActiveRecord
         }
         return $contact;
     }
-    
-    
+
+
     /**
      * Rescinds an existing offer.
      * If offer was already published, the record is made inactive;
      * If it has not been published, the record is deleted.
-     * 
+     *
      * @param string $id
      * @return mixed
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 01/04/2016
      * Date Last Modified: 01/04/2016
@@ -430,11 +430,11 @@ class Offer extends \yii\db\ActiveRecord
     public static function rescindOffer($applicationid, $offertype)
     {
         $save_flag = false;
-        
+
         $offer = Offer::find()
                 ->where(['applicationid' => $applicationid, 'isactive' => 1, 'isdeleted' => 0, 'offertypeid' => $offertype])
                 ->one();
-        
+
         if ($offer)
         {
             if($offer->ispublished == 1)
@@ -451,7 +451,7 @@ class Offer extends \yii\db\ActiveRecord
                 $offer->revokedby = Yii::$app->user->getId();
                 $offer->revokedate = date('Y-m-d');
             }
-           
+
             $save_flag = $offer->save();
             if ($save_flag == true)
                 return true;
@@ -461,14 +461,14 @@ class Offer extends \yii\db\ActiveRecord
         else
             return false;
     }
-    
-    
+
+
     /**
      * Returns the type of a particular offer
-     * 
+     *
      * @param type $personid
      * @return string
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 02/04/2016
      * Date Last Modified: 02/04/2016
@@ -490,14 +490,14 @@ class Offer extends \yii\db\ActiveRecord
         }
         return " ";
     }
-    
-    
+
+
     /**
      * Returns true if application has an active full offer
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 02/04/2016
      * Date Last Modified: 02/04/2016
@@ -514,13 +514,13 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
+
     /**
      * Returns true if application has an active, published, full offer
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 02/04/2016
      * Date Last Modified: 02/04/2016
@@ -537,14 +537,14 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns the type name of a particular offer
-     * 
+     *
      * @param type $personid
      * @return string
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 05/04/2016
      * Date Last Modified: 05/04/2016
@@ -565,22 +565,22 @@ class Offer extends \yii\db\ActiveRecord
                 if ($off->offertypeid == 1)
                     $has_full_offer = true;
             }
-            
+
             if ($has_full_offer == true)
                 return "Full Offer";
             else
                 return "Interview Invitation";
         }
     }
-    
-    
+
+
     /**
      * Returns true if there is a pending application for the stated application period exists
-     * 
+     *
      * @param type $applicationperiodid
      * @param type $offertype
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 18/04/2016
      * Date Last Modified: 18/04/2016
@@ -594,7 +594,7 @@ class Offer extends \yii\db\ActiveRecord
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['offer.ispublished'] = 0;
         $offer_cond['offer.isactive'] = 1;
-        
+
         $offers = Offer::find()
                 ->innerJoin('`application`', '`application`.`applicationid` = `offer`.`applicationid`')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -606,15 +606,15 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns true if there is a pending application for the stated application-periods exists
-     * 
+     *
      * @param type $applicationperiodid
      * @param type $offertype
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 18/04/2016
      * Date Last Modified: 2017_08_29
@@ -626,7 +626,7 @@ class Offer extends \yii\db\ActiveRecord
         {
             $periodids[]=$period->applicationperiodid;
         }
-        
+
         $offer_cond['application.isactive'] = 1;
         $offer_cond['application.isdeleted'] = 0;
         $offer_cond['academic_offering.isactive'] = 1;
@@ -639,7 +639,7 @@ class Offer extends \yii\db\ActiveRecord
         $offer_cond['offer.isdeleted'] = 0;
         $offer_cond['offer.ispublished'] = 0;
         $offer_cond['offer.isactive'] = 1;
-        
+
         $offers = Offer::find()
                 ->innerJoin('`application`', '`application`.`applicationid` = `offer`.`applicationid`')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -651,15 +651,15 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns true if there is a pending application for the stated application-periods exists
-     * 
+     *
      * @param type $applicationperiodid
      * @param type $offertype
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 18/04/2016
      * Date Last Modified: 2017_08_29
@@ -671,7 +671,7 @@ class Offer extends \yii\db\ActiveRecord
         {
             $periodids[] = $period->applicationperiodid;
         }
-        
+
         $offer_cond['application.isactive'] = 1;
         $offer_cond['application.isdeleted'] = 0;
         $offer_cond['academic_offering.isactive'] = 1;
@@ -683,7 +683,7 @@ class Offer extends \yii\db\ActiveRecord
         $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isactive'] = 1;
         $offer_cond['offer.isdeleted'] = 0;
-        
+
         $offers = Offer::find()
                 ->innerJoin('`application`', '`application`.`applicationid` = `offer`.`applicationid`')
                 ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
@@ -695,15 +695,15 @@ class Offer extends \yii\db\ActiveRecord
             return true;
         return false;
     }
-        
-    
-    
+
+
+
      /**
      * Returns offers an applicant has for a particular application period
-     * 
+     *
      * @param type $personid
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 15/05/2016
      * Date Last Modified: 15/05/2016
@@ -718,7 +718,7 @@ class Offer extends \yii\db\ActiveRecord
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
-                            'application_period.isactive' => 1, 'application_period.isdeleted' => 0 
+                            'application_period.isactive' => 1, 'application_period.isdeleted' => 0
                             ])
                     ->groupBy('application.personid')
                     ->orderBy('offer.offerid ASC')
@@ -732,7 +732,7 @@ class Offer extends \yii\db\ActiveRecord
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
                                 'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
-                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $applicationperiodid 
+                                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.applicationperiodid' => $applicationperiodid
                                 ])
                         ->groupBy('application.personid')
                         ->orderBy('offer.offerid ASC')
@@ -742,13 +742,13 @@ class Offer extends \yii\db\ActiveRecord
             return $offers;
         return false;
     }
-    
-    
+
+
     /**
      * Returns true is pending offers exist
-     * 
+     *
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 24/05/2016
      * Date Last Modified: 24/05/2016
@@ -764,18 +764,18 @@ class Offer extends \yii\db\ActiveRecord
                     'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
                     ])
             ->all();
-        
+
         if ($offers)
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns true is published offers exist
-     * 
+     *
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 24/05/2016
      * Date Last Modified: 24/05/2016
@@ -791,18 +791,18 @@ class Offer extends \yii\db\ActiveRecord
                     'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
                     ])
             ->all();
-        
+
         if ($offers)
             return true;
         return false;
     }
-    
-    
+
+
     /**
      * Returns true is revoked offers exist
-     * 
+     *
      * @return boolean
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 24/05/2016
      * Date Last Modified: 24/05/2016
@@ -819,10 +819,10 @@ class Offer extends \yii\db\ActiveRecord
                     ])
             ->andWhere(['not', ['offer.revokedby' => null]])
             ->all();
-        
+
         if ($offers)
             return true;
         return false;
     }
-   
+
 }

@@ -1738,7 +1738,7 @@ class ProgrammesController extends Controller
                            $broadsheet_info['final'] = $record['final'];
                            $broadsheet_info['programme'] = $record['programme'];
 
-                           $lecs = EmployeeBatch::find()
+                           $lecs = EmployeeBatchCape::find()
                                    ->where(['batchcapeid' => $record['batchcapeid']])
                                     ->all();
                            if($lecs)
