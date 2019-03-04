@@ -14,7 +14,7 @@
     AppAsset::register($this);
 
     $avatar = "css/dist/img/logo.png";      // Default avatar
-    
+
     if (Yii::$app->user->isGuest == false)
     {
         $employee = Employee::find()->where(['personid' => Yii::$app->user->getId()])->one();
@@ -37,9 +37,9 @@
         $employee_username = "Unknown";
         $employee_job_title = "Error: Please login";
     }
-    
+
     $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "skin-green-light sidebar-mini" : "skin-red-light sidebar-mini";
-    
+
 ?>
 
 
@@ -53,7 +53,7 @@
             <title><?= Html::encode($this->title) ?></title>
             <?php $this->head() ?>
         </head>
-    
+
         <body class=<?= $theme ?>>
             <?php $this->beginBody() ?>
                 <div class="wrapper">
@@ -109,7 +109,7 @@
                                         </div>
                                       </li>
                                     </ul>
-                                    
+
                                   </li>
                                 </ul>
                               </div>
@@ -126,17 +126,17 @@
                       <!-- sidebar menu: : style can be found in sidebar.less -->
                       <ul class="sidebar-menu">
                         <?php if (Yii::$app->user->can('System Administrator')): ?>
-                            <?= Yii::$app->controller->renderPartial('//layouts/administration_settings_partial'); ?>                          
+                            <?= Yii::$app->controller->renderPartial('//layouts/administration_settings_partial'); ?>
                         <?php endif;?>
 
 
                        <?php if (Yii::$app->user->can('System Administrator')  || Yii::$app->user->can('Registrar')): ?>
-                          <?= Yii::$app->controller->renderPartial('//layouts/apply_administration_partial'); ?>                          
+                          <?= Yii::$app->controller->renderPartial('//layouts/apply_administration_partial'); ?>
                        <?php endif;?>
 
 
                        <?php if (Yii::$app->user->can('admissions')): ?>
-                          <?= Yii::$app->controller->renderPartial('//layouts/admissions_partial'); ?>                         
+                          <?= Yii::$app->controller->renderPartial('//layouts/admissions_partial'); ?>
                        <?php endif; ?>
 
 
@@ -158,8 +158,8 @@
                        <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')):?>
                            <?= Yii::$app->controller->renderPartial('//layouts/payments_partial'); ?>
                        <?php endif; ?>
-                          
-                       <?php if (true):?>    
+
+                       <?php if (false):?>
                            <?= Yii::$app->controller->renderPartial('//layouts/legacy_partial'); ?>
                        <?php endif;?>
 
@@ -197,11 +197,11 @@
                                             <li><a href="<?= Url::toRoute(['/subcomponents/legacy/batch/index'])?>"><i class="fa fa-circle-o"></i>Manage Batches</a></li>
                                         <?php endif;?>
                                     <?php endif;?>
-                                </ul>                  
+                                </ul>
                             </li>
                         <?php endif; ?>
-                            
-                        
+
+
                         <!--
                         <?php if (Yii::$app->user->can('programmes')): ?>
                         <li class="active treeview">
