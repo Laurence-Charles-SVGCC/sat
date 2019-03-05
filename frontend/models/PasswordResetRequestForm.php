@@ -36,13 +36,13 @@ class PasswordResetRequestForm extends Model
     public function sendEmail()
     {
         /* @var $user User */
-        $email = Email::findOne(['email' => $this->email, 'isdeleted' => 0]);
+        $email = Email::findOne(['email' => $this->email, 'priority' => 1,
+        'isdeleted' => 0]);
 
         if ($email == true)
         {
           $user = User::find()
-          ->where(['priority' => 1, 'isactive' => 1,
-          'personid' => $email->personid])
+          ->where(['isactive' => 1, 'personid' => $email->personid])
           ->one();
 
           if ($user == true) {
