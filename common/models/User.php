@@ -40,7 +40,8 @@
              */
             public static function tableName()
             {
-                return '{{%person}}';
+                // return '{{%person}}';
+                return 'person';
             }
 
             /**
@@ -66,6 +67,12 @@
                 return [
                     ['isactive', 'default', 'value' => self::STATUS_ACTIVE],
                     ['isactive', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+                    [['persontypeid', 'username'], 'required'],
+                    [['persontypeid', 'isactive', 'isdeleted'], 'integer'],
+                    [['datecreated', 'dateupdated'], 'safe'],
+                    [['salt', 'resettoken', 'email'], 'string', 'max' => 100],
+                    [['username', 'pword', 'p_word'], 'string', 'min' => 8],
+                    [['username'], 'string', 'max' => 8],
                 ];
             }
 
@@ -122,14 +129,14 @@
              */
             public static function isPasswordResetTokenValid($token)
             {
-                // if (empty($token) 
+                // if (empty($token)
                 if ( $token == NULL) {
                     return false;
                 }
                 $expire = Yii::$app->params['user.passwordResetTokenExpire'];
                 $parts = explode('_', $token);
                 $timestamp = (int) end($parts);
-                return $timestamp + $expire >= time();
+                return ($timestamp + $expire) >= time();
             }
 
             /**

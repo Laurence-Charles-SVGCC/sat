@@ -37,22 +37,41 @@ class PasswordResetRequestForm extends Model
     {
         /* @var $user User */
         $email = Email::findOne(['email' => $this->email, 'isdeleted' => 0]);
-        
-        $user = $email? User::findOne(['isactive' => User::STATUS_ACTIVE, 'personid' => $email->personid]) : NULL;
 
-        if ($user) {
-            if (!User::isPasswordResetTokenValid($user->resettoken)) {
-                $user->generatePasswordResetToken();
-            }
+        if ($email == true)
+        {
+          $user = User::find()
+          ->where(['isactive' => 1, 'personid' => $email->personid])
+          ->one();
 
-            if ($user->save()) {
-                return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
-                    ->setFrom([\Yii::$app->params['supportEmail'] => 'SAT Administrator'])
-                    ->setTo($this->email)
-                    ->setSubject('Password reset for SAT.')
-                    ->send();
-            }
+          if ($user == true) {
+              if (User::isPasswordResetTokenValid($user->resettoken) == false) {
+                  $user->generatePasswordResetToken();
+                  $user->save();
+              }
+
+              return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
+                  ->setFrom([\Yii::$app->params['supportEmail'] => 'SAT Administrator'])
+                  ->setTo($this->email)
+                  ->setSubject('Password reset for SAT.')
+                  ->send();
+          }
         }
+        // $user = $email? User::findOne(['isactive' => 1, 'personid' => $email->personid]) : NULL;
+        //
+        // if ($user) {
+        //     if (User::isPasswordResetTokenValid($user->resettoken) == false) {
+        //         $user->generatePasswordResetToken();
+        //     }
+        //
+        //     if ($user->save()) {
+        //         return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
+        //             ->setFrom([\Yii::$app->params['supportEmail'] => 'SAT Administrator'])
+        //             ->setTo($this->email)
+        //             ->setSubject('Password reset for SAT.')
+        //             ->send();
+        //     }
+        // }
 
         return false;
     }
