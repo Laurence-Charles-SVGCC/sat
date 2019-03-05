@@ -23,7 +23,7 @@
          * @property string $username
          * @property string $pword
          * @property string $email
-         * 
+         *
          * @property string $auth_key
          * @property integer $isactive
          * @property integer $isdeleted
@@ -122,7 +122,8 @@
              */
             public static function isPasswordResetTokenValid($token)
             {
-                if (empty($token)) {
+                // if (empty($token) 
+                if ( $token == NULL) {
                     return false;
                 }
                 $expire = Yii::$app->params['user.passwordResetTokenExpire'];
@@ -202,7 +203,7 @@
             }
 
             /**
-             * 
+             *
              *
              * @param string $type_name
              */
@@ -212,7 +213,7 @@
             }
 
             /**
-             * 
+             *
              *
              * @param string $type_name
              */
@@ -224,10 +225,10 @@
 
             /**
              * Returns a user record
-             * 
+             *
              * @param type $personid
              * @return User | NULL
-             * 
+             *
              * Author: Laurence Charles
              * Date Created: 2015_12_20
              * Date Last Modified: 2017_08_26
@@ -318,9 +319,9 @@
 
             /**
             * Returns the division id of the user
-            * 
+            *
             * @return boolean
-            * 
+            *
             * Author: Laurence Charles
             * Date Created: 08/08/2017
             * Date Last Modified: 08/08/2017
@@ -345,9 +346,9 @@
 
         /**
          * Return collection of student user accounts that are associated with a particular academis year
-         * 
+         *
          * @return [User] | []
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 2017_07_25
          * Date Last Modified: 2017_08_26
