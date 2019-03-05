@@ -41,7 +41,8 @@ class PasswordResetRequestForm extends Model
         if ($email == true)
         {
           $user = User::find()
-          ->where(['isactive' => 1, 'personid' => $email->personid])
+          ->where(['priority' => 1, 'isactive' => 1,
+          'personid' => $email->personid])
           ->one();
 
           if ($user == true) {
