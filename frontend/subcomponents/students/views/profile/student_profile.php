@@ -2667,8 +2667,8 @@
                                     </td>
                                     <th>Student ID</th>
                                     <td><?=$person->username?></td>
-                                    <th>Full Name</th>
-                                    <td><?=$student->title . ". " . $student->firstname . " " . $student->middlename . " " . $student->lastname ?>
+                                    <th>Registration ID</th>
+                                    <td><?= $studentregistrationid ?>
                                 </tr>
                                 <tr>
                                     <th>Date of Birth</th>
