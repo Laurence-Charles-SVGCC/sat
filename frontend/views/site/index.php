@@ -9,8 +9,8 @@
 
     <h4>
         <div class = "alert alert-info">
-            Welcome to your control panel. Please contact the the E-College Unit for assistance, if the controls
-            you require are not present.
+            Welcome to your control panel. Please contact the the E-College Unit
+            for assistance and/or feedback.
         </div>
     <h4>
 
