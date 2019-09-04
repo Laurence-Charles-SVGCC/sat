@@ -2774,7 +2774,7 @@ class Applicant extends \yii\db\ActiveRecord
 
             $startyear =  substr($academic_year->title, 2, 2);
             $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
-            $num = str_pad(strval($applicantid), 4, '0', STR_PAD_LEFT);
+            $num = str_pad(strval(($applicantid%10000)), 4, '0', STR_PAD_LEFT);
             try
             {
                 $potentialstudentid = intval($startyear . $div . $num);
