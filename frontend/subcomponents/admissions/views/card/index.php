@@ -5,9 +5,9 @@
     use yii\helpers\Url;
     use yii\widgets\ActiveForm;
     use kartik\export\ExportMenu;
-    
+
     use frontend\models\ApplicationPeriod;
-    
+
     $this->title = 'Student Card Panel';
     $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -15,14 +15,14 @@
 
 <div class="box box-primary table-responsive no-padding" style = "font-size:1.2em;  width:60%; margin: 0 auto;">
     <h2 class="text-center"><?= $this->title?></h2>
-    
+
     <div class="box-header with-border">
         <span class="box-title">
-            Welcome. This module facilitates the search for students who have been received offers to 
+            Welcome. This module facilitates the search for students who have been received offers to
             attend the institution and their associated Institutional ID processing.
         </span>
     </div>
-    
+
     <div class="box-body">
         <div>
             There are three ways in which you can navigate this application.
@@ -31,7 +31,7 @@
                 <li>You may begin your search based on Student Name.</li>
                 <li>You may begin your search based on Application Period.</li>
             </ol>
-        </div> 
+        </div>
 
         <p>
             Please select a method by which to begin your search.
@@ -52,7 +52,7 @@
                 <?= Html::input('text', 'field_firstname'); ?> <br/><br/>
 
                 <?= Html::label( 'Last Name',  'label_lastname'); ?>
-                <?= Html::input('text', 'field_lastname'); ?> 
+                <?= Html::input('text', 'field_lastname'); ?>
 
                 <?= Html::submitButton('Search', ['class' => 'btn btn-md btn-success', 'style' => 'float: right; margin-right:5%']) ?>
             <?php ActiveForm::end(); ?>
@@ -65,27 +65,27 @@
                     <span class='caret'></span>
                 </button>
                 <ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>
-                    <?php 
+                    <?php
                         $periods = ApplicationPeriod::find()
-                                ->innerJoin('application', '`application_period`.`divisionid` = `application`.`divisionid`')
-                                ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
-                                ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                                        'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1
-                                    ])
+                                // ->innerJoin('application', '`application_period`.`divisionid` = `application`.`divisionid`')
+                                // ->innerJoin('offer', '`application`.`applicationid` = `offer`.`applicationid`')
+                                // ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+                                //         'offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1
+                                //     ])
                                 ->all();
                         if($periods)
                         {
                             foreach($periods as $period)
                             {
                                 $hyperlink = Url::to(['card/index', 'criteria' => 'application-period', 'periodid' => $period->applicationperiodid]);
-                                echo "<li><a href=$hyperlink>$period->name</a></li>"; 
+                                echo "<li><a href=$hyperlink>$period->name</a></li>";
                             }
                         }
                         else
                         {
                              echo "<li>No active application periods exist</li>";
                         }
-                    ?> 
+                    ?>
                 </ul>
             </div>
         </div>
@@ -173,11 +173,11 @@
             ?><br/>
         </div>
 
-        <?= $this->render('search_results', 
+        <?= $this->render('search_results',
                         [
                             'dataProvider' => $dataProvider,
                             'info_string' => $info_string,
-                        ]); 
+                        ]);
         ?>
     </div>
 <?php endif;?>
