@@ -132,7 +132,7 @@ class CohortReportGeneratorController extends \yii\web\Controller
         $info['studentid'] = $student['studentid'];
         $info['firstname'] = $student['firstname'];
         $info['lastname'] = $student['lastname'];
-        $cumulative_grade_info['gender'] = $student['gender'];
+        $info['gender'] = $student['gender'];
         $info['institution_email'] = $student['institution_email'];
         $info['personal_email'] = $student['personal_email'];
         $info['phone'] = "{$student['homephone']} / {$student['cellphone']} / {$student['workphone']}";
