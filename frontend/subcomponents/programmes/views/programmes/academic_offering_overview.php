@@ -5,22 +5,22 @@
     use yii\widgets\ActiveForm;
     use kartik\grid\GridView;
     use kartik\export\ExportMenu;
-    
+
     use frontend\models\Division;
     use frontend\models\AcademicYear;
     use frontend\models\Semester;
     use frontend\models\Department;
     use frontend\models\ProgrammeCatalog;
     use frontend\models\AcademicOffering;
-    
+
     $this->title = 'Academic Offering Overview';
     $this->params['breadcrumbs'][] = ['label' => 'Control Panel', 'url' => ['index']];
     $this->params['breadcrumbs'][] = ['label' => 'Programme Overview', 'url' => Url::to(['programmes/programme-overview',
                                                             'programmecatalogid' => $programmecatalogid
                                                             ])];
     $this->params['breadcrumbs'][] = $this->title;
-    
-    
+
+
     if (Yii::$app->user->can('Assistant Registrar')  || Yii::$app->user->can('Registrar')
             ||   Yii::$app->user->can('Deputy Dean')  || Yii::$app->user->can('Deputy Director'))
     {
@@ -103,23 +103,23 @@
                 <legend><strong>Manage Programme Booklets</strong></legend>
                 <?php if(ProgrammeCatalog::getBooklets($programme_info['divisionid'], $programme_info['programmecatalogid'], $academicofferingid) == true):?>
                     <a class="btn btn-info glyphicon glyphicon-download-alt" style="width:20%; margin-left:5%; margin-right:15%"
-                            href=<?=Url::toRoute(['/subcomponents/programmes/programmes/download-booklet', 
+                            href=<?=Url::toRoute(['/subcomponents/programmes/programmes/download-booklet',
                                                                 'divisionid' => $programme_info['divisionid'],
                                                                 'programmecatalogid' => $programme_info['programmecatalogid'],
                                                                 'academicofferingid' => $academicofferingid]);
                                     ?> role="button"> Download Booklet
                     </a>
-                    <a class="btn btn-warning glyphicon glyphicon-refresh" style="width:20%; margin-right:15%;" 
+                    <a class="btn btn-warning glyphicon glyphicon-refresh" style="width:20%; margin-right:15%;"
                             href=<?=Url::toRoute(['/subcomponents/programmes/programmes/replace-booklet',
                                                                     'divisionid' => $programme_info['divisionid'],
                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
                                                                     'academicofferingid' => $academicofferingid,]);
                                         ?> role="button"> Replace Booklet
                          </a>
-                    <?= Html::a(' Delete Booklet', 
+                    <?= Html::a(' Delete Booklet',
                                     ['delete-booklet',  'divisionid' => $programme_info['divisionid'],
                                                      'programmecatalogid' => $programme_info['programmecatalogid'],
-                                                     'academicofferingid' => $academicofferingid], 
+                                                     'academicofferingid' => $academicofferingid],
                                     ['class' => 'btn btn-danger glyphicon glyphicon-remove',
                                         'data' => [
                                             'confirm' => 'Are you sure you want to delete the current booklet?',
@@ -129,7 +129,7 @@
                                     ]);
                     ?>
                     <?php else:?>
-                         <a class="btn btn-info" 
+                         <a class="btn btn-info"
                             href=<?=Url::toRoute(['/subcomponents/programmes/programmes/upload-booklet',
                                                                     'divisionid' => $programme_info['divisionid'],
                                                                     'programmecatalogid' => $programme_info['programmecatalogid'],
@@ -147,7 +147,7 @@
                     <p>Click one of the following links to download the course listing.</p>
                         <?= ExportMenu::widget([
                             'dataProvider' => $unique_course_listing_dataprovider,
-                            'columns' => 
+                            'columns' =>
                                 [
                                     [
                                         'attribute' => 'coursecode',
@@ -207,7 +207,7 @@
             <fieldset>
                 <legend><strong>Intake Reports</strong></legend>
                 <p>Select the button below to generate the intake report.</p>
-                <a class="btn btn-success" 
+                <a class="btn btn-success"
                     href=<?=Url::toRoute(['/subcomponents/programmes/programmes/generate-intake-report',
                                                             'academicofferingid' => $academicofferingid
                                                         ]);
@@ -427,7 +427,7 @@
                    <?php if($cumulative_grade_dataprovider  && $iscape == false):?>
                            <br/><br/>
                            <p>
-                               <strong>2.</strong>Click on any of the following links to download a student listing of all the enrolled 
+                               <strong>2.</strong>Click on any of the following links to download a student listing of all the enrolled
                                students within this ASc. programme. The primary focus of this report is a student's current cumulative
                                academic performance.
                            </p>
@@ -453,6 +453,31 @@
                                                'attribute' => 'lastname',
                                                'format' => 'text',
                                                'label' => 'Last Name'
+                                           ],
+                                           [
+                                               'attribute' => 'gender',
+                                               'format' => 'text',
+                                               'label' => 'Gender'
+                                           ],
+                                           [
+                                               'attribute' => 'institution_email',
+                                               'format' => 'text',
+                                               'label' => 'institution_email'
+                                           ],
+                                           [
+                                               'attribute' => 'personal_email',
+                                               'format' => 'text',
+                                               'label' => 'personal_email'
+                                           ],
+                                           [
+                                               'attribute' => 'phone',
+                                               'format' => 'text',
+                                               'label' => 'phone'
+                                           ],
+                                           [
+                                               'attribute' => 'programme',
+                                               'format' => 'text',
+                                               'label' => 'programme'
                                            ],
                                            [
                                                'attribute' => 'final',
@@ -483,7 +508,7 @@
                        <?php if($programme_comparison_dataprovider  && $iscape == false):?>
                            <br/><br/>
                            <p>
-                               <strong>3.</strong>Click on any of the following links to download a report showing the current top 
+                               <strong>3.</strong>Click on any of the following links to download a report showing the current top
                                performers from each ASc. Programme.
                            </p>
                            <?= ExportMenu::widget([
@@ -545,7 +570,7 @@
                        <?php endif;?><br/><br/>
                        <?php if (Yii::$app->user->can('viewPerformanceReports')): ?>
                             <p>
-                                 <strong>4.</strong> Select the button below to generate a report that summaries the overall performance of students 
+                                 <strong>4.</strong> Select the button below to generate a report that summaries the overall performance of students
                                  enrolled in a particular course.
                              </p>
                              <a class="btn btn-success"

@@ -1916,14 +1916,25 @@ class ProgrammesController extends Controller
                 $students = $db->createCommand(
                      "SELECT person.username AS 'studentid',
                         student_registration.studentregistrationid AS 'studentregistrationid',
+                        student_registration.academicofferingid AS 'academicofferingid',
                         student.title AS 'title',
                         student.firstname AS 'firstname',
-                        student.lastname AS 'lastname'
+                        student.lastname AS 'lastname',
+                        student.gender AS 'gender',
+                        student.email AS 'institution_email',
+                        email.email AS 'personal_email',
+                        phone.homephone AS 'homephone',
+                        phone.cellphone AS 'cellphone',
+                        phone.workphone AS 'workphone'
                         FROM student_registration
                         JOIN person
                         ON student_registration.personid = person.personid
                         JOIN student
                         ON person.personid = student.personid
+                        JOIN email
+                        ON student.personid = email.personid
+                        JOIN phone
+                        ON email.personid = phone.personid
                         WHERE student_registration.isactive = 1
                         AND student_registration.isdeleted = 0
                         AND student.isactive = 1
@@ -1943,7 +1954,11 @@ class ProgrammesController extends Controller
                         $cumulative_grade_info['title'] = $student['title'];
                         $cumulative_grade_info['firstname'] = $student['firstname'];
                         $cumulative_grade_info['lastname'] = $student['lastname'];
-
+                        $cumulative_grade_info['gender'] = $student['gender'];
+                        $cumulative_grade_info['institution_email'] = $student['institution_email'];
+                        $cumulative_grade_info['personal_email'] = $student['personal_email'];
+                        $cumulative_grade_info['phone'] = "{$student['homephone']} / {$student['cellphone']} / {$student['workphone']}";
+                        $cumulative_grade_info['programme'] = ProgrammeCatalog::getProgrammeName($student['academicofferingid']);
                         $cumulative_gpa = StudentRegistration::calculateCumulativeGPA($student['studentregistrationid']);
                         $cumulative_grade_info['final'] = $cumulative_gpa;
 
