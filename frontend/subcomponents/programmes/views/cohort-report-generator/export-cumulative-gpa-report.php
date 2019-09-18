@@ -30,6 +30,26 @@
                  'label' => 'Last Name'
                ],
                [
+                   'attribute' => 'gender',
+                   'format' => 'text',
+                   'label' => 'Gender'
+               ],
+               [
+                   'attribute' => 'institution_email',
+                   'format' => 'text',
+                   'label' => 'institution_email'
+               ],
+               [
+                   'attribute' => 'personal_email',
+                   'format' => 'text',
+                   'label' => 'personal_email'
+               ],
+               [
+                   'attribute' => 'phone',
+                   'format' => 'text',
+                   'label' => 'phone'
+               ],
+               [
                  'attribute' => 'final',
                  'format' => 'text',
                  'label' => 'Cumulative GPA'

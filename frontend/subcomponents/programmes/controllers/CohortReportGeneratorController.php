@@ -84,7 +84,13 @@ class CohortReportGeneratorController extends \yii\web\Controller
         student_registration.academicofferingid AS 'academicofferingid',
         student.title AS 'title',
         student.firstname AS 'firstname',
-        student.lastname AS 'lastname'
+        student.lastname AS 'lastname',
+        student.gender AS 'gender',
+        student.email AS 'institution_email',
+        email.email AS 'personal_email',
+        phone.homephone AS 'homephone',
+        phone.cellphone AS 'cellphone',
+        phone.workphone AS 'workphone'
         FROM student_registration
         JOIN person
         ON student_registration.personid = person.personid
@@ -96,6 +102,10 @@ class CohortReportGeneratorController extends \yii\web\Controller
         ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid
         JOIN application_period
         ON academic_offering.applicationperiodid = application_period.applicationperiodid
+        JOIN email
+        ON student.personid = email.personid
+        JOIN phone
+        ON email.personid = phone.personid
         WHERE student_registration.isactive = 1
         AND student_registration.isdeleted = 0
         AND student_registration.registrationtypeid = 1
@@ -122,6 +132,10 @@ class CohortReportGeneratorController extends \yii\web\Controller
         $info['studentid'] = $student['studentid'];
         $info['firstname'] = $student['firstname'];
         $info['lastname'] = $student['lastname'];
+        $cumulative_grade_info['gender'] = $student['gender'];
+        $info['institution_email'] = $student['institution_email'];
+        $info['personal_email'] = $student['personal_email'];
+        $info['phone'] = "{$student['homephone']} / {$student['cellphone']} / {$student['workphone']}";
         $info['division'] = $selected_division;
         $info['cohort'] = $selected_cohort;
 
