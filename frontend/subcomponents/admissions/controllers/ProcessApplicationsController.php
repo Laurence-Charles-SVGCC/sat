@@ -295,6 +295,12 @@
 
             $username = $applicant->getPerson()->one()->username;
 
+            if ($application_status == 11) {
+                Yii::$app->getSession()->setFlash(
+                    "error", "Appplication for applicant {$username} was removed from consideration.");
+                return $this->redirect(['admissions/find-current-applicant', 'status' => 'pending']);
+            }
+
             $applications = Application::find()
                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
