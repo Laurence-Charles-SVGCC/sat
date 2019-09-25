@@ -15,7 +15,6 @@
         use frontend\models\Employee;
         use frontend\models\Student;
 
-
         /**
          * User model
          *
@@ -72,7 +71,7 @@
                     [['datecreated', 'dateupdated'], 'safe'],
                     [['salt', 'resettoken', 'email'], 'string', 'max' => 100],
                     [['username', 'pword', 'p_word'], 'string', 'min' => 8],
-                    [['username'], 'string', 'max' => 8],
+                    [['username'], 'string', 'max' => 10],
                 ];
             }
 
@@ -130,7 +129,7 @@
             public static function isPasswordResetTokenValid($token)
             {
                 // if (empty($token)
-                if ( $token == NULL) {
+                if ($token == null) {
                     return false;
                 }
                 $expire = Yii::$app->params['user.passwordResetTokenExpire'];
@@ -256,65 +255,48 @@
                 $user = User::find()
                             ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                             ->one();
-                if ($user == true)
-                {
-                    if ($user->persontypeid == 2) //if student
-                   {
+                if ($user == true) {
+                    if ($user->persontypeid == 2) { //if student
                         $student = Student::find()
                                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                                 ->one();
-                        if ($student)
-                        {
-                            if ($student->middlename == false)
-                            {
+                        if ($student) {
+                            if ($student->middlename == false) {
                                 $full_name = $student->title . ". " . $student->firstname . " " . $student->middlename . " " . $student->lastname;
-                            }
-                            elseif ($student->middlename == true)
-                            {
+                            } elseif ($student->middlename == true) {
                                 $full_name = $student->title . ". " . $student->firstname . " " . $student->lastname;
                             }
                         }
-                   }
-
-                   elseif($user->persontypeid == 3) //if employee
-                   {
-                       $employee = Employee::find()
+                    } elseif ($user->persontypeid == 3) { //if employee
+                        $employee = Employee::find()
                                 ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                                 ->one();
-                        if ($employee)
-                        {
-                            if ($employee->middlename == false)
-                            {
+                        if ($employee) {
+                            if ($employee->middlename == false) {
                                 $full_name = $employee->title . ". " . $employee->firstname . " " . $employee->middlename . " " . $employee->lastname;
-                            }
-                            elseif ($employee->middlename == true)
-                            {
+                            } elseif ($employee->middlename == true) {
                                 $full_name = $employee->title . ". " . $employee->firstname . " " . $employee->lastname;
                             }
                         }
-                   }
+                    }
                 }
-                return $full_name;;
+                return $full_name;
+                ;
             }
 
 
             // (laurence_charles) - Return collection or user records based on $user_type
-            public static function getUsers($user_type = NULL)
+            public static function getUsers($user_type = null)
             {
-                if ($user_type == NULL)
-                {
+                if ($user_type == null) {
                     $users = User::find()
                     ->where(['persontypeid' => [2,3], 'isactive' => 1, 'isdeleted' => 0])
                     ->all();
-                }
-                elseif ($user_type == 2)
-                {
+                } elseif ($user_type == 2) {
                     $users = User::find()
                     ->where(['persontypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
                     ->all();
-                }
-                elseif($user_type == 3)
-                {
+                } elseif ($user_type == 3) {
                     $users = User::find()
                     ->where(['persontypeid' => 3, 'isactive' => 1, 'isdeleted' => 0])
                     ->all();
@@ -333,52 +315,50 @@
             * Date Created: 08/08/2017
             * Date Last Modified: 08/08/2017
             */
-           public function getUserDivision()
-           {
+            public function getUserDivision()
+            {
                 $division = Division::find()
-                        ->innerJoin('department' , '`division`.`divisionid` = `department`.`divisionid`')
-                        ->innerJoin('employee_department' , '`department`.`departmentid` = `employee_department`.`departmentid`')
+                        ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
+                        ->innerJoin('employee_department', '`department`.`departmentid` = `employee_department`.`departmentid`')
                         ->where(['division.isactive' => 1,  'division.isdeleted' => 0,
                                         'department.isactive' => 1,  'department.isdeleted' => 0,
                                         'department.isactive' => 1,  'department.isdeleted' => 0 ])
                         ->one();
-                if ($division)
-                {
-                     return $division->divisionid;
+                if ($division) {
+                    return $division->divisionid;
                 }
                 return false;
-           }
+            }
 
 
 
-        /**
-         * Return collection of student user accounts that are associated with a particular academis year
-         *
-         * @return [User] | []
-         *
-         * Author: Laurence Charles
-         * Date Created: 2017_07_25
-         * Date Last Modified: 2017_08_26
-         */
-        public static function getStudentUsersByYear($acadmeicyearid)
-        {
-            $cond = array();
-            $cond['person.isactive'] = 1;
-            $cond['person.isdeleted'] = 0;
-            $cond['application.isactive'] = 1;
-            $cond['application.isdeleted'] = 0;
-            $cond['academic_offering.isactive'] = 1;
-            $cond['academic_offering.isdeleted'] = 0;
-            $cond['academic_offering.academicyearid'] = $acadmeicyearid;
+            /**
+             * Return collection of student user accounts that are associated with a particular academis year
+             *
+             * @return [User] | []
+             *
+             * Author: Laurence Charles
+             * Date Created: 2017_07_25
+             * Date Last Modified: 2017_08_26
+             */
+            public static function getStudentUsersByYear($acadmeicyearid)
+            {
+                $cond = array();
+                $cond['person.isactive'] = 1;
+                $cond['person.isdeleted'] = 0;
+                $cond['application.isactive'] = 1;
+                $cond['application.isdeleted'] = 0;
+                $cond['academic_offering.isactive'] = 1;
+                $cond['academic_offering.isdeleted'] = 0;
+                $cond['academic_offering.academicyearid'] = $acadmeicyearid;
 
-            $users = User::find()
+                $users = User::find()
                     ->innerJoin('`application`', '`person`.`personid` = `application`.`personid`')
                     ->innerJoin('`academic_offering`', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
                     ->where($cond)
                     ->groupby('person.personid')
                     ->all();
 
-           return $users;
+                return $users;
+            }
         }
-
-    }

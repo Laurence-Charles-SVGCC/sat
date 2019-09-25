@@ -2791,10 +2791,15 @@ class Applicant extends \yii\db\ActiveRecord
             $applicant = Applicant::find()
                     ->where(['applicantid' => $applicantid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
+            // $old_id = $applicant->potentialstudentid;
+            // $year =  substr($old_id, 0, 2);
+            // $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
+            // $num = substr($old_id, 4, 4);
+            // $potentialstudentid = intval($year . $div . $num);
             $old_id = $applicant->potentialstudentid;
             $year =  substr($old_id, 0, 2);
             $div = str_pad(strval($divisionid), 2, '0', STR_PAD_LEFT);
-            $num = substr($old_id, 4, 4);
+            $num = str_pad(strval(($applicantid%10000)), 4, '0', STR_PAD_LEFT);
             $potentialstudentid = intval($year . $div . $num);
         }
         return $potentialstudentid;
