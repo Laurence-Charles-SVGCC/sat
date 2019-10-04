@@ -363,7 +363,7 @@
             }
 
 
-            public static function generateUsername()
+            public static function generateEmployeeUsername()
             {
                 $formattedYear = "14";
                 $currentYear = date('Y');

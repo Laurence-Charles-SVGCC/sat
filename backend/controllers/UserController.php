@@ -390,7 +390,7 @@ class UserController extends Controller
                 try {
                     //(laurence_charles) -  if '$model->username' is not defined by user, the system will generate a username
                     // $username = $model->username == '' ? SignupLecturerForm::createEmployeeUsername() : $model->username;
-                    $username = $model->username == '' ? User::generateUsername() : $model->username;
+                    $username = $model->username == '' ? User::generateEmployeeUsername() : $model->username;
 
                     $personal_email = (strcmp($model->personal_email, "") == 0 || $model->personal_email == null)? "pending..." : $model->personal_email;
 
