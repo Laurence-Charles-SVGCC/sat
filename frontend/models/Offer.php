@@ -94,7 +94,7 @@ class Offer extends \yii\db\ActiveRecord
     {
         $db = Yii::$app->db;
         $records = $db->createCommand(
-                "SELECT application.applicationid AS 'applicationid',"
+            "SELECT application.applicationid AS 'applicationid',"
                 . " application.academicofferingid AS 'academicofferingid',"
                 . " application.ordering AS 'ordering',"
                 . " offer_type.name AS 'offertype',"
@@ -116,10 +116,11 @@ class Offer extends \yii\db\ActiveRecord
                 . " ON offer.offertypeid = offer_type.offertypeid"
                 . " WHERE student_registration.registrationid = " . $studentregistrationid
                 . ";"
-                )
+        )
                 ->queryAll();
-        if (count($records) > 0)
+        if (count($records) > 0) {
             return $records;
+        }
         return false;
     }
 
@@ -128,7 +129,7 @@ class Offer extends \yii\db\ActiveRecord
     {
         $db = Yii::$app->db;
         $records = $db->createCommand(
-                "SELECT application.applicationid AS 'applicationid',"
+            "SELECT application.applicationid AS 'applicationid',"
                 . " application.academicofferingid AS 'academicofferingid',"
                 . " application.ordering AS 'ordering',"
                 . " offer_type.name AS 'offertype',"
@@ -149,11 +150,12 @@ class Offer extends \yii\db\ActiveRecord
                 . " WHERE application.personid = " . $personid
                 . " AND offer.isdeleted = 0"
                 . " AND offer.ispublished = 1;"
-                )
+        )
                 ->queryAll();
 
-        if (count($records)>0)
+        if (count($records)>0) {
             return $records;
+        }
         return false;
     }
 
@@ -168,11 +170,11 @@ class Offer extends \yii\db\ActiveRecord
     * Date Created:10/01/2016
     * Date Last Modified: 10/01/2016
     */
-   public static function getProgrammeDetails($offerid)
-   {
+    public static function getProgrammeDetails($offerid)
+    {
         $db = Yii::$app->db;
         $record = $db->createCommand(
-                    "SELECT qualification_type.abbreviation AS 'qualification',"
+            "SELECT qualification_type.abbreviation AS 'qualification',"
                     . " programme_catalog.name AS 'programmename',"
                     . " programme_catalog.specialisation AS 'specialisation'"
                     . " FROM offer"
@@ -187,29 +189,30 @@ class Offer extends \yii\db\ActiveRecord
                     . " WHERE offer.offerid = ". $offerid
 //                    . " AND offer.isdeleted = 0;"
                     . " AND offer.isdeleted = 0;"
-                    )
+        )
                     ->queryOne();
-        if ($record)
+        if ($record) {
             return $record;
+        }
         return false;
-   }
+    }
 
 
-   /**
-     * Determines if a 'offer' record is associated with a CAPE programme
-     *
-     * @param type $offerid
-     * @return boolean
-     *
-     * Author: Laurence Charles
-     * Date Created: 10/01/2016
-     * Date Last Modified: 10/01/2016
-     */
+    /**
+      * Determines if a 'offer' record is associated with a CAPE programme
+      *
+      * @param type $offerid
+      * @return boolean
+      *
+      * Author: Laurence Charles
+      * Date Created: 10/01/2016
+      * Date Last Modified: 10/01/2016
+      */
     public static function isCape($offerid)
     {
         $db = Yii::$app->db;
         $records = $db->createCommand(
-                    "SELECT * "
+            "SELECT * "
                     . " FROM offer"
                     . " JOIN application"
                     . " ON offer.applicationid = application.applicationid"
@@ -219,10 +222,11 @@ class Offer extends \yii\db\ActiveRecord
                     . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
                     . " WHERE offer.offerid = ". $offerid
                     . " AND programme_catalog.name = 'CAPE';"
-                    )
+        )
                     ->queryAll();
-        if (count($records) > 0)
+        if (count($records) > 0) {
             return true;
+        }
         return false;
     }
 
@@ -245,8 +249,9 @@ class Offer extends \yii\db\ActiveRecord
                         'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9, 'application.personid' => $personid
                         ])
                 ->one();
-        if ($offer)
+        if ($offer) {
             return $offer;
+        }
         return false;
     }
 
@@ -269,8 +274,9 @@ class Offer extends \yii\db\ActiveRecord
                         'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 9, 'application.personid' => $personid
                         ])
                 ->one();
-        if ($offer)
+        if ($offer) {
             return $offer;
+        }
         return false;
     }
 
@@ -288,13 +294,14 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasRecords($personid)
     {
         $offers = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
                             ])
                     ->all();
-        if (count($offers) > 0)
+        if (count($offers) > 0) {
             return true;
+        }
         return false;
     }
 
@@ -310,12 +317,17 @@ class Offer extends \yii\db\ActiveRecord
      */
     public function getApplicantUsername()
     {
-        $user = User::find()
-                ->innerJoin('application' , '`application`.`personid` = `person`.`personid`')
-                ->where(['person.isactive' => 1, 'person.isdeleted' => 0,
-                        'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0
-                        ])
-                ->one();
+        $user =
+        User::find()
+        ->innerJoin('application', '`person`.`personid` = `application`.`personid`')
+        ->where(
+            [
+                'person.isactive' => 1, 'person.isdeleted' => 0,
+                'application.applicationid' => $this->applicationid,
+                // 'application.isactive' => 1, 'application.isdeleted' => 0
+                ]
+        )
+        ->one();
         return $user->username;
     }
 
@@ -334,13 +346,12 @@ class Offer extends \yii\db\ActiveRecord
         $name = "Unknown";
 
         $applicant = Applicant::find()
-                ->innerJoin('application' , '`application`.`personid` = `applicant`.`personid`')
+                ->innerJoin('application', '`application`.`personid` = `applicant`.`personid`')
                  ->where(['applicant.isactive' => 1, 'applicant.isdeleted' => 0,
                                 'application.applicationid' => $this->applicationid, 'application.isactive' => 1, 'application.isdeleted' => 0
                             ])
                 ->one();
-        if ($applicant)
-        {
+        if ($applicant) {
             $name = $applicant->title . ". " . $applicant->firstname . " " . $applicant->middlename . " " . $applicant->lastname;
         }
         return $name;
@@ -363,23 +374,18 @@ class Offer extends \yii\db\ActiveRecord
         $application = Application::find()
                 ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        if ($application)
-        {
-             $permanent_address = Address::find()
+        if ($application) {
+            $permanent_address = Address::find()
                     ->where(['personid' => $application->personid, 'addresstypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-             if ($permanent_address)
-             {
-                 if ($permanent_address->town == "other")
-                 {
-                     $address = $permanent_address->addressline . ",  " . $permanent_address->country;
-                 }
-                 else
-                 {
-                     $address = $permanent_address->town . ",  " . $permanent_address->country;
-                 }
-                 return $address;
-             }
+            if ($permanent_address) {
+                if ($permanent_address->town == "other") {
+                    $address = $permanent_address->addressline . ",  " . $permanent_address->country;
+                } else {
+                    $address = $permanent_address->town . ",  " . $permanent_address->country;
+                }
+                return $address;
+            }
         }
         return $address;
     }
@@ -401,13 +407,11 @@ class Offer extends \yii\db\ActiveRecord
         $application = Application::find()
                 ->where(['applicationid' => $this->applicationid, 'isactive' => 1, 'isdeleted' => 0])
                 ->one();
-        if ($application)
-        {
+        if ($application) {
             $phone = Phone::find()
                     ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-            if ($phone)
-            {
+            if ($phone) {
                 $contact = $phone->homephone . ", " . $phone->workphone . ", " . $phone->cellphone;
             }
         }
@@ -435,17 +439,13 @@ class Offer extends \yii\db\ActiveRecord
                 ->where(['applicationid' => $applicationid, 'isactive' => 1, 'isdeleted' => 0, 'offertypeid' => $offertype])
                 ->one();
 
-        if ($offer)
-        {
-            if($offer->ispublished == 1)
-            {
+        if ($offer) {
+            if ($offer->ispublished == 1) {
                 $offer->isactive = 0;
                 $offer->isdeleted = 0;
                 $offer->revokedby = Yii::$app->user->getId();
                 $offer->revokedate = date('Y-m-d');
-            }
-            else
-            {
+            } else {
                 $offer->isactive = 0;
                 $offer->isdeleted = 1;
                 $offer->revokedby = Yii::$app->user->getId();
@@ -453,13 +453,14 @@ class Offer extends \yii\db\ActiveRecord
             }
 
             $save_flag = $offer->save();
-            if ($save_flag == true)
+            if ($save_flag == true) {
                 return true;
-            else
+            } else {
                 return false;
-        }
-        else
+            }
+        } else {
             return false;
+        }
     }
 
 
@@ -476,13 +477,12 @@ class Offer extends \yii\db\ActiveRecord
     public static function getOfferType($personid)
     {
         $offer = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
                             ])
                     ->one();
-        if ($offer)
-        {
+        if ($offer) {
             $type = OfferType::find()
                     ->where(['offertypeid' => $offer->offertypeid])
                     ->one();
@@ -505,13 +505,14 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasActiveFullOffer($personid)
     {
         $offer = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
                             ])
                     ->one();
-        if ($offer)
+        if ($offer) {
             return true;
+        }
         return false;
     }
 
@@ -528,13 +529,14 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasActivePublishedFullOffer($personid)
     {
         $offer = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1, 'offer.ispublished' => 1,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
                             ])
                     ->one();
-        if ($offer)
+        if ($offer) {
             return true;
+        }
         return false;
     }
 
@@ -552,24 +554,24 @@ class Offer extends \yii\db\ActiveRecord
     public static function getPriorityOffer($personid)
     {
         $offers = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0,
                             'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid
                             ])
                     ->all();
-        if ($offers)
-        {
+        if ($offers) {
             $has_full_offer = false;
-            foreach($offers as $off)
-            {
-                if ($off->offertypeid == 1)
+            foreach ($offers as $off) {
+                if ($off->offertypeid == 1) {
                     $has_full_offer = true;
+                }
             }
 
-            if ($has_full_offer == true)
+            if ($has_full_offer == true) {
                 return "Full Offer";
-            else
+            } else {
                 return "Interview Invitation";
+            }
         }
     }
 
@@ -602,8 +604,9 @@ class Offer extends \yii\db\ActiveRecord
                 ->where($offer_cond)
                 ->groupby('offer.offerid')
                 ->all();
-        if($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
 
@@ -622,8 +625,7 @@ class Offer extends \yii\db\ActiveRecord
     public static function anyPendingOfferExists($applicationperiods, $offertype)
     {
         $periodids = array();
-        foreach($applicationperiods as $period)
-        {
+        foreach ($applicationperiods as $period) {
             $periodids[]=$period->applicationperiodid;
         }
 
@@ -633,7 +635,7 @@ class Offer extends \yii\db\ActiveRecord
         $offer_cond['academic_offering.isdeleted'] = 0;
         $offer_cond['application_period.applicationperiodid'] = $periodids;
         $offer_cond['application_period.isactive'] = 1;
-         $offer_cond['application_period.isdeleted'] = 0;
+        $offer_cond['application_period.isdeleted'] = 0;
         $offer_cond['application_period.iscomplete'] = 0;
         $offer_cond['offer.offertypeid'] = $offertype;
         $offer_cond['offer.isdeleted'] = 0;
@@ -647,8 +649,9 @@ class Offer extends \yii\db\ActiveRecord
                 ->where($offer_cond)
                 ->groupby('offer.offerid')
                 ->all();
-        if($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
 
@@ -667,8 +670,7 @@ class Offer extends \yii\db\ActiveRecord
     public static function anyOfferExists($applicationperiods, $offertype)
     {
         $periodids = array();
-        foreach($applicationperiods as $period)
-        {
+        foreach ($applicationperiods as $period) {
             $periodids[] = $period->applicationperiodid;
         }
 
@@ -691,29 +693,29 @@ class Offer extends \yii\db\ActiveRecord
                 ->where($offer_cond)
                 ->groupby('offer.offerid')
                 ->all();
-        if($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
 
 
 
-     /**
-     * Returns offers an applicant has for a particular application period
-     *
-     * @param type $personid
-     * @return boolean
-     *
-     * Author: Laurence Charles
-     * Date Created: 15/05/2016
-     * Date Last Modified: 15/05/2016
-     */
-    public static function hasOffer($personid, $applicationperiodid = NULL)
+    /**
+    * Returns offers an applicant has for a particular application period
+    *
+    * @param type $personid
+    * @return boolean
+    *
+    * Author: Laurence Charles
+    * Date Created: 15/05/2016
+    * Date Last Modified: 15/05/2016
+    */
+    public static function hasOffer($personid, $applicationperiodid = null)
     {
-        if ($applicationperiodid == NULL)
-        {
+        if ($applicationperiodid == null) {
             $offers = Offer::find()
-                    ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                    ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                     ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                     ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                     ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
@@ -723,11 +725,9 @@ class Offer extends \yii\db\ActiveRecord
                     ->groupBy('application.personid')
                     ->orderBy('offer.offerid ASC')
                     ->all();
-        }
-        else
-        {
+        } else {
             $offers = Offer::find()
-                        ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+                        ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
                         ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
                         ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.offertypeid' => 1,
@@ -738,8 +738,9 @@ class Offer extends \yii\db\ActiveRecord
                         ->orderBy('offer.offerid ASC')
                         ->all();
         }
-        if ($offers)
+        if ($offers) {
             return $offers;
+        }
         return false;
     }
 
@@ -756,7 +757,7 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasPendingOffers()
     {
         $offers = Offer::find()
-            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
             ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 0, 'offer.revokedby' => null,
@@ -765,8 +766,9 @@ class Offer extends \yii\db\ActiveRecord
                     ])
             ->all();
 
-        if ($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
 
@@ -783,7 +785,7 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasPublishedOffers()
     {
         $offers = Offer::find()
-            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
             ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.ispublished' => 1, 'offer.revokedby' => null,
@@ -792,8 +794,9 @@ class Offer extends \yii\db\ActiveRecord
                     ])
             ->all();
 
-        if ($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
 
@@ -810,7 +813,7 @@ class Offer extends \yii\db\ActiveRecord
     public static function hasRevokededOffers()
     {
         $offers = Offer::find()
-            ->innerJoin('application' , '`application`.`applicationid` = `offer`.`applicationid`')
+            ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
             ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
             ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
             ->where(['offer.isdeleted' => 0,
@@ -820,9 +823,9 @@ class Offer extends \yii\db\ActiveRecord
             ->andWhere(['not', ['offer.revokedby' => null]])
             ->all();
 
-        if ($offers)
+        if ($offers) {
             return true;
+        }
         return false;
     }
-
 }
