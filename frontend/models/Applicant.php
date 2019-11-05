@@ -372,7 +372,7 @@ class Applicant extends \yii\db\ActiveRecord
 
             /*
              * if alternative application exist;
-             * -> the last altenative application is the the target
+             * -> the last alternative application is the the target
              * else
              * -> the determination is a bit more complex
              */
