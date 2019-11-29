@@ -71,7 +71,7 @@
                     [['datecreated', 'dateupdated'], 'safe'],
                     [['salt', 'resettoken', 'email'], 'string', 'max' => 100],
                     [['username', 'pword', 'p_word'], 'string', 'min' => 8],
-                    [['username'], 'string', 'max' => 10],
+                    [['username'], 'string', 'max' => 45],
                 ];
             }
 

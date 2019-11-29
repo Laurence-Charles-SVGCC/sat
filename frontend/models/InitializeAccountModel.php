@@ -1,7 +1,7 @@
 <?php
 
     namespace frontend\models;
-    
+
     use Yii;
     use yii\base\Model;
 
@@ -17,14 +17,14 @@
         public $firstname;
         public $middlename;
         public $lastname;
-        
+
         /**
          * @inheritdoc
-         * 
+         *
          * Author: Laurence Charles
          * Date Created: 27/05/2016
          * Date Last Modified: 28/05/2016
-         * 
+         *
          */
         public function rules()
         {
@@ -35,11 +35,11 @@
                 [['pword', 'confirm'], 'string', 'max' => 20],
                 [['confirm'], 'compare', 'compareAttribute'=>'pword','message'=>'Passwords do not match'],
                 [['title'], 'string', 'max' => 3],
-                [['firstname', 'middlename', 'lastname'], 'string', 'max' => 45],
+                [['firstname', 'middlename', 'lastname', 'email'], 'string', 'max' => 45],
             ];
         }
 
-        
+
         /**
          * @inheritdoc
          */
@@ -53,9 +53,6 @@
                 'firstname' => 'First Name',
                 'middlename' => 'Middle Name',
                 'lastname' => 'Last Name',
-            ];    
+            ];
         }
-
-}
-
-
+    }
