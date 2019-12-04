@@ -692,7 +692,7 @@
                                             $user->username = $applicant->potentialstudentid;
                                         } else {
                                             $student_number = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "generate");
-                                            $user->username = $student_number;
+                                            $user->username = strval($student_number);
                                         }
 
                                         $user->persontypeid = 2;
