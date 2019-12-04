@@ -689,7 +689,7 @@
                                     } else {
                                         //Update username
                                         if ($applicant->potentialstudentid) {
-                                            $user->username = $applicant->potentialstudentid;
+                                            $user->username = strval($applicant->potentialstudentid);
                                         } else {
                                             $student_number = Applicant::preparePotentialStudentID($application->divisionid, $applicant->applicantid, "generate");
                                             $user->username = strval($student_number);
