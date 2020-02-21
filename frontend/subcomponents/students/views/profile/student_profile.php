@@ -3098,7 +3098,7 @@
                     <?php if(Yii::$app->user->can('viewTransferData')):?>
                         <div class="panel-heading" style="color:green;font-weight:bold; font-size:1.3em">Transfer History
                             <?php if(Yii::$app->user->can('transferStudent')):?>
-                                <?php if (StudentRegistration::hasGradeRecords($studentregistrationid) == false):?>
+                                <?php if (true/*StudentRegistration::hasGradeRecords($studentregistrationid) == false*/):?>
                                     <?php if (StudentRegistration::isCape($studentregistrationid) == true):?>
                                         <a class='btn btn-success glyphicon glyphicon-transfer pull-right' href=<?=Url::toRoute(['/subcomponents/students/profile/add-transfer', 'personid' => $applicant->personid, 'studentregistrationid' => $studentregistrationid]);?> role='button'> Add-Drop/Transfer</a>
                                     <?php else: ?>
