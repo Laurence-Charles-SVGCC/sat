@@ -44,26 +44,22 @@
             ];
         }
 
-        
+
         //(laurence_charles) - Creates username for employees
         public static function createEmployeeUsername()
         {
-            $last_user = User::find()->orderBy('personid DESC', 'desc')->one();
-            //150 used to prevent username clashes with the users already entered on eCampus.
-            $num = $last_user ? strval($last_user->personid + 1) : 150;
-            while (strlen($num) < 4)
-            {
-                $num = '0' . $num;
-            }
+            $lastUser = User::find()->orderBy('personid DESC', 'desc')->one();
+            $nextID = $lastUser->personid + 1;
+            $prospectiveID = strval($nextID % 10000);
+            $num = str_pad($prospectiveID, 4, '0', STR_PAD_LEFT);
             return '1401' . $num;
         }
 
 
-        // (gamal_crichton) - Creates "User' record. 
+        // (gamal_crichton) - Creates "User' record.
         public function signup($username, $institutional_email)
         {
-            if ($this->validate()) 
-            {
+            if ($this->validate()) {
                 $user = new User();
                 $user->username = $username;
                 $user->email = $institutional_email;
@@ -73,21 +69,18 @@
                 $user->isactive = 1;
                 $user->isdeleted = 0;
 
-                if ($user->save() == true) 
-                {
+                if ($user->save() == true) {
                     return $user;
-                }   
+                }
             }
             return null;
         }
 
-        
+
         // (gamal_crichton) - Restrict ability to sign up to only College emails
         public function svgccMail($attribute, $params)
         {
-
-            if (!stripos($this->$attribute, 'svgcc.vc') && !stripos($this->$attribute, 'svgcc.net'))
-            {
+            if (!stripos($this->$attribute, 'svgcc.vc') && !stripos($this->$attribute, 'svgcc.net')) {
                 $this->addError($attribute, 'Only SVGCC Email addresses are allowed.');
             }
         }
