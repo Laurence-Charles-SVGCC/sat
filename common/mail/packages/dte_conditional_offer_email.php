@@ -13,7 +13,11 @@
         <p>You have been shortlisted to interview for entry into the <?= $programme; ?> programme at the <?= $division_name ?>.</p>
 
         <?php if ($offer != false && $offer->appointment == true):?>
-            <p><strong>Your interview is scheduled for <?= $offer->appointment;?></strong>.</p><br/>
+            <div>
+                <strong>
+                    Your interview is scheduled for <?= $offer->appointment;?>
+                </strong>.
+            </div>
         <?php endif; ?>
 
         <div style="white-space: pre;">
