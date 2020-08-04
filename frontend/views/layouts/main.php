@@ -1,38 +1,32 @@
 <?php
     use yii\helpers\Html;
-    use yii\helpers\Url;
-    use yii\widgets\Breadcrumbs;
-    use frontend\assets\AppAsset;
-    use common\widgets\Alert;
-    use frontend\models\EmployeeTitle;
-    use frontend\models\ApplicationPeriod;
-    use frontend\models\Employee;
-    use frontend\models\CordinatorType;
-    use frontend\models\LegacyYear;
-    use frontend\models\ApplicationSettings;
+use yii\helpers\Url;
+use yii\widgets\Breadcrumbs;
+use frontend\assets\AppAsset;
+use common\widgets\Alert;
+use frontend\models\EmployeeTitle;
+use frontend\models\ApplicationPeriod;
+use frontend\models\Employee;
+use frontend\models\CordinatorType;
+use frontend\models\LegacyYear;
+use frontend\models\ApplicationSettings;
 
-    AppAsset::register($this);
+AppAsset::register($this);
 
     $avatar = "css/dist/img/logo.png";      // Default avatar
 
-    if (Yii::$app->user->isGuest == false)
-    {
+    if (Yii::$app->user->isGuest == false) {
         $employee = Employee::find()->where(['personid' => Yii::$app->user->getId()])->one();
         $employee_name = $employee->firstname . " " . $employee->lastname;
         $employee_username = Yii::$app->user->identity->username;
         $title = EmployeeTitle::findOne(['employeetitleid' => $employee->employeetitleid]);
         $employee_job_title = $title? $title->name: "";
-        if ($employee->gender == "m")
-        {
+        if ($employee->gender == "m") {
             $avatar = "css/dist/img/avatar_male(150_150).png";
-        }
-        elseif ($employee->gender == "f")
-        {
+        } elseif ($employee->gender == "f") {
             $avatar = "css/dist/img/avatar_female(150_150).png";
         }
-    }
-    else
-    {
+    } else {
         $employee_name = "Error";
         $employee_username = "Unknown";
         $employee_job_title = "Error: Please login";
@@ -97,11 +91,11 @@
                                       <li class="user-footer">
                                         <?php if (Yii::$app->user->can('System Administrator')): ?>
                                             <div class="pull-left" style="margin-left:2.5%">
-                                                <?php if(strstr(Url::home(true), "localhost") == true) :?>
-                                                    <a href="./../../backend/web/" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
-                                                <?php else:?>
-                                                    <a href="http://www.svgcc.vc/subdomains/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat glyphicon glyphicon-transfer"> Backend</a>
-                                                <?php endif;?>
+                                              <?php if (strstr(Url::home(true), "localhost") == true) :?>
+                                                  <a href="./../../backend/web/" class="btn btn-default btn-flat"> Go To Backend</a>
+                                              <?php else:?>
+                                                  <a href="https://www.sat.svgcc.online/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat"> Go To Backend</a>
+                                              <?php endif;?>
                                             </div>
                                         <?php endif;?>
                                         <div class="pull-right">
@@ -173,13 +167,13 @@
 
                                 <ul class="treeview-menu">
                                     <?php if (Yii::$app->user->can('viewLegacyStudents')): ?>
-                                        <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
+                                        <?php if (LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                             <li><a href="<?= Url::toRoute(['/subcomponents/legacy/student/find-a-student'])?>"><i class="fa fa-circle-o"></i>Find/Create Student</a></li>
                                         <?php endif;?>
                                     <?php endif;?>
 
                                     <?php if (Yii::$app->user->can('manageLegacyGrades')): ?>
-                                        <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
+                                        <?php if (LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                             <li><a href="<?= Url::toRoute(['/subcomponents/legacy/grades/find-batches'])?>"><i class="fa fa-circle-o"></i>Grades</a></li>
                                         <?php endif;?>
                                     <?php endif;?>
@@ -193,7 +187,7 @@
                                     <?php endif;?>
 
                                     <?php if (Yii::$app->user->can('manageLegacyBatches')): ?>
-                                        <?php if(LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
+                                        <?php if (LegacyYear::find()->where(['isactive' => 1, 'isdeleted' => 0])->count() > 0):?>
                                             <li><a href="<?= Url::toRoute(['/subcomponents/legacy/batch/index'])?>"><i class="fa fa-circle-o"></i>Manage Batches</a></li>
                                         <?php endif;?>
                                     <?php endif;?>
