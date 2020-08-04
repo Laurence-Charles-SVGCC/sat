@@ -91,11 +91,7 @@ AppAsset::register($this);
                                       <li class="user-footer">
                                         <?php if (Yii::$app->user->can('System Administrator')): ?>
                                             <div class="pull-left" style="margin-left:2.5%">
-                                              <?php if (strstr(Url::home(true), "localhost") == true) :?>
-                                                  <a href="./../../backend/web/" class="btn btn-default btn-flat"> Go To Backend</a>
-                                              <?php else:?>
-                                                  <a href="https://www.sat.svgcc.online/sat/backend/web/index.php?r=site" class="btn btn-default btn-flat"> Go To Backend</a>
-                                              <?php endif;?>
+                                                <a href="./../../backend/web/" class="btn btn-default btn-flat"> Go To Backend</a>
                                             </div>
                                         <?php endif;?>
                                         <div class="pull-right">
