@@ -1,363 +1,346 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 
-
-
 /**
  * Load appropriate data into Subject, Proficiency and Grade dropdown lists
- * 
+ *
  * @param {type} e
  * @returns {Boolean}
- * 
+ *
  * Author: charles.laurence1@gmail.com
  * Created: 04/01/2016
  * Modified: 04/01/2016 | 2018_04_09
  */
-function AddCsecQualificationAjaxFunction(e)
-{
-    var httpxml;
-    try
-    {
-        // Firefox, Opera 8.0+, Safari
-        httpxml=new XMLHttpRequest();
+function AddCsecQualificationAjaxFunction(e) {
+  var httpxml;
+  try {
+    // Firefox, Opera 8.0+, Safari
+    httpxml = new XMLHttpRequest();
+  } catch (e) {
+    // Internet Explorer
+    try {
+      httpxml = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e) {
+      try {
+        httpxml = new ActiveXObject("Microsoft.XMLHTTP");
+      } catch (e) {
+        alert("Your browser does not support AJAX!");
+        return false;
+      }
     }
-    catch (e)
-    {
-        // Internet Explorer
-        try
-        {
-            httpxml=new ActiveXObject("Msxml2.XMLHTTP");
+  }
+
+  function stateck() {
+    if (httpxml.readyState == 4) {
+      var myarray = JSON.parse(httpxml.responseText);
+
+      var pass = myarray.pass;
+      if (pass == 1) {
+        /***************************** Handles Subject dropdownlist **************************/
+        var subject = document.getElementById("csecqualification-subjectid");
+
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = subject.options.length - 1; j > 0; j--) {
+          subject.options.remove(j);
         }
-        catch (e)
-        {
-            try
-            {
-                httpxml=new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            catch (e)
-            {
-                alert("Your browser does not support AJAX!");
-                return false;
-            }
+
+        //Adding new options
+        for (i = 0; i < myarray.subjects.length; i++) {
+          var optn1 = document.createElement("OPTION");
+          optn1.value = myarray.subjects[i].id;
+          optn1.text = myarray.subjects[i].name;
+          subject.options.add(optn1);
         }
-    }
-    
-    function stateck() 
-    {
-        if(httpxml.readyState==4)
-        {
-            var myarray = JSON.parse(httpxml.responseText); 
-            
-            var pass = myarray.pass;
-            if (pass == 1)
-            {    
-                /***************************** Handles Subject dropdownlist **************************/
-                var subject = document.getElementById('csecqualification-subjectid');
 
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=subject.options.length-1; j>0; j--)
-                {
-                    subject.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.subjects.length;i++)
-                {
-                    var optn1 = document.createElement("OPTION");
-                    optn1.value = myarray.subjects[i].id; 
-                    optn1.text = myarray.subjects[i].name;
-                    subject.options.add(optn1);
-                }
+        /************************** Handles Proficiency Dropdownlist **************************/
+        var proficiency = document.getElementById(
+          "csecqualification-examinationproficiencytypeid"
+        );
 
-                /************************** Handles Proficiency Dropdownlist **************************/
-                var proficiency = document.getElementById('csecqualification-examinationproficiencytypeid');
-
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=proficiency.options.length-1; j>0; j--)
-                {
-                    proficiency.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.proficiencies.length;i++)
-                {
-                    var optn2 = document.createElement("OPTION");
-                    optn2.value = myarray.proficiencies[i].id; 
-                    optn2.text = myarray.proficiencies[i].name;
-                    proficiency.options.add(optn2);
-                }
-
-                /****************************** Handles Garde dropdownlist ****************************/
-                var grade = document.getElementById('csecqualification-examinationgradeid');
-                
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=grade.options.length-1; j>0; j--)
-                {
-                    grade.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.grades.length;i++)
-                {
-                    var optn3 = document.createElement("OPTION");
-                    optn3.value = myarray.grades[i].id; 
-                    optn3.text = myarray.grades[i].name;
-                    grade.options.add(optn3);
-                }
-                /************************************************************************************/
-            }
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = proficiency.options.length - 1; j > 0; j--) {
+          proficiency.options.remove(j);
         }
-    } // end of function stateck
-    
-    
-    /*******************Gets id of element triggering event********************/
-    var targ;
-    if (!e) 
-        var e = window.event;
-    if (e.target) 
-        targ = e.target;
-    else if (e.srcElement)
-    {
-        targ = e.srcElement;
+
+        //Adding new options
+        for (i = 0; i < myarray.proficiencies.length; i++) {
+          var optn2 = document.createElement("OPTION");
+          optn2.value = myarray.proficiencies[i].id;
+          optn2.text = myarray.proficiencies[i].name;
+          proficiency.options.add(optn2);
+        }
+
+        /****************************** Handles Garde dropdownlist ****************************/
+        var grade = document.getElementById(
+          "csecqualification-examinationgradeid"
+        );
+
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = grade.options.length - 1; j > 0; j--) {
+          grade.options.remove(j);
+        }
+
+        //Adding new options
+        for (i = 0; i < myarray.grades.length; i++) {
+          var optn3 = document.createElement("OPTION");
+          optn3.value = myarray.grades[i].id;
+          optn3.text = myarray.grades[i].name;
+          grade.options.add(optn3);
+        }
+        /************************************************************************************/
+      }
     }
-    if (targ.nodeType == 3) // defeat Safari bug
-	targ = targ.parentNode;
+  } // end of function stateck
 
-    var targetID = targ.id;
-    
-    /**************************************************************************/
-    
-    var baseUrl = document.getElementsByName('addCsecQualification_baseUrl')[0].value;
-    
-    // (laurence_charles) - Customized URL for ajax call based on user's current URLs
-    // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
-    //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-    //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-    //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-    //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-    if (baseUrl.search("localhost") >= 0)
-    {
-        var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
-    {
-        var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("sat.svgcc.vc") >= 0)
-    {
-        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
-    {
-        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
+  /*******************Gets id of element triggering event********************/
+  var targ;
+  if (!e) var e = window.event;
+  if (e.target) targ = e.target;
+  else if (e.srcElement) {
+    targ = e.srcElement;
+  }
+  if (targ.nodeType == 3)
+    // defeat Safari bug
+    targ = targ.parentNode;
 
+  var targetID = targ.id;
 
+  /**************************************************************************/
 
-    //For live sat_dev implementation
-//    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    
-    //Implementation for live server
-    //var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-//    var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    
-    //For local implementation
-//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  var baseUrl = document.getElementsByName("addCsecQualification_baseUrl")[0]
+    .value;
 
-    var exam_body = document.getElementById(targetID).value;
+  // (laurence_charles) - Customized URL for ajax call based on user's current URLs
+  // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
+  //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
+  //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
+  //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
+  //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
 
-    url+= exam_body;
-    
-    httpxml.onreadystatechange=stateck;
-   
-    httpxml.open("GET",url,true);
-    httpxml.send(null);
+  /**************    Pre Migration to Blushost VPS    ***********/
+  // if (baseUrl.search("localhost") >= 0)
+  // {
+  //     var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // }
+  // else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
+  // {
+  //     var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // }
+  // else if(baseUrl.search("sat.svgcc.vc") >= 0)
+  // {
+  //     var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // }
+  // else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
+  // {
+  //     var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // }
+  /**************    Post Migration to Blushost VPS    ***********/
+
+  var protocol = window.location.protocol;
+  if (baseUrl.search("localhost") >= 0) {
+    var url =
+      protocol +
+      "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+    var url =
+      protocol +
+      "https://sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  }
+
+  /**************************************************************/
+
+  //For live sat_dev implementation
+  //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  //Implementation for live server
+  //var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  //    var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  //For local implementation
+  //    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  var exam_body = document.getElementById(targetID).value;
+
+  url += exam_body;
+
+  httpxml.onreadystatechange = stateck;
+
+  httpxml.open("GET", url, true);
+  httpxml.send(null);
 }
-
 
 /**
  * Load appropriate data into Subject, Proficiency and Grade dropdown lists
- * 
+ *
  * @param {type} e
  * @returns {Boolean}
- * 
+ *
  * Author: charles.laurence1@gmail.com
  * Created: 04/01/2016
  * Modified: 04/01/2016 | 2018_04_09
  */
-function EditCsecQualificationAjaxFunction(e)
-{
-    var httpxml;
-    try
-    {
-        // Firefox, Opera 8.0+, Safari
-        httpxml=new XMLHttpRequest();
+function EditCsecQualificationAjaxFunction(e) {
+  var httpxml;
+  try {
+    // Firefox, Opera 8.0+, Safari
+    httpxml = new XMLHttpRequest();
+  } catch (e) {
+    // Internet Explorer
+    try {
+      httpxml = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e) {
+      try {
+        httpxml = new ActiveXObject("Microsoft.XMLHTTP");
+      } catch (e) {
+        alert("Your browser does not support AJAX!");
+        return false;
+      }
     }
-    catch (e)
-    {
-        // Internet Explorer
-        try
-        {
-            httpxml=new ActiveXObject("Msxml2.XMLHTTP");
+  }
+
+  function stateck() {
+    if (httpxml.readyState == 4) {
+      var myarray = JSON.parse(httpxml.responseText);
+
+      var pass = myarray.pass;
+
+      if (pass == 1) {
+        /***************************** Handles Subject dropdownlist **************************/
+        var subject = document.getElementById("csecqualification-subjectid");
+
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = subject.options.length - 1; j > 0; j--) {
+          subject.options.remove(j);
         }
-        catch (e)
-        {
-            try
-            {
-                httpxml=new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            catch (e)
-            {
-                alert("Your browser does not support AJAX!");
-                return false;
-            }
+
+        //Adding new options
+        for (i = 0; i < myarray.subjects.length; i++) {
+          var optn1 = document.createElement("OPTION");
+          optn1.value = myarray.subjects[i].id;
+          optn1.text = myarray.subjects[i].name;
+          subject.options.add(optn1);
         }
-    }
-    
-    function stateck() 
-    {
-        if(httpxml.readyState==4)
-        {
-            var myarray = JSON.parse(httpxml.responseText); 
 
-            var pass = myarray.pass;
-            
-            if (pass == 1)
-            {    
-                /***************************** Handles Subject dropdownlist **************************/
-                var subject = document.getElementById('csecqualification-subjectid');                
-                
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=subject.options.length-1; j>0; j--)
-                {
-                    subject.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.subjects.length;i++)
-                {
-                    var optn1 = document.createElement("OPTION");
-                    optn1.value = myarray.subjects[i].id; 
-                    optn1.text = myarray.subjects[i].name;
-                    subject.options.add(optn1);
-                }
+        /************************** Handles Proficiency Dropdownlist **************************/
+        var proficiency = document.getElementById(
+          "csecqualification-examinationproficiencytypeid"
+        );
 
-                /************************** Handles Proficiency Dropdownlist **************************/
-                var proficiency = document.getElementById('csecqualification-examinationproficiencytypeid');
-                
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=proficiency.options.length-1; j>0; j--)
-                {
-                    proficiency.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.proficiencies.length;i++)
-                {
-                    var optn2 = document.createElement("OPTION");
-                    optn2.value = myarray.proficiencies[i].id; 
-                    optn2.text = myarray.proficiencies[i].name;
-                    proficiency.options.add(optn2);
-                }
-
-                /****************************** Handles Garde dropdownlist ****************************/
-                var grade = document.getElementById('csecqualification-examinationgradeid');
-                
-                //Remove the options from 2nd dropdown list except 'select' option
-                for(j=grade.options.length-1; j>0; j--)
-                {
-                    grade.options.remove(j);
-                }
-                
-                //Adding new options
-                for (i=0;i<myarray.grades.length;i++)
-                {
-                    var optn3 = document.createElement("OPTION");
-                    optn3.value = myarray.grades[i].id; 
-                    optn3.text = myarray.grades[i].name;
-                    grade.options.add(optn3);
-                }
-                /************************************************************************************/
-            }
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = proficiency.options.length - 1; j > 0; j--) {
+          proficiency.options.remove(j);
         }
-    } // end of function stateck
-       
-    /*******************Gets id of element triggering event********************/
-    var targ;
-    if (!e) 
-        var e = window.event;
-    if (e.target) 
-        targ = e.target;
-    else if (e.srcElement)
-    {
-        targ = e.srcElement;
-    }
-    if (targ.nodeType == 3) // defeat Safari bug
-	targ = targ.parentNode;
-    
-    var targetID = targ.id;
-    
-    /**************************************************************************/
-    
-    var baseUrl = document.getElementsByName('editCsecQualification_baseUrl')[0].value;
-    
-    // (laurence_charles) - Customized URL for ajax call based on user's current URLs
-    // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
-    //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-    //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-    //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-    //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-    if (baseUrl.search("localhost") >= 0)
-    {
-        var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
-    {
-        var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("sat.svgcc.vc") >= 0)
-    {
-        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
-    {
-        var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    }
-    
-    
-    
-//    if (baseUrl.search("localhost")!=-1)
-//    {
-//        var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-//    }
-//    else
-//    {
-//        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-//    }
-    
-    
-    
-    //For live sat_dev implementation
-//    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-    
-    //Implementation for live server
-//    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-     
-       
-    //For local implementation
-//    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
 
-    var exam_body = document.getElementById(targetID).value;
-   
-    url+= exam_body;
-    
-    httpxml.onreadystatechange=stateck;
-   
-    httpxml.open("GET",url,true);
-    httpxml.send(null);
+        //Adding new options
+        for (i = 0; i < myarray.proficiencies.length; i++) {
+          var optn2 = document.createElement("OPTION");
+          optn2.value = myarray.proficiencies[i].id;
+          optn2.text = myarray.proficiencies[i].name;
+          proficiency.options.add(optn2);
+        }
+
+        /****************************** Handles Garde dropdownlist ****************************/
+        var grade = document.getElementById(
+          "csecqualification-examinationgradeid"
+        );
+
+        //Remove the options from 2nd dropdown list except 'select' option
+        for (j = grade.options.length - 1; j > 0; j--) {
+          grade.options.remove(j);
+        }
+
+        //Adding new options
+        for (i = 0; i < myarray.grades.length; i++) {
+          var optn3 = document.createElement("OPTION");
+          optn3.value = myarray.grades[i].id;
+          optn3.text = myarray.grades[i].name;
+          grade.options.add(optn3);
+        }
+        /************************************************************************************/
+      }
+    }
+  } // end of function stateck
+
+  /*******************Gets id of element triggering event********************/
+  var targ;
+  if (!e) var e = window.event;
+  if (e.target) targ = e.target;
+  else if (e.srcElement) {
+    targ = e.srcElement;
+  }
+  if (targ.nodeType == 3)
+    // defeat Safari bug
+    targ = targ.parentNode;
+
+  var targetID = targ.id;
+
+  /**************************************************************************/
+
+  var baseUrl = document.getElementsByName("editCsecQualification_baseUrl")[0]
+    .value;
+
+  // (laurence_charles) - Customized URL for ajax call based on user's current URLs
+  // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
+  //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
+  //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
+  //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
+  //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
+  /**************    Pre Migration to Blushost VPS    ***********/
+  // if (baseUrl.search("localhost") >= 0) {
+  //   var url =
+  //     "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // } else if (baseUrl.search("www.sat.svgcc.vc") >= 0) {
+  //   var url =
+  //     "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // } else if (baseUrl.search("sat.svgcc.vc") >= 0) {
+  //   var url =
+  //     "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // } else if (baseUrl.search("www.svgcc.vc/subdomains") >= 0) {
+  //   var url =
+  //     "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  // }
+  /**************    Post Migration to Blushost VPS    ***********/
+
+  var protocol = window.location.protocol;
+  if (baseUrl.search("localhost") >= 0) {
+    var url =
+      protocol +
+      "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+    var url =
+      protocol +
+      "//sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  }
+
+  /**************************************************************/
+
+  //    if (baseUrl.search("localhost")!=-1)
+  //    {
+  //        var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  //    }
+  //    else
+  //    {
+  //        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+  //    }
+
+  //For live sat_dev implementation
+  //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  //Implementation for live server
+  //    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  //For local implementation
+  //    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+
+  var exam_body = document.getElementById(targetID).value;
+
+  url += exam_body;
+
+  httpxml.onreadystatechange = stateck;
+
+  httpxml.open("GET", url, true);
+  httpxml.send(null);
 }
-
-
