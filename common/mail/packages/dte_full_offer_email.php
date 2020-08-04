@@ -13,7 +13,7 @@ use frontend\models\ApplicationPeriod;
         <p>Dear <?= $first_name . ' ' . $last_name ?>,</p>
 
         <p>
-            We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful.  
+            We are pleased to inform you that your application to the St. Vincent and the Grenadines Community College has been successful.
             You are offered a place in the <?= $programme; ?> Programme at the <?= $division_name ?> commencing on <?= $package->commencementdate?>.<br/>
             Your Student Number is: <?= $studentno; ?>.
         </p>
@@ -24,17 +24,22 @@ use frontend\models\ApplicationPeriod;
     </div>
 
     <div id="salutations">
-        <p>With warm wishes and kind regards,</p>
-        <?php if (stripos(Url::home(true), "localhost") == false) :?>
-           <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.png" alt="mrs-rouse-signature"></p>
-        <?php else: ?>
-             <p><img src="http://localhost/sat_dev/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>
-        <?php endif; ?>
-             
+      <p>With warm wishes and kind regards,</p>
+      <?php if (stripos(Url::home(true), "localhost") == false) :?>
+         <p>
+           <img src="https://sat.svgcc.online/images/email_header.png"
+           alt="mrs-rouse-signature">
+         </p>
+      <?php else: ?>
+           <p>
+             <img src="http://localhost/sat_dev/frontend/web/img/signature.png"
+             alt="mrs-rouse-signature">
+           </p>
+      <?php endif; ?>
+
         <p>
             Samantha Minors-Rouse
             <br/>Registrar
         </p>
     </div>
 </div>
-

@@ -1,6 +1,7 @@
 <?php
     use yii\helpers\Html;
-    use yii\helpers\Url;
+use yii\helpers\Url;
+
 ?>
 
 <?php $this->beginPage() ?>
@@ -16,11 +17,11 @@
             <?php $this->beginBody() ?>
 
                 <?php if (stripos(Url::home(true), "localhost") == false) :?>
-                  <img src="http://www.svgcc.vc/subdomains/images/email_header.png"
+                  <img src="https://sat.svgcc.online/images/email_header.png"
                   alt="email_header" class="img-rounded"
                   style="max-width:700px; max-height:150px"/>
                 <?php else: ?>
-                  <img src="http://localhost/sat2/web/img/email_header.png"
+                  <img src="http://localhost/sat_dev/frontend/web/img/email_header.png"
                   alt="email_header" class="img-rounded"
                   style="max-width:700px; max-height:150px"/>
                 <?php endif; ?>

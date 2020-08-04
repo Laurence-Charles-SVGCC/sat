@@ -1,5 +1,6 @@
 <?php
     use yii\helpers\Url;
+
 ?>
 
 <div>
@@ -22,12 +23,18 @@
     </span>
 
     <div id="salutations">
-        <p>With warm wishes and kind regards,</p>
-        <?php if (stripos(Url::home(true), "localhost") == false) :?>
-           <p><img src="http://www.svgcc.vc/subdomains/sat/frontend/images/signature.png" alt="mrs-rouse-signature"></p>
-        <?php else: ?>
-             <p><img src="http://localhost/sat_dev/frontend/images/signature.jpg" alt="mrs-rouse-signature"></p>
-        <?php endif; ?>
+      <p>With warm wishes and kind regards,</p>
+      <?php if (stripos(Url::home(true), "localhost") == false) :?>
+         <p>
+           <img src="https://sat.svgcc.online/images/email_header.png"
+           alt="mrs-rouse-signature">
+         </p>
+      <?php else: ?>
+           <p>
+             <img src="http://localhost/sat_dev/frontend/web/img/signature.png"
+             alt="mrs-rouse-signature">
+           </p>
+      <?php endif; ?>
 
         <p>
             Samantha Minors-Rouse
