@@ -49,8 +49,9 @@
                 [['title', 'firstname', 'lastname', 'email'], 'required'],
                 [['created_at', 'updated_at'], 'safe'],
                 [['title'], 'string', 'max' => 4],
-                [['firstname', 'lastname', 'email', 'applicantname'], 'string', 'max' => 45],
-                [['token'], 'string', 'max' => 15]
+                [['firstname', 'lastname', 'email'], 'string', 'max' => 255],
+                [['applicantname'], 'string', 'max' => 45],
+                [['token'], 'string', 'max' => 255]
             ];
         }
 
