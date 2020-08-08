@@ -6,16 +6,16 @@ use Yii;
 
 class CsecQualificationModel
 {
-    public static function getVerifiedCsecQualificationsByPersonId($personID)
+    public static function getVerifiedCsecQualificationsByPersonId($personId)
     {
         return CsecQualification::find()
         ->where(
             [
-            'personid' => $personid,
-            'isverified' => 1,
-            'isactive' => 1,
-            'isdeleted' => 0
-          ]
+              'personid' => $personId,
+              'isverified' => 1,
+              'isactive' => 1,
+              'isdeleted' => 0
+            ]
         )
         ->all();
     }
