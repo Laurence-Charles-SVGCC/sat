@@ -113,30 +113,6 @@ function AddCsecQualificationAjaxFunction(e) {
   var baseUrl = document.getElementsByName("addCsecQualification_baseUrl")[0]
     .value;
 
-  // (laurence_charles) - Customized URL for ajax call based on user's current URLs
-  // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
-  //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-  //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-  //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-  //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-
-  /**************    Pre Migration to Blushost VPS    ***********/
-  // if (baseUrl.search("localhost") >= 0)
-  // {
-  //     var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // }
-  // else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
-  // {
-  //     var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // }
-  // else if(baseUrl.search("sat.svgcc.vc") >= 0)
-  // {
-  //     var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // }
-  // else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
-  // {
-  //     var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // }
   /**************    Post Migration to Blushost VPS    ***********/
 
   var protocol = window.location.protocol;
@@ -144,23 +120,13 @@ function AddCsecQualificationAjaxFunction(e) {
     var url =
       protocol +
       "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+  } else if (baseUrl.search("sat.svgcc.vc/sat") >= 0) {
     var url =
       protocol +
-      "https://sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+      "https://sat.svgcc.vc/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
   }
 
   /**************************************************************/
-
-  //For live sat_dev implementation
-  //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-
-  //Implementation for live server
-  //var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  //    var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-
-  //For local implementation
-  //    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
 
   var exam_body = document.getElementById(targetID).value;
 
@@ -282,26 +248,6 @@ function EditCsecQualificationAjaxFunction(e) {
   var baseUrl = document.getElementsByName("editCsecQualification_baseUrl")[0]
     .value;
 
-  // (laurence_charles) - Customized URL for ajax call based on user's current URLs
-  // This must be dont to avert cross site scripting block that may occur as user may access feature through 4 different URLs;
-  //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-  //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-  //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=....
-  //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=...
-  /**************    Pre Migration to Blushost VPS    ***********/
-  // if (baseUrl.search("localhost") >= 0) {
-  //   var url =
-  //     "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // } else if (baseUrl.search("www.sat.svgcc.vc") >= 0) {
-  //   var url =
-  //     "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // } else if (baseUrl.search("sat.svgcc.vc") >= 0) {
-  //   var url =
-  //     "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // } else if (baseUrl.search("www.svgcc.vc/subdomains") >= 0) {
-  //   var url =
-  //     "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  // }
   /**************    Post Migration to Blushost VPS    ***********/
 
   var protocol = window.location.protocol;
@@ -309,31 +255,13 @@ function EditCsecQualificationAjaxFunction(e) {
     var url =
       protocol +
       "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+  } else if (baseUrl.search("sat.svgcc.vc/sat") >= 0) {
     var url =
       protocol +
-      "//sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
+      "//sat.svgcc.vc/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
   }
 
   /**************************************************************/
-
-  //    if (baseUrl.search("localhost")!=-1)
-  //    {
-  //        var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  //    }
-  //    else
-  //    {
-  //        var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-  //    }
-
-  //For live sat_dev implementation
-  //    var url = "http://www.svgcc.vc/subdomains/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-
-  //Implementation for live server
-  //    var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
-
-  //For local implementation
-  //    var url="http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fstudents%2Fprofile%2Fexamination-body-dependants&exam_body_id=";
 
   var exam_body = document.getElementById(targetID).value;
 

@@ -139,46 +139,17 @@ function calculateApplicantIntent(e) {
   var baseUrl = document.getElementsByName(
     "applicationPeriodCreation_baseUrl"
   )[0].value;
-  //    if (baseUrl.search("localhost")!=-1)
-  //        url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  //    else
-  ////        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  //        url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
 
-  // (laurence_charles) - Customized URL for ajax call based on user's current URLs
-  // This must be dont to avert cross site scripting block that may occur as user may access feature through 3 different URLs;
-  //1. http://localhost/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2F...
-  //2. http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2F....
-  //3.  http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2F....
-  //4. http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2F...
-
-  /**************    Pre Migration to Blushost VPS    ***********/
-  // if (baseUrl.search("localhost") >= 0)
-  // {
-  //     var url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  // }
-  // else if(baseUrl.search("www.sat.svgcc.vc") >= 0)
-  // {
-  //     var url = "http://www.sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  // }
-  // else if(baseUrl.search("sat.svgcc.vc") >= 0)
-  // {
-  //     var url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  // }
-  // else if(baseUrl.search("www.svgcc.vc/subdomains") >= 0)
-  // {
-  //     var url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&"
-  // }
   /**************    Post Migration to Blushost VPS    ***********/
   var protocol = window.location.protocol;
   if (baseUrl.search("localhost") >= 0) {
     var url =
       protocol +
       "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
-  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+  } else if (baseUrl.search("sat.svgcc.vc/sat") >= 0) {
     var url =
       protocol +
-      "//sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
+      "//sat.svgcc.vc/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Fadmissions%2Fprocess-applicant-intentid&";
   }
 
   /**************************************************************/
@@ -194,16 +165,6 @@ function calculateApplicantIntent(e) {
   httpxml.open("GET", url, true);
   httpxml.send(null);
 }
-
-//function generateAcademicYearBlanks()
-//{
-//    var title = document.getElementById("academicyear-title").value;
-//    if (title == null || title == false || title == " ")
-//    {
-//        document.getElementById("academicyear-title").value = "default";
-//        document.getElementById("academicyear-startdate").value = "1990-01-01";
-//    }
-//}
 
 function generateAcademicYearBlanks() {
   var title = document.getElementById("academicyear-title").value;
@@ -223,9 +184,6 @@ function generateAcademicSemesterBlanks() {
   var i;
   for (i = 0; i < 3; i++) {
     var title = document.getElementById("semester-" + i + "-title").value;
-    //        var temp = document.getElementById("semester-" + i +"-title");
-    //        var title = temp.options[temp.selectedIndex].value;
-
     var period = document.getElementById("semester-" + i + "-period").value;
     var startdate = document.getElementById("semester-" + i + "-startdate")
       .value;

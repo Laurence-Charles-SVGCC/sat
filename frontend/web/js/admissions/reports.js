@@ -336,23 +336,16 @@ function PrepareListing(e) {
 
   var baseUrl = document.getElementsByName("preparelisting_baseUrl")[0].value;
 
-  /**************    Pre Migration to Blushost VPS    ***********/
-  // if (baseUrl.search("localhost") != -1)
-  //   url =
-  //     "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
-  // else
-  //   url =
-  //     "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
   /**************    Post Migration to Blushost VPS    ***********/
   var protocol = window.location.protocol;
   if (baseUrl.search("localhost") >= 0) {
     var url =
       protocol +
       "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
-  } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+  } else if (baseUrl.search("sat.svgcc.vc/sat") >= 0) {
     var url =
       protocol +
-      "//sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
+      "//sat.svgcc.vc/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-listing&";
   }
 
   /**************************************************************/
@@ -610,38 +603,19 @@ function IntakePrepareListing(e) {
 
   if (listing_type != null) {
     var baseUrl = document.getElementsByName("intake_listing_baseUrl")[0].value;
-    //     if (baseUrl.search("localhost")!=-1)
-    //         url = "http://localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    //     else
-    // //        url = "http://www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    //         url = "http://sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
 
     var protocol = window.location.protocol;
 
-    /**************    Pre Migration to Blushost VPS    ***********/
-    // if (baseUrl.search("localhost") >= 0) {
-    //   url =
-    //     protocol +
-    //     "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    // } else if (baseUrl.search("sat.svgcc.vc/") >= 0) {
-    //   url =
-    //     protocol +
-    //     "//sat.svgcc.vc/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    // } else if (baseUrl.search("www.svgcc.vc/subdomains/") >= 0) {
-    //   url =
-    //     protocol +
-    //     "//www.svgcc.vc/subdomains/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    // }
     /**************    Post Migration to Blushost VPS    ***********/
 
     if (baseUrl.search("localhost") >= 0) {
       var url =
         protocol +
         "//localhost:80/sat_dev/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
-    } else if (baseUrl.search("sat.svgcc.online/sat") >= 0) {
+    } else if (baseUrl.search("sat.svgcc.vc/sat") >= 0) {
       var url =
         protocol +
-        "//sat.svgcc.online/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
+        "//sat.svgcc.vc/sat/frontend/web/index.php?r=subcomponents%2Fadmissions%2Freports%2Fget-intake-listing&";
     }
 
     /**************************************************************/
