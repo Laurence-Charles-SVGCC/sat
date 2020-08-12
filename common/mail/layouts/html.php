@@ -17,7 +17,7 @@ use yii\helpers\Url;
             <?php $this->beginBody() ?>
 
                 <?php if (stripos(Url::home(true), "localhost") == false) :?>
-                  <img src="https://sat.svgcc.online/images/email_header.png"
+                  <img src="https://sat.svgcc.vc/images/email_header.png"
                   alt="email_header" class="img-rounded"
                   style="max-width:700px; max-height:150px"/>
                 <?php else: ?>

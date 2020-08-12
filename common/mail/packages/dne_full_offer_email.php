@@ -25,7 +25,7 @@
     <p>With warm wishes and kind regards,</p>
     <?php if (stripos(Url::home(true), "localhost") == false) :?>
        <p>
-         <img src="https://sat.svgcc.online/images/email_header.png"
+         <img src="https://sat.svgcc.vc/images/email_header.png"
          alt="mrs-rouse-signature">
        </p>
     <?php else: ?>
