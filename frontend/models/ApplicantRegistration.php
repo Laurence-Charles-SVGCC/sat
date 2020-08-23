@@ -554,7 +554,8 @@
             // $generated_reset_link = Yii::$app->urlManager->createUrl(['account-management/applicant-account-confirmation', 'id' => $this->applicantname, 'token' => $this->token]);
             // $formatted_reset_link = str_replace("/sat_dev/frontend/web", "", $generated_reset_link);
             // $reset_url = $host . $formatted_reset_link;
-            $reset_url =  "https://apply.svgcc.vc/index.php?r=account-management%2Fapplicant-account-confirmation&" . "id=" . $this->applicantname . "&token=" . $this->token;
+            // $reset_url =  "https://apply.svgcc.vc/index.php?r=account-management%2Fapplicant-account-confirmation&" . "id=" . $this->applicantname . "&token=" . $this->token;
+            $reset_url =  "https://admissions.svgcc.vc/index.php?r=account-management%2Fapplicant-account-confirmation&" . "id=" . $this->applicantname . "&token=" . $this->token;
 
             $feedback = Yii::$app->mailer->compose(['html' => 'applicant_account_request_email'], ['model' => $this, 'reset_url' => $reset_url])
                    ->setFrom(Yii::$app->params['applicationEmail'])
