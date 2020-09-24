@@ -5,9 +5,6 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 
-use frontend\models\EmployeeDivision;
-use backend\models\AuthAssignment;
-
 /**
  * This is the model class for table "employee".
  *
@@ -106,14 +103,14 @@ class Employee extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['personid' => 'personid']);
     }
-    
-    
+
+
     /**
      * Returns the full name of an employee
-     * 
+     *
      * @param type $personid
      * @return boolean|string
-     * 
+     *
      * Author: Laurence Charles
      * Date Created : 23/12/2015
      * Date Last Modified: 23/12/2015
@@ -123,21 +120,20 @@ class Employee extends \yii\db\ActiveRecord
         $employee = Employee::find()
                     ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-        if ($employee)
-        {
+        if ($employee) {
             $full_name = $employee->title . ". " . $employee->firstname . " " . $employee->lastname;
             return $full_name;
         }
         return false;
     }
-    
-    
+
+
     /**
      * Returns the divisionid of an employee
-     * 
+     *
      * @param type $personid
      * @return boolean|string
-     * 
+     *
      * Author: Laurence Charles
      * Date Created : 16/01/2016
      * Date Last Modified: 16/01/2016
@@ -147,99 +143,90 @@ class Employee extends \yii\db\ActiveRecord
         $employee = EmployeeDivision::find()
                     ->where(['employeeid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
                     ->one();
-        if ($employee)
-        {
+        if ($employee) {
             return $employee->divisionid;
         }
         return false;
     }
-    
-    
+
+
     /**
      * Returns an associative array is ['personid'=>'fullname']
-     * 
+     *
      * @param type $employeetitle
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 23/06/2016
      * Date Last Modified: 23/06/2016
      */
     public static function getEmployeeListing($employeetitle)
     {
-         $employees = Employee::find()
+        $employees = Employee::find()
                  ->innerJoin('employee_title', '`employee`.`employeetitleid` = `employee_title`.`employeetitleid`')
                  ->where(['employee.isactive' => 1, 'employee.isdeleted' => 0,
                                 'employee_title.isactive' => 1, 'employee_title.isdeleted' => 0, 'employee_title.name' => $employeetitle
                                 ])
                  ->orderBy('lastname')
                  ->all();
-         
-        if ($employees)
-        {
+
+        if ($employees) {
             $keys = array();
             array_push($keys, '');
 
             $values = array();
             array_push($values, 'Select Emploee...');
 
-           foreach($employees as $employee)
-            {
+            foreach ($employees as $employee) {
                 $key = $employee->personid;
                 array_push($keys, $key);
                 $value = self::getEmployeeName($employee->personid);
                 array_push($values, $value);
             }
-         }
+        }
         $combined = array_combine($keys, $values);
         return $combined;
     }
-    
-    
-    
+
+
+
     /**
      * Returns an associative array is ['personid'=>'fullname'] of all employees
-     * 
+     *
      * @param type $employeetitle
      * @return type
-     * 
+     *
      * Author: Laurence Charles
      * Date Created: 02/11/2016
      * Date Last Modified: 02/11/2016
      */
     public static function getAllEmployees()
     {
-         $employees = Employee::find()
+        $employees = Employee::find()
                  ->where(['isactive' => 1, 'isdeleted' => 0])
                  ->orderBy('lastname')
                  ->all();
-         
-        if ($employees)
-        {
+
+        if ($employees) {
             $keys = array();
             array_push($keys, '');
 
             $values = array();
             array_push($values, 'Select Emploee...');
 
-           foreach($employees as $employee)
-           {
-               $role = AuthAssignment::find()
+            foreach ($employees as $employee) {
+                $role = AuthAssignment::find()
                        ->where(['user_id' => $employee->personid ])
                        ->one();
-               if ($role == false ||  ($role == true && $role->item_name!="System Administrator"))
-               {
+                if ($role == false ||  ($role == true && $role->item_name!="System Administrator")) {
                     $key = $employee->personid;
                     array_push($keys, $key);
                     $value = self::getEmployeeName($employee->personid);
                     array_push($values, $value);
-               }
+                }
             }
         }
-       $combined = array_combine($keys, $values);
-       return $combined;
+        $combined = array_combine($keys, $values);
+        return $combined;
     }
-    
-    
-    
 }
