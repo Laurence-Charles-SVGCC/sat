@@ -495,5 +495,47 @@ class StudentRegistration extends \yii\db\ActiveRecord
        }
        return false;
     }
+
+
+    public static function generateRegistrationDescription($id)
+    {
+        $registration = Yii::$app->db->createCommand(
+            "SELECT student_registration.studentregistrationid AS 'studentregistrationid',"
+            . " qualification_type.abbreviation AS 'qualification',"
+            . " programme_catalog.name AS 'programmename',"
+            . " programme_catalog.specialisation AS 'specialisation',"
+            . " academic_year.title AS 'year-title',"
+            . " applicant_intent.name AS 'applicant-intent-name'"
+            . " FROM student_registration"
+            . " JOIN academic_offering"
+            . " ON student_registration.academicofferingid = academic_offering.academicofferingid"
+            . " JOIN programme_catalog"
+            . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
+            . " JOIN qualification_type"
+            . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+            . " JOIN academic_year"
+            . " ON academic_offering.academicyearid = academic_year.academicyearid"
+            . " JOIN applicant_intent"
+            . " ON academic_year.applicantintentid = applicant_intent.applicantintentid"
+            . " WHERE student_registration.studentregistrationid = {$id};"
+        )
+          ->queryOne();
+
+        if ($registration == true) {
+            $qualification = $registration["qualification"];
+            $programmeName = $registration["programmename"];
+            $specialisation = $registration["specialisation"];
+            $applicantIntentName = $registration["applicant-intent-name"];
+            $yearTitle = $registration["year-title"];
+            if ($qualification == "CAPE") {
+                return "{$applicantIntentName} ({$yearTitle})- {$programmeName}";
+            } elseif ($qualification != "CAPE" && $specialisation == true) {
+                return "{$applicantIntentName} ({$yearTitle})- {$qualification} {$programmeName} ({$specialisation})";
+            } elseif ($qualification != "CAPE" && $specialisation == false) {
+                return "{$applicantIntentName} ({$yearTitle})- {$qualification} {$programmeName}";
+            }
+        }
+        return null;
+    }
     
 }
