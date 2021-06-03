@@ -511,7 +511,7 @@ class ProcessApplicationsController extends \yii\web\Controller
                     &&  $userDivisionId == $currentApplication->divisionid) ? true : false;
 
             $userIsAuthorizedDteDneMember =
-                (in_array($userDivisionId, [4, 5]) == true
+                (in_array($userDivisionId, [6, 7]) == true
                     && (Yii::$app->user->can("Dean") == true
                         || Yii::$app->user->can("Deputy Dean") == true
                         || Yii::$app->user->can("Admission Team Adjuster") == true)) ? true : false;
