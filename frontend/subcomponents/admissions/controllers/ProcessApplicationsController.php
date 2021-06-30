@@ -1226,10 +1226,8 @@ class ProcessApplicationsController extends \yii\web\Controller
                 EmployeeDepartment::getUserDivision() == 6  || EmployeeDepartment::getUserDivision() == 7
                 || (EmployeeDepartment::getUserDivision() == 1  && ApplicationPeriod::isDteOrDneApplicationPeriodUnderReview() == true)
             ) {
-                /*
-                   * If an application is pending all subsequent applications
-                   * are set to pending
-                   */
+                // If an application is pending all subsequent applications
+                // are set to pending
                 if ($new_status == 3) {
                     if ($count - $position > 1) {
                         for ($i = $position + 1; $i < $count; $i++) {
@@ -1288,10 +1286,9 @@ class ProcessApplicationsController extends \yii\web\Controller
                 }
 
 
-                /*
-                   * If an application is shortlist, borderlined all preceeding applications
-                   * to reject and subsequent applications are set to pending
-                   */ elseif ($new_status == 4  || $new_status == 7) {
+                // If an application is shortlist, borderlined all preceeding applications
+                // to reject and subsequent applications are set to pending
+                elseif ($new_status == 4  || $new_status == 7) {
                     //updates subsequent applications
                     if ($count - $position > 1) {
                         for ($i = $position + 1; $i < $count; $i++) {
@@ -1366,11 +1363,11 @@ class ProcessApplicationsController extends \yii\web\Controller
 
 
                 /*
-                   * If an application is interviewoffer;
-                   * -> all preceeding  applications are set to reject
-                   * -> all subsequent applications are set to reject
-                   * -> new conditional offer is created
-                   */ elseif ($new_status == 8) {
+                * If an application is interviewoffer;
+                * -> all preceeding  applications are set to reject
+                * -> all subsequent applications are set to reject
+                * -> new conditional offer is created
+                */ elseif ($new_status == 8) {
                     //updates subsequent applications
                     if ($count - $position > 1) {
                         for ($i = $position + 1; $i < $count; $i++) {
@@ -1568,34 +1565,27 @@ class ProcessApplicationsController extends \yii\web\Controller
                    * -> nothing is done to preceeding applications
                    * -> nothing is done to subsequent applications
                    */ elseif ($new_status == 9  && (Yii::$app->user->can('Dean') || Yii::$app->user->can('Deputy Dean'))) {
-                    /*
-                      * If previous status was "InterviewOffer";
-                      * ->any subsequent applications are rejected
-                      * -> full offer must be created
-                      */
-                    if ($old_status == 8) {
-                        $old_offer = Offer::find()
-                            ->where(['applicationid' => $update_candidate->applicationid, 'offertypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
-                            ->one();
-                        if ($old_offer == false) {
-                            $transaction->rollBack();
-                            Yii::$app->session->setFlash('error', 'Applicant corresponding conditional offer was not found');
-                            return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                        } else {
-                            /**
-                             * this should prevent the creation of multiple offers,
-                             * which is suspected to occur when internet timeout
-                             * during request submission
-                             */
-                            $existing_current_offer = Offer::find()
-                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+
+                    /*** Handle exception case when interviews are skipped  ***/
+                    $academicOffering =
+                        AcademicOffering::find()
+                        ->where(["academicofferingid" => $update_candidate->academicofferingid])
+                        ->one();
+
+                    if ($academicOffering->interviewneeded == 0) {
+                        if (in_array($old_status, [3, 4, 7]) == true) {
+                            // prevent duplicate offers
+                            $existing_current_offer =
+                                Offer::find()
+                                ->where([
+                                    'applicationid' => $applicationid,
+                                    'offertypeid' => 1,
+                                    'isactive' => 1,
+                                    'isdeleted' => 0
+                                ])
                                 ->all();
 
-                            /*
-                              * If conditional exists;
-                              * it must be published before applicant can be given a full offer
-                              */
-                            if ($old_offer == true  && $existing_current_offer == false) {
+                            if ($existing_current_offer == false) {
                                 //all subsequent applications are rejected
                                 if ($count - $position > 1) {
                                     for ($i = $position + 1; $i < $count; $i++) {
@@ -1630,25 +1620,27 @@ class ProcessApplicationsController extends \yii\web\Controller
                                     $applicant->potentialstudentid = $generated_id;
                                     $applicant->save();
                                 }
-                            } else {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Applicant conditional offer must be published before full offer can be made');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
                             }
                         }
-                    }
 
-                    /*
-                      * If previous status was "post interview rejection";
-                      * -> that rejection is rescinded
-                      * -> new offer is created
-                      */ elseif ($old_status == 10) {
-                        $result = Rejection::rescindRejection($update_candidate->personid);
-                        if ($result == false) {
-                            $transaction->rollBack();
-                            Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
-                            return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
-                        } else {
+                        /*
+                        * If previous status was  "pre-interview-rejection";
+                        * -> that rejection is rescinded
+                        * -> new offer is created
+                        */ elseif ($old_status == 6) {
+                            $rejection = Rejection::find()
+                                ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+
+                            if ($rejection) {
+                                $result = Rejection::rescindRejection($update_candidate->personid);
+                                if ($result == false) {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
+                            }
+
                             /**
                              * this should prevent the creation of multiple offers,
                              * which is suspected to occur when internet timeout
@@ -1682,56 +1674,172 @@ class ProcessApplicationsController extends \yii\web\Controller
                                 }
                             }
                         }
-                    }
+                    } elseif ($academicOffering->interviewneeded == 1) {
+                        /*
+                        * If previous status was "InterviewOffer";
+                        * ->any subsequent applications are rejected
+                        * -> full offer must be created
+                        */
+                        if ($old_status == 8) {
+                            $old_offer = Offer::find()
+                                ->where(['applicationid' => $update_candidate->applicationid, 'offertypeid' => 2, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
+                            if ($old_offer == false) {
+                                $transaction->rollBack();
+                                Yii::$app->session->setFlash('error', 'Applicant corresponding conditional offer was not found');
+                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                            } else {
+                                /**
+                                 * this should prevent the creation of multiple offers,
+                                 * which is suspected to occur when internet timeout
+                                 * during request submission
+                                 */
+                                $existing_current_offer = Offer::find()
+                                    ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
 
-                    /*
-                       * If previous status was  "pre-interview-rejection";
-                       * -> that rejection is rescinded
-                       * -> new offer is created
-                       */ elseif ($old_status == 6) {
-                        $rejection = Rejection::find()
-                            ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
-                            ->one();
+                                /*
+                                * If conditional exists;
+                                * it must be published before applicant can be given a full offer
+                                */
+                                if ($old_offer == true  && $existing_current_offer == false) {
+                                    //all subsequent applications are rejected
+                                    if ($count - $position > 1) {
+                                        for ($i = $position + 1; $i < $count; $i++) {
+                                            $applications[$i]->applicationstatusid = 6;
+                                            $applications_save_flag = $applications[$i]->save();
+                                            if ($applications_save_flag == false) {
+                                                $transaction->rollBack();
+                                                Yii::$app->session->setFlash('error', 'Error occured when saving application');
+                                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                            }
+                                        }
+                                    }
 
-                        if ($rejection) {
+                                    // create offer
+                                    $offer = new Offer();
+                                    $offer->applicationid = $applicationid;
+                                    $offer->offertypeid = 1;
+                                    $offer->issuedby = Yii::$app->user->getId();
+                                    $offer->issuedate = date("Y-m-d");
+                                    $offer_save_flag = $offer->save();
+                                    if ($offer_save_flag == false) {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+                                    // Generate potentialstudentid
+                                    else {
+                                        $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                        $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                        $applicant->potentialstudentid = $generated_id;
+                                        $applicant->save();
+                                    }
+                                } else {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Applicant conditional offer must be published before full offer can be made');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
+                            }
+                        }
+
+                        /*
+                        * If previous status was "post interview rejection";
+                        * -> that rejection is rescinded
+                        * -> new offer is created
+                        */ elseif ($old_status == 10) {
                             $result = Rejection::rescindRejection($update_candidate->personid);
                             if ($result == false) {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
                                 return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                            } else {
+                                /**
+                                 * this should prevent the creation of multiple offers,
+                                 * which is suspected to occur when internet timeout
+                                 * during request submission
+                                 */
+                                $existing_current_offer = Offer::find()
+                                    ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                    ->all();
+
+                                if ($existing_current_offer == false) {
+                                    // create offer
+                                    $offer = new Offer();
+                                    $offer->applicationid = $applicationid;
+                                    $offer->offertypeid = 1;
+                                    $offer->issuedby = Yii::$app->user->getId();
+                                    $offer->issuedate = date("Y-m-d");
+                                    $offer_save_flag = $offer->save();
+                                    if ($offer_save_flag == false) {
+                                        $transaction->rollBack();
+                                        Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                        return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                    }
+                                    // Generate potentialstudentid
+                                    else {
+                                        $applicant = Applicant::find()
+                                            ->where(['personid' => $update_candidate->personid])
+                                            ->one();
+                                        $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                        $applicant->potentialstudentid = $generated_id;
+                                        $applicant->save();
+                                    }
+                                }
                             }
                         }
 
-                        /**
-                         * this should prevent the creation of multiple offers,
-                         * which is suspected to occur when internet timeout
-                         * during request submission
-                         */
-                        $existing_current_offer = Offer::find()
-                            ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
-                            ->all();
+                        /*
+                        * If previous status was  "pre-interview-rejection";
+                        * -> that rejection is rescinded
+                        * -> new offer is created
+                        */ elseif ($old_status == 6) {
+                            $rejection = Rejection::find()
+                                ->where(['personid' => $update_candidate->personid, 'isactive' => 1, 'isdeleted' => 0])
+                                ->one();
 
-                        if ($existing_current_offer == false) {
-                            // create offer
-                            $offer = new Offer();
-                            $offer->applicationid = $applicationid;
-                            $offer->offertypeid = 1;
-                            $offer->issuedby = Yii::$app->user->getId();
-                            $offer->issuedate = date("Y-m-d");
-                            $offer_save_flag = $offer->save();
-                            if ($offer_save_flag == false) {
-                                $transaction->rollBack();
-                                Yii::$app->session->setFlash('error', 'Error occured when creating offer');
-                                return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                            if ($rejection) {
+                                $result = Rejection::rescindRejection($update_candidate->personid);
+                                if ($result == false) {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when rescind rejection');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
                             }
-                            // Generate potentialstudentid
-                            else {
-                                $applicant = Applicant::find()
-                                    ->where(['personid' => $update_candidate->personid])
-                                    ->one();
-                                $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
-                                $applicant->potentialstudentid = $generated_id;
-                                $applicant->save();
+
+                            /**
+                             * this should prevent the creation of multiple offers,
+                             * which is suspected to occur when internet timeout
+                             * during request submission
+                             */
+                            $existing_current_offer = Offer::find()
+                                ->where(['applicationid' => $applicationid, 'offertypeid' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                                ->all();
+
+                            if ($existing_current_offer == false) {
+                                // create offer
+                                $offer = new Offer();
+                                $offer->applicationid = $applicationid;
+                                $offer->offertypeid = 1;
+                                $offer->issuedby = Yii::$app->user->getId();
+                                $offer->issuedate = date("Y-m-d");
+                                $offer_save_flag = $offer->save();
+                                if ($offer_save_flag == false) {
+                                    $transaction->rollBack();
+                                    Yii::$app->session->setFlash('error', 'Error occured when creating offer');
+                                    return self::actionViewByStatus(EmployeeDepartment::getUserDivision(), $old_status, $programme_id);
+                                }
+                                // Generate potentialstudentid
+                                else {
+                                    $applicant = Applicant::find()
+                                        ->where(['personid' => $update_candidate->personid])
+                                        ->one();
+                                    $generated_id = Applicant::preparePotentialStudentID($update_candidate->divisionid, $applicant->applicantid, "generate");
+                                    $applicant->potentialstudentid = $generated_id;
+                                    $applicant->save();
+                                }
                             }
                         }
                     }
