@@ -164,6 +164,18 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                         <?= Yii::$app->controller->renderPartial('//layouts/legacy_partial'); ?>
                     <?php endif; ?>
 
+                    <!-- Bursary Module -->
+                    <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')) : ?>
+                        <li>
+                            <?=
+                                Html::a(
+                                    'Bursary',
+                                    Url::toRoute(['/subcomponents/bursary/site/index']),
+                                    ['id' => 'bursary-sidebar-anchor']
+                                );
+                            ?>
+                        </li>s
+                    <?php endif; ?>
 
                     <!--Legacy-->
                     <?php if (false/*Yii::$app->user->can('accessLegacy')*/) : ?>
