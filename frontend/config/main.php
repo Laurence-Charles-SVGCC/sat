@@ -28,7 +28,7 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        
+
     ],
     'params' => $params,
     //App's Modules.
@@ -36,13 +36,13 @@ return [
         //Custom built modules for subcomponents
         'subcomponents' => [
             'class' => 'app\subcomponents\SubcomponentsModule',
-            'modules' =>[
+            'modules' => [
                 'admissions' => [
                     'class' => 'app\subcomponents\admissions\AdmissionsModule'
-                 ],
+                ],
                 'applications' => [
                     'class' => 'app\subcomponents\applications\ApplicationsModule'
-                 ],
+                ],
                 'gradebook' => [
                     'class' => 'app\subcomponents\gradebook\GradebookModule',
                 ],
@@ -64,7 +64,13 @@ return [
                 'students' => [
                     'class' => 'app\subcomponents\students\StudentsModule',
                 ],
-              ]
-          ]
+                'coordinator' => [
+                    'class' => 'app\subcomponents\coordinator\CoordinatorModule',
+                ],
+                'bursary' => [
+                    'class' => 'app\subcomponents\bursary\Module',
+                ],
+            ]
+        ]
     ]
 ];
