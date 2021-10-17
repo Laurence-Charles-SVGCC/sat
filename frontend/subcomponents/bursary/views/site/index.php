@@ -6,6 +6,8 @@ use yii\helpers\Url;
 $this->title = 'Bursary Dashboard';
 ?>
 
+<h1><?= $this->title ?></h1>
+
 <div class="row">
     <div class="col-sm-4 col-md-4">
         <div class="thumbnail" style="min-height:100px">
