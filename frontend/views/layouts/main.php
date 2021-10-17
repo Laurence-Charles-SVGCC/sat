@@ -169,12 +169,12 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                         <li>
                             <?=
                                 Html::a(
-                                    'Bursary',
+                                    "<i class='glyphicon glyphicon-usd'></i>Bursary",
                                     Url::toRoute(['/subcomponents/bursary/site/index']),
                                     ['id' => 'bursary-sidebar-anchor']
                                 );
                             ?>
-                        </li>s
+                        </li>
                     <?php endif; ?>
 
                     <!--Legacy-->
