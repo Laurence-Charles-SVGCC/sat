@@ -155,11 +155,6 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                         <?= Yii::$app->controller->renderPartial('//layouts/gradebook_partial'); ?>
                     <?php endif; ?>
 
-
-                    <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')) : ?>
-                        <?= Yii::$app->controller->renderPartial('//layouts/payments_partial'); ?>
-                    <?php endif; ?>
-
                     <?php if (false) : ?>
                         <?= Yii::$app->controller->renderPartial('//layouts/legacy_partial'); ?>
                     <?php endif; ?>
