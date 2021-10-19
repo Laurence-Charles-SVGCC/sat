@@ -114,7 +114,7 @@ class BillingChargeModel
                 ]
             )
             ->all();
-        if (empty($billingCharges)) {
+        if (!empty($billingCharges)) {
             return $billingCharges[0];
         }
         return false;
