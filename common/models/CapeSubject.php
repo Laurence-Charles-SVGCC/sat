@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace common\models;
 
 use Yii;
 
@@ -43,8 +43,8 @@ class CapeSubject extends \yii\db\ActiveRecord
             [['cordinatorid', 'academicofferingid', 'unitcount', 'capacity', 'isactive', 'isdeleted'], 'integer'],
             [['academicofferingid', 'subjectname'], 'required'],
             [['subjectname'], 'string', 'max' => 100],
-            [['cordinatorid'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['cordinatorid' => 'personid']],
-            [['academicofferingid'], 'exist', 'skipOnError' => true, 'targetClass' => AcademicOffering::className(), 'targetAttribute' => ['academicofferingid' => 'academicofferingid']],
+            [['cordinatorid'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['cordinatorid' => 'personid']],
+            [['academicofferingid'], 'exist', 'skipOnError' => true, 'targetClass' => AcademicOffering::class, 'targetAttribute' => ['academicofferingid' => 'academicofferingid']],
         ];
     }
 
@@ -70,7 +70,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getApplicationCapesubjects()
     {
-        return $this->hasMany(ApplicationCapesubject::className(), ['capesubjectid' => 'capesubjectid']);
+        return $this->hasMany(ApplicationCapesubject::class, ['capesubjectid' => 'capesubjectid']);
     }
 
     /**
@@ -78,7 +78,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getCordinator()
     {
-        return $this->hasOne(User::className(), ['personid' => 'cordinatorid']);
+        return $this->hasOne(User::class, ['personid' => 'cordinatorid']);
     }
 
     /**
@@ -86,7 +86,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getAcademicoffering()
     {
-        return $this->hasOne(AcademicOffering::className(), ['academicofferingid' => 'academicofferingid']);
+        return $this->hasOne(AcademicOffering::class, ['academicofferingid' => 'academicofferingid']);
     }
 
     /**
@@ -94,7 +94,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getCapeSubjectGroups()
     {
-        return $this->hasMany(CapeSubjectGroup::className(), ['capesubjectid' => 'capesubjectid']);
+        return $this->hasMany(CapeSubjectGroup::class, ['capesubjectid' => 'capesubjectid']);
     }
 
     /**
@@ -102,7 +102,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getCapegroups()
     {
-        return $this->hasMany(CapeGroup::className(), ['capegroupid' => 'capegroupid'])->viaTable('cape_subject_group', ['capesubjectid' => 'capesubjectid']);
+        return $this->hasMany(CapeGroup::class, ['capegroupid' => 'capegroupid'])->viaTable('cape_subject_group', ['capesubjectid' => 'capesubjectid']);
     }
 
     /**
@@ -110,7 +110,7 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getCapeUnits()
     {
-        return $this->hasMany(CapeUnit::className(), ['capesubjectid' => 'capesubjectid']);
+        return $this->hasMany(CapeUnit::class, ['capesubjectid' => 'capesubjectid']);
     }
 
     /**
@@ -118,6 +118,6 @@ class CapeSubject extends \yii\db\ActiveRecord
      */
     public function getCordinators()
     {
-        return $this->hasMany(Cordinator::className(), ['capesubjectid' => 'capesubjectid']);
+        return $this->hasMany(Cordinator::class, ['capesubjectid' => 'capesubjectid']);
     }
 }
