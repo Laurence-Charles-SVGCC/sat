@@ -39,8 +39,6 @@ use yii\helpers\Html;
           </li>
         </ul>
       </div><br /><br />
-
-
     </div>
 
     <div class="panel-body">

@@ -9,28 +9,22 @@ use yii\helpers\Html;
     <div class="panel-heading">
       <span>Payments</span>
 
-      <div class="btn-group pull-right">
-        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Select action...
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <?php foreach ($studentRegistrations as $studentRegistrationId => $programme) : ?>
-            <li>
-              <?=
-                Html::a(
-                  "Manage {$programme} Scheduled Fees",
-                  [
-                    "student-payments/scheduled-fee-report",
-                    "username" => $username,
-                    "studentRegistrationId" => $studentRegistrationId
-                  ]
-                );
-              ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-      </div><br /><br />
+      <ul class="pull-right">
+        <?php foreach ($studentRegistrations as $studentRegistrationId => $programme) : ?>
+          <li>
+            <?=
+              Html::a(
+                "Manage {$programme} Scheduled Fees",
+                [
+                  "student-payments/scheduled-fee-report",
+                  "username" => $username,
+                  "studentRegistrationId" => $studentRegistrationId
+                ]
+              );
+            ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
     </div>
 
     <div class="panel-body">

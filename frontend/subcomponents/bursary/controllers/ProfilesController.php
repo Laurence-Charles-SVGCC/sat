@@ -8,7 +8,6 @@ use common\models\ApplicantModel;
 use common\models\ApplicationModel;
 use common\models\ApplicationAmendmentPaymentForm;
 use common\models\ApplicationSubmissionPaymentForm;
-use common\models\AuthorizationModel;
 use common\models\BillingChargeModel;
 use common\models\BillingModel;
 use common\models\BursaryAccountSearchForm;
@@ -62,7 +61,6 @@ class ProfilesController extends \yii\web\Controller
 
     public function actionStudentProfile($username)
     {
-        $user = Yii::$app->user->identity;
         $customer = UserModel::findUserByUsername($username);
         $userFullname = UserModel::getUserFullname($customer);
         $applicant = ApplicantModel::getApplicantByPersonid($customer->personid);
