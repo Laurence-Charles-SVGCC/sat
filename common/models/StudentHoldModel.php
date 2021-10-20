@@ -11,7 +11,6 @@ class StudentHoldModel
         return StudentHold::find()->where(["studentholdid" => $id])->one();
     }
 
-
     public static function getFinancialHoldsByPersonID($id)
     {
         return StudentHold::find()
@@ -23,9 +22,14 @@ class StudentHoldModel
                 "hold_type",
                 "`student_hold`.`holdtypeid` = `hold_type`.`holdtypeid`"
             )
+            // ->innerJoin(
+            //     "hold_category",
+            //     " `hold_type`.`holdcategoryid` = `hold_category`.`holdcategoryid`"
+            // )
             ->where(
                 [
                     "student_registration.personid" => $id,
+                    // 'hold_category.holdcategoryid' => 1,
                     "hold_type.holdcategoryid" => 1,
                     "student_hold.isactive" => 1,
                     "student_hold.isdeleted" => 0
@@ -33,7 +37,6 @@ class StudentHoldModel
             )
             ->all();
     }
-
 
     public static function prepareFormattedStudentFinancialHolds(
         $financialHolds
@@ -117,7 +120,6 @@ class StudentHoldModel
         return $data;
     }
 
-
     public static function reactivateHold($studentHold, $userID)
     {
         $studentHold->holdstatus = 1;
@@ -128,7 +130,6 @@ class StudentHoldModel
         $studentHold->dateresolved = null;
         return $studentHold->save();
     }
-
 
     public static function resolveHold($studentHold, $userID)
     {
@@ -147,7 +148,6 @@ class StudentHoldModel
         $studentHold->dateresolved = date("Y-m-d");
         return $studentHold->save();
     }
-
 
     public static function processPublishingRequest($hold, $notificationForm)
     {
