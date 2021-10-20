@@ -97,6 +97,38 @@ class ApplicationSubmissionPaymentForm extends Model
         }
     }
 
+    private function billingEligibleForWaiver($paymentMethodId)
+    {
+        $billingCharge =
+            BillingChargeModel::getBillingChargeById($this->billingChargeId);
+
+        $billingType =
+            BillingChargeModel::getBillingChargeFeeName($billingCharge);
+
+        $paymentMethod =
+            PaymentMethodModel::getPaymentMethodByID($paymentMethodId);
+
+        if (
+            $paymentMethod->name == "Vaccination Waiver"
+            && in_array(
+                $billingType,
+                ["Application Submission", "Application Amendment"]
+            )
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private function determineAmountPayable($paymentMethodId)
+    {
+        if ($this->billingEligibleForWaiver($paymentMethodId) == true) {
+            return 0;
+        } else {
+            return $this->amount;
+        }
+    }
+
 
     private function generateBilling(
         $receipt,
@@ -111,7 +143,31 @@ class ApplicationSubmissionPaymentForm extends Model
         $billing->application_period_id = $this->applicationPeriodId;
         $billing->created_by = $staffID;
         $billing->cost = $cost;
-        $billing->amount_paid = $this->amount;
+
+        $billing->amount_paid =
+            $this->determineAmountPayable($receipt->payment_method_id);
+
+        return $billing;
+    }
+
+
+    private function generateCorrespondingAmendmentBilling(
+        $receipt,
+        $applicationAmendment,
+        $customerId,
+        $staffID
+    ) {
+        $billing = new Billing();
+        $billing->receipt_id = $receipt->id;
+        $billing->billing_charge_id = $applicationAmendment->id;
+        $billing->customer_id = $customerId;
+        $billing->application_period_id = $this->applicationPeriodId;
+        $billing->created_by = $staffID;
+        $billing->cost = $applicationAmendment->cost;
+
+        $billing->amount_paid =
+            $this->determineAmountPayable($receipt->payment_method_id);
+
         return $billing;
     }
 
@@ -120,7 +176,7 @@ class ApplicationSubmissionPaymentForm extends Model
         $customerId,
         $staffID,
         $applicationSubmissionCost,
-        $applicationAmendmentCost,
+        $applicationAmendment,
         $controller
     ) {
         $receipt = $this->generateReceipt($customerId, $staffID);
@@ -137,9 +193,9 @@ class ApplicationSubmissionPaymentForm extends Model
                 );
 
             $amendmentBilling =
-                $this->generateBilling(
+                $this->generateCorrespondingAmendmentBilling(
                     $receipt,
-                    $applicationAmendmentCost,
+                    $applicationAmendment,
                     $customerId,
                     $staffID
                 );
@@ -227,7 +283,7 @@ class ApplicationSubmissionPaymentForm extends Model
                 $customerId,
                 $staffID,
                 $applicationSubmissionCost,
-                $applicationAmendment->cost,
+                $applicationAmendment,
                 $controller
             );
         } else {

@@ -93,6 +93,38 @@ class ApplicationAmendmentPaymentForm extends Model
         }
     }
 
+    private function billingEligibleForWaiver($paymentMethodId)
+    {
+        $billingCharge =
+            BillingChargeModel::getBillingChargeById($this->billingChargeId);
+
+        $billingType =
+            BillingChargeModel::getBillingChargeFeeName($billingCharge);
+
+        $paymentMethod =
+            PaymentMethodModel::getPaymentMethodByID($paymentMethodId);
+
+        if (
+            $paymentMethod->name == "Vaccination Waiver"
+            && in_array(
+                $billingType,
+                ["Application Submission", "Application Amendment"]
+            )
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private function determineAmountPayable($paymentMethodId)
+    {
+        if ($this->billingEligibleForWaiver($paymentMethodId) == true) {
+            return 0;
+        } else {
+            return $this->amount;
+        }
+    }
+
 
     private function generateBilling(
         $receipt,
@@ -107,7 +139,10 @@ class ApplicationAmendmentPaymentForm extends Model
         $billing->application_period_id = $this->applicationPeriodId;
         $billing->created_by = $staffID;
         $billing->cost = $cost;
-        $billing->amount_paid = $this->amount;
+
+        $billing->amount_paid =
+            $this->determineAmountPayable($receipt->payment_method_id);
+
         return $billing;
     }
 
