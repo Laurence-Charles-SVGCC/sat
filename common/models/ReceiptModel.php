@@ -164,16 +164,20 @@ class ReceiptModel
     public static function prepareReceiptContent(
         $controller,
         $receipt,
-        $billings
+        $billings,
+        $applicantName,
+        $applicantId
     ) {
         $total = number_format(self::calculateReceiptTotal($receipt), 2);
 
         return $controller->renderPartial(
             "receipt-template",
             [
-                'receipt' => $receipt,
-                'billings' => $billings,
-                "total" => $total
+                "receipt" => $receipt,
+                "billings" => $billings,
+                "total" => $total,
+                "applicantName" => $applicantName,
+                "applicantId" => $applicantId
             ]
         );
     }
@@ -182,30 +186,32 @@ class ReceiptModel
     public static function generateReceiptForDownload(
         $controller,
         $receipt,
-        $billings
+        $billings,
+        $applicantName,
+        $applicantId
     ) {
         $pdf =
-            new Pdf(
-                [
-                    "filename" => "{$receipt->receipt_number}-Receipt.pdf",
-                    'mode' => Pdf::MODE_CORE,
-                    'format' => Pdf::FORMAT_A4,
-                    'orientation' => Pdf::ORIENT_PORTRAIT,
-                    'destination' => Pdf::DEST_BROWSER,
-                    'content' =>
-                    self::prepareReceiptContent(
-                        $controller,
-                        $receipt,
-                        $billings
-                    ),
-                    'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
-                    'cssInline' => '.kv-heading-1{font-size:18px}',
-                    'options' => ['title' =>  "Receipt {$receipt->receipt_number}"],
-                    'methods' => [
-                        'SetFooter' => ['{PAGENO}'],
-                    ]
+            new Pdf([
+                "filename" => "{$receipt->receipt_number}-Receipt.pdf",
+                'mode' => Pdf::MODE_CORE,
+                'format' => Pdf::FORMAT_A4,
+                'orientation' => Pdf::ORIENT_PORTRAIT,
+                'destination' => Pdf::DEST_BROWSER,
+                'content' =>
+                self::prepareReceiptContent(
+                    $controller,
+                    $receipt,
+                    $billings,
+                    $applicantName,
+                    $applicantId
+                ),
+                'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
+                'cssInline' => '.kv-heading-1{font-size:18px}',
+                'options' => ['title' =>  "Receipt {$receipt->receipt_number}"],
+                'methods' => [
+                    'SetFooter' => ['{PAGENO}'],
                 ]
-            );
+            ]);
         return $pdf->render();
     }
 
@@ -213,7 +219,7 @@ class ReceiptModel
     public static function determineFilePath($receipt)
     {
         $basePath =
-            Yii::getAlias("@app") . "/modules/sat/modules/bursary/files/receipts";
+            Yii::getAlias("@frontend") . "/subcomponents/bursary/files/receipts";
 
         $filename = "{$receipt->receipt_number}.pdf";
         $filePath = "{$basePath}/{$filename}";
@@ -229,7 +235,7 @@ class ReceiptModel
     public static function createFilePath($receipt)
     {
         $basePath =
-            Yii::getAlias("@app") . "/modules/sat/modules/bursary/files/receipts";
+            Yii::getAlias("@frontend") . "/subcomponents/bursary/files/receipts";
 
         $filename = "{$receipt->receipt_number}.pdf";
         return "{$basePath}/{$filename}";
@@ -239,7 +245,9 @@ class ReceiptModel
     public static function generateReceiptFileToDirectory(
         $controller,
         $receipt,
-        $billings
+        $billings,
+        $applicantName,
+        $applicantId
     ) {
         $pdf = new Pdf(
             [
@@ -251,7 +259,9 @@ class ReceiptModel
                 'content' => self::prepareReceiptContent(
                     $controller,
                     $receipt,
-                    $billings
+                    $billings,
+                    $applicantName,
+                    $applicantId
                 ),
                 'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
                 'cssInline' => '.kv-heading-1{font-size:18px}',
@@ -277,7 +287,9 @@ class ReceiptModel
 
         $filePath = self::determineFilePath($receipt);
         $total = self::calculateReceiptTotal($receipt);
-        $userFullName = UserModel::getUserById($receipt->customer_id)->username;
+
+        $customer = UserModel::getUserById($receipt->customer_id);
+        $userFullName = UserModel::getUserFullname($customer);
 
         return Yii::$app->mailer
             ->compose(
@@ -300,9 +312,18 @@ class ReceiptModel
     public static function publishReceipt(
         $controller,
         $receipt,
-        $billings
+        $billings,
+        $applicantName,
+        $applicantId
     ) {
-        self::generateReceiptFileToDirectory($controller, $receipt, $billings);
+        self::generateReceiptFileToDirectory(
+            $controller,
+            $receipt,
+            $billings,
+            $applicantName,
+            $applicantId
+        );
+
         return self::generateEmailForReceipt($receipt, $billings);
     }
 
