@@ -32,3 +32,6 @@ frontend/web/js/students/ajax_functions.js
 
 # composer vendor dir
 /vendor
+
+# bursary generated receipts
+frontend/subcomponents/bursary/files/receipts
