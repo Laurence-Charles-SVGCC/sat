@@ -129,10 +129,11 @@ class StudentPaymentsController extends \yii\web\Controller
                 "paymentMethods" => $paymentMethods,
                 "programme" => $programme,
                 "studentRegistrationId" => $studentRegistrationId,
-                "outstandingFeesExist" => $outstandingFeesExist,
 
                 "batchStudentFeePaymentBillingForms" =>
                 $batchStudentFeePaymentBillingForms,
+
+                "outstandingFeesExist" => $outstandingFeesExist,
             ]
         );
     }
