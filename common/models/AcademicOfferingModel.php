@@ -101,4 +101,23 @@ class AcademicOfferingModel extends \yii\base\Model
             return null;
         }
     }
+
+
+    public static function getFormattedOfferingName($academicOffering)
+    {
+        $programme =
+            ProgrammeCatalogModel::getProgrammeCatalogByID(
+                $academicOffering->programmecatalogid
+            );
+
+        $academicYear =
+            AcademicYearModel::getAcademicYearByID(
+                $academicOffering->academicyearid
+            );
+
+        $programmeName =
+            ProgrammeCatalogModel::getFormattedProgrammeName($programme);
+
+        return $programmeName . " ({$academicYear->title})";
+    }
 }

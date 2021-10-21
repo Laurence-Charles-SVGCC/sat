@@ -24,6 +24,7 @@ class ApplicationModel
                     "isdeleted" => 0
                 ]
             )
+            ->orderBy("ordering ASC")
             ->all();
     }
 
@@ -74,10 +75,14 @@ class ApplicationModel
         }
 
         if (empty($applicationCapeSubjects) == true) {
-            return ProgrammeCatalogModel::getFormattedProgrammeName($programme);
+            // return ProgrammeCatalogModel::getFormattedProgrammeName($programme);
+            return AcademicOfferingModel::getFormattedOfferingName($offering);
         } else {
+            $academicYear =
+                AcademicYearModel::getAcademicYearByID($offering->academicyearid);
+
             return $programme->name
-                . ": "
+                . " ({$academicYear->title}): "
                 . implode(' ,', $capeSubjectsNames);
         }
     }

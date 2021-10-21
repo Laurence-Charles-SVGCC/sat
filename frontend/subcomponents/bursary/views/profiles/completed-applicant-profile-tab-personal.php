@@ -13,7 +13,7 @@
           <th>Applications</th>
           <td>
             <?php foreach ($applicationDetails as $detail) : ?>
-              <?= "{$detail['ordering']} - {$detail['name']}"; ?>
+              <?= "{$detail['ordering']} - {$detail['name']}"; ?><br />
             <?php endforeach; ?>
           </td>
         </tr>
