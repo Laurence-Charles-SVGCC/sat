@@ -30,6 +30,11 @@ use yii\helpers\Url;
                     }
                 ],
                 [
+                    "attribute" => "billingDetails",
+                    "format" => "text",
+                    "label" => "Billings"
+                ],
+                [
                     "attribute" => "total",
                     "format" => "text",
                     "label" => "Total"

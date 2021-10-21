@@ -96,10 +96,19 @@ class ReceiptModel
             $data["receiptNumber"] = $receipt->receipt_number;
 
             $total = 0;
+            $billingDetails = "";
             $billings = $receipt->getBillings()->all();
             foreach ($billings as $billing) {
+                $billingCharge =
+                    BillingChargeModel::getBillingChargeById($billing->billing_charge_id);
+
+                $billingTypeName =
+                    BillingChargeModel::getBillingChargeFeeName($billingCharge);
+
+                $billingDetails .= "{$billingTypeName} \n";
                 $total += $billing->amount_paid;
             }
+            $data["billingDetails"] = $billingDetails;
             $data["total"] = $total;
             $data["datePaid"] = $receipt->date_paid;
 
@@ -439,10 +448,19 @@ class ReceiptModel
             $data["receiptNumber"] = $receipt->receipt_number;
 
             $total = 0;
-            $billings = $receipt->getBillings()->all();
+            $billings = ReceiptModel::getBillings($receipt);
+            $billingDetails = "";
             foreach ($billings as $billing) {
+                $billingCharge =
+                    BillingChargeModel::getBillingChargeById($billing->billing_charge_id);
+
+                $billingTypeName =
+                    BillingChargeModel::getBillingChargeFeeName($billingCharge);
+
+                $billingDetails .= "{$billingTypeName} \n";
                 $total += $billing->amount_paid;
             }
+            $data["billingDetails"] = $billingDetails;
             $data["total"] = $total;
             $data["datePaid"] = $receipt->date_paid;
 

@@ -16,7 +16,7 @@ use yii\helpers\Url;
                     "dataProvider" => $dataProvider,
                     "columns" => [
                         [
-                            "label" => "Receipt Number",
+                            "label" => "Receipt#",
                             "format" => "raw",
                             "value" => function ($row) {
                                 return Html::a(
@@ -32,6 +32,11 @@ use yii\helpers\Url;
                                     ]
                                 );
                             }
+                        ],
+                        [
+                            "attribute" => "billingDetails",
+                            "format" => "text",
+                            "label" => "Billings"
                         ],
                         [
                             "attribute" => "total",
