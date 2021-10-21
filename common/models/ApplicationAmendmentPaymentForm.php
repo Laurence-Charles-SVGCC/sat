@@ -171,12 +171,17 @@ class ApplicationAmendmentPaymentForm extends Model
                     "Error ocurred generating application amendment payment billing."
                 );
             } else {
-                $billings = $receipt->getBillings()->all();
+                $billings = ReceiptModel::getBillings($receipt);
+                $customer = UserModel::getUserById($receipt->customer_id);
+                $applicantName = UserModel::getUserFullname($customer);
+                $applicantId = $customer->username;
                 if ($this->autoPublish == true) {
                     ReceiptModel::publishReceipt(
                         $controller,
                         $receipt,
-                        $billings
+                        $billings,
+                        $applicantName,
+                        $applicantId
                     );
                 }
                 return $receipt;
@@ -216,11 +221,16 @@ class ApplicationAmendmentPaymentForm extends Model
 
             if ($amendmentBilling->save() == true) {
                 $billings = ReceiptModel::getBillings($receipt);
+                $customer = UserModel::getUserById($receipt->customer_id);
+                $applicantName = UserModel::getUserFullname($customer);
+                $applicantId = $customer->username;
                 if ($this->autoPublish == true) {
                     ReceiptModel::publishReceipt(
                         $controller,
                         $receipt,
-                        $billings
+                        $billings,
+                        $applicantName,
+                        $applicantId
                     );
                 }
                 return $receipt;

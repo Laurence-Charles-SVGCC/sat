@@ -215,12 +215,17 @@ class ApplicationSubmissionPaymentForm extends Model
                 $submissionBillingFeedback == true
                 && $amendmentBillingFeedback == true
             ) {
-                $billings = $receipt->getBillings()->all();
+                $billings = ReceiptModel::getBillings($receipt);
+                $customer = UserModel::getUserById($receipt->customer_id);
+                $applicantName = UserModel::getUserFullname($customer);
+                $applicantId = $customer->username;
                 if ($this->autoPublish == true) {
                     ReceiptModel::publishReceipt(
                         $controller,
                         $receipt,
-                        $billings
+                        $billings,
+                        $applicantName,
+                        $applicantId
                     );
                 }
                 return $receipt;
@@ -253,12 +258,17 @@ class ApplicationSubmissionPaymentForm extends Model
                     "Error ocurred generating application submission payment billing."
                 );
             } else {
-                $billings = $receipt->getBillings()->all();
+                $billings = ReceiptModel::getBillings($receipt);
+                $customer = UserModel::getUserById($receipt->customer_id);
+                $applicantName = UserModel::getUserFullname($customer);
+                $applicantId = $customer->username;
                 if ($this->autoPublish == true) {
                     ReceiptModel::publishReceipt(
                         $controller,
                         $receipt,
-                        $billings
+                        $billings,
+                        $applicantName,
+                        $applicantId
                     );
                 }
                 return $receipt;
