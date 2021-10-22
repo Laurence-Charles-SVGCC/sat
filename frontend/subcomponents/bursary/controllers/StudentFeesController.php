@@ -257,7 +257,78 @@ class StudentFeesController extends \yii\web\Controller
     }
 
 
-    public function actionUpdateBillingChargeCostFromDashboard($billingChargeId)
+    // public function actionUpdateBillingChargeCostFromDashboard($billingChargeId)
+    // {
+    //     $user = Yii::$app->user->identity;
+
+    //     $oldBillingCharge =
+    //         BillingChargeModel::getBillingChargeById($billingChargeId);
+
+    //     $newBillingCharge = new BillingCharge();
+
+    //     $billingType =
+    //         BillingTypeModel::getBillingTypeByID(
+    //             $oldBillingCharge->billing_type_id
+    //         );
+
+    //     $applicationPeriod =
+    //         ApplicationPeriodModel::getApplicationPeriodByID(
+    //             $oldBillingCharge->application_period_id
+    //         );
+
+    //     $academicOffering =
+    //         AcademicOfferingModel::getAcademicOfferingByID(
+    //             $oldBillingCharge->academic_offering_id
+    //         );
+
+    //     $programmeName =
+    //         AcademicOfferingModel::getProgrammeName($academicOffering);
+
+    //     $programmeTitle =
+    //         "{$applicationPeriod->name} {$programmeName} Programme Fees";
+
+    //     if ($postData = Yii::$app->request->post()) {
+    //         if ($newBillingCharge->load($postData) == true) {
+    //             if (BillingChargeModel::generateUpdatedBillingCharge(
+    //                 $oldBillingCharge,
+    //                 $newBillingCharge,
+    //                 $user->personid
+    //             ) == true) {
+    //                 Yii::$app->getSession()->setFlash(
+    //                     "success",
+    //                     "Fee modification successful."
+    //                 );
+
+    //                 return $this->redirect(
+    //                     [
+    //                         "view-application-period-student-fee-dashboard",
+
+    //                         "applicationPeriodId" =>
+    //                         $oldBillingCharge->application_period_id
+    //                     ]
+    //                 );
+    //             } else {
+    //                 Yii::$app->getSession()->setFlash(
+    //                     "warning",
+    //                     "Fee charge modification failed."
+    //                 );
+    //             }
+    //         }
+    //     }
+
+    //     return $this->render(
+    //         "update-academic-offering-fee",
+    //         [
+    //             "model" => $newBillingCharge,
+    //             "feeName" => $billingType->name,
+    //             "programmeTitle" => $programmeTitle,
+    //             "academicOfferingId" => $oldBillingCharge->academic_offering_id,
+    //             "applicationPeriodId" => $oldBillingCharge->application_period_id,
+    //         ]
+    //     );
+    // }
+
+    public function actionUpdateAcademicOfferingBillingCharge($billingChargeId)
     {
         $user = Yii::$app->user->identity;
 
@@ -275,6 +346,7 @@ class StudentFeesController extends \yii\web\Controller
             ApplicationPeriodModel::getApplicationPeriodByID(
                 $oldBillingCharge->application_period_id
             );
+
         $academicOffering =
             AcademicOfferingModel::getAcademicOfferingByID(
                 $oldBillingCharge->academic_offering_id
@@ -325,6 +397,91 @@ class StudentFeesController extends \yii\web\Controller
                 "applicationPeriodId" => $oldBillingCharge->application_period_id,
             ]
         );
+    }
+
+
+    public function actionUpdateApplicationPeriodBillingChargeFromDashboard($billingChargeId)
+    {
+        $user = Yii::$app->user->identity;
+
+        $oldBillingCharge =
+            BillingChargeModel::getBillingChargeById($billingChargeId);
+
+        $newBillingCharge = new BillingCharge();
+
+        $billingType =
+            BillingTypeModel::getBillingTypeByID(
+                $oldBillingCharge->billing_type_id
+            );
+
+        $applicationPeriod =
+            ApplicationPeriodModel::getApplicationPeriodByID(
+                $oldBillingCharge->application_period_id
+            );
+
+        $applicationPeriodTitle = "{$applicationPeriod->name} Fees";
+
+        if ($postData = Yii::$app->request->post()) {
+            if ($newBillingCharge->load($postData) == true) {
+                if (BillingChargeModel::generateUpdatedBillingCharge(
+                    $oldBillingCharge,
+                    $newBillingCharge,
+                    $user->personid
+                ) == true) {
+                    Yii::$app->getSession()->setFlash(
+                        "success",
+                        "Fee modification successful."
+                    );
+
+                    return $this->redirect(
+                        [
+                            "view-application-period-student-fee-dashboard",
+
+                            "applicationPeriodId" =>
+                            $oldBillingCharge->application_period_id
+                        ]
+                    );
+                } else {
+                    Yii::$app->getSession()->setFlash(
+                        "warning",
+                        "Fee charge modification failed."
+                    );
+                }
+            }
+        }
+
+        return $this->render(
+            "update-application-period-fee",
+            [
+                "model" => $newBillingCharge,
+                "feeName" => $billingType->name,
+                "applicationPeriodTitle" => $applicationPeriodTitle,
+                "applicationPeriodId" => $oldBillingCharge->application_period_id,
+            ]
+        );
+    }
+
+
+    public function actionUpdateBillingChargeCostFromDashboard($billingChargeId)
+    {
+        $oldBillingCharge =
+            BillingChargeModel::getBillingChargeById($billingChargeId);
+
+        if ($oldBillingCharge->academic_offering_id == NULL) {
+            return $this->redirect(
+                [
+                    "update-application-period-billing-charge-from-dashboard",
+                    "billingChargeId" => $billingChargeId
+                ]
+            );
+        } else {
+            return $this->redirect(
+                [
+                    "update-academic-offering-billing-charge-from-dashboard",
+                    "billingChargeId" => $billingChargeId
+                ]
+            );
+        }
     }
 
 

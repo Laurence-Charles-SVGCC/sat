@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
 
+
 <div class="panel panel-default" <?= $displayExistingFees ?>>
     <div class="panel-heading">
         <h3 class="panel-title">
@@ -40,7 +41,7 @@ use yii\helpers\Url;
                                 if (!empty($row["pastBillingChargeInformation"])) {
                                     foreach ($row["pastBillingChargeInformation"] as $key => $charge) {
                                         $anchors .=
-                                            "<li>"
+                                            "<li style = 'list-style-type:none; margin-top:10px'>"
                                             . Html::a(
                                                 "Revert fee to {$charge}",
                                                 Url::to(
@@ -49,14 +50,18 @@ use yii\helpers\Url;
                                                         "fromBillingChargeId" => $row["billingChargeId"],
                                                         "toBillingChargeId" => $key
                                                     ]
-                                                )
+                                                ),
+                                                [
+                                                    "class" => "btn btn-primary",
+                                                    "style" => "border:0px; width:150px"
+                                                ]
                                             )
                                             . "</li>";
                                     }
                                 }
 
                                 $anchors .=
-                                    "<li>"
+                                    "<li style = 'list-style-type:none; margin-top:10px'>"
                                     . Html::a(
                                         "Create new fee",
                                         Url::to(
@@ -64,19 +69,27 @@ use yii\helpers\Url;
                                                 "update-billing-charge-cost-from-dashboard",
                                                 "billingChargeId" => $row["billingChargeId"]
                                             ]
-                                        )
+                                        ),
+                                        [
+                                            "class" => "btn btn-primary",
+                                            "style" => "border:0px; width:150px"
+                                        ]
                                     )
                                     . "</li>";
 
-                                return "<div class='dropdown'>"
-                                    . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                    .   $row['cost']
-                                    .   "<span class='caret'></span>"
-                                    . "</button>"
-                                    . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                    .   $anchors
-                                    . "</ul>"
-                                    . "</div>";
+                                return "<ul>"
+                                    . "<li style = 'list-style-type:none; margin-top:10px'>"
+                                    . Html::a(
+                                        "<strong>Currently - $ {$row['cost']}</strong>",
+                                        null,
+                                        [
+                                            "class" => "btn btn-default",
+                                            "disabled" => true,
+                                            "style" => "border:0px; width:150px"
+                                        ]
+                                    )
+                                    . "</li>"
+                                    . $anchors;
                             }
                         ],
                         [
@@ -84,45 +97,46 @@ use yii\helpers\Url;
                             "label" => "Payable On Enrollment",
                             "value" => function ($row) {
                                 if ($row["payable_on_enrollment"] == true) {
-                                    $label = "Yes";
-                                    $options =
-                                        "<li>"
+                                    return Html::a(
+                                        "<strong>Yes</strong>",
+                                        null,
+                                        [
+                                            "class" => "btn btn-default",
+                                            "disabled" => true
+                                        ]
+                                    )
                                         . Html::a(
-                                            "Change to No",
+                                            "Change to 'No'",
                                             Url::to(
                                                 [
                                                     "update-payable-status",
                                                     "billingChargeId" => $row["billingChargeId"],
                                                     "input" => 0
                                                 ]
-                                            )
-                                        )
-                                        . "</li>";
+                                            ),
+                                            ["class" => "btn btn-warning"]
+                                        );
                                 } else {
-                                    $label = "No";
-                                    $options =
-                                        "<li>"
+                                    return Html::a(
+                                        "<strong>No</strong>",
+                                        null,
+                                        [
+                                            "class" => "btn btn-default",
+                                            "disabled" => true
+                                        ]
+                                    )
                                         . Html::a(
-                                            "Change to Yes",
+                                            "Change to 'Yes'",
                                             Url::to(
                                                 [
                                                     "update-payable-status",
                                                     "billingChargeId" => $row["billingChargeId"],
                                                     "input" => 1
                                                 ]
-                                            )
-                                        )
-                                        . "</li>";
+                                            ),
+                                            ["class" => "btn btn-success"]
+                                        );
                                 }
-                                return "<div class='dropdown'>"
-                                    . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                    .   $label
-                                    .   " <span class='caret'></span>"
-                                    . "</button>"
-                                    . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                    .   $options
-                                    . "</ul>"
-                                    . "</div>";
                             }
                         ],
                     ]
