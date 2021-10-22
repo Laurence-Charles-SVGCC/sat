@@ -51,7 +51,7 @@ $this->params["breadcrumbs"][] = $this->title;
                             $anchors = "";
 
                             $anchors .=
-                                "<li>"
+                                "<li style ='list-style-type:none; margin-top:5px'>"
                                 . Html::a(
                                     "Create new fee",
                                     Url::to(
@@ -59,19 +59,28 @@ $this->params["breadcrumbs"][] = $this->title;
                                             "edit-application-submission-billing-charge",
                                             "billingChargeId" => $row["applicationSubmissionChargeId"]
                                         ]
-                                    )
+                                    ),
+                                    [
+                                        "class" => "btn btn-primary",
+                                        "style" => "border:0px; width:150px"
+                                    ]
                                 )
                                 . "</li>";
 
-                            return "<div class='dropdown'>"
-                                . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                .   $row['applicationSubmissionChargeCost']
-                                .   "<span class='caret'></span>"
-                                . "</button>"
-                                . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                .   $anchors
-                                . "</ul>"
-                                . "</div>";
+                            return "<ul>"
+                                . "<li style ='list-style-type:none; margin-top:5px'>"
+                                . Html::a(
+                                    "<strong>$ {$row['applicationSubmissionChargeCost']}</strong>",
+                                    null,
+                                    [
+                                        "class" => "btn btn-default",
+                                        "disabled" => true,
+                                        "style" => "border:0px; width:150px"
+                                    ]
+                                )
+                                . "</li>"
+                                . $anchors
+                                . "</ul>";
                         } elseif (
                             $row["applicationSubmissionChargeCost"] == true
                             && $row["otherApplicationSubmissionChargeInformation"] == true
@@ -79,7 +88,7 @@ $this->params["breadcrumbs"][] = $this->title;
                             $anchors = "";
                             foreach ($row["otherApplicationSubmissionChargeInformation"] as $key => $charge) {
                                 $anchors .=
-                                    "<li>"
+                                    "<li style ='list-style-type:none; margin-top:5px'>"
                                     . Html::a(
                                         "Revert fee to {$charge}",
                                         Url::to(
@@ -88,13 +97,17 @@ $this->params["breadcrumbs"][] = $this->title;
                                                 "fromBillingChargeId" => $row["applicationSubmissionChargeId"],
                                                 "toBillingChargeId" => $key
                                             ]
-                                        )
+                                        ),
+                                        [
+                                            "class" => "btn btn-primary",
+                                            "style" => "border:0px; width:150px"
+                                        ]
                                     )
                                     . "</li>";
                             }
 
                             $anchors .=
-                                "<li>"
+                                "<li style ='list-style-type:none; margin-top:5px'>"
                                 . Html::a(
                                     "Create new fee",
                                     Url::to(
@@ -102,23 +115,32 @@ $this->params["breadcrumbs"][] = $this->title;
                                             "edit-application-submission-billing-charge",
                                             "billingChargeId" => $row["applicationSubmissionChargeId"]
                                         ]
-                                    )
+                                    ),
+                                    [
+                                        "class" => "btn btn-primary",
+                                        "style" => "border:0px; width:150px"
+                                    ]
                                 )
                                 . "</li>";
 
-                            return "<div class='dropdown'>"
-                                . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                .   $row['applicationSubmissionChargeCost']
-                                .   "<span class='caret'></span>"
-                                . "</button>"
-                                . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                .   $anchors
-                                . "</ul>"
-                                . "</div>";
+                            return "<ul>"
+                                . "<li style ='list-style-type:none; margin-top:5px'>"
+                                . Html::a(
+                                    "<strong>$ {$row['applicationSubmissionChargeCost']}</strong>",
+                                    null,
+                                    [
+                                        "class" => "btn btn-default",
+                                        "disabled" => true,
+                                        "style" => "border:0px; width:150px"
+                                    ]
+                                )
+                                . "</li>"
+                                . $anchors
+                                . "</ul>";
                         }
                     }
                 ],
-
+                //////////
                 [
                     "format" => "raw",
                     "label" => "Application Amendment Fee",
@@ -143,7 +165,7 @@ $this->params["breadcrumbs"][] = $this->title;
                             $anchors = "";
 
                             $anchors .=
-                                "<li>"
+                                "<li style ='list-style-type:none; margin-top:5px'>"
                                 . Html::a(
                                     "Create new fee",
                                     Url::to(
@@ -151,19 +173,28 @@ $this->params["breadcrumbs"][] = $this->title;
                                             "edit-application-amendment-billing-charge",
                                             "billingChargeId" => $row["applicationAmendmentChargeId"]
                                         ]
-                                    )
+                                    ),
+                                    [
+                                        "class" => "btn btn-primary",
+                                        "style" => "border:0px; width:150px"
+                                    ]
                                 )
                                 . "</li>";
 
-                            return "<div class='dropdown'>"
-                                . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                .   $row['applicationAmendmentChargeCost']
-                                .   "<span class='caret'></span>"
-                                . "</button>"
-                                . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                .   $anchors
-                                . "</ul>"
-                                . "</div>";
+                            return "<ul>"
+                                . "<li style ='list-style-type:none; margin-top:5px'>"
+                                . Html::a(
+                                    "<strong>$ {$row['applicationAmendmentChargeCost']}</strong>",
+                                    null,
+                                    [
+                                        "class" => "btn btn-default",
+                                        "disabled" => true,
+                                        "style" => "border:0px; width:150px"
+                                    ]
+                                )
+                                . "</li>"
+                                . $anchors
+                                . "</ul>";
                         } elseif (
                             $row["applicationAmendmentChargeCost"] == true
                             && $row["otherApplicationAmendmentChargeInformation"] == true
@@ -171,7 +202,7 @@ $this->params["breadcrumbs"][] = $this->title;
                             $anchors = "";
                             foreach ($row["otherApplicationAmendmentChargeInformation"] as $key => $charge) {
                                 $anchors .=
-                                    "<li>"
+                                    "<li style ='list-style-type:none; margin-top:5px'>"
                                     . Html::a(
                                         "Revert fee to {$charge}",
                                         Url::to(
@@ -180,13 +211,17 @@ $this->params["breadcrumbs"][] = $this->title;
                                                 "fromBillingChargeId" => $row["applicationAmendmentChargeId"],
                                                 "toBillingChargeId" => $key
                                             ]
-                                        )
+                                        ),
+                                        [
+                                            "class" => "btn btn-primary",
+                                            "style" => "border:0px; width:150px"
+                                        ]
                                     )
                                     . "</li>";
                             }
 
                             $anchors .=
-                                "<li>"
+                                "<li style ='list-style-type:none; margin-top:5px'>"
                                 . Html::a(
                                     "Create new fee",
                                     Url::to(
@@ -194,56 +229,31 @@ $this->params["breadcrumbs"][] = $this->title;
                                             "edit-application-amendment-billing-charge",
                                             "billingChargeId" => $row["applicationAmendmentChargeId"]
                                         ]
-                                    )
+                                    ),
+                                    [
+                                        "class" => "btn btn-primary",
+                                        "style" => "border:0px; width:150px"
+                                    ]
                                 )
                                 . "</li>";
 
-                            return "<div class='dropdown'>"
-                                . "<button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>"
-                                .   $row['applicationAmendmentChargeCost']
-                                .   "<span class='caret'></span>"
-                                . "</button>"
-                                . "<ul class='dropdown-menu' aria-labelledby='dropdownMenu1'>"
-                                .   $anchors
-                                . "</ul>"
-                                . "</div>";
+                            return "<ul>"
+                                . "<li style ='list-style-type:none; margin-top:5px'>"
+                                . Html::a(
+                                    "<strong>$ {$row['applicationAmendmentChargeCost']}</strong>",
+                                    null,
+                                    [
+                                        "class" => "btn btn-default",
+                                        "disabled" => true,
+                                        "style" => "border:0px; width:150px"
+                                    ]
+                                )
+                                . "</li>"
+                                . $anchors
+                                . "</ul>";
                         }
                     }
                 ],
-
-
-
-
-
-                // [
-                //     "format" => "raw",
-                //     "label" => "Application Amendment Fee",
-                //     "value" => function ($row) {
-                //         if ($row["applicationAmendmentChargeCost"] == true) {
-                //             return Html::a(
-                //                 $row["applicationAmendmentChargeCost"],
-                //                 Url::to(
-                //                     [
-                //                         "edit-application-amendment-billing-charge",
-                //                         "billingChargeId" => $row["applicationAmendmentChargeId"]
-                //                     ]
-                //                 ),
-                //                 ["id" => "edit-application-amendment-billing-charge-button"]
-                //             );
-                //         } else {
-                //             return Html::a(
-                //                 "Add",
-                //                 Url::to(
-                //                     [
-                //                         "add-application-amendment-billing-charge-to-application-period",
-                //                         "applicationPeriodId" => $row["applicationPeriodId"]
-                //                     ]
-                //                 ),
-                //                 ["id" => "add-application-amendment-billing-charge-button"]
-                //             );
-                //         }
-                //     }
-                // ],
             ]
         ]
     );
