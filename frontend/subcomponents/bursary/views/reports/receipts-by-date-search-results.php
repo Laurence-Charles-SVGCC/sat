@@ -30,7 +30,7 @@ $this->params["breadcrumbs"][] = $this->title;
                     "label" => "Receipt ID",
                     "value" => function ($row) {
                         return Html::a(
-                            $row["receiptId"],
+                            $row["receiptNumber"],
                             Url::to(
                                 [
                                     "payments/view-receipt",

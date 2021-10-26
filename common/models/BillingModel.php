@@ -257,6 +257,7 @@ class BillingModel
         }
 
         $record["receiptId"] = $receipt->id;
+        $record["receiptNumber"] = $receipt->receipt_number;
         $record["date"] = $receipt->date_paid;
         $record["customerUsername"] = $receipt->username;
         $record["customerFullName"] = $receipt->full_name;
