@@ -300,28 +300,29 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
 
-    /**
-     * Returns the division id of the user
-     *
-     * @return boolean
-     *
-     * Author: Laurence Charles
-     * Date Created: 08/08/2017
-     * Date Last Modified: 08/08/2017
-     */
     public function getUserDivision()
     {
         $divisions =
             Division::find()
-            ->innerJoin('department', '`division`.`divisionid` = `department`.`divisionid`')
-            ->innerJoin('employee_department', '`department`.`departmentid` = `employee_department`.`departmentid`')
+            ->innerJoin(
+                'department',
+                '`division`.`divisionid` = `department`.`divisionid`'
+            )
+            ->innerJoin(
+                'employee_department',
+                '`department`.`departmentid` = `employee_department`.`departmentid`'
+            )
             ->where([
-                'division.isactive' => 1,  'division.isdeleted' => 0,
-                'department.isactive' => 1,  'department.isdeleted' => 0,
-                'department.isactive' => 1,  'department.isdeleted' => 0
+                'division.isactive' => 1,
+                'division.isdeleted' => 0,
+                'department.isactive' => 1,
+                'department.isdeleted' => 0,
+                'employee_department.personid' => $this->personid,
+                'employee_department.isactive' => 1,
+                'employee_department.isdeleted' => 0
             ])
-            ->one();
-        if (empty($divisions)) {
+            ->all();
+        if (!empty($divisions)) {
             return $divisions[0]->divisionid;
         }
         return false;
