@@ -7,7 +7,7 @@ use yii\helpers\Url;
     <div class="panel panel-default">
         <div class="panel-heading">
             <?php if (stripos(Url::home(true), "localhost") == false) : ?>
-                <img src="https://www.sat.svgcc.vc/images/email_header.png" alt="email_header" class="img-rounded" style="max-width:700px; max-height:150px" />
+                <img src="https://sat.svgcc.vc/images/email_header.png" alt="email_header" class="img-rounded" style="max-width:700px; max-height:150px" />
             <?php else : ?>
                 <img src="http://localhost:8888/sat_dev/frontend/web/img/email_header.png" alt="email_header" class="img-rounded" style="max-width:700px; max-height:150px" />
             <?php endif; ?>
