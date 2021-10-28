@@ -78,7 +78,10 @@ class BillingModel
 
     public static function getReceipt($billing)
     {
-        return Receipt::find()->where(["id" => $billing->receipt_id])->one();
+        return Receipt::find()
+            ->where([
+                "id" => $billing->receipt_id, "is_active" => 1, "is_deleted" => 0
+            ])->one();
     }
 
 
