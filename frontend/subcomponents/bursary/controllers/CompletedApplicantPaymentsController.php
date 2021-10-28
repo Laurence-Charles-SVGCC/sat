@@ -3,7 +3,6 @@
 namespace app\subcomponents\bursary\controllers;
 
 use Yii;
-use common\models\AuthorizationModel;
 use common\models\ApplicantModel;
 use common\models\ApplicationAmendmentPaymentForm;
 use common\models\ApplicationSubmissionPaymentForm;
