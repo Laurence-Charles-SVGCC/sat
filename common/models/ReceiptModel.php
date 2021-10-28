@@ -10,7 +10,11 @@ class ReceiptModel
 {
     public static function getReceiptById($id)
     {
-        return Receipt::find()->where(["id" => $id])->one();
+        return Receipt::find()
+            ->where([
+                "id" => $id, "is_active" => 1, "is_deleted" => 0
+            ])
+            ->one();
     }
 
 
