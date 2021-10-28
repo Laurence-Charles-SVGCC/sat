@@ -184,7 +184,7 @@ class ReceiptModel
         $total = number_format(self::calculateReceiptTotal($receipt), 2);
 
         return $controller->renderPartial(
-            "receipt-template",
+            "payments/receipt-template",
             [
                 "receipt" => $receipt,
                 "billings" => $billings,
