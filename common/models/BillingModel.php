@@ -60,7 +60,10 @@ class BillingModel
 
     public static function getBillingById($id)
     {
-        return Billing::find()->where(["id" => $id])->one();
+        return Billing::find()
+            ->where([
+                "id" => $id, "is_active" => 1, "is_deleted" => 0
+            ])->one();
     }
 
 
