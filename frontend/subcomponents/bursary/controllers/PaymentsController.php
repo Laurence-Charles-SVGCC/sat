@@ -4,7 +4,6 @@ namespace app\subcomponents\bursary\controllers;
 
 use Yii;
 use common\models\ApplicationPeriodModel;
-use common\models\AuthorizationModel;
 use common\models\BillingModel;
 use common\models\PaymentMethodModel;
 use common\models\ReceiptModel;
