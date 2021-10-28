@@ -10,7 +10,7 @@ class ApplicationAmendmentPaymentForm extends Model
     public $fullName;
     public $amount;
     public $paymentMethodId;
-    public $receiptNumber;
+    // public $receiptNumber;
     public $datePaid;
     public $autoPublish;
     public $customerId;
@@ -38,7 +38,7 @@ class ApplicationAmendmentPaymentForm extends Model
                 "required"
             ],
             [["amount"], "number"],
-            [["receiptNumber", "username", "fullName"], "string"],
+            [[/*"receiptNumber",*/"username", "fullName"], "string"],
             [
                 [
                     "paymentMethodId",
@@ -59,7 +59,7 @@ class ApplicationAmendmentPaymentForm extends Model
     public function attributeLabels()
     {
         return [
-            "receiptNumber" => "Receipt Number",
+            //"receiptNumber" => "Receipt Number",
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "amount" => "Amount",
@@ -69,6 +69,10 @@ class ApplicationAmendmentPaymentForm extends Model
         ];
     }
 
+    private function generateReceiptNumber()
+    {
+        return "00000000";
+    }
 
     private function generateReceipt(
         $customerId,
@@ -81,7 +85,8 @@ class ApplicationAmendmentPaymentForm extends Model
         $receipt->created_by = $staffID;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber;
+        // $receipt->receipt_number = $this->receiptNumber;
+        $receipt->receipt_number = $this->generateReceiptNumber();
         $receipt->email = EmailModel::getEmailByPersonid($customerId)->email;
         $receipt->date_paid = $this->datePaid;
         $receipt->auto_publish = $this->autoPublish;

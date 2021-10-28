@@ -11,7 +11,7 @@ class ApplicationSubmissionPaymentForm extends Model
     public $amount;
     public $paymentMethodId;
     public $includeAmendmentFee;
-    public $receiptNumber;
+    // public $receiptNumber;
     public $datePaid;
     public $autoPublish;
     public $customerId;
@@ -40,7 +40,7 @@ class ApplicationSubmissionPaymentForm extends Model
                 "required"
             ],
             [["amount"], "number"],
-            [["receiptNumber", "username", "fullName"], "string"],
+            [[/*"receiptNumber",*/"username", "fullName"], "string"],
             [
                 [
                     "paymentMethodId",
@@ -62,7 +62,7 @@ class ApplicationSubmissionPaymentForm extends Model
     public function attributeLabels()
     {
         return [
-            "receiptNumber" => "Receipt Number",
+            //"receiptNumber" => "Receipt Number",
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "amount" => "Amount",
@@ -71,6 +71,11 @@ class ApplicationSubmissionPaymentForm extends Model
             "datePaid" => "Date of payment",
             "autoPublish" => "Email invoice to applicant"
         ];
+    }
+
+    private function generateReceiptNumber()
+    {
+        return "00000000";
     }
 
 
@@ -85,7 +90,7 @@ class ApplicationSubmissionPaymentForm extends Model
         $receipt->created_by = $staffID;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber;
+        $receipt->receipt_number = $this->generateReceiptNumber();
         $receipt->email = EmailModel::getEmailByPersonid($customerId)->email;
         $receipt->date_paid = $this->datePaid;
         $receipt->auto_publish = $this->autoPublish;
@@ -179,7 +184,8 @@ class ApplicationSubmissionPaymentForm extends Model
         $applicationAmendment,
         $controller
     ) {
-        $receipt = $this->generateReceipt($customerId, $staffID);
+        $receipt =
+            $this->generateReceipt($customerId, $staffID);
 
         if ($receipt == null) {
             return new ErrorObject("Error ocurred generating receipt model");

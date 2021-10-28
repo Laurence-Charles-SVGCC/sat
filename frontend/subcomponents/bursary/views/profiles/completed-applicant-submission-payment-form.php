@@ -43,11 +43,6 @@ use yii\helpers\Url;
         ?>
 
         <?=
-            $form->field($applicantSubmissionPaymentForm, "receiptNumber")
-                ->textInput(["class" => "form-control"]);
-        ?>
-
-        <?=
             $form->field($applicantSubmissionPaymentForm, 'datePaid')
                 ->widget(
                     DatePicker::class,
