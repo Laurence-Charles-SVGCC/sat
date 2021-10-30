@@ -54,6 +54,14 @@ use yii\helpers\Url;
                     <td style="text-align: right;"><?= $total ?></td>
                 </tr>
             </table>
+        </div><br />
+
+        <div class="panel-footer">
+            <?php if (stripos(Url::home(true), "localhost") == false) : ?>
+                <img src="https://sat.svgcc.vc/images/college_stamp.png" alt="college_stamp" class="img-rounded" style="width:189px; height:74px" />
+            <?php else : ?>
+                <img src="http://localhost:8888/sat_dev/frontend/web/img/college_stamp.png" alt="college_stamp" class="img-rounded" style="width:189px; height:74px" />
+            <?php endif; ?>
         </div>
     </div>
 </div>
