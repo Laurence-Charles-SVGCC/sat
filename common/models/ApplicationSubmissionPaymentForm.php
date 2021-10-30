@@ -73,9 +73,42 @@ class ApplicationSubmissionPaymentForm extends Model
         ];
     }
 
+
+    private function padToFourCharacterString($numAsString)
+    {
+        $length = strlen($numAsString);
+        if ($length == 1) {
+            return "000{$numAsString}";
+        } elseif ($length == 2) {
+            return "00{$numAsString}";
+        } elseif ($length == 3) {
+            return "0{$numAsString}";
+        } elseif ($length == 4) {
+            return $numAsString;
+        }
+    }
+
+    private function getLastReceiptId()
+    {
+        $receipts = Receipt::find()->orderBy("id DESC")->all();
+        if (!empty($receipts)) {
+            $id = $receipts[0]->id;
+            $idAsFourCharacterString = strval($id % 10000);
+            return $this->padToFourCharacterString($idAsFourCharacterString);
+        } else {
+            return "0000";
+        }
+    }
+
     private function generateReceiptNumber()
     {
-        return "00000000";
+        $unformattedDate = date('Y-m-d');
+        $yearSegment = substr($unformattedDate, 0, 4);
+        $monthSegment = substr($unformattedDate, 5, 2);
+        $daySegment = substr($unformattedDate, 8, 2);
+        $idSegment = $this->getLastReceiptId();
+
+        return "{$yearSegment}{$monthSegment}{$daySegment}{$idSegment}";
     }
 
 
