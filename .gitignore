@@ -35,3 +35,7 @@ frontend/web/js/students/ajax_functions.js
 
 # bursary generated receipts
 frontend/subcomponents/bursary/files/receipts
+
+#frontend college_stamp image
+frontend/web/img/college_stamp.png
+
