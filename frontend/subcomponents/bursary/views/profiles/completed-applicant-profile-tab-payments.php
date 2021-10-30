@@ -81,7 +81,7 @@ use yii\helpers\Html;
         && $showApplicantAmendmentPaymentForm == true
       ) : ?>
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-7">
             <?=
               $this->render(
                 "completed-applicant-receipt-listing",
@@ -90,7 +90,7 @@ use yii\helpers\Html;
             ?>
           </div>
 
-          <div class="col-sm-6">
+          <div class="col-sm-5">
             <?=
               $this->render(
                 "completed-applicant-amendment-payment-form",
