@@ -11,9 +11,7 @@ class SingleStudentFeePaymentForm extends Model
     public $balance;
     public $amountPaid;
     public $paymentMethodId;
-    public $receiptNumber;
     public $datePaid;
-    public $autoPublish;
     public $customerId;
     public $applicationPeriodId;
     public $billingChargeId;
@@ -33,7 +31,6 @@ class SingleStudentFeePaymentForm extends Model
                     "paymentMethodId",
                     "includeAmendmentFee",
                     "datePaid",
-                    "autoPublish",
                     "customerId",
                     "applicationPeriodId",
                     "billingChargeId"
@@ -41,11 +38,10 @@ class SingleStudentFeePaymentForm extends Model
                 "required"
             ],
             [["amountPaid", "balance"], "number"],
-            [["receiptNumber", "username", "fullName"], "string"],
+            [["username", "fullName"], "string"],
             [
                 [
                     "paymentMethodId",
-                    "autoPublish",
                     "customerId",
                     "applicationPeriodId",
                     "billingChargeId"
@@ -63,14 +59,12 @@ class SingleStudentFeePaymentForm extends Model
     public function attributeLabels()
     {
         return [
-            "receiptNumber" => "Receipt Number",
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "balance" => "Balance",
             "amountPaid" => "AmountPaid",
             "paymentMethodId" => "Payment Method",
-            "datePaid" => "Date of payment",
-            "autoPublish" => "Email invoice to applicant"
+            "datePaid" => "Date of payment"
         ];
     }
 
@@ -89,7 +83,43 @@ class SingleStudentFeePaymentForm extends Model
         $this->customerId = $customer->personid;
         $this->applicationPeriodId = $billingCharge->application_period_id;
         $this->billingChargeId = $billingCharge->id;
-        $this->autoPublish = 1;
+    }
+
+    private function padToFourCharacterString($numAsString)
+    {
+        $length = strlen($numAsString);
+        if ($length == 1) {
+            return "000{$numAsString}";
+        } elseif ($length == 2) {
+            return "00{$numAsString}";
+        } elseif ($length == 3) {
+            return "0{$numAsString}";
+        } elseif ($length == 4) {
+            return $numAsString;
+        }
+    }
+
+    private function getLastReceiptId()
+    {
+        $receipts = Receipt::find()->orderBy("id DESC")->all();
+        if (!empty($receipts)) {
+            $id = $receipts[0]->id;
+            $idAsFourCharacterString = strval($id % 10000);
+            return $this->padToFourCharacterString($idAsFourCharacterString);
+        } else {
+            return "0000";
+        }
+    }
+
+    private function generateReceiptNumber()
+    {
+        $unformattedDate = date('Y-m-d');
+        $yearSegment = substr($unformattedDate, 0, 4);
+        $monthSegment = substr($unformattedDate, 5, 2);
+        $daySegment = substr($unformattedDate, 8, 2);
+        $idSegment = $this->getLastReceiptId();
+
+        return "{$yearSegment}{$monthSegment}{$daySegment}{$idSegment}";
     }
 
 
@@ -104,10 +134,12 @@ class SingleStudentFeePaymentForm extends Model
         $receipt->created_by = $staffId;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber;
+
+        $receipt->receipt_number =
+            $receipt->receipt_number = $this->generateReceiptNumber();
+
         $receipt->email = EmailModel::getEmailByPersonid($customerId)->email;
         $receipt->date_paid = $this->datePaid;
-        $receipt->auto_publish = $this->autoPublish;
         $receipt->timestamp = date("Y-m-d H:i:s");
         if ($receipt->save() == true) {
             return $receipt;
@@ -134,10 +166,8 @@ class SingleStudentFeePaymentForm extends Model
     }
 
 
-    public function processIndividualBillingPaymentRequest(
-        $staffId,
-        $controller
-    ) {
+    public function processIndividualBillingPaymentRequest($staffId)
+    {
         $receipt = $this->generateReceipt($this->customerId, $staffId);
 
         if ($receipt == null) {
@@ -156,19 +186,6 @@ class SingleStudentFeePaymentForm extends Model
                         . " billing."
                 );
             } else {
-                $billings = ReceiptModel::getBillings($receipt);
-                $customer = UserModel::getUserById($receipt->customer_id);
-                $applicantName = UserModel::getUserFullname($customer);
-                $applicantId = $customer->username;
-                if ($this->autoPublish == true) {
-                    ReceiptModel::publishReceipt(
-                        $controller,
-                        $receipt,
-                        $billings,
-                        $applicantName,
-                        $applicantId
-                    );
-                }
                 return $receipt;
             }
         }

@@ -14,6 +14,7 @@ use common\models\BillingModel;
 use common\models\BillingTypeModel;
 use common\models\ErrorObject;
 use common\models\PaymentMethodModel;
+use common\models\ReceiptModel;
 use common\models\SingleStudentFeePaymentForm;
 use common\models\UserModel;
 use yii\base\Model;
@@ -352,8 +353,8 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                     );
                 } else {
                     return $this->redirect([
-                        "profiles/redirect-to-customer-profile",
-                        "username" => $username
+                        "preview-receipt",
+                        "receiptId" => $receipt->id
                     ]);
                 }
             } else {
@@ -410,8 +411,7 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
             if ($model->load($postData) == true) {
                 $receipt =
                     $model->processIndividualBillingPaymentRequest(
-                        $user->personid,
-                        $this
+                        $user->personid
                     );
 
                 if ($receipt instanceof ErrorObject) {
@@ -421,8 +421,8 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                     );
                 } else {
                     return $this->redirect([
-                        "enrollment-payments-report",
-                        "username" => $username
+                        "preview-receipt",
+                        "receiptId" => $receipt->id
                     ]);
                 }
             } else {
@@ -443,5 +443,96 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                 "paymentMethods" => $paymentMethods
             ]
         );
+    }
+
+
+    public function actionPreviewReceipt($receiptId)
+    {
+        $receipt = ReceiptModel::getReceiptById($receiptId);
+        $billings = ReceiptModel::getBillings($receipt);
+        $customer = UserModel::getUserById($receipt->customer_id);
+        $applicantName = UserModel::getUserFullname($customer);
+        $applicantId = $customer->username;
+        $total = number_format(ReceiptModel::calculateReceiptTotal($receipt), 2);
+
+        return $this->render(
+            "preview-receipt",
+            [
+                "receipt" => $receipt,
+                "billings" => $billings,
+                "total" => $total,
+                "applicantName" => $applicantName,
+                "applicantId" => $applicantId
+            ]
+        );
+    }
+
+
+    public function actionRedoReceipt($receiptId)
+    {
+        $user = Yii::$app->user->identity;
+        $receipt = ReceiptModel::getReceiptById($receiptId);
+        $billings = ReceiptModel::getBillings($receipt);
+        $customer = UserModel::getUserById($receipt->customer_id);
+        $applicantName = UserModel::getUserFullname($customer);
+        $applicantId = $customer->username;
+
+        if (ReceiptModel::deleteReceipt(
+            $receipt,
+            $billings,
+            $user->personid
+        ) == true) {
+            return $this->redirect([
+                "enrollment-payments-report",
+                "username" => $applicantId
+            ]);
+        } else {
+            Yii::$app->getSession()->setFlash(
+                'warning',
+                'Error occurred deleting receipt.'
+            );
+        }
+        return $this->redirect([
+            "view-receipt",
+            "id" => $receiptId,
+            "username" => UserModel::getUserById($receipt->customer_id)->username,
+        ]);
+    }
+
+
+    public function actionApproveAndPublishReceipt($receiptId)
+    {
+        $receipt = ReceiptModel::getReceiptById($receiptId);
+        $billings = ReceiptModel::getBillings($receipt);
+        $customer = UserModel::getUserById($receipt->customer_id);
+        $applicantName = UserModel::getUserFullname($customer);
+        $applicantId = $customer->username;
+
+        ReceiptModel::publishReceipt(
+            $this,
+            $receipt,
+            $billings,
+            $applicantName,
+            $applicantId
+        );
+
+        $receipt->publish_count += 1;
+        if ($receipt->save() == true) {
+            Yii::$app->getSession()->setFlash(
+                "success",
+                "Receipt published successfully."
+            );
+        } else {
+            Yii::$app->getSession()->setFlash(
+                "warning",
+                "Error occurred publishing receipt."
+            );
+        }
+
+        return $this->redirect([
+            "payments/view-receipt",
+            "id" => $receiptId,
+            "username" => UserModel::getUserById($receipt->customer_id)->username
+        ]);
     }
 }

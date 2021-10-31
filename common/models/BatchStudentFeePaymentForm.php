@@ -9,12 +9,10 @@ class BatchStudentFeePaymentForm extends Model
     public $username;
     public $fullName;
     public $paymentMethodId;
-    public $receiptNumber;
     public $customerId;
     public $staffId;
     public $applicationPeriodId;
     public $datePaid;
-    public $autoPublish;
 
     /**
      * @inheritdoc
@@ -28,19 +26,16 @@ class BatchStudentFeePaymentForm extends Model
                     "fullName",
                     "paymentMethodId",
                     "datePaid",
-                    "autoPublish",
-                    "receiptNumber",
                     "customerId",
                     "staffId",
                     "applicationPeriodId",
                 ],
                 "required"
             ],
-            [["receiptNumber", "username", "fullName"], "string"],
+            [["username", "fullName"], "string"],
             [
                 [
                     "paymentMethodId",
-                    "autoPublish",
                     "customerId",
                     "staffId",
                     "applicationPeriodId"
@@ -62,9 +57,7 @@ class BatchStudentFeePaymentForm extends Model
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "paymentMethodId" => "Payment Method",
-            "receiptNumber" => "Receipt Number",
-            "datePaid" => "Date of payment",
-            "autoPublish" => "Email invoice to applicant"
+            "datePaid" => "Date of payment"
         ];
     }
 
@@ -80,7 +73,6 @@ class BatchStudentFeePaymentForm extends Model
         $this->customerId = $customer->personid;
         $this->staffId = $staffId;
         $this->applicationPeriodId = $applicationPeriodId;
-        $this->autoPublish = 1;
     }
 
 
@@ -109,7 +101,7 @@ class BatchStudentFeePaymentForm extends Model
         $personId,
         $applicationPeriodId
     ) {
-        $regustrations =  StudentRegistration::find()
+        $registrations =  StudentRegistration::find()
             ->innerJoin(
                 'academic_offering',
                 '`student_registration`.`academicofferingid` = `academic_offering`.`academicofferingid`'
@@ -125,6 +117,43 @@ class BatchStudentFeePaymentForm extends Model
         } else {
             return false;
         }
+    }
+
+    private function padToFourCharacterString($numAsString)
+    {
+        $length = strlen($numAsString);
+        if ($length == 1) {
+            return "000{$numAsString}";
+        } elseif ($length == 2) {
+            return "00{$numAsString}";
+        } elseif ($length == 3) {
+            return "0{$numAsString}";
+        } elseif ($length == 4) {
+            return $numAsString;
+        }
+    }
+
+    private function getLastReceiptId()
+    {
+        $receipts = Receipt::find()->orderBy("id DESC")->all();
+        if (!empty($receipts)) {
+            $id = $receipts[0]->id;
+            $idAsFourCharacterString = strval($id % 10000);
+            return $this->padToFourCharacterString($idAsFourCharacterString);
+        } else {
+            return "0000";
+        }
+    }
+
+    private function generateReceiptNumber()
+    {
+        $unformattedDate = date('Y-m-d');
+        $yearSegment = substr($unformattedDate, 0, 4);
+        $monthSegment = substr($unformattedDate, 5, 2);
+        $daySegment = substr($unformattedDate, 8, 2);
+        $idSegment = $this->getLastReceiptId();
+
+        return "{$yearSegment}{$monthSegment}{$daySegment}{$idSegment}";
     }
 
 
@@ -146,13 +175,12 @@ class BatchStudentFeePaymentForm extends Model
         $receipt->created_by = $this->staffId;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber;
+        $receipt->receipt_number = $this->generateReceiptNumber();
 
         $receipt->email =
             EmailModel::getEmailByPersonid($this->customerId)->email;
 
         $receipt->date_paid = $this->datePaid;
-        $receipt->auto_publish = $this->autoPublish;
         $receipt->timestamp = date("Y-m-d H:i:s");
         if ($receipt->save() == true) {
             return $receipt;
@@ -162,16 +190,6 @@ class BatchStudentFeePaymentForm extends Model
     }
 
 
-    /**
-     * Process user billing input to generate billing models
-     *
-     * @param Receipt $receipt
-     * @param array BatchStudentFeePaymentBillingForm $billings
-     * @return array Billings
-     * 
-     * Test command:
-     * Untested
-     */
     public function generateBillings($receipt, $billings)
     {
         $savedBillings = array();
@@ -193,16 +211,6 @@ class BatchStudentFeePaymentForm extends Model
     }
 
 
-    /**
-     * Generate Billing model
-     *
-     * @param Receipt $receiptId
-     * @param BatchStudentFeePaymentBillingForm $billing
-     * @return Billing|null
-     * 
-     * Test command:
-     * Untested
-     */
     private function generateBilling($receipt, $billing)
     {
         $billingModel = new Billing();
@@ -277,15 +285,6 @@ class BatchStudentFeePaymentForm extends Model
                     $customer = UserModel::getUserById($receipt->customer_id);
                     $applicantName = UserModel::getUserFullname($customer);
                     $applicantId = $customer->username;
-                    if ($this->autoPublish == true) {
-                        ReceiptModel::publishReceipt(
-                            $controller,
-                            $receipt,
-                            $billings,
-                            $applicantName,
-                            $applicantId
-                        );
-                    }
                     return $receipt;
                 }
             }
@@ -333,18 +332,6 @@ class BatchStudentFeePaymentForm extends Model
                 if ($billings == false) {
                     return new ErrorObject("Error ocurred generating billings.");
                 } else {
-                    if ($this->autoPublish == true) {
-                        $customer = UserModel::getUserById($receipt->customer_id);
-                        $applicantName = UserModel::getUserFullname($customer);
-                        $applicantId = $customer->username;
-                        ReceiptModel::publishReceipt(
-                            $controller,
-                            $receipt,
-                            $billings,
-                            $applicantName,
-                            $applicantId
-                        );
-                    }
                     return $receipt;
                 }
             }
@@ -361,13 +348,12 @@ class BatchStudentFeePaymentForm extends Model
         $receipt->created_by = $this->staffId;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber;
+        $receipt->receipt_number = $this->receiptNumber; ///xxxx
 
         $receipt->email =
             EmailModel::getEmailByPersonid($this->customerId)->email;
 
         $receipt->date_paid = $this->datePaid;
-        $receipt->auto_publish = $this->autoPublish;
         $receipt->timestamp = date("Y-m-d H:i:s");
         if ($receipt->save() == true) {
             return $receipt;
