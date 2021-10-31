@@ -4,7 +4,6 @@ namespace app\subcomponents\bursary\controllers;
 
 use Yii;
 use common\models\AcademicOfferingModel;
-use common\models\AuthorizationModel;
 use common\models\ApplicantModel;
 use common\models\BatchStudentFeePaymentForm;
 use common\models\BillingChargeModel;
