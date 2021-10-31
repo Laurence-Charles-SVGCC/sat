@@ -20,15 +20,6 @@ $this->params["breadcrumbs"][] =
         ]
     ];
 
-$this->params["breadcrumbs"][] =
-    [
-        "label" => "Enrollment Payments Report",
-        "url" => [
-            "successful-applicant-payments/enrollment-payments-report",
-            "username" => $applicantId
-        ]
-    ];
-
 $this->params["breadcrumbs"][] = $this->title;
 ?>
 
@@ -52,7 +43,11 @@ $this->params["breadcrumbs"][] = $this->title;
             <?=
                 Html::a(
                     "Redo",
-                    ["redo-receipt", "receiptId" => $receipt->id],
+                    [
+                        "redo-receipt",
+                        "receiptId" => $receipt->id,
+                        "studentRegistrationId" => $studentRegistrationId
+                    ],
                     [
                         "title" => "Redo Receipt",
                         "data" => [

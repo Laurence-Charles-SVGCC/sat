@@ -314,7 +314,6 @@ class BatchStudentFeePaymentForm extends Model
 
     public function processEnrolledStudentPaymentRequest(
         $billings,
-        $controller,
         $studentRegistrationId
     ) {
         if ($this->billingsSubmitted($billings) == false) {

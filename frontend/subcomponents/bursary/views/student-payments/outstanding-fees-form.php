@@ -25,11 +25,6 @@ use yii\helpers\Html;
         ?>
 
         <?=
-            $form->field($batchStudentFeePaymentForm, "receiptNumber")
-                ->textInput(["class" => "form-control"]);
-        ?>
-
-        <?=
             $form->field($batchStudentFeePaymentForm, 'datePaid')
                 ->widget(
                     DatePicker::class,
@@ -46,12 +41,6 @@ use yii\helpers\Html;
             $form->field($batchStudentFeePaymentForm, "paymentMethodId")
                 ->inline()
                 ->radioList($paymentMethods);
-        ?>
-
-        <?=
-            $form->field($batchStudentFeePaymentForm, "autoPublish")
-                ->inline()
-                ->radioList([0 => "No", 1 => "Yes"]);
         ?>
 
         <br />

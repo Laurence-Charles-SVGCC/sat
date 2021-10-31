@@ -59,11 +59,6 @@ $this->params["breadcrumbs"][] = $this->title;
         ?>
 
         <?=
-            $form->field($model, "receiptNumber")
-                ->textInput(["class" => "form-control"]);
-        ?>
-
-        <?=
             $form->field($model, 'datePaid')
                 ->widget(
                     DatePicker::class,
@@ -80,12 +75,6 @@ $this->params["breadcrumbs"][] = $this->title;
             $form->field($model, "paymentMethodId")
                 ->inline()
                 ->radioList($paymentMethods);
-        ?>
-
-        <?=
-            $form->field($model, "autoPublish")
-                ->inline()
-                ->radioList([0 => "No", 1 => "Yes"]);
         ?>
 
         <?= Html::submitButton("Add", ["class" => "btn btn-success pull-right"]); ?>
