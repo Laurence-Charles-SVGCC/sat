@@ -15,7 +15,7 @@ $this->params["breadcrumbs"][] =
 $this->params["breadcrumbs"][] =
     [
         "label" => $userFullname,
-        "url" => ["profiles/student-profile", "username" => $username]
+        "url" => ["profiles/redirect-to-customer-profile", "username" => $username]
     ];
 
 $this->params["breadcrumbs"][] = $this->title;
