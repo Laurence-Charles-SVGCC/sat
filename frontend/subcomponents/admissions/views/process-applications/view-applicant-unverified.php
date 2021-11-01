@@ -1,37 +1,51 @@
 <?php
 
-    use yii\widgets\Breadcrumbs;
-    use yii\widgets\ActiveForm;
-    use yii\helpers\Html;
-    use yii\grid\GridView;
-    use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
-    $this->title = 'Application Details';
+$this->title = 'Application Details';
 
-    $this->params['breadcrumbs'][] =
+$this->params['breadcrumbs'][] =
     [
-      'label' => 'Review Applicants',
-      'url' => Url::toRoute(['/subcomponents/admissions/process-applications'])
+        'label' => 'Review Applicants',
+        'url' => Url::toRoute(['/subcomponents/admissions/process-applications'])
     ];
 
-    $this->params['breadcrumbs'][] =
+$this->params['breadcrumbs'][] =
     [
-      'label' => $applicationStatusName,
-      'url' => Url::to(
-          [
-            'process-applications/view-by-status',
-            'division_id' => $userDivisionId,
-            'application_status' => $applicationStatus
-          ]
-      )
+        'label' => $applicationStatusName,
+        'url' => Url::to(
+            [
+                'process-applications/view-by-status',
+                'division_id' => $userDivisionId,
+                'application_status' => $applicationStatus
+            ]
+        )
     ];
 
-    $this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
 <h1 class="text-center">
-  <?= $applicantUsername . " - " .$applicantFullName;?>
+    <span><?= $applicantUsername . " - " . $applicantFullName; ?></span>
+    <?php if (Yii::$app->user->can('System Administrator')) : ?>
+        <span>
+            <?=
+                Html::a(
+                    "View Full Profile",
+                    Url::toRoute(
+                        [
+                            '/subcomponents/admissions/view-applicant/applicant-profile',
+                            'search_status' => 'pending-unlimited',
+                            'applicantusername' => $applicantUsername
+                        ]
+                    ),
+                    ["class" => "btn btn-default pull-right"]
+                );
+            ?>
+        </span>
+    <?php endif; ?>
 </h1>
 
 <p id="offer-message" class="alert alert-warning">
@@ -51,22 +65,21 @@
                     <th>Status</th>
                 </tr>
 
-                <?php foreach ($programmeChoices as $programmeChoice): ?>
+                <?php foreach ($programmeChoices as $programmeChoice) : ?>
                     <tr>
-                        <td> <?= $programmeChoice["ordering"]?> </td>
+                        <td> <?= $programmeChoice["ordering"] ?> </td>
                         <td> <?= $programmeChoice["divisionAbbreviation"] ?> </td>
                         <td> <?= $programmeChoice["programmeDescription"] ?> </td>
                         <td> <?= $programmeChoice["status"] ?> </td>
                     </tr>
-                <?php endforeach;?>
+                <?php endforeach; ?>
             </table>
         </div>
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
             <li class='active' role="presentation">
-                <a href="#certificates" aria-controls="certificates" role="tab"
-                data-toggle="tab">
+                <a href="#certificates" aria-controls="certificates" role="tab" data-toggle="tab">
                     Certificates
                 </a>
             </li>
@@ -78,11 +91,11 @@
                 $this->render(
                     'view-applicant-unverified-certificates-tab',
                     [
-                      'applicant' => $applicant,
-                      'centreName' => $centreName,
-                      'cseccentreid' => $cseccentreid,
-                      'verifiedCsecQualificationsDataProvider' =>
-                          $verifiedCsecQualificationsDataProvider,
+                        'applicant' => $applicant,
+                        'centreName' => $centreName,
+                        'cseccentreid' => $cseccentreid,
+                        'verifiedCsecQualificationsDataProvider' =>
+                        $verifiedCsecQualificationsDataProvider,
                     ]
                 );
             ?>
