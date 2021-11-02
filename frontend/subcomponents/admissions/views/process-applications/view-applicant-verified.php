@@ -245,6 +245,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     Personal Information
                 </a>
             </li>
+            <li role="presentation">
+                <a href="#institutions-attended" aria-controls="institutions-attended" role="tab" data-toggle="tab">
+                    Institutions Attended
+                </a>
+            </li>
             <?php if ($applicant->applicantintentid == 4) : //if DTE Applicant
             ?>
                 <li role="presentation">
@@ -303,6 +308,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'guardian' =>  $guardian,
                         'spouse' => $spouse,
                     ]
+                );
+            ?>
+
+            <?=
+                $this->render(
+                    'view-applicant-verified-academic-institutions-tab',
+                    ['secondaryAttendances' => $secondaryAttendances]
                 );
             ?>
 

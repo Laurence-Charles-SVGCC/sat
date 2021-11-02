@@ -15,7 +15,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\Request;
 use yii\helpers\FileHelper;
 use yii\base\Model;
-
+use common\models\AcademicCareer;
 use common\models\User;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\AcademicOffering;
@@ -481,6 +481,11 @@ class ProcessApplicationsController extends \yii\web\Controller
             $criminalrecord =
                 CriminalRecordModel::getCriminalRecordByPersonId($personid);
 
+            // secondary attendance
+            $academicCareer =
+                new AcademicCareer($applicant->getPerson()->one());
+            $secondaryAttendances = $academicCareer->getSecondaryAttendances();
+
             // special permissions
             $applicantHasApplicationsForActiveApplicationPeriod =
                 ApplicantModel::hasApplicationsForActiveApplicationPeriod($applicant);
@@ -788,6 +793,9 @@ class ProcessApplicationsController extends \yii\web\Controller
                     $verifiedCsecQualificationsDataProvider,
                     'postSecondaryQualification' => $postSecondaryQualification,
                     'externalQualification' => $externalQualification,
+
+                    //institutions-attended
+                    'secondaryAttendances' => $secondaryAttendances
                 ]
             );
         } else {
