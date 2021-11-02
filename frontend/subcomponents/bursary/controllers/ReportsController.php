@@ -23,33 +23,48 @@ class ReportsController extends \yii\web\Controller
 
         if ($postData = Yii::$app->request->post()) {
             if ($model->load($postData) == true) {
-                $billings = BillingModel::getBillingsByDate($model);
-                $dataProvider =
-                    new ArrayDataProvider(
-                        [
-                            "allModels" =>
-                            BillingModel::prepareFormattedBillingListing(
-                                $billings
-                            ),
-                            "pagination" => ["pageSize" => 100],
-                            "sort" => [
-                                "defaultOrder" => ["receiptId" => SORT_ASC],
-                                "attributes" => [
-                                    "receiptId",
-                                    "username",
-                                    "billingType"
-                                ]
-                            ]
-                        ]
-                    );
-
-                return $this->render(
-                    "billings-by-date-search-results",
-                    ["dataProvider" => $dataProvider]
-                );
+                return $this->redirect([
+                    "billings-by-date-result",
+                    "startDate" => $model->startDate,
+                    "endDate" => $model->endDate
+                ]);
             }
         }
         return $this->render("billings-by-date", ["model" => $model]);
+    }
+
+
+    public function actionBillingsByDateResult($startDate, $endDate)
+    {
+        $model = new BillingsByDateSearchForm();
+        $model->startDate = $startDate;
+        $model->endDate = $endDate;
+        $billings = BillingModel::getBillingsByDate($model);
+
+        $dataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    BillingModel::prepareFormattedBillingListing(
+                        $billings
+                    ),
+                    "pagination" => ["pageSize" => 100],
+                    "sort" => [
+                        "defaultOrder" => ["receiptId" => SORT_ASC],
+                        "attributes" => [
+                            "receiptId",
+                            "paymentMethod",
+                            "billingType",
+                            "customerLastname"
+                        ]
+                    ]
+                ]
+            );
+
+        return $this->render(
+            "billings-by-date-search-results",
+            ["dataProvider" => $dataProvider]
+        );
     }
 
 
@@ -59,32 +74,46 @@ class ReportsController extends \yii\web\Controller
 
         if ($postData = Yii::$app->request->post()) {
             if ($model->load($postData) == true) {
-                $receipts = ReceiptModel::getReceiptsByDate($model);
-                $dataProvider =
-                    new ArrayDataProvider(
-                        [
-                            "allModels" =>
-                            ReceiptModel::prepareFormattedReceiptReport(
-                                $receipts
-                            ),
-                            "pagination" => ["pageSize" => 100],
-                            "sort" => [
-                                "defaultOrder" => ["receiptId" => SORT_ASC],
-                                "attributes" => [
-                                    "receiptId",
-                                    "username",
-                                    "billingType"
-                                ]
-                            ]
-                        ]
-                    );
-
-                return $this->render(
-                    "receipts-by-date-search-results",
-                    ["dataProvider" => $dataProvider]
-                );
+                return $this->redirect([
+                    "receipts-by-date-result",
+                    "startDate" => $model->startDate,
+                    "endDate" => $model->endDate
+                ]);
             }
         }
         return $this->render("receipts-by-date", ["model" => $model]);
+    }
+
+
+    public function actionReceiptsByDateResult($startDate, $endDate)
+    {
+        $model = new ReceiptsByDateSearchForm();
+        $model->startDate = $startDate;
+        $model->endDate = $endDate;
+        $receipts = ReceiptModel::getReceiptsByDate($model);
+
+        $dataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    ReceiptModel::prepareFormattedReceiptReport(
+                        $receipts
+                    ),
+                    "pagination" => ["pageSize" => 200],
+                    "sort" => [
+                        "defaultOrder" => ["receiptId" => SORT_ASC],
+                        "attributes" => [
+                            "receiptId",
+                            "paymentMethod",
+                            "customerLastname"
+                        ]
+                    ]
+                ]
+            );
+
+        return $this->render(
+            "receipts-by-date-search-results",
+            ["dataProvider" => $dataProvider]
+        );
     }
 }

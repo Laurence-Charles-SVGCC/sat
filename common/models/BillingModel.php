@@ -265,14 +265,22 @@ class BillingModel
         $record["receiptId"] = $receipt->id;
         $record["receiptNumber"] = $receipt->receipt_number;
         $record["date"] = $receipt->date_paid;
+        $record["timestamp"] = $receipt->timestamp;
         $record["customerUsername"] = $receipt->username;
         $record["customerFullName"] = $receipt->full_name;
+        $applicant =
+            ApplicantModel::getApplicantByPersonid($receipt->customer_id);
+        $record["customerFirstname"] = $applicant->firstname;
+        $record["customerLastname"] = $applicant->lastname;
 
         $record["billingType"] = $billingType->name;
         $record["applicationPeriod"] = $period->name;
         $record["paymentMethod"] = $paymentMethod->name;
         $record["amountDue"] = $billing->cost;
         $record["amountPaid"] = $billing->amount_paid;
+        $paymentProcessor = UserModel::findUserByID($receipt->created_by);
+        $record["paymentProcessor"] =
+            Usermodel::getUserFullname($paymentProcessor);
         return $record;
     }
 }

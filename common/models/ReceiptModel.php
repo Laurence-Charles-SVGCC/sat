@@ -415,16 +415,27 @@ class ReceiptModel
 
         $record["receiptId"] = $receipt->id;
         $record["receiptNumber"] = $receipt->receipt_number;
+
         $record["date"] = $receipt->date_paid;
+        $record["timestamp"] = $receipt->timestamp;
+
+
         $record["customerUsername"] = $receipt->username;
         $record["customerFullName"] = $receipt->full_name;
+
+        $applicant =
+            ApplicantModel::getApplicantByPersonid($receipt->customer_id);
+        $record["customerFirstname"] = $applicant->firstname;
+        $record["customerLastname"] = $applicant->lastname;
+
         $record["paymentMethod"] = $paymentMethod->name;
 
         $record["amountPaid"] =
             number_format(self::calculateReceiptTotal($receipt), 2);
 
         $paymentProcessor = UserModel::findUserByID($receipt->created_by);
-        $record["paymentProcessor"] = Usermodel::getUserFullname($paymentProcessor);
+        $record["paymentProcessor"] =
+            Usermodel::getUserFullname($paymentProcessor);
 
         return $record;
     }
