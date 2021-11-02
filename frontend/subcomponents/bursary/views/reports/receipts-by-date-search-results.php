@@ -73,6 +73,11 @@ $this->params["breadcrumbs"][] = $this->title;
                     "format" => "text",
                     "label" => "Paid"
                 ],
+                [
+                    "attribute" => "paymentProcessor",
+                    "format" => "text",
+                    "label" => "Collected By"
+                ]
             ]
         ]
     );

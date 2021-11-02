@@ -423,6 +423,9 @@ class ReceiptModel
         $record["amountPaid"] =
             number_format(self::calculateReceiptTotal($receipt), 2);
 
+        $paymentProcessor = UserModel::findUserByID($receipt->created_by);
+        $record["paymentProcessor"] = Usermodel::getUserFullname($paymentProcessor);
+
         return $record;
     }
 
