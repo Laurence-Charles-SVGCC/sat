@@ -13,16 +13,11 @@ use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
 use frontend\models\ApplicationCapesubject;
 use frontend\models\DocumentSubmitted;
-use frontend\models\TransactionPurpose;
-use frontend\models\Transaction;
 use frontend\models\Student;
 use frontend\models\StudentRegistration;
 use frontend\models\RegistrationType;
 use frontend\models\DocumentIntent;
 use frontend\models\Division;
-use frontend\models\ApplicationPeriod;
-use frontend\models\EmployeeDepartment;
-use frontend\models\Employee;
 use frontend\models\Email;
 
 
