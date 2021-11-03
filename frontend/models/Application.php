@@ -157,8 +157,8 @@ class Application extends \yii\db\ActiveRecord
     public static function getApplications($id)
     {
         $applications = Application::find()
-                ->where(['personid' => $id, 'isdeleted'=> 0])
-                ->all();
+            ->where(['personid' => $id, 'isdeleted' => 0])
+            ->all();
         if (count($applications) > 0) {
             return $applications;
         }
@@ -185,10 +185,10 @@ class Application extends \yii\db\ActiveRecord
                 . " FROM academic_offering"
                 . " JOIN programme_catalog"
                 . " ON academic_offering.programmecatalogid = programme_catalog.programmecatalogid"
-                . " WHERE academic_offering.academicofferingid = ". $academicofferingid
+                . " WHERE academic_offering.academicofferingid = " . $academicofferingid
                 . ";"
         )
-                ->queryAll();
+            ->queryAll();
 
         $name = $records[0]["name"];
         if (strcmp($name, "CAPE") == 0) {     //if application is for CAPE programme
@@ -211,10 +211,10 @@ class Application extends \yii\db\ActiveRecord
     public static function getSpecialApplication($id)
     {
         $applications = Applincation::find()
-                    ->where(['personid' => $id, 'isactive' =>1, 'isdeleted'=> 0])
-                    ->andWhere(['>', 'ordering', 3])
-                    ->all();
-        if (count($applications)>0) {
+            ->where(['personid' => $id, 'isactive' => 1, 'isdeleted' => 0])
+            ->andWhere(['>', 'ordering', 3])
+            ->all();
+        if (count($applications) > 0) {
             return $applications;
         }
         return false;
@@ -236,19 +236,19 @@ class Application extends \yii\db\ActiveRecord
         $db = Yii::$app->db;
         $p = $db->createCommand(
             "SELECT academic_offering.academicofferingid AS 'academicofferingid',"
-            . " programme_catalog.name AS 'name',"
-            . " programme_catalog.specialisation AS 'specialisation',"
-            . " qualification_type.abbreviation AS 'qualificationtype'"
-            . " FROM  academic_offering "
-            . " JOIN programme_catalog"
-            . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
-            . " JOIN qualification_type"
-            . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
-            . " WHERE academic_offering.academicofferingid = " . $academicofferingid . " ;"
+                . " programme_catalog.name AS 'name',"
+                . " programme_catalog.specialisation AS 'specialisation',"
+                . " qualification_type.abbreviation AS 'qualificationtype'"
+                . " FROM  academic_offering "
+                . " JOIN programme_catalog"
+                . " ON programme_catalog.programmecatalogid = academic_offering.programmecatalogid"
+                . " JOIN qualification_type"
+                . " ON programme_catalog.qualificationtypeid = qualification_type.qualificationtypeid"
+                . " WHERE academic_offering.academicofferingid = " . $academicofferingid . " ;"
         )
             ->queryAll();
 
-        if (count($p)>0) {
+        if (count($p) > 0) {
             $specialization = $p[0]["specialisation"];
             $qualification = $p[0]["qualificationtype"];
             $programme = $p[0]["name"];
@@ -273,13 +273,13 @@ class Application extends \yii\db\ActiveRecord
     public static function getNextApplicationID($personid)
     {
         $custom_applications = Application::find()
-                    ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->andWhere(['>', 'ordering', 3])
-                    ->orderBy('ordering ASC')
-                    ->all();
+            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
+            ->andWhere(['>', 'ordering', 3])
+            ->orderBy('ordering ASC')
+            ->all();
         $count = count($custom_applications);
         if ($count > 0) {
-            $last_id = $custom_applications[($count-1)];
+            $last_id = $custom_applications[($count - 1)];
             $new_id = $last_id->ordering + 1;
         } else {
             $new_id = 4;
@@ -301,16 +301,18 @@ class Application extends \yii\db\ActiveRecord
     {
         $data = array();
         $applications = Application::find()
-                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0,
-                        'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                        'academic_offering.isdeleted' => 0,
-                        'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
-                ->groupby('application.personid')
-                ->all();
+            ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+            ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isdeleted' => 0,
+                'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                'academic_offering.isdeleted' => 0,
+                'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10]
+            ])
+            ->groupby('application.personid')
+            ->all();
         foreach ($applications as $application) {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -331,16 +333,18 @@ class Application extends \yii\db\ActiveRecord
     {
         $data = array();
         $applications = Application::find()
-                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                        'application.isdeleted' => 0,
-                        'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                        'academic_offering.isdeleted' => 0,
-                        'application.applicationstatusid' => 11])
-                ->groupby('application.personid')
-                ->all();
+            ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+            ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isdeleted' => 0,
+                'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                'academic_offering.isdeleted' => 0,
+                'application.applicationstatusid' => 11
+            ])
+            ->groupby('application.personid')
+            ->all();
         foreach ($applications as $application) {
             $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
         }
@@ -361,21 +365,22 @@ class Application extends \yii\db\ActiveRecord
     public static function centreApplicantsReceivedCount($cseccentreid)
     {
         $count = Application::find()
-                    ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['applicant.isexternal' => 0,
-                            'csec_centre.cseccentreid' => $cseccentreid,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                            'academic_offering.isdeleted' => 0
-                            ])
-                    ->groupby('application.personid')
-                    ->count();
+            ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+            ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+            ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+            ->where([
+                'applicant.isexternal' => 0,
+                'csec_centre.cseccentreid' => $cseccentreid,
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'csec_qualification.isdeleted' => 0,
+                'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                'academic_offering.isdeleted' => 0
+            ])
+            ->groupby('application.personid')
+            ->count();
         return $count;
     }
 
@@ -393,21 +398,22 @@ class Application extends \yii\db\ActiveRecord
     public static function centreAbandonedApplicantsReceivedCount($cseccentreid)
     {
         $count = Application::find()
-                    ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['applicant.isexternal' => 0,
-                            'csec_centre.cseccentreid' => $cseccentreid,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
-                            'academic_offering.isdeleted' => 0
-                            ])
-                    ->groupby('application.personid')
-                    ->count();
+            ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+            ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+            ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+            ->where([
+                'applicant.isexternal' => 0,
+                'csec_centre.cseccentreid' => $cseccentreid,
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'csec_qualification.isdeleted' => 0,
+                'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->groupby('application.personid')
+            ->count();
         return $count;
     }
 
@@ -425,19 +431,20 @@ class Application extends \yii\db\ActiveRecord
     public static function centreApplicantsReceived($cseccentreid)
     {
         $applicants = Application::find()
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                            'academic_offering.isdeleted' => 0
-                            ])
-                    ->groupby('application.personid')
-                    ->all();
+            ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+            ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+            ->where([
+                'csec_centre.cseccentreid' => $cseccentreid,
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'csec_qualification.isdeleted' => 0,
+                'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                'academic_offering.isdeleted' => 0
+            ])
+            ->groupby('application.personid')
+            ->all();
         return $applicants;
     }
 
@@ -456,19 +463,20 @@ class Application extends \yii\db\ActiveRecord
     public static function centreAbandonedApplicantsReceived($cseccentreid)
     {
         $applicants = Application::find()
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
-                    ->where(['csec_centre.cseccentreid' => $cseccentreid,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'csec_qualification.isdeleted' => 0,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
-                            'academic_offering.isdeleted' => 0
-                            ])
-                    ->groupby('application.personid')
-                    ->all();
+            ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+            ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->innerJoin('academic_year', '`academic_year`.`academicyearid` = `application_period`.`academicyearid`')
+            ->where([
+                'csec_centre.cseccentreid' => $cseccentreid,
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'csec_qualification.isdeleted' => 0,
+                'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->groupby('application.personid')
+            ->all();
         return $applicants;
     }
 
@@ -511,33 +519,37 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($external == true) {
             $applicants = Application::find()
-                    ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                            'csec_qualification.isverified' => 1, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                            'academic_offering.isdeleted' => 0])
-                    ->groupBy('application.personid')
-                    ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_qualification.isverified' => 1, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid')
+                ->all();
         } else {
             $applicants = Application::find()
-                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                'csec_centre.cseccentreid' => $cseccentreid,
-                                'csec_qualification.isverified' => 1, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
-                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                                'academic_offering.isdeleted' => 0])
-                        ->groupBy('application.personid')
-                        ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_centre.cseccentreid' => $cseccentreid,
+                    'csec_qualification.isverified' => 1, 'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1, /*'application_period.applicationperiodstatusid' => 5,*/
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid')
+                ->all();
         }
 
         $eligible = array();
@@ -548,8 +560,8 @@ class Application extends \yii\db\ActiveRecord
                 * are verified then they are removed from "pending"
                 */
                 $all_certs = CsecQualification::find()
-                       ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
-                       ->all();
+                    ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
                 $cert_count = count($all_certs);
                 $verified_count = 0;
                 if ($cert_count > 0) {
@@ -566,14 +578,14 @@ class Application extends \yii\db\ActiveRecord
                 $verified = false;
                 if ($post_qualification == true) {
                     $cert_count++;
-                    if ($post_qualification->isverified==1 && $post_qualification->isqueried==0) {
+                    if ($post_qualification->isverified == 1 && $post_qualification->isqueried == 0) {
                         $verified_count++;
                     }
                 }
 
                 if ($external_qualification == true) {
                     $cert_count++;
-                    if ($external_qualification->isverified==1 && $external_qualification->isqueried==0) {
+                    if ($external_qualification->isverified == 1 && $external_qualification->isqueried == 0) {
                         $verified_count++;
                     }
                 }
@@ -587,8 +599,8 @@ class Application extends \yii\db\ActiveRecord
                 * are verified then they are removed from "pending"
                 */
                 $all_certs = CsecQualification::find()
-                       ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
-                       ->all();
+                    ->where(['personid' => $applicant->personid, 'isactive' => 1, 'isdeleted' => 0])
+                    ->all();
                 $cert_count = count($all_certs);
                 $verified_count = 0;
                 if ($cert_count > 0) {
@@ -605,7 +617,7 @@ class Application extends \yii\db\ActiveRecord
                 $verified = false;
                 if ($post_qualification == true) {
                     $cert_count++;
-                    if ($post_qualification->isverified==1 && $post_qualification->isqueried==0) {
+                    if ($post_qualification->isverified == 1 && $post_qualification->isqueried == 0) {
                         $verified_count++;
                     }
                 }
@@ -656,33 +668,37 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($external == true) {
             $applicants = Application::find()
-                    ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                            'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                            'academic_offering.isdeleted' => 0])
-                    ->groupBy('application.personid')
-                    ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid')
+                ->all();
         } else {
             $applicants = Application::find()
-                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                'csec_centre.cseccentreid' => $cseccentreid,
-                                'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
-                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                                'academic_offering.isdeleted' => 0])
-                        ->groupBy('application.personid', 'csec_centre.cseccentreid')
-                        ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_centre.cseccentreid' => $cseccentreid,
+                    'csec_qualification.isdeleted' => 0,  'csec_qualification.isactive' => 1,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid', 'csec_centre.cseccentreid')
+                ->all();
         }
 
         $eligible = array();
@@ -694,9 +710,9 @@ class Application extends \yii\db\ActiveRecord
                 } else {
                     $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
                     $external_qualification = ExternalQualification::getExternalQualifications($applicant->personid);
-                    if ($post_qualification == true  && $post_qualification->isqueried==1) {
+                    if ($post_qualification == true  && $post_qualification->isqueried == 1) {
                         $eligible[] = $applicants[$key];
-                    } elseif ($external_qualification == true  && $external_qualification->isqueried==1) {
+                    } elseif ($external_qualification == true  && $external_qualification->isqueried == 1) {
                         $eligible[] = $applicants[$key];
                     }
                 }
@@ -706,7 +722,7 @@ class Application extends \yii\db\ActiveRecord
                     $eligible[] = $applicants[$key];
                 } else {
                     $post_qualification = PostSecondaryQualification::getPostSecondaryQualifications($applicant->personid);
-                    if ($post_qualification == true  && $post_qualification->isqueried==1) {
+                    if ($post_qualification == true  && $post_qualification->isqueried == 1) {
                         $eligible[] = $applicants[$key];
                     }
                 }
@@ -733,53 +749,59 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($external == true) {
             $applicants = Application::find()
-                    ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                    ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                    ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                    ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                    ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                            'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                            'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-                            'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                            'academic_offering.isdeleted' => 0])
-                    ->groupBy('application.personid')
-                    ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid')
+                ->all();
 
             /*
              * External Applicant with no certificates entered must also be captured
              */
             $applicants_without_csec_qualification = Application::find()
-                                            ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
-                                            ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                                            ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                                    'application.isdeleted' => 0,
-                                                    'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                                    'academic_offering.isdeleted' => 0,
-                                                    'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10]])
-                                            ->groupby('application.personid')
-                                            ->all();
-            foreach ($applicants_without_csec_qualification as $index =>$record) {
+                ->leftjoin('applicant', '`application`.`personid` = `applicant`.`personid`')
+                ->leftjoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->leftjoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0,
+                    'applicant.isexternal' => 1, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'academic_offering.isdeleted' => 0,
+                    'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10]
+                ])
+                ->groupby('application.personid')
+                ->all();
+            foreach ($applicants_without_csec_qualification as $index => $record) {
                 if (CsecQualification::getQualifications($record->personid) == true) {
                     unset($applicants_without_csec_qualification[$index]);
                 }
             }
         } else {
             $applicants = Application::find()
-                        ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
-                        ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                                'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
-                                'csec_centre.cseccentreid' => $cseccentreid,
-                                'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
-                                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'academic_offering.isdeleted' => 0])
-                        ->groupBy('application.personid')
-                        ->all();
+                ->innerJoin('applicant', '`applicant`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_qualification', '`csec_qualification`.`personid` = `application`.`personid`')
+                ->innerJoin('csec_centre', '`csec_centre`.`cseccentreid` = `csec_qualification`.`cseccentreid`')
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'applicant.isexternal' => 0, 'applicant.isactive' => 1, 'applicant.isdeleted' => 0,
+                    'csec_centre.cseccentreid' => $cseccentreid,
+                    'csec_qualification.isactive' => 1, 'csec_qualification.isdeleted' => 0,
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupBy('application.personid')
+                ->all();
         }
 
         $elegible = array();
@@ -794,21 +816,21 @@ class Application extends \yii\db\ActiveRecord
 
                 if ($post_qualification == false && $external_qualification == false) {
                     if ($non_verified1 == true &&  $queried1 == false) {
-                        $elegible [] =$applicants[$key];
+                        $elegible[] = $applicants[$key];
                     }
-                } elseif ($post_qualification == true  &&  $external_qualification==false) {
+                } elseif ($post_qualification == true  &&  $external_qualification == false) {
                     $non_verified2 = $post_qualification->isverified;
                     $queried2 = $post_qualification->isqueried;
                     if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0)) {
-                        $elegible [] =$applicants[$key];
+                        $elegible[] = $applicants[$key];
                     }
-                } elseif ($post_qualification == false  &&  $external_qualification==true) {
+                } elseif ($post_qualification == false  &&  $external_qualification == true) {
                     $external_qualification_isverified = $external_qualification->isverified;
                     $external_qualification_isqueried = $external_qualification->isqueried;
                     if ($queried1 == false && $external_qualification_isqueried == 0 && ($non_verified1 == true || $external_qualification_isverified == 0)) {
-                        $elegible [] =$applicants[$key];
+                        $elegible[] = $applicants[$key];
                     }
-                } elseif ($post_qualification == true  &&  $external_qualification==true) {
+                } elseif ($post_qualification == true  &&  $external_qualification == true) {
                     $non_verified2 = $post_qualification->isverified;
                     $queried2 = $post_qualification->isqueried;
 
@@ -816,7 +838,7 @@ class Application extends \yii\db\ActiveRecord
                     $external_qualification_isqueried = $external_qualification->isqueried;
 
                     if ($queried1 == false  && $queried2 == 0 && $external_qualification_isqueried == 0 && ($non_verified1 == true || $non_verified2 == 0 || $external_qualification_isverified == 0)) {
-                        $elegible [] =$applicants[$key];
+                        $elegible[] = $applicants[$key];
                     }
                 }
             } else {    // if attempting to retrieve "non-external" applicants
@@ -829,7 +851,7 @@ class Application extends \yii\db\ActiveRecord
                     $queried2 = $qualification->isqueried;
 
                     if ($queried1 == false && $queried2 == 0 && ($non_verified1 == true || $non_verified2 == 0)) {
-                        $elegible[] =$applicants[$key];
+                        $elegible[] = $applicants[$key];
                     }
                 } else {
                     if ($queried1 == false && $non_verified1 == true) {
@@ -898,14 +920,15 @@ class Application extends \yii\db\ActiveRecord
          * changed
          */
         $old_applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
-                    ])
-                ->orderBy('application.ordering ASC')
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
 
         if ($old_applications) {
             $target_application = end($old_applications);
@@ -920,14 +943,14 @@ class Application extends \yii\db\ActiveRecord
 
                 // if rejected -> get last application
                 if ($application_status == 6) {       //if reject
-//                    $target_application = $applications[($count-1)];
+                    //                    $target_application = $applications[($count-1)];
                     $target_application = end($applications);
                 }
 
                 // if unverified -> get first application that has unverified status
                 elseif ($application_status == 2) {
                     foreach ($applications as $application) {
-                        if ($application->applicationstatusid==2) {
+                        if ($application->applicationstatusid == 2) {
                             $target_application = $application;
                             break;
                         }
@@ -937,7 +960,7 @@ class Application extends \yii\db\ActiveRecord
                 // if pending -> get first application that has pending status
                 elseif ($application_status == 3) {
                     foreach ($applications as $application) {
-                        if ($application->applicationstatusid==3) {
+                        if ($application->applicationstatusid == 3) {
                             $target_application = $application;
                             break;
                         }
@@ -1037,14 +1060,15 @@ class Application extends \yii\db\ActiveRecord
          * changed
          */
         $old_applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
-                    ])
-                ->orderBy('application.ordering ASC')
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
 
         if ($old_applications) {
             $target_application = end($old_applications);
@@ -1067,7 +1091,7 @@ class Application extends \yii\db\ActiveRecord
                 // if unverified -> get first application that has unverified status
                 elseif ($application_status == 2) {   //if unverified
                     foreach ($applications as $application) {
-                        if ($application->applicationstatusid==2) {
+                        if ($application->applicationstatusid == 2) {
                             $target_application = $application;
                             break;
                         }
@@ -1077,7 +1101,7 @@ class Application extends \yii\db\ActiveRecord
                 // if pending -> get first application that has pending status
                 elseif ($application_status == 3) {
                     foreach ($applications as $application) {
-                        if ($application->applicationstatusid==3) {
+                        if ($application->applicationstatusid == 3) {
                             $target_application = $application;
                             break;
                         }
@@ -1160,7 +1184,7 @@ class Application extends \yii\db\ActiveRecord
     {
         $count = count($applications);
 
-        for ($i = 0 ; $i < $count ; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             if ($applications[$i]->applicationid == $application->applicationid) {
                 return $i;
             }
@@ -1196,8 +1220,8 @@ class Application extends \yii\db\ActiveRecord
                 . " AND application.isdeleted = 0"
                 . " AND application.personid=" . $id . ";"
         )
-                ->queryAll();
-        if (count($query) >0) {
+            ->queryAll();
+        if (count($query) > 0) {
             return true;
         }
         return false;
@@ -1217,24 +1241,26 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($divisionid == null) {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10],
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         } else {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2,3,4,5,6,7,8,9,10], 'application.divisionid' => $divisionid,
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [2, 3, 4, 5, 6, 7, 8, 9, 10], 'application.divisionid' => $divisionid,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         }
         return $applicants;
     }
@@ -1253,24 +1279,26 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($divisionid == null) {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         } else {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.divisionid' => $divisionid,
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.divisionid' => $divisionid,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         }
         return $applicants;
     }
@@ -1289,24 +1317,26 @@ class Application extends \yii\db\ActiveRecord
     {
         if ($divisionid == null) {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10],
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3, 4, 5, 6, 7, 8, 9, 10],
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         } else {
             $applicants = Application::find()
-                            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                            ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3,4,5,6,7,8,9,10], 'application.divisionid' => $divisionid,
-                                    'academic_offering.isdeleted' => 0
-                                    ])
-                            ->groupby('application.personid')
-                            ->count();
+                ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+                ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+                ->where([
+                    'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                    'application.isdeleted' => 0, 'application.applicationstatusid' => [3, 4, 5, 6, 7, 8, 9, 10], 'application.divisionid' => $divisionid,
+                    'academic_offering.isdeleted' => 0
+                ])
+                ->groupby('application.personid')
+                ->count();
         }
         return $applicants;
     }
@@ -1327,14 +1357,15 @@ class Application extends \yii\db\ActiveRecord
     public static function getApplicantApplications($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
@@ -1352,41 +1383,43 @@ class Application extends \yii\db\ActiveRecord
     public static function getVerifiedApplications($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                 'application.isdeleted' => 0, 'application.personid' => $personid,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->andWhere(['>', 'application.applicationstatusid', 2])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isdeleted' => 0, 'application.personid' => $personid,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->andWhere(['>', 'application.applicationstatusid', 2])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
 
     /**
-    * Returns an array of all verifed applications
-    *
-    * @param type $personid
-    * @return type
-    *
-    * Author: Luarence Charles
-    * Date Creatred: 24/05/2016
-    * Date Last Modified: 24/05/2016
-    */
+     * Returns an array of all verifed applications
+     *
+     * @param type $personid
+     * @return type
+     *
+     * Author: Luarence Charles
+     * Date Creatred: 24/05/2016
+     * Date Last Modified: 24/05/2016
+     */
     public static function getAllVerifiedApplications($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.isdeleted' => 0, 'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->andWhere(['>', 'application.applicationstatusid', 2])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.isdeleted' => 0, 'application_period.isactive' => 1,
+                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $personid,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->andWhere(['>', 'application.applicationstatusid', 2])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
@@ -1406,14 +1439,15 @@ class Application extends \yii\db\ActiveRecord
     public static function getAbandonedApplicantApplications($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.personid' => $personid,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11, 'application.personid' => $personid,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
@@ -1431,14 +1465,15 @@ class Application extends \yii\db\ActiveRecord
     public static function getAllAbandonedApplicantApplications()
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 11,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
@@ -1457,14 +1492,15 @@ class Application extends \yii\db\ActiveRecord
     public static function getAbandonmentEligibility($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
-                                'academic_offering.isdeleted' => 0
-                                ])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1,
+                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.applicationstatusid' => 2, 'application.personid' => $personid,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         if ($applications) {
             return true;
         }
@@ -1484,15 +1520,16 @@ class Application extends \yii\db\ActiveRecord
     public static function getCustomApplications($personid)
     {
         $applications = Application::find()
-                        ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                        ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-                        ->where([/*'application_period.iscomplete' => 0, */'application_period.isactive' => 1,
-                                'application.isactive' => 1, 'application.isdeleted' => 0, /*'application.applicationstatusid' => 9,*/ 'application.personid' => $personid,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
-                                ])
-                        ->andWhere(['>', 'application.ordering', 3])
-                        ->orderBy('application.ordering ASC')
-                        ->all();
+            ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
+            ->innerJoin('application_period', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
+            ->where([/*'application_period.iscomplete' => 0, */
+                'application_period.isactive' => 1,
+                'application.isactive' => 1, 'application.isdeleted' => 0, /*'application.applicationstatusid' => 9,*/ 'application.personid' => $personid,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0
+            ])
+            ->andWhere(['>', 'application.ordering', 3])
+            ->orderBy('application.ordering ASC')
+            ->all();
         return $applications;
     }
 
@@ -1511,14 +1548,15 @@ class Application extends \yii\db\ActiveRecord
     public static function hasOldApplication($personid)
     {
         $old_applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
-                    ])
-                ->orderBy('application.ordering ASC')
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.name' => ['DASGS2015', 'DTVE2015']
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         if ($old_applications) {
             return true;
         }
@@ -1540,14 +1578,15 @@ class Application extends \yii\db\ActiveRecord
     public static function hasActiveApplications($personid)
     {
         $applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
-                    ])
-                ->orderBy('application.ordering ASC')
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         if ($applications) {
             return true;
         }
@@ -1569,13 +1608,14 @@ class Application extends \yii\db\ActiveRecord
     public static function getActiveApplications($personid)
     {
         $applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
-                    ])
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 0
+            ])
+            ->all();
         if ($applications) {
             return $applications;
         }
@@ -1597,14 +1637,15 @@ class Application extends \yii\db\ActiveRecord
     public static function hasInactiveApplications($personid)
     {
         $applications = Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                        'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                        'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 1
-                    ])
-                ->orderBy('application.ordering ASC')
-                ->all();
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.isactive' => 1, 'application_period.isdeleted' => 0, 'application_period.iscomplete' => 1
+            ])
+            ->orderBy('application.ordering ASC')
+            ->all();
         if ($applications) {
             return true;
         }
@@ -1625,21 +1666,21 @@ class Application extends \yii\db\ActiveRecord
     public static function hasVerificationFailures($divisionid)
     {
         $unverified_applications = Application::find()
-                ->where(['applicationstatusid' => 2, 'divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
-                ->groupBy('personid')
-                ->all();
+            ->where(['applicationstatusid' => 2, 'divisionid' => $divisionid, 'isactive' => 1, 'isdeleted' => 0])
+            ->groupBy('personid')
+            ->all();
         foreach ($unverified_applications as $application) {
             $all_qualifications = CsecQualification::find()
-                    ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->all();
+                ->where(['personid' => $application->personid, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
 
             if (!$all_qualifications) {
                 continue;
             }
 
             $verified_qualifications = CsecQualification::find()
-                    ->where(['personid' => $application->personid, 'isverified' => 1, 'isactive' => 1, 'isdeleted' => 0])
-                    ->all();
+                ->where(['personid' => $application->personid, 'isverified' => 1, 'isactive' => 1, 'isdeleted' => 0])
+                ->all();
 
             if (count($verified_qualifications) == count($all_qualifications)) {   //target applicant
                 return true;
@@ -1660,19 +1701,20 @@ class Application extends \yii\db\ActiveRecord
      */
     public static function istLastChosenApplication($application)
     {
-        $applications =Application::find()
-                ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-                ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-                ->where(['application.personid' => $application->personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
-                                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-                                 'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                            ])
-                ->andWhere(['<', 'application.ordering', 4])
-                ->orderBy('application.ordering ASC')
-                ->all();
+        $applications = Application::find()
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
+            ->where([
+                'application.personid' => $application->personid, 'application.isactive' => 1, 'application.isdeleted' => 0,
+                'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
+                'application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
+            ])
+            ->andWhere(['<', 'application.ordering', 4])
+            ->orderBy('application.ordering ASC')
+            ->all();
         if ($applications) {
             $count = count($applications);
-            $last_application = $applications[$count-1];
+            $last_application = $applications[$count - 1];
             if ($application->applicationid == $last_application->applicationid) {
                 return true;
             }
@@ -1682,20 +1724,20 @@ class Application extends \yii\db\ActiveRecord
 
 
     /**
-        * Return abbreviation of division that application is associated with.
-        *
-        * @return string
-        *
-        * Author: chalres.laurence1@gmail.com
-        * Created: 2018_03_01
-        * Modified: 2018_03_01
-        */
+     * Return abbreviation of division that application is associated with.
+     *
+     * @return string
+     *
+     * Author: chalres.laurence1@gmail.com
+     * Created: 2018_03_01
+     * Modified: 2018_03_01
+     */
     public function getDivisionAbbreviation()
     {
         return Division::find()
-                    ->where(['divisionid' => $this->divisionid, 'isactive' => 1, 'isdeleted' => 0])
-                    ->one()
-                    ->abbreviation;
+            ->where(['divisionid' => $this->divisionid, 'isactive' => 1, 'isdeleted' => 0])
+            ->one()
+            ->abbreviation;
     }
 
 
