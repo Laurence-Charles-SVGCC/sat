@@ -5,7 +5,6 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 use frontend\models\Applicant;
-use frontend\models\Application;
 use frontend\models\AcademicYear;
 use frontend\models\CsecQualification;
 use frontend\models\PostSecondaryQualification;
