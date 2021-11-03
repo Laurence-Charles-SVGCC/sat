@@ -29,16 +29,6 @@ use frontend\models\Email;
 
 class RegisterStudentController extends \yii\web\Controller
 {
-    /**
-     *
-     * @param type $personid
-     * @param type $programme
-     * @return type
-     *
-     * Author: Gamal Crichton
-     * Date Created: ??
-     * Date Last Modified: 21/04/2016
-     */
     public function actionViewProspectiveStudent($personid, $programme)
     {
         $applicant = Applicant::find()
@@ -145,16 +135,6 @@ class RegisterStudentController extends \yii\web\Controller
     }
 
 
-    /**
-     * Creates a student record for a successful appplicant
-     *
-     * @return type
-     *
-     * Author: Laurence Charles
-     * Date Created: 22/04/2016
-     * Date Last Modified: 22/04/2016
-     *
-     */
     public function actionEnrollStudent($personid, $programme)
     {
         $student_save_flag = false;
@@ -328,12 +308,6 @@ class RegisterStudentController extends \yii\web\Controller
     }
 
 
-    /*
-    * Purpose: Responds to user indicating they want to register an applicant.
-     * Does prelinary checks to ensure that applicant can be registered
-    * Created: 3/08/2015 by Gamal Crichton
-    * Last Modified: 3/08/2015 by Gamal Crichton
-    */
     public function actionRegisterApplicant($applicantusername)
     {
         $user = User::findOne(['username' => $applicantusername, 'isdeleted' => 0]);
