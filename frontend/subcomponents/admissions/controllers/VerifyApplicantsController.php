@@ -24,6 +24,8 @@ use frontend\models\Division;
 use frontend\models\ExternalQualification;
 use frontend\models\Employee;
 
+use common\models\CsecCentreModel;
+
 
 class VerifyApplicantsController extends \yii\web\Controller
 {
@@ -781,7 +783,8 @@ class VerifyApplicantsController extends \yii\web\Controller
         if (strcasecmp($centrename, "external") == 0) {
             $data = array();
 
-            foreach (Application::centreApplicantsVerified($cseccentreid, true) as $application) {
+            // foreach (Application::centreApplicantsVerified($cseccentreid, true) as $application) {
+            foreach (CsecCentreModel::centreApplicantsVerified($cseccentreid, true) as $application) {
                 $container = array();
 
                 $applicant = Applicant::find()->where(['personid' => $application->personid])->one();

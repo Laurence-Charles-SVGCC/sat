@@ -169,4 +169,133 @@ class ApplicantModel
             return true;
         }
     }
+
+
+    public static function isExternalApplicantVerified($applicant)
+    {
+        $postSecondaryQualifications =
+            PostSecondaryQualificationModel::getPostSecondaryQualifications(
+                $applicant
+            );
+
+        $externalQualifications =
+            ExternalQualificationModel::getExternalQualifications(
+                $applicant
+            );
+
+        if (
+            self::isApplicantExternal($applicant) == true
+            && empty($postSecondaryQualifications)
+            && empty($externalQualifications)
+            && self::allApplicationsVerified($applicant) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == true
+            && empty($postSecondaryQualifications)
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == true
+            && empty($externalQualifications)
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::allQualificationsVerified(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::allQualificationsVerified(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function isNonExternalApplicantVerified($applicant)
+    {
+        $csecQualifications =
+            CsecQualificationModel::getCsecQualifications($applicant);
+
+        $postSecondaryQualifications =
+            PostSecondaryQualificationModel::getPostSecondaryQualifications(
+                $applicant
+            );
+
+        $externalQualifications =
+            ExternalQualificationModel::getExternalQualifications(
+                $applicant
+            );
+
+        if (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && empty($postSecondaryQualifications)
+            && empty($externalQualifications)
+
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && empty($postSecondaryQualifications)
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && empty($externalQualifications)
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::allQualificationsVerified(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::allQualificationsVerified(
+                $externalQualifications
+            ) == true
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::allQualificationsVerified(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
