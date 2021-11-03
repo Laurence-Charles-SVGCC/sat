@@ -104,4 +104,13 @@ class CsecCentreModel
 
         return $eligible;
     }
+
+    public static function centreApplicantsVerifiedCount($cseccentreid, $external = false)
+    {
+        if ($external == true) {
+            return count(self::centreApplicantsVerified($cseccentreid, true));
+        } else {
+            return count(self::centreApplicantsVerified($cseccentreid));
+        }
+    }
 }

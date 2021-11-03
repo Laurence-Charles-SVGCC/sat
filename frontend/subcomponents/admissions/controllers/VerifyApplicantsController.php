@@ -178,27 +178,25 @@ class VerifyApplicantsController extends \yii\web\Controller
     }
 
 
-    /*
-    * Purpose: Displays verification dashboard of a centre
-    * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
-    */
     public function actionCentreDetails($centre_id, $centre_name)
     {
         if (strcasecmp($centre_name, "external") == 0) {
             $amt_received = count(Application::getExternal());
-            //            $amt_verified = "N/A";
-            //            $amt_queried = "N/A";
-            //            $amt_pending = 0;
-            $amt_verified = Application::centreApplicantsVerifiedCount($centre_id, true);
-            $amt_queried = Application::centreApplicantsQueriedCount($centre_id, true);
-            $amt_pending = count(Application::centreApplicantsPending($centre_id, true));
+            $amt_verified =
+                CsecCentreModel::centreApplicantsVerifiedCount($centre_id, true);
+            $amt_queried =
+                Application::centreApplicantsQueriedCount($centre_id, true);
+            $amt_pending =
+                count(Application::centreApplicantsPending($centre_id, true));
         } else {
-            $amt_received = Application::centreApplicantsReceivedCount($centre_id);
-            $amt_verified = Application::centreApplicantsVerifiedCount($centre_id);
-            $amt_queried = Application::centreApplicantsQueriedCount($centre_id);
-            //            $amt_pending = $amt_received - ($amt_verified + $amt_queried);
-            $amt_pending = Application::centreApplicantsPendingCount($centre_id);
+            $amt_received =
+                Application::centreApplicantsReceivedCount($centre_id);
+            $amt_verified =
+                Application::centreApplicantsVerifiedCount($centre_id);
+            $amt_queried =
+                Application::centreApplicantsQueriedCount($centre_id);
+            $amt_pending =
+                Application::centreApplicantsPendingCount($centre_id);
         }
 
         return $this->render(
