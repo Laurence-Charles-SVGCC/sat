@@ -783,11 +783,8 @@ class VerifyApplicantsController extends \yii\web\Controller
         if (strcasecmp($centrename, "external") == 0) {
             $data = array();
 
-            // foreach (Application::centreApplicantsVerified($cseccentreid, true) as $application) {
-            foreach (CsecCentreModel::centreApplicantsVerified($cseccentreid, true) as $application) {
+            foreach (CsecCentreModel::centreApplicantsVerified($cseccentreid, true) as $applicant) {
                 $container = array();
-
-                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
 
                 $container["personid"] = $applicant->personid;
                 $container["firstname"] = $applicant->firstname;
