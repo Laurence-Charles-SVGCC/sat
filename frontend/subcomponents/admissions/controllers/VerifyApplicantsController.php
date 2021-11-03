@@ -778,24 +778,6 @@ class VerifyApplicantsController extends \yii\web\Controller
 
     public function actionViewVerified($cseccentreid, $centrename)
     {
-        //        $data = array();
-        //        foreach(Application::centreApplicantsVerified($cseccentreid) as $application)
-        //        {
-        //            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-        //        }
-        //        $dataProvider = new ArrayDataProvider([
-        //            'allModels' => $data,
-        //            'pagination' => [
-        //                'pageSize' => 20,
-        //            ],
-        //            'sort' => [
-        //                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-        //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
-        //            ],
-        //        ]);
-
-
-
         if (strcasecmp($centrename, "external") == 0) {
             $data = array();
 
