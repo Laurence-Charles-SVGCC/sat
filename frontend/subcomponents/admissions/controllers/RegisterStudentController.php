@@ -29,13 +29,6 @@ use frontend\models\Email;
 
 class RegisterStudentController extends \yii\web\Controller
 {
-    //    public function actionIndex()
-    //    {
-    //        return $this->render('index');
-    //    }
-
-
-
     /**
      *
      * @param type $personid
