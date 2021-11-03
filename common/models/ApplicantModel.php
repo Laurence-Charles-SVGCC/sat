@@ -141,4 +141,32 @@ class ApplicantModel
         }
         return $data;
     }
+
+
+    public static function isApplicantExternal($applicant)
+    {
+        if ($applicant->isexternal == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function allApplicationsVerified($applicant)
+    {
+        $applications =
+            ApplicationModel::getActiveApplicationsByPersonID($applicant->personid);
+
+        if (empty($applications)) {
+            return false;
+        } else {
+            foreach ($applications as $application) {
+                if ($application->applicationstatusid == 2) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }

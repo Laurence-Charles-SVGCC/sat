@@ -83,6 +83,7 @@ use frontend\models\TeachingAdditionalInfoModel;
 use frontend\models\TeachingExperienceModel;
 use frontend\models\UserModel;
 
+
 class ProcessApplicationsController extends \yii\web\Controller
 {
 
@@ -355,11 +356,20 @@ class ProcessApplicationsController extends \yii\web\Controller
         $csecCentre =
             CsecQualificationModel::getCentreDetails($csecQualifications[0]);
 
+        // if (
+        //     CsecQualificationModel::hasVerifiedCsecQualifications(
+        //         $csecQualifications
+        //     )
+        //     == true
+        // ) {
         if (
-            CsecQualificationModel::hasVerifiedCsecQualifications(
-                $csecQualifications
-            )
-            == true
+            (\common\models\ApplicantModel::isApplicantExternal($applicant) == true
+                && \common\models\ApplicantModel::allApplicationsVerified($applicant) == true)
+            ||
+            (\common\models\ApplicantModel::isApplicantExternal($applicant) == false
+                && CsecQualificationModel::hasVerifiedCsecQualifications(
+                    $csecQualifications
+                ) == true)
         ) {
             // Academic qualificaitons tab
             $externalQualification =
@@ -817,237 +827,6 @@ class ProcessApplicationsController extends \yii\web\Controller
             );
         }
     }
-    //         public function actionViewApplicantCertificates($personid, $programme, $application_status, $programme_id = 0)
-    //         {
-    //             $divisionid = (EmployeeDepartment::getUserDivision(Yii::$app->user->identity->personid));
-    //
-    //             $duplicate_message = false;
-    //
-    //             $applicant = Applicant::find()
-    //                         ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-    //                         ->one();
-    //
-    //             $username = $applicant->getPerson()->one()->username;
-    //
-    //             if ($application_status == 11) {
-    //                 Yii::$app->getSession()->setFlash(
-    //                     "error", "Appplication for applicant {$username} was removed from consideration.");
-    //                 return $this->redirect(['admissions/find-current-applicant', 'status' => 'pending']);
-    //             }
-    //
-    //             $applications = Application::find()
-    //                         ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-    //                         ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-    //                         ->where(['application_period.iscomplete' => 0, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-    //                                 /*'application.isactive' => 1,*/ 'application.isdeleted' => 0, 'application.personid' => $personid])
-    //                         ->orderBy('application.ordering ASC')
-    //                         ->all();
-    //
-    //             $certificates = CsecQualification::getSubjects($personid);
-    //
-    //             $application_container = array();
-    //
-    //             $target_application = null;
-    //
-    //             foreach($applications as $application)
-    //             {
-    //
-    //                 $combined = array();
-    //                 $keys = array();
-    //                 $values = array();
-    //
-    //                 array_push($keys, "application");
-    //                 array_push($keys, "istarget");
-    //                 array_push($keys, "division");
-    //                 array_push($keys, "programme");
-    //                 array_push($keys, "status");
-    //
-    //                 array_push($values, $application);
-    //
-    //                 $istarget = Application::isTarget($applications, $application_status, $application);
-    //                 if ($istarget == true)
-    //                     $target_application = $application;
-    //                 array_push($values, $istarget);
-    //
-    //                 $division = Division::find()
-    //                             ->where(['divisionid' => $application->divisionid])
-    //                             ->one()
-    //                             ->abbreviation;
-    //                 array_push($values, $division);
-    //
-    //                 $cape_subjects_names = array();
-    //                 $cape_subjects = ApplicationCapesubject::find()
-    //                             ->innerJoin('application', '`application_capesubject`.`applicationid` = `application`.`applicationid`')
-    //                             ->where(['application.applicationid' => $application->applicationid,
-    //                                     'application.isactive' => 1,
-    //                                     'application.isdeleted' => 0]
-    //                                     )
-    //                             ->all();
-    //
-    //                 $programme_record = ProgrammeCatalog::find()
-    //                             ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-    //                             ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-    //                             ->where(['application.applicationid' => $application->applicationid])
-    //                             ->one();
-    //
-    //                 foreach ($cape_subjects as $cs)
-    //                 {
-    //                     $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
-    //                 }
-    //
-    //                 $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
-    //                 array_push($values, $programme_name);
-    //
-    //                 $status = ApplicationStatus::find()
-    //                         ->where(['applicationstatusid' => $application->applicationstatusid])
-    //                         ->one()
-    //                         ->name;
-    //                 array_push($values, $status);
-    //
-    //                 $combined = array_combine($keys, $values);
-    //                 array_push($application_container, $combined);
-    //             }
-    //
-    //
-    //             /*Get possible duplicates. needs work to deal with multiple years of certificates,
-    //              * but should catch majority
-    //              */
-    //             if ($certificates)
-    //             {
-    //                 $dups = CsecQualification::getPossibleDuplicate($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
-    //                 $message = '';
-    //                 if ($dups)
-    //                 {
-    //                     $dupes = '';
-    //                     foreach($dups as $dup)
-    //                     {
-    //                         $user = User::findOne(['personid' => $dup, 'isdeleted' => 0]);
-    //                         $dupes = $user ? $dupes . ' ' . $user->username : $dupes;
-    //                     }
-    //                     $message = 'Possible Duplicate of applicant(s) ' . $dupes;
-    //
-    //                 }
-    //                 $reapp = CsecQualification::getPossibleReapplicant($applicant->personid, $certificates[0]->candidatenumber, $certificates[0]->year);
-    //                 if ($reapp)
-    //                 {
-    //                     $message = $message . ' Applicant applied to College in academic year prior to 2015/2016.';
-    //                 }
-    //                 if ($dups || $reapp)
-    //                 {
-    //                     //Yii::$app->session->setFlash('warning', $message);
-    //                     $duplicate_message = $message;
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 Yii::$app->session->setFlash('error', 'Applicant certificates not yet verified OR Applicant has external Certificates.');
-    //             }
-    //             $dataProvider = new ArrayDataProvider([
-    //                 'allModels' => $certificates,
-    //                 'pagination' => [
-    //                     'pageSize' => 50,
-    //                 ],
-    //             ]);
-    //
-    //
-    //             $offers_made = 0;
-    //             $spaces = 0;
-    //             $cape_info = array();
-    //             $cape = false;
-    //             $ao = $target_application ? AcademicOffering::findOne(['academicofferingid' => $target_application->academicofferingid]) : NULL;
-    //             if ($ao)
-    //             {
-    //                 $cape_prog = ProgrammeCatalog::findOne(['name' => 'CAPE']);
-    //                 $cape = $cape_prog ? $ao->programmecatalogid == $cape_prog->programmecatalogid : false;
-    //
-    //                 if ($cape)
-    //                 {
-    //                     $cape_subjects = CapeSubject::find()
-    //                             ->innerJoin('application_capesubject', '`application_capesubject`.`capesubjectid` = `cape_subject`.`capesubjectid`')
-    //                             ->where(['application_capesubject.applicationid' => $target_application->applicationid])
-    //                             ->all();
-    //
-    //                     foreach ($cape_subjects as $cape)
-    //                     {
-    //                         $cape_info[$cape->subjectname]['offers_made'] = count(Offer::find()
-    //                                                                                                         ->joinWith('application')
-    //                                                                                                         ->innerJoin('`academic_offering`', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-    //                                                                                                         ->innerJoin('`application_period`', '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`')
-    //                                                                                                         ->innerJoin('`application_capesubject`', '`application`.`applicationid` = `application_capesubject`.`applicationid`')
-    //                                                                                                         ->where(['application_capesubject.capesubjectid' => $cape->capesubjectid,
-    //                                                                                                                 'application_period.isactive' => 1, 'application_period.iscomplete' => 0,
-    //                                                                                                                 'offer.isdeleted' => 0
-    //                                                                                                                 ])
-    //                                                                                                         ->all());
-    //                         $cape_info[$cape->subjectname]['capacity'] = $cape->capacity;
-    //                     }
-    //                 }
-    // //
-    //                 $offers_made = count(Offer::find()
-    //                         ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
-    //                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-    //                         ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 1,
-    //                                 'application.isactive' => 1, 'application.isdeleted' => 0,
-    //                                 'academic_offering.academicofferingid' => $ao->academicofferingid])
-    //                         ->all());
-    //
-    //                 $conditional_offers_made = count(Offer::find()
-    //                         ->innerJoin('application', '`application`.`applicationid` = `offer`.`applicationid`')
-    //                         ->innerJoin('academic_offering', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-    //                         ->where(['offer.isactive' => 1, 'offer.isdeleted' => 0, 'offer.offertypeid' => 2,
-    //                                 'application.isactive' => 1, 'application.isdeleted' => 0,
-    //                                 'academic_offering.academicofferingid' => $ao->academicofferingid])
-    //                         ->all());
-    //
-    //                 $spaces = $ao->spaces;
-    //             }
-    //
-    //             /* determine Csec Centre Details */
-    //            $centrename = "None";
-    //            $cseccentreid = 0;
-    //            $all_certificates = CsecQualification::find()
-    //                    ->where(['personid' => $applicant->personid])
-    //                    ->all();
-    //            if ($all_certificates == true)
-    //            {
-    //                $test_certificate = $all_certificates[0];
-    //                $centre = CsecCentre::find()
-    //                        ->where(['cseccentreid' => $test_certificate->cseccentreid])
-    //                        ->one();
-    //                if ($centre == true)
-    //                {
-    //                     $centrename = $centre->name;
-    //                     $cseccentreid = $centre->cseccentreid;
-    //                }
-    //            }
-    //             /*****************************/
-    //
-    //             return $this->render('view_applicant_certificates',
-    //                     [
-    //                         'personid' => $personid,
-    //                         'division_id' => $divisionid,
-    //                         'duplicate_message' => $duplicate_message,
-    //                         'username' => $username,
-    //                         'applicant' => $applicant,
-    //                         'applications' => $applications,
-    //                         'application_container' => $application_container,
-    //                         'dataProvider' => $dataProvider,
-    //                         'application_status' => $application_status,
-    //                         'applicationid' => $target_application->applicationid,
-    //                         'target_application' => $target_application,
-    //                         'programme' => $programme,
-    //                         'conditional_offers_made' => $conditional_offers_made,
-    //                         'offers_made' => $offers_made,
-    //                         'spaces' => $spaces,
-    //                         'cape' => $cape,
-    //                         'cape_info' => $cape_info,
-    //                         'programme_id' => $programme_id,
-    //
-    //                         'centrename' => $centrename,
-    //                         'cseccentreid' => $cseccentreid,
-    //
-    //                     ]);
-    //         }
 
 
     /**
