@@ -776,11 +776,6 @@ class VerifyApplicantsController extends \yii\web\Controller
     }
 
 
-    /*
-    * Purpose: Displays verified applicants from a given centre
-    * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
-    */
     public function actionViewVerified($cseccentreid, $centrename)
     {
         //        $data = array();
