@@ -14,17 +14,16 @@ $this->params['breadcrumbs'][] = ['label' => 'Enroll Students', 'url' => Url::to
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-div class="panel panel-default">
-<div class="panel-heading">
-    <h2 class="panel-title">
-        <span>Enrollment Fee Report</span>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">
+            Enrollment Fee Report
+        </h2>
+    </div>
 
-    </h2>
-</div>
-<div class="panel-body">
-    <?=
-        GridView::widget(
-            [
+    <div class="panel-body">
+        <?=
+            GridView::widget([
                 "dataProvider" => $dataProvider,
                 "columns" => [
                     [
@@ -62,10 +61,10 @@ div class="panel panel-default">
                         }
                     ],
                 ],
-            ]
-        );
-    ?>
-</div>
+            ]);
+        ?>
+    </div>
+
 </div>
 <div class="box box-primary table-responsive no-padding" style="font-size:1.2em;">
     <div class="box-header with-border">

@@ -20,16 +20,14 @@ use frontend\models\DocumentIntent;
 use frontend\models\Division;
 use frontend\models\Email;
 
-
+use common\models\ApplicantModel;
+use common\models\ApplicationModel;
 
 class RegisterStudentController extends \yii\web\Controller
 {
     public function actionViewProspectiveStudent($personid, $programme)
     {
-        $applicant = Applicant::find()
-            ->where(['personid' => $personid, 'isactive' => 1, 'isdeleted' => 0])
-            ->one();
-
+        $applicant = ApplicantModel::getApplicantByPersonid($personid);
         $username = $applicant->getPerson()->one()->username;
 
         $applications = Application::find()
@@ -109,6 +107,25 @@ class RegisterStudentController extends \yii\web\Controller
             array_push($selections, $doc->documenttypeid);
         }
 
+        $successfulApplication =
+            ApplicationModel::getSuccessfulApplication($applicant);
+
+        $feesDataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    ApplicantModel::prepareSuccessfulApplicantFeeReport(
+                        $personid,
+                        $successfulApplication->academicoffering
+                    ),
+                    "pagination" => ["pageSize" => 100],
+                    "sort" => [
+                        "defaultOrder" => ["billingTypeName" => SORT_ASC],
+                        "attributes" => ["billingTypeName", "programme"]
+                    ]
+                ]
+            );
+
         return $this->render(
             'prospective_student',
             [
@@ -125,6 +142,8 @@ class RegisterStudentController extends \yii\web\Controller
                 'selections' => $selections,
                 'offerid' => $offer->offerid,
                 'applicationid' => $target_application->applicationid,
+
+                "dataProvider" => $feesDataProvider,
             ]
         );
     }
