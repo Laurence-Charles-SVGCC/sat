@@ -5,7 +5,6 @@ namespace frontend\models;
 use Yii;
 use common\models\User;
 use frontend\models\Application;
-use frontend\models\Applicant;
 use frontend\models\ApplicantRegistration;
 use frontend\models\Offer;
 use frontend\models\ProgrammeCatalog;
