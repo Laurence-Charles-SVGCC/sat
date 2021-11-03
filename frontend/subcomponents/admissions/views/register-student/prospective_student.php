@@ -7,12 +7,6 @@ use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
-use frontend\models\ExaminationBody;
-use frontend\models\ExaminationProficiencyType;
-use frontend\models\Subject;
-use frontend\models\ExaminationGrade;
-use frontend\models\ApplicationStatus;
-use frontend\models\EmployeeDepartment;
 use frontend\models\DocumentType;
 
 $this->title = 'Successful Applicant  Review Dashboard';
