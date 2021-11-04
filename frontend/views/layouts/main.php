@@ -127,9 +127,7 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                     <?php endif; ?>
 
                     <!-- Programme Oversight -->
-                    <?php if (Yii::$app->user->can('Cordinator')) : ?>
-                        <?= Yii::$app->controller->renderPartial('//layouts/coordinator_partial'); ?>
-                    <?php endif; ?>
+
 
 
                     <?php if (Yii::$app->user->can('admissions')) : ?>
