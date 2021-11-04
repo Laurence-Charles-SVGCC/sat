@@ -32,4 +32,50 @@ class CsecQualificationModel
             return true;
         }
     }
+
+
+    public static function hasQualificationsQueried($qualifications)
+    {
+        if ($qualifications == false) {
+            return false;
+        } else {
+            foreach ($qualifications as $qualification) {
+                if ($qualification->isqueried == 1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+
+    public static function hasQualificationsPending($qualifications)
+    {
+        if ($qualifications == false) {
+            return false;
+        } else {
+            foreach ($qualifications as $qualification) {
+                if (
+                    $qualification->isverified == 0
+                    && $qualification->isqueried == 0
+                ) {
+                    return true;
+                }
+            }
+            return true;
+        }
+    }
+
+
+    public static function qualificationsClassifiedAsPending($qualifications)
+    {
+        if (
+            self::hasQualificationsQueried($qualifications) == false
+            && self::hasQualificationsPending($qualifications) == true
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

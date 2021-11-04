@@ -298,4 +298,214 @@ class ApplicantModel
             return false;
         }
     }
+
+
+    public static function isExternalApplicantPending($applicant)
+    {
+        $postSecondaryQualifications =
+            PostSecondaryQualificationModel::getPostSecondaryQualifications(
+                $applicant
+            );
+
+        $externalQualifications =
+            ExternalQualificationModel::getExternalQualifications(
+                $applicant
+            );
+
+        if (
+            self::isApplicantExternal($applicant) == true
+            && empty($postSecondaryQualifications)
+            && empty($externalQualifications)
+            && self::allApplicationsVerified($applicant) == false
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == true
+            && empty($postSecondaryQualifications)
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == true
+            && empty($externalQualifications)
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::qualificationsClassifiedAsPending(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::qualificationsClassifiedAsPending(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function isNonExternalApplicantPending($applicant)
+    {
+        $csecQualifications =
+            CsecQualificationModel::getCsecQualifications($applicant);
+
+        $postSecondaryQualifications =
+            PostSecondaryQualificationModel::getPostSecondaryQualifications(
+                $applicant
+            );
+
+        $externalQualifications =
+            ExternalQualificationModel::getExternalQualifications(
+                $applicant
+            );
+
+        if (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && empty($postSecondaryQualifications)
+            && empty($externalQualifications)
+
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && empty($postSecondaryQualifications)
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && empty($externalQualifications)
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::qualificationsClassifiedAsPending(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && !empty($csecQualifications)
+            && CsecQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::qualificationsClassifiedAsPending(
+                $externalQualifications
+            ) == true
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::qualificationsClassifiedAsPending(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function getExternalApplicantsForActivePeriods()
+    {
+        return Applicant::find()
+            ->innerJoin(
+                'application',
+                '`applicant`.`personid` = `application`.`personid`'
+            )
+            ->innerJoin(
+                'academic_offering',
+                '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`'
+            )
+            ->innerJoin(
+                'application_period',
+                '`application_period`.`applicationperiodid` = `academic_offering`.`applicationperiodid`'
+            )
+            ->where([
+                'applicant.isexternal' => 1,
+                'applicant.isactive' => 1,
+                'applicant.isdeleted' => 0,
+                'application.isactive' => 1,
+                'application.isdeleted' => 0,
+                'application.applicationstatusid' => [
+                    2, 3, 4, 5, 6, 7, 8, 9, 10
+                ],
+                'academic_offering.isactive' => 1,
+                'academic_offering.isdeleted' => 0,
+                'application_period.iscomplete' => 0,
+                'application_period.isactive' => 1,
+            ])
+            ->groupBy('applicant.personid')
+            ->all();
+    }
+
+
+    public static function isExternalApplicantQueried($applicant)
+    {
+        $postSecondaryQualifications =
+            PostSecondaryQualificationModel::getPostSecondaryQualifications(
+                $applicant
+            );
+
+        $externalQualifications =
+            ExternalQualificationModel::getExternalQualifications(
+                $applicant
+            );
+
+        if (
+            self::isApplicantExternal($applicant) == true
+            && empty($postSecondaryQualifications)
+            && !empty($externalQualifications)
+            && ExternalQualificationModel::hasQualificationsQueried(
+                $externalQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == true
+            && empty($externalQualifications)
+            && !empty($postSecondaryQualifications)
+            && PostSecondaryQualificationModel::hasQualificationsQueried(
+                $postSecondaryQualifications
+            ) == true
+        ) {
+            return true;
+        } elseif (
+            self::isApplicantExternal($applicant) == false
+            && (!empty($externalQualifications) && ExternalQualificationModel::hasQualificationsQueried(
+                    $externalQualifications
+                ) == true)
+            || (!empty($postSecondaryQualifications)
+                && PostSecondaryQualificationModel::hasQualificationsQueried(
+                    $postSecondaryQualifications
+                ) == true)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

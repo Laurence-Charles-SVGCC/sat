@@ -153,21 +153,21 @@ class VerifyApplicantsController extends \yii\web\Controller
     public function actionCentreDetails($centre_id, $centre_name)
     {
         if (strcasecmp($centre_name, "external") == 0) {
-            $amt_received = count(Application::getExternal());
-            $amt_verified =
+            $amtReceived = count(Application::getExternal());
+            $amtVerified =
                 CsecCentreModel::centreApplicantsVerifiedCount($centre_id, true);
-            $amt_queried =
-                Application::centreApplicantsQueriedCount($centre_id, true);
-            $amt_pending =
-                count(Application::centreApplicantsPending($centre_id, true));
+            $amtQueried =
+                CsecCentreModel::centreApplicantsQueriedCount($centre_id, true);
+            $amtPending =
+                CsecCentreModel::centreApplicantsPendingCount($centre_id, true);
         } else {
-            $amt_received =
+            $amtReceived =
                 Application::centreApplicantsReceivedCount($centre_id);
-            $amt_verified =
+            $amtVerified =
                 Application::centreApplicantsVerifiedCount($centre_id);
-            $amt_queried =
+            $amtQueried =
                 Application::centreApplicantsQueriedCount($centre_id);
-            $amt_pending =
+            $amtPending =
                 Application::centreApplicantsPendingCount($centre_id);
         }
 
@@ -176,10 +176,10 @@ class VerifyApplicantsController extends \yii\web\Controller
             [
                 'centre_name' => $centre_name,
                 'centre_id' => $centre_id,
-                'pending' => $amt_pending,
-                'verified' => $amt_verified,
-                'queried' => $amt_queried,
-                'total' => $amt_received,
+                'pending' => $amtPending,
+                'verified' => $amtVerified,
+                'queried' => $amtQueried,
+                'total' => $amtReceived,
             ]
         );
     }
@@ -566,37 +566,14 @@ class VerifyApplicantsController extends \yii\web\Controller
         );
     }
 
-    /*
-    * Purpose: Displays pending applicants from a given centre
-    * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
-    */
+
     public function actionViewPending($cseccentreid, $centrename)
     {
-        //        $data = array();
-        //        foreach(Application::centreApplicantsPending($cseccentreid) as $application)
-        //        {
-        //            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-        //        }
-        //        $dataProvider = new ArrayDataProvider([
-        //            'allModels' => $data,
-        //            'pagination' => [
-        //                'pageSize' => 20,
-        //            ],
-        //            'sort' => [
-        //                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-        //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
-        //            ],
-        //        ]);
-
         if (strcasecmp($centrename, "external") == 0) {
             $data = array();
 
-            foreach (Application::centreApplicantsPending($cseccentreid, true) as $application) {
+            foreach (CsecCentreModel::centreApplicantsPending($cseccentreid, true) as $applicant) {
                 $container = array();
-
-                $applicant = Applicant::find()->where(['personid' => $application->personid])->one();
-
                 $container["personid"] = $applicant->personid;
                 $container["firstname"] = $applicant->firstname;
                 $container["middlename"] = $applicant->middlename;
@@ -914,32 +891,13 @@ class VerifyApplicantsController extends \yii\web\Controller
         );
     }
 
-    /*
-    * Purpose: Displays queried applicants from a given centre
-    * Created: 15/07/2015 by Gii
-    * Last Modified: 16/07/2015 by Gamal Crichton | 18/02/2016 by L.Charles
-    */
+
     public function actionViewQueried($cseccentreid, $centrename)
     {
-        //        $data = array();
-        //        foreach(Application::centreApplicantsQueried($cseccentreid) as $application)
-        //        {
-        //            $data[] = Applicant::find()->where(['personid' => $application->personid])->one();
-        //        }
-        //
-        //        $dataProvider = new ArrayDataProvider([
-        //            'allModels' => $data,
-        //            'pagination' => [
-        //                'pageSize' => 20,
-        //            ],
-        //            'sort' => [
-        //                'defaultOrder' => ['lastname' => SORT_ASC, 'firstname' => SORT_ASC],
-        //                'attributes' => ['personid', 'firstname', 'middlenames', 'lastname', 'gender'],
-        //            ],
-        //        ]);
         if (strcasecmp($centrename, "external") == 0) {
             $data = array();
 
+            // foreach (Application::centreApplicantsQueried($cseccentreid, true) as $application) {
             foreach (Application::centreApplicantsQueried($cseccentreid, true) as $application) {
                 $container = array();
 
