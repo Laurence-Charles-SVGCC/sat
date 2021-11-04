@@ -810,17 +810,43 @@ class UserModel
 
     public static function isCompletedApplicant($user)
     {
-        $targetApplications =
+        $successfulApplications =
             Application::find()
             ->where([
                 "personid" => $user->personid,
-                "applicationstatusid" => [2, 3, 4, 5, 6, 7, 8, 10],
+                "applicationstatusid" => 9,
                 "isactive" => 1,
                 "isdeleted" => 0
             ])
+            ->orderBy('ordering DESC')
             ->all();
-        if ($targetApplications == true) {
-            return true;
+        if (!empty($successfulApplications)) {
+            $currentApplication =  $successfulApplications[0];
+            $currentOffer =
+                Offer::find()
+                ->where([
+                    "applicationid" => $currentApplication->applicationid,
+                    "isactive" => 1,
+                    "isdeleted" => 0,
+                    "ispublished" => 0
+                ])
+                ->one();
+            if ($currentOffer == true) {
+                return true;
+            }
+        } else {
+            $targetApplications =
+                Application::find()
+                ->where([
+                    "personid" => $user->personid,
+                    "applicationstatusid" => [2, 3, 4, 5, 6, 7, 8, 10],
+                    "isactive" => 1,
+                    "isdeleted" => 0
+                ])
+                ->all();
+            if ($targetApplications == true) {
+                return true;
+            }
         }
         return false;
     }
