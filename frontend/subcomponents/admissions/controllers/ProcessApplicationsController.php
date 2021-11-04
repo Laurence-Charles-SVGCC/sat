@@ -553,10 +553,10 @@ class ProcessApplicationsController extends \yii\web\Controller
                     || (
                         (Yii::$app->user->can('Dean') == true
                             || Yii::$app->user->can('Deputy Dean') == true)
-                        && ApplicationModel::hasPublishedRejection($applications) == true)
+                        && ApplicationModel::hasPublishedRejection($applications) == false)
                     || (Yii::$app->user->can('Admission Team Adjuster') == true
                         && ApplicantModel::isRejected($personid, $applications) == true
-                        && ApplicationModel::hasPublishedRejection($applications) == true)) ? true : false;
+                        && ApplicationModel::hasPublishedRejection($applications) == false)) ? true : false;
 
             $contiguousProgrammeChoicesHaveSameDivision =
                 (count($applications) == 2
