@@ -11,7 +11,6 @@ class ApplicationSubmissionPaymentForm extends Model
     public $amount;
     public $paymentMethodId;
     public $includeAmendmentFee;
-    // public $receiptNumber;
     public $datePaid;
     public $autoPublish;
     public $customerId;
@@ -40,7 +39,7 @@ class ApplicationSubmissionPaymentForm extends Model
                 "required"
             ],
             [["amount"], "number"],
-            [[/*"receiptNumber",*/"username", "fullName"], "string"],
+            [["username", "fullName"], "string"],
             [
                 [
                     "paymentMethodId",
@@ -62,7 +61,6 @@ class ApplicationSubmissionPaymentForm extends Model
     public function attributeLabels()
     {
         return [
-            //"receiptNumber" => "Receipt Number",
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "amount" => "Amount",

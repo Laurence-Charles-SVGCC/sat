@@ -43,11 +43,6 @@ $this->params["breadcrumbs"][] = $this->title;
         ?>
 
         <?=
-            $form->field($applicantAmendmentPaymentForm, "receiptNumber")
-                ->textInput(["class" => "form-control"]);
-        ?>
-
-        <?=
             $form->field($applicantAmendmentPaymentForm, 'datePaid')
                 ->widget(
                     DatePicker::class,
