@@ -87,6 +87,7 @@ $this->params["breadcrumbs"][] = $this->title;
             </div><br />
 
             <div>
+                <strong>Operator:</strong> <?= $operator ?><br />
                 <strong>Date:</strong> <?= date_format(new \DateTime($receipt->date_paid), "F j, Y") ?><br />
                 <strong>ApplicantID:</strong> <?= $applicantId ?><br />
                 <strong>Name:</strong> <?= $applicantName ?><br />
@@ -109,6 +110,17 @@ $this->params["breadcrumbs"][] = $this->title;
                         <td><?= $billing->amount_paid ?></td>
                     </tr>
                 <?php endforeach; ?>
+
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+
                 <tr>
                     <td><strong>Total</strong></td>
                     <td></td>

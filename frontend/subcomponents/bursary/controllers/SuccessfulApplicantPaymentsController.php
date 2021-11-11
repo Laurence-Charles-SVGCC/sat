@@ -298,8 +298,8 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
             ApplicationModel::getSuccessfulApplication($applicant);
 
         $batchStudentFeePaymentBillingForms =
-            $batchStudentFeePaymentForm->generateDefaultBillingFormsForSuccessfulApplicant(
-                $successfulApplication->academicoffering
+            $batchStudentFeePaymentForm->generateDefaultBillingFormsForSuccessfulApplication(
+                $successfulApplication
             );
 
         if (empty($batchStudentFeePaymentBillingForms)) {
@@ -310,7 +310,7 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
 
         $paymentMethods =
             ArrayHelper::map(
-                PaymentMethodModel::getActivePaymentMethods(),
+                PaymentMethodModel::getNonWaiverPaymentMethods(),
                 "paymentmethodid",
                 "name"
             );
@@ -320,16 +320,23 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                 [
                     "allModels" =>
                     ApplicantModel::prepareSuccessfulApplicantFeeReport(
-                        $customer->personid,
-                        $successfulApplication->academicoffering
+                        $successfulApplication
                     ),
                     "pagination" => ["pageSize" => 100],
                     "sort" => [
-                        "defaultOrder" => ["billingTypeName" => SORT_ASC],
-                        "attributes" => ["billingTypeName", "programme"]
+                        "defaultOrder" => ["fee" => SORT_ASC],
+                        "attributes" => ["fee"]
                     ]
                 ]
             );
+
+        $paymentSummary =
+            ApplicantModel::calculateEnrollmentFeesSummary(
+                $successfulApplication
+            );
+        $totalCost = $paymentSummary["totalCost"];
+        $totalPaid = $paymentSummary["totalPaid"];
+        $balanceDue = $paymentSummary["totalDue"];
 
         if ($postData = Yii::$app->request->post()) {
             if (
@@ -378,6 +385,9 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                 $batchStudentFeePaymentBillingForms,
 
                 "outstandingFeesExist" => $outstandingFeesExist,
+                "totalCost" => $totalCost,
+                "totalPaid" => $totalPaid,
+                "balanceDue" => $balanceDue
             ]
         );
     }

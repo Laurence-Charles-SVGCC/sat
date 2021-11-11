@@ -45,6 +45,14 @@ $this->params["breadcrumbs"][] = $this->title;
                     );
             ?>
 
+            <?=
+                $form->field($model, "payable_on_enrollment")
+                    ->dropDownList(
+                        [0 => "No", 1 => "Yes"],
+                        ["prompt" => "Select ..."]
+                    );
+            ?>
+
             <?= $form->field($model, "cost")->textInput(); ?>
 
             <?=

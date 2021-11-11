@@ -76,21 +76,40 @@ class BatchStudentFeePaymentForm extends Model
     }
 
 
-    public function generateDefaultBillingFormsForSuccessfulApplicant(
-        $academicOffering
+    // public function generateDefaultBillingFormsForSuccessfulApplicant(
+    //     $academicOffering
+    // ) {
+    //     $records = array();
+
+    //     $applicableBillingCharges =
+    //         BillingChargeModel::getOutstandingEnrollmentChargesByApplicationPeriodId(
+    //             $academicOffering
+    //         );
+
+    //     foreach ($applicableBillingCharges as $billingCharge) {
+    //         $record = new BatchStudentFeePaymentBillingForm();
+    //         $record->fillModel($this->customerId, $billingCharge);
+    //         $records[] = $record;
+    //     }
+
+    //     return $records;
+    // }
+    public function generateDefaultBillingFormsForSuccessfulApplication(
+        $application
     ) {
         $records = array();
 
         $applicableBillingCharges =
-            BillingChargeModel::getOutstandingEnrollmentChargesByApplicationPeriodId(
-                $academicOffering,
-                $this->customerId
+            BillingChargeModel::getOutstandingEnrollmentChargesByApplication(
+                $application
             );
 
-        foreach ($applicableBillingCharges as $billingCharge) {
-            $record = new BatchStudentFeePaymentBillingForm();
-            $record->fillModel($this->customerId, $billingCharge);
-            $records[] = $record;
+        if (!empty($applicableBillingCharges)) {
+            foreach ($applicableBillingCharges as $billingCharge) {
+                $record = new BatchStudentFeePaymentBillingForm();
+                $record->fillModel($this->customerId, $billingCharge);
+                $records[] = $record;
+            }
         }
 
         return $records;

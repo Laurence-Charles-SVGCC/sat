@@ -64,8 +64,11 @@ class StudentFeesController extends \yii\web\Controller
             new ArrayDataProvider(
                 [
                     "allModels" =>
+                    // BillingChargeModel::prepareAcademicOfferingFeeCatalog(
+                    //     $applicationPeriodId
+                    // ),
                     BillingChargeModel::prepareAcademicOfferingFeeCatalog(
-                        $applicationPeriodId
+                        $academicOffering
                     ),
                     "pagination" => ["pageSize" => 100],
                     "sort" => [
@@ -580,8 +583,8 @@ class StudentFeesController extends \yii\web\Controller
                     );
                 } else {
                     Yii::$app->getSession()->setFlash(
-                        "Fees added successfully.",
-                        'Error occurred processing request.'
+                        "success",
+                        'Fees added successfully.'
                     );
                     return $this->redirect([
                         "view-application-period-student-fee-dashboard",

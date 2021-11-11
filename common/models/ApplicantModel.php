@@ -94,23 +94,35 @@ class ApplicantModel
         return ApplicationModel::getFormattedProgrammeChoice($acceptedApplication);
     }
 
-
-    public static function prepareSuccessfulApplicantFeeReport(
-        $personid,
-        $academicOffering
-    ) {
-        $data = array();
-        $applicableBillingCharges =
-            BillingChargeModel::getEnrollmentBillingChargesForAcademicOffering(
-                $academicOffering
+    public static function getBillingChargeCatalog($application)
+    {
+        $cohortCharges =
+            BillingChargeModel::getCohortBillingChargesPayableOnEnrollment(
+                $application
             );
+        // $cohortCharges = array();
+
+        $programmeCharges =
+            BillingChargeModel::getProgrammeBillingChargesPayableOnEnrollment(
+                $application
+            );
+
+        return array_merge($cohortCharges, $programmeCharges);
+    }
+
+
+
+    public static function prepareSuccessfulApplicantFeeReport($application)
+    {
+        $data = array();
+        $applicableBillingCharges = self::getBillingChargeCatalog($application);
 
         foreach ($applicableBillingCharges as $billingCharge) {
             $charge = array();
-            $customer = UserModel::getUserById($personid);
+            $customer = UserModel::getUserById($application->personid);
             $charge["username"] = $customer->username;
             $charge["billingChargeId"] = $billingCharge->id;
-            $charge["customerId"] = $personid;
+            $charge["customerId"] = $application->personid;
 
             $billingType =
                 BillingTypeModel::getBillingTypeByID(
@@ -118,24 +130,25 @@ class ApplicantModel
                 );
             $charge["fee"] = $billingType->name;
 
-            $charge["cost"] = $billingCharge->cost;
+            $charge["cost"] = number_format($billingCharge->cost, 2);
 
             $totalPaid =
                 BillingModel::calculateTotalPaidOnBillingCharge(
                     $billingCharge->id,
-                    $personid
+                    $application->personid
                 );
-            $charge["totalPaid"] = $totalPaid;
+            $charge["totalPaid"] = number_format($totalPaid, 2);
 
             $outstanding = $billingCharge->cost - $totalPaid;
-            $charge["outstanding"] = $outstanding;
+            $charge["outstanding"] = number_format($outstanding, 2);
 
             if ($totalPaid == 0) {
                 $charge["status"] = "Unpaid";
             } elseif ($totalPaid == $billingCharge->cost) {
                 $charge["status"] = "Paid In Full";
             } elseif ($totalPaid < $billingCharge->cost) {
-                $charge["status"] = "Balance = {$outstanding}";
+                $outstandingFormatted = number_format($outstanding, 2);;
+                $charge["status"] = "Balance = {$outstandingFormatted}";
             }
             $data[] = $charge;
         }
@@ -496,8 +509,8 @@ class ApplicantModel
         } elseif (
             self::isApplicantExternal($applicant) == false
             && (!empty($externalQualifications) && ExternalQualificationModel::hasQualificationsQueried(
-                    $externalQualifications
-                ) == true)
+                $externalQualifications
+            ) == true)
             || (!empty($postSecondaryQualifications)
                 && PostSecondaryQualificationModel::hasQualificationsQueried(
                     $postSecondaryQualifications
@@ -507,5 +520,34 @@ class ApplicantModel
         } else {
             return false;
         }
+    }
+
+
+    public static function calculateEnrollmentFeesSummary($application)
+    {
+        $totalCost = 0;
+        $totalPaid = 0;
+        $totalDue = 0;
+        $summary = array();
+
+        $applicableBillingCharges = self::getBillingChargeCatalog($application);
+
+        foreach ($applicableBillingCharges as $billingCharge) {
+            $totalCost += $billingCharge->cost;
+
+            $paidAmount =
+                BillingModel::calculateTotalPaidOnBillingCharge(
+                    $billingCharge->id,
+                    $application->personid
+                );
+            $totalPaid += $paidAmount;
+
+            $totalDue += $billingCharge->cost - $paidAmount;
+        }
+
+        $summary["totalCost"] = "$" . number_format($totalCost, 2);
+        $summary["totalPaid"] = "$" . number_format($totalPaid, 2);
+        $summary["totalDue"] = "$" . number_format($totalDue, 2);
+        return $summary;
     }
 }

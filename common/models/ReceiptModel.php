@@ -173,6 +173,15 @@ class ReceiptModel
         return false;
     }
 
+    public static function getOperatorCode($user)
+    {
+        $employee = EmployeeModel::getEmployeeByID($user->personid);
+        $last = substr($employee->lastname, 0, 3);
+        $first = substr($employee->firstname, 0, 3);
+        $code = "{$last}{$first}";
+        return strtoupper($code);
+    }
+
 
     public static function prepareReceiptContent(
         $controller,
@@ -181,6 +190,9 @@ class ReceiptModel
         $applicantName,
         $applicantId
     ) {
+        $user = UserModel::getUserById($receipt->created_by);
+        $operator = self::getOperatorCode($user);
+
         $total = number_format(self::calculateReceiptTotal($receipt), 2);
 
         return $controller->renderPartial(
@@ -190,7 +202,8 @@ class ReceiptModel
                 "billings" => $billings,
                 "total" => $total,
                 "applicantName" => $applicantName,
-                "applicantId" => $applicantId
+                "applicantId" => $applicantId,
+                "operator" => $operator
             ]
         );
     }

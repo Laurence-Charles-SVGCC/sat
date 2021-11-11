@@ -20,4 +20,17 @@ class CapeSubjectModel
         $capeSubject = self::getCapeSubjectByID($id);
         return $capeSubject->subjectname;
     }
+
+
+    public static function getCapeSubjectNames($capeSubjects)
+    {
+        $names = array();
+
+        if (!empty($capeSubjects)) {
+            foreach ($capeSubjects as $capeSubject) {
+                $names[] = $capeSubject->subjectname;
+            }
+        }
+        return $names;
+    }
 }

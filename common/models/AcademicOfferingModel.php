@@ -120,4 +120,19 @@ class AcademicOfferingModel extends \yii\base\Model
 
         return $programmeName . " ({$academicYear->title})";
     }
+
+
+    public static function isCape($academicOffering)
+    {
+        $programmeCatalog =
+            ProgrammeCatalogModel::getProgrammeCatalogByID(
+                $academicOffering->programmecatalogid
+            );
+
+        if ($programmeCatalog->name === "CAPE") {
+            return true;
+        }
+
+        return false;
+    }
 }

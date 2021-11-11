@@ -89,7 +89,7 @@ class BillingChargeForm extends \yii\base\Model
         if (
             $this->billing_type_id == true
             && $this->cost == true
-            && $this->payable_on_enrollment
+            && $this->payable_on_enrollment != null
         ) {
             return true;
         } else {

@@ -37,32 +37,26 @@ $this->params['breadcrumbs'][] = $this->title;
                         "label" => "Cost"
                     ],
                     [
+                        "attribute" => "totalPaid",
+                        "format" => "text",
+                        "label" => "Paid"
+                    ],
+                    [
                         "attribute" => "status",
                         "format" => "text",
                         "label" => "Status"
-                    ],
-                    [
-                        "label" => "Action",
-                        "format" => "raw",
-                        "value" => function ($row) {
-                            if ($row["status"] == "Paid In Full") {
-                                return "";
-                            } else {
-                                return Html::a(
-                                    "Pay",
-                                    Url::toRoute([
-                                        "make-fee-payment",
-                                        "username" => $row["username"],
-                                        "billingChargeId" => $row["billingChargeId"]
-                                    ]),
-                                    ["class" => "btn btn-success"]
-                                );
-                            }
-                        }
-                    ],
+                    ]
                 ],
             ]);
         ?>
+
+        <table class="table">
+            <tr>
+                <th style="text-align: center;">Total Cost: <?= $totalCost ?></th>
+                <th style="text-align: center;">Total Paid: <?= $totalPaid ?></th>
+                <th style="text-align: center;">Balance Due: <?= $balanceDue ?></th>
+            </tr>
+        </table>
     </div>
 
 </div>

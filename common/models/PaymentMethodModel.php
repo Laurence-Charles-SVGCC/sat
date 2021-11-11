@@ -79,4 +79,13 @@ class PaymentMethodModel
         $paymentMethod = self::getPaymentMethodByID($paymentmethodid);
         return $paymentMethod->name;
     }
+
+
+    public static function getNonWaiverPaymentMethods()
+    {
+        return PaymentMethod::find()
+            ->where(["isdeleted" => 0])
+            ->andWhere(['not', ['name' => 'Vaccination Waiver']])
+            ->all();
+    }
 }

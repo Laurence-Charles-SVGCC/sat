@@ -160,4 +160,46 @@ class ApplicationModel
         $applications = self::getActiveApplicationsByPersonID($personId);
         return self::formatApplicationsInformation($applications);
     }
+
+
+    public static function getSubjectsForCapeApplication($application)
+    {
+        return CapeSubject::find()
+            ->innerJoin(
+                'application_capesubject',
+                '`cape_subject`.`capesubjectid` = `application_capesubject`.`capesubjectid`'
+            )
+            ->innerJoin(
+                'application',
+                '`application_capesubject`.`applicationid` = `application`.`applicationid`'
+            )
+            ->where([
+                "cape_subject.isactive" => 1,
+                "cape_subject.isdeleted" => 0,
+                "application.personid" => $application->personid,
+                "application.academicofferingid" => $application->academicofferingid,
+                "application.applicationstatusid" => 9
+            ])
+            ->all();
+    }
+
+
+    public static function isCape($application)
+    {
+        $academicOffering =
+            AcademicOfferingModel::getAcademicOfferingByID(
+                $application->academicofferingid
+            );
+
+        $programmeCatalog =
+            ProgrammeCatalogModel::getProgrammeCatalogByID(
+                $academicOffering->programmecatalogid
+            );
+
+        if ($programmeCatalog->name === "CAPE") {
+            return true;
+        }
+
+        return false;
+    }
 }
