@@ -146,7 +146,7 @@ class ApplicantModel
             } elseif ($totalPaid == $billingCharge->cost) {
                 $charge["status"] = "Paid In Full";
             } elseif ($totalPaid < $billingCharge->cost) {
-                $outstandingFormatted = number_format($outstanding, 2);;
+                $outstandingFormatted = number_format($outstanding, 2);
                 $charge["status"] = "Balance = {$outstandingFormatted}";
             }
             $data[] = $charge;

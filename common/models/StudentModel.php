@@ -132,24 +132,25 @@ class StudentModel
                 );
             $charge["fee"] = $billingType->name;
 
-            $charge["cost"] = $billingCharge->cost;
+            $charge["cost"] = number_format($billingCharge->cost, 2);
 
             $totalPaid =
                 BillingModel::calculateTotalPaidOnBillingCharge(
                     $billingCharge->id,
                     $studentRegistration->personid
                 );
-            $charge["totalPaid"] = $totalPaid;
+            $charge["totalPaid"] = number_format($totalPaid, 2);
 
             $outstanding = $billingCharge->cost - $totalPaid;
-            $charge["outstanding"] = $outstanding;
+            $charge["outstanding"] = number_format($outstanding, 2);
 
             if ($totalPaid == 0) {
                 $charge["status"] = "Unpaid";
             } elseif ($totalPaid == $billingCharge->cost) {
                 $charge["status"] = "Paid In Full";
             } elseif ($totalPaid < $billingCharge->cost) {
-                $charge["status"] = "Balance = {$outstanding}";
+                $outstandingFormatted = number_format($outstanding, 2);;
+                $charge["status"] = "Balance = {$outstandingFormatted}";
             }
             $data[] = $charge;
         }
