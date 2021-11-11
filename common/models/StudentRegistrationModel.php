@@ -97,4 +97,25 @@ class StudentRegistrationModel
             ->where(["personid" => $id, "isdeleted" => 0])
             ->all();
     }
+
+
+    public static function getApplication($studentRegistration)
+    {
+        return
+            Application::find()
+            ->innerJoin(
+                'offer',
+                '`application`.`applicationid` = `offer`.`applicationid`'
+            )
+            ->innerJoin(
+                'student_registration',
+                '`offer`.`offerid` = `student_registration`.`offerid`'
+            )
+            ->where([
+                "application.isactive" => 1,
+                "application.isdeleted" => 0,
+                "student_registration.studentregistrationid" => $studentRegistration->studentregistrationid
+            ])
+            ->one();
+    }
 }

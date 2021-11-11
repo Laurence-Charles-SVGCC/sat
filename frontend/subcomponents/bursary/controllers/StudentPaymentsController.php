@@ -30,6 +30,9 @@ class StudentPaymentsController extends \yii\web\Controller
                 $studentRegistrationId
             );
 
+        $application =
+            StudentRegistrationModel::getApplication($studentRegistration);
+
         $customer = UserModel::getUserByUsername($username);
         $userFullname = UserModel::getUserFullname($customer);
         $applicant = ApplicantModel::getApplicantByPersonid($customer->personid);
@@ -59,7 +62,7 @@ class StudentPaymentsController extends \yii\web\Controller
 
         $paymentMethods =
             ArrayHelper::map(
-                PaymentMethodModel::getActivePaymentMethods(),
+                PaymentMethodModel::getNonWaiverPaymentMethods(),
                 "paymentmethodid",
                 "name"
             );
@@ -83,6 +86,12 @@ class StudentPaymentsController extends \yii\web\Controller
                     ]
                 ]
             );
+
+        $paymentSummary =
+            ApplicantModel::calculateEnrollmentFeesSummary($application);
+        $totalCost = $paymentSummary["totalCost"];
+        $totalPaid = $paymentSummary["totalPaid"];
+        $balanceDue = $paymentSummary["totalDue"];
 
         if ($postData = Yii::$app->request->post()) {
             if (
@@ -134,6 +143,9 @@ class StudentPaymentsController extends \yii\web\Controller
                 $batchStudentFeePaymentBillingForms,
 
                 "outstandingFeesExist" => $outstandingFeesExist,
+                "totalCost" => $totalCost,
+                "totalPaid" => $totalPaid,
+                "balanceDue" => $balanceDue
             ]
         );
     }
@@ -217,6 +229,8 @@ class StudentPaymentsController extends \yii\web\Controller
         $applicantName = UserModel::getUserFullname($customer);
         $applicantId = $customer->username;
         $total = number_format(ReceiptModel::calculateReceiptTotal($receipt), 2);
+        $user = UserModel::getUserById($receipt->created_by);
+        $operator = ReceiptModel::getOperatorCode($user);
 
         return $this->render(
             "preview-receipt",
@@ -226,7 +240,8 @@ class StudentPaymentsController extends \yii\web\Controller
                 "total" => $total,
                 "applicantName" => $applicantName,
                 "applicantId" => $applicantId,
-                "studentRegistrationId" => $studentRegistrationId
+                "studentRegistrationId" => $studentRegistrationId,
+                "operator" => $operator
             ]
         );
     }

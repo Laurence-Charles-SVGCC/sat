@@ -100,7 +100,6 @@ class ApplicantModel
             BillingChargeModel::getCohortBillingChargesPayableOnEnrollment(
                 $application
             );
-        // $cohortCharges = array();
 
         $programmeCharges =
             BillingChargeModel::getProgrammeBillingChargesPayableOnEnrollment(

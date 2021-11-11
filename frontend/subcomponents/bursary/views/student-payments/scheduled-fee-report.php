@@ -90,6 +90,14 @@ $this->params["breadcrumbs"][] = $this->title;
                 ]
             );
         ?>
+
+        <table class="table">
+            <tr>
+                <th style="text-align: center;">Total Cost: <?= $totalCost ?></th>
+                <th style="text-align: center;">Total Paid: <?= $totalPaid ?></th>
+                <th style="text-align: center;">Balance Due: <?= $balanceDue ?></th>
+            </tr>
+        </table>
     </div>
 </div>
 

@@ -315,10 +315,26 @@ class BatchStudentFeePaymentForm extends Model
         $studentRegistration
     ) {
         $records = array();
+        $application =
+            Application::find()
+            ->innerJoin(
+                'offer',
+                '`application`.`applicationid` = `offer`.`applicationid`'
+            )
+            ->innerJoin(
+                'student_registration',
+                '`offer`.`offerid` = `student_registration`.`offerid`'
+            )
+            ->where([
+                "application.isactive" => 1,
+                "application.isdeleted" => 0,
+                "student_registration.studentregistrationid" => $studentRegistration->studentregistrationid
+            ])
+            ->one();
 
         $applicableBillingCharges =
-            BillingChargeModel::getAllOutstandingBillingCharges(
-                $studentRegistration
+            BillingChargeModel::getFirstAndSecondYearBillingChargesForApplication(
+                $application
             );
 
         foreach ($applicableBillingCharges as $billingCharge) {
@@ -366,7 +382,7 @@ class BatchStudentFeePaymentForm extends Model
         $receipt->created_by = $this->staffId;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-        $receipt->receipt_number = $this->receiptNumber; ///xxxx
+        $receipt->receipt_number = $this->generateReceiptNumber();
 
         $receipt->email =
             EmailModel::getEmailByPersonid($this->customerId)->email;

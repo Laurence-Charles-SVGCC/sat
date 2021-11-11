@@ -96,14 +96,26 @@ class StudentModel
     ) {
         $data = array();
 
-        $academicOffering =
-            AcademicOfferingModel::getAcademicOfferingByID(
-                $studentRegistration->academicofferingid
-            );
+        $application =
+            Application::find()
+            ->innerJoin(
+                'offer',
+                '`application`.`applicationid` = `offer`.`applicationid`'
+            )
+            ->innerJoin(
+                'student_registration',
+                '`offer`.`offerid` = `student_registration`.`offerid`'
+            )
+            ->where([
+                "application.isactive" => 1,
+                "application.isdeleted" => 0,
+                "student_registration.studentregistrationid" => $studentRegistration->studentregistrationid
+            ])
+            ->one();
 
         $applicableBillingCharges =
-            BillingChargeModel::getBillingChargesForAcademicOffering(
-                $academicOffering
+            BillingChargeModel::getFirstAndSecondYearBillingChargesForApplication(
+                $application
             );
 
         foreach ($applicableBillingCharges as $billingCharge) {

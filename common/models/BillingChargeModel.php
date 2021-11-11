@@ -899,7 +899,7 @@ class BillingChargeModel
             );
 
         $billingChargeCatalog =
-            self::getBillingChargesForAcademicOffering($academicOffering);
+            self::getBillingChargesForApplication($academicOffering);
 
         foreach ($billingChargeCatalog as $billingCharge) {
             if (
@@ -916,30 +916,55 @@ class BillingChargeModel
     }
 
 
-    public static function getBillingChargesForAcademicOffering(
-        $academicOffering
-    ) {
+    public static function getFirstAndSecondYearBillingChargesForApplication($application)
+    {
         $cohortCharges =
-            self::getCohortBillingCharges(
-                $academicOffering->applicationperiodid
-            );
+            self::getFirstAndSecondYearCohortBillingCharges($application);
 
-        $programmeCharges = self::getProgrammeBillingCharges($academicOffering);
+        $programmeCharges =
+            self::getFirstAndSecondYearProgrammeBillingCharges(
+                $application
+            );
 
         return array_merge($cohortCharges, $programmeCharges);
     }
 
 
-    public static function getCohortBillingCharges($applicationPeriodId)
-    {
-        return BillingCharge::find()
+    public static function getFirstAndSecondYearCohortBillingCharges(
+        $application
+    ) {
+        $academicOffering =
+            AcademicOfferingModel::getAcademicOfferingByID(
+                $application->academicofferingid
+            );
+
+        $billingCharges = BillingCharge::find()
+            ->innerJoin(
+                'billing_type',
+                '`billing_charge`.`billing_type_id` = `billing_type`.`id`'
+            )
+            ->innerJoin(
+                'billing_category',
+                '`billing_type`.`billing_category_id` = `billing_category`.`id`'
+            )
+            ->innerJoin(
+                'billing_scope',
+                '`billing_category`.`billing_scope_id` = `billing_scope`.`id`'
+            )
             ->where([
-                "application_period_id" => $applicationPeriodId,
-                "academic_offering_id" => NULL,
-                "is_active" => 1,
-                "is_deleted" => 0
+                "billing_charge.application_period_id" => $academicOffering->applicationperiodid,
+                "billing_charge.academic_offering_id" => NULL,
+                "billing_scope.name" => "Student",
+                "billing_charge.is_active" => 1,
+                "billing_charge.is_deleted" => 0
             ])
             ->all();
+
+        if (!empty($billingCharges)) {
+            return $billingCharges;
+        } else {
+            return array();
+        }
     }
 
 
@@ -980,17 +1005,44 @@ class BillingChargeModel
     }
 
 
-    public static function getProgrammeBillingCharges($academicOffering)
-    {
-        return BillingCharge::find()
+    public static function getFirstAndSecondYearProgrammeBillingCharges(
+        $application
+    ) {
+        $screenedBillingCharges = array();
+
+        $billingCharges =
+            BillingCharge::find()
+            ->innerJoin(
+                'billing_type',
+                '`billing_charge`.`billing_type_id` = `billing_type`.`id`'
+            )
+            ->innerJoin(
+                'billing_category',
+                '`billing_type`.`billing_category_id` = `billing_category`.`id`'
+            )
+            ->innerJoin(
+                'billing_scope',
+                '`billing_category`.`billing_scope_id` = `billing_scope`.`id`'
+            )
             ->where([
-                "application_period_id" => $academicOffering->applicationperiodid,
-                "academic_offering_id" => $academicOffering->academicofferingid,
-                "is_active" => 1,
-                "is_deleted" => 0
+                "billing_charge.academic_offering_id" => $application->academicofferingid,
+                "billing_scope.name" => "Student",
+                "billing_charge.is_active" => 1,
+                "billing_charge.is_deleted" => 0
             ])
             ->all();
+
+        if (!empty($billingCharges)) {
+            $screenedBillingCharges =
+                BillingChargeModel::screenForCapeLaboratoryFeeBillings(
+                    $billingCharges,
+                    $application
+                );
+        }
+
+        return $screenedBillingCharges;
     }
+
 
     public static function screenForCapeLaboratoryFeeBillings(
         $billingCharges,

@@ -112,16 +112,6 @@ $this->params["breadcrumbs"][] = $this->title;
                 <?php endforeach; ?>
 
                 <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-
-                <tr>
                     <td><strong>Total</strong></td>
                     <td></td>
                     <td><?= $total ?></td>
