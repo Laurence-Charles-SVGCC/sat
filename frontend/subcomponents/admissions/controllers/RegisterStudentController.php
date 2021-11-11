@@ -30,12 +30,22 @@ class RegisterStudentController extends \yii\web\Controller
         $applicant = ApplicantModel::getApplicantByPersonid($personid);
         $username = $applicant->getPerson()->one()->username;
 
-        $applications = Application::find()
-            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-            ->innerJoin('application_period', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-            ->where([/*'application_period.iscomplete' => 0,*/
-                'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-                'application.isactive' => 1, 'application.isdeleted' => 0, 'application.personid' => $applicant->personid
+        $applications =
+            Application::find()
+            ->innerJoin(
+                'academic_offering',
+                '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`'
+            )
+            ->innerJoin(
+                'application_period',
+                '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`'
+            )
+            ->where([
+                'application_period.isactive' => 1,
+                'application_period.isdeleted' => 0,
+                'application.isactive' => 1,
+                'application.isdeleted' => 0,
+                'application.personid' => $applicant->personid
             ])
             ->all();
 
@@ -56,7 +66,6 @@ class RegisterStudentController extends \yii\web\Controller
 
             array_push($values, $application);
 
-            //            $offer = Offer::getActiveOffer($applicant->personid);
             $offer = Offer::getActiveFullOffer($applicant->personid);
 
             //if this application is the same as the one that is associated with current offer
@@ -64,11 +73,13 @@ class RegisterStudentController extends \yii\web\Controller
                 $divisionid = $application->divisionid;
                 $istarget = true;
                 $target_application = $application;
-            } else
+            } else {
                 $istarget = false;
+            }
             array_push($values, $istarget);
 
-            $division = Division::find()
+            $division =
+                Division::find()
                 ->where(['divisionid' => $application->divisionid])
                 ->one()
                 ->abbreviation;
@@ -84,17 +95,29 @@ class RegisterStudentController extends \yii\web\Controller
                 ])
                 ->all();
 
-            $programme_record = ProgrammeCatalog::find()
-                ->innerJoin('academic_offering', '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`')
-                ->innerJoin('application', '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`')
-                ->where(['application.applicationid' => $application->applicationid])
-                ->one();
+            $programme_records =
+                ProgrammeCatalog::find()
+                ->innerJoin(
+                    'academic_offering',
+                    '`academic_offering`.`programmecatalogid` = `programme_catalog`.`programmecatalogid`'
+                )
+                ->innerJoin(
+                    'application',
+                    '`academic_offering`.`academicofferingid` = `application`.`academicofferingid`'
+                )
+                ->where([
+                    'application.applicationid' => $application->applicationid
+                ])
+                ->all();
 
             foreach ($cape_subjects as $cs) {
-                $cape_subjects_names[] = $cs->getCapesubject()->one()->subjectname;
+                $cape_subjects_names[] =
+                    $cs->getCapesubject()->one()->subjectname;
             }
 
-            $programme_name = empty($cape_subjects) ? $programme_record->getFullName() : $programme_record->name . ": " . implode(' ,', $cape_subjects_names);
+            $programme_name =
+                empty($cape_subjects) ? $programme_records[0]->getFullName() : $programme_records[0]->name . ": " . implode(' ,', $cape_subjects_names);
+
             array_push($values, $programme_name);
 
             $combined = array_combine($keys, $values);
@@ -115,8 +138,7 @@ class RegisterStudentController extends \yii\web\Controller
                 [
                     "allModels" =>
                     ApplicantModel::prepareSuccessfulApplicantFeeReport(
-                        $personid,
-                        $successfulApplication->academicoffering
+                        $successfulApplication
                     ),
                     "pagination" => ["pageSize" => 100],
                     "sort" => [
@@ -125,6 +147,14 @@ class RegisterStudentController extends \yii\web\Controller
                     ]
                 ]
             );
+
+        $paymentSummary =
+            ApplicantModel::calculateEnrollmentFeesSummary(
+                $successfulApplication
+            );
+        $totalCost = $paymentSummary["totalCost"];
+        $totalPaid = $paymentSummary["totalPaid"];
+        $balanceDue = $paymentSummary["totalDue"];
 
         return $this->render(
             'prospective_student',
@@ -138,12 +168,13 @@ class RegisterStudentController extends \yii\web\Controller
                 'target_application' => $target_application,
                 'programme' => $programme,
                 'divisionid' => $divisionid,
-
                 'selections' => $selections,
                 'offerid' => $offer->offerid,
                 'applicationid' => $target_application->applicationid,
-
                 "dataProvider" => $feesDataProvider,
+                "totalCost" => $totalCost,
+                "totalPaid" => $totalPaid,
+                "balanceDue" => $balanceDue
             ]
         );
     }

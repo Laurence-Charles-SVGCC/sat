@@ -48,8 +48,8 @@ use yii\helpers\Html;
             <tr>
                 <th></th>
                 <th>Fee</th>
-                <th>Cost</th>
                 <th>Balance</th>
+                <th>Amt. Received</th>
             </tr>
 
 
