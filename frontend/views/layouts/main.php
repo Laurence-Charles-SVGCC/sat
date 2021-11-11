@@ -158,7 +158,7 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                     <?php endif; ?>
 
                     <!-- Bursary Module -->
-                    <?php if (Yii::$app->user->can('Bursar')  || Yii::$app->user->can('Bursary Staff')) : ?>
+                    <?php if (Yii::$app->user->can('Bursar') || Yii::$app->user->can('Bursary Staff') || Yii::$app->user->can('Bursary Temp')) : ?>
                         <li>
                             <?=
                                 Html::a(
