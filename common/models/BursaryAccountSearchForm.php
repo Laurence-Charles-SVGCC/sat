@@ -37,7 +37,10 @@ class BursaryAccountSearchForm extends Model
 
     public function validateAccountExistence($attribute, $params)
     {
-        $user = UserModel::findUserByApplicantIdOrStudentId($this->id);
+        $user =
+            UserModel::findUserByApplicantIdPotentialStudentIdOrStudentId(
+                $this->id
+            );
         if ($user == false) {
             $this->addError($attribute, 'Account not found.');
         }

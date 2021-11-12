@@ -127,27 +127,45 @@ class ProfilesController extends \yii\web\Controller
 
         if ($postData = Yii::$app->request->post()) {
             if ($model->load($postData) == true && $model->validate() == true) {
-                $customer = UserModel::findUserByApplicantIDOrStudentID($model->id);
-                $customerClassification = UserModel::getUserClassification($customer);
+                $customer =
+                    UserModel::findUserByApplicantIdPotentialStudentIdOrStudentId(
+                        $model->id
+                    );
+
+                $customerClassification =
+                    UserModel::getUserClassification($customer);
+
                 if ($customerClassification == "Student") {
                     return $this->redirect(
                         ["student-profile", "username" => $customer->username]
                     );
                 } elseif ($customerClassification == "Successful Applicant") {
                     return $this->redirect(
-                        ["successful-applicant-profile", "username" => $customer->username]
+                        [
+                            "successful-applicant-profile",
+                            "username" => $customer->username
+                        ]
                     );
                 } elseif ($customerClassification == "Completed Applicant") {
                     return $this->redirect(
-                        ["completed-applicant-profile", "username" => $customer->username]
+                        [
+                            "completed-applicant-profile",
+                            "username" => $customer->username
+                        ]
                     );
                 } elseif ($customerClassification == "Abandoned Applicant") {
                     return $this->redirect(
-                        ["abandoned-applicant-profile", "username" => $customer->username]
+                        [
+                            "abandoned-applicant-profile",
+                            "username" => $customer->username
+                        ]
                     );
                 } elseif ($customerClassification == "Incomplete Applicant") {
                     return $this->redirect(
-                        ["incomplete-applicant-profile", "username" => $customer->username]
+                        [
+                            "incomplete-applicant-profile",
+                            "username" => $customer->username
+                        ]
                     );
                 }
             }

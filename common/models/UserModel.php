@@ -941,4 +941,45 @@ class UserModel
     {
         return User::find()->where(["personid" => $id])->one();
     }
+
+
+    public static function findUserByApplicantIdPotentialStudentIdOrStudentId(
+        $username
+    ) {
+        /* if applicantID is entered && user is currently applicant
+        OR if studentID is entered && user is currently student
+        */
+        $userTableSearchResult =
+            User::find()
+            ->where(["username" => $username, "persontypeid" => [1, 2]])
+            ->one();
+
+        if ($userTableSearchResult == true) {
+            return $userTableSearchResult;
+        }
+
+        /* if StudentID is entered by successful applicant has not enrolled yet */
+        $potentialStudentIdSearchResult =
+            Applicant::find()->where(["potentialstudentid" => $username])->one();
+
+        if ($potentialStudentIdSearchResult == true) {
+            $user =
+                self::findUserByID($potentialStudentIdSearchResult->personid);
+            if ($user == true) {
+                return $user;
+            }
+        }
+
+        /* if applicantID is entered && user is currently student */
+        $studentTableSearchResult =
+            Student::find()->where(["applicantname" => $username])->one();
+
+        if ($studentTableSearchResult == true) {
+            $user = self::findUserByID($studentTableSearchResult->personid);
+            if ($user == true) {
+                return $user;
+            }
+        }
+        return null;
+    }
 }
