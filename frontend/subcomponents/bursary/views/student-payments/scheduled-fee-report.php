@@ -62,6 +62,11 @@ $this->params["breadcrumbs"][] = $this->title;
                             "label" => "Cost"
                         ],
                         [
+                            "attribute" => "totalPaid",
+                            "format" => "text",
+                            "label" => "Paid"
+                        ],
+                        [
                             "attribute" => "status",
                             "format" => "text",
                             "label" => "Status"
