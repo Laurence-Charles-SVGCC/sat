@@ -331,8 +331,9 @@ class StudentFeesController extends \yii\web\Controller
     //     );
     // }
 
-    public function actionUpdateAcademicOfferingBillingCharge($billingChargeId)
-    {
+    public function actionUpdateAcademicOfferingBillingChargeFromDashboard(
+        $billingChargeId
+    ) {
         $user = Yii::$app->user->identity;
 
         $oldBillingCharge =
