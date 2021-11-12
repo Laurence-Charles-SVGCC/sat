@@ -618,6 +618,7 @@ class BillingChargeModel
         $userID
     ) {
         $oldBillingCharge->is_active = 0;
+        $newBillingCharge->payable_on_enrollment = $oldBillingCharge->payable_on_enrollment;
         $newBillingCharge->billing_type_id = $oldBillingCharge->billing_type_id;
         $newBillingCharge->application_period_id = $oldBillingCharge->application_period_id;
         $newBillingCharge->academic_offering_id = $oldBillingCharge->academic_offering_id;
