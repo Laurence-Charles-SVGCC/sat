@@ -81,8 +81,8 @@ class StudentPaymentsController extends \yii\web\Controller
                     ),
                     "pagination" => ["pageSize" => 100],
                     "sort" => [
-                        "defaultOrder" => ["billingTypeName" => SORT_ASC],
-                        "attributes" => ["billingTypeName", "programme"]
+                        "defaultOrder" => ["fee" => SORT_ASC],
+                        "attributes" => ["fee"]
                     ]
                 ]
             );
