@@ -4,6 +4,7 @@ namespace app\subcomponents\bursary\controllers;
 
 use Yii;
 use yii\data\ArrayDataProvider;
+use common\models\Applicant;
 use common\models\ApplicantModel;
 use common\models\ApplicationModel;
 use common\models\ApplicationAmendmentPaymentForm;
@@ -11,6 +12,7 @@ use common\models\ApplicationSubmissionPaymentForm;
 use common\models\BillingChargeModel;
 use common\models\BillingModel;
 use common\models\BursaryAccountSearchForm;
+use common\models\BursaryAccountNameSearchForm;
 use common\models\EmailModel;
 use common\models\PaymentMethodModel;
 use common\models\PhoneModel;
@@ -23,6 +25,101 @@ use common\models\UserModel;
 
 class ProfilesController extends \yii\web\Controller
 {
+    public function actionSearchByName()
+    {
+        $model = new BursaryAccountNameSearchForm();
+        $infoString = "";
+        $searchCriteria = array();
+        $dataProvider = null;
+
+        if ($postData = Yii::$app->request->post()) {
+            if ($model->load($postData) == true) {
+
+                if ($model->first_name) {
+                    $searchCriteria["firstname"] = $model->first_name;
+                    $infoString = "{$infoString} First Name: {$model->first_name}";
+                }
+                if ($model->last_name) {
+                    $searchCriteria["lastname"] = $model->last_name;
+                    $infoString = "{$infoString} Last Name: {$model->last_name}";
+                }
+
+                if (empty($searchCriteria)) {
+                    Yii::$app->getSession()->setFlash('error', 'A search criteria must be entered.');
+                } else {
+                    $searchCriteria['isactive'] = 1;
+                    $searchCriteria['isdeleted'] = 0;
+
+                    $applicants =
+                        Applicant::find()
+                        ->where($searchCriteria)
+                        ->all();
+
+                    if (empty($applicants)) {
+                        Yii::$app->getSession()->setFlash('error', 'No applicant found matching this criteria.');
+                    } else {
+                        $data = array();
+                        foreach ($applicants as $applicant) {
+                            $app = array();
+                            $customer = $applicant->getPerson()->one();
+                            $app['username'] = $customer->username;
+                            $app['firstname'] = $applicant->firstname;
+                            $app['middlename'] = $applicant->middlename;
+                            $app['lastname'] = $applicant->lastname;
+
+
+                            $customerClassification =
+                                UserModel::getUserClassification($customer);
+
+                            $app['customerClassification'] =
+                                $customerClassification;
+
+                            if ($customerClassification == "Student") {
+                                $app["action"] = "student-profile";
+                            } elseif ($customerClassification == "Successful Applicant") {
+                                $app["action"] = "successful-applicant-profile";
+                            } elseif ($customerClassification == "Completed Applicant") {
+                                $app["action"] = "completed-applicant-profile";
+                            } elseif ($customerClassification == "Abandoned Applicant") {
+                                $app["action"] = "abandoned-applicant-profile";
+                            } elseif ($customerClassification == "Incomplete Applicant") {
+                                $app["action"] = "incomplete-applicant-profile";
+                            } else {
+                                $app["action"] = null;
+                            }
+
+                            $data[] = $app;
+                        }
+
+                        $dataProvider = new ArrayDataProvider([
+                            'allModels' => $data,
+                            'pagination' => [
+                                'pageSize' => 200,
+                            ],
+                            'sort' => [
+                                'attributes' => [
+                                    'username',
+                                    'firstname',
+                                    'lastname'
+                                ],
+                            ],
+                        ]);
+
+                        return $this->render(
+                            'search-by-name-results',
+                            [
+                                'dataProvider' => $dataProvider,
+                                'infoString' => $infoString,
+                            ]
+                        );
+                    }
+                }
+            }
+        }
+        return $this->render("search-by-name", ["model" => $model]);
+    }
+
+
     public function actionSearch()
     {
         $user = Yii::$app->user->identity;

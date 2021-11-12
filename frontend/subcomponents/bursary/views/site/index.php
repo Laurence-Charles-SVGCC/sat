@@ -12,14 +12,23 @@ $this->title = 'Bursary Dashboard';
     <div class="col-sm-4 col-md-4">
         <div class="thumbnail" style="min-height:100px">
             <div class="caption text-center">
-                <?=
-                    Html::a(
-                        '<h3>Find Account</h3>',
-                        Url::toRoute(['profiles/search'])
-                    );
-                ?>
+                <h3>Find Account</h3>
                 <p>
-                    Find applicant and student accounts.
+                    <?=
+                        Html::a(
+                            "Search by ID",
+                            Url::toRoute(['profiles/search']),
+                            ["class" => "btn btn-primary btn-sm"]
+                        );
+                    ?>
+
+                    <?=
+                        Html::a(
+                            "Search by name",
+                            Url::toRoute(['profiles/search-by-name']),
+                            ["class" => "btn btn-primary btn-sm"]
+                        );
+                    ?>
                 </p>
             </div>
         </div>
