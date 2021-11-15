@@ -540,4 +540,28 @@ class ApplicationPeriodModel
         }
         return $data;
     }
+
+
+    public static function hasOffers($applicationPeriod)
+    {
+        $offers =
+            Offer::find()
+            ->innerJoin('application', '`offer`.`applicationid` = `application`.`applicationid`')
+            ->innerJoin('academic_offering', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
+            ->where([
+                'offer.ispublished' => 0,
+                'offer.isactive' => 1,
+                'offer.isdeleted' => 0,
+                'application.isactive' => 1,
+                'application.isdeleted' => 0,
+                'academic_offering.applicationperiodid' => $applicationPeriod->applicationperiodid,
+                'academic_offering.isactive' => 1,
+                'academic_offering.isdeleted' => 0
+            ])
+            ->all();
+        if (empty($offers)) {
+            return false;
+        }
+        return true;
+    }
 }

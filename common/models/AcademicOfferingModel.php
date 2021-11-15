@@ -135,4 +135,30 @@ class AcademicOfferingModel extends \yii\base\Model
 
         return false;
     }
+
+
+    public static function getSuccessfulApplications(
+        $academicOffering
+    ) {
+        return Application::find()
+            ->innerJoin(
+                'offer',
+                '`application`.`applicationid` = `offer`.`applicationid`'
+            )
+            ->innerJoin(
+                'academic_offering',
+                '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`'
+            )
+            ->where([
+                "application.academicofferingid" => $academicOffering->academicofferingid,
+                "application.applicationstatusid" => 9,
+                "application.isactive" => 1,
+                "application.isdeleted" => 0,
+                "offer.ispublished" => 1,
+                "offer.isactive" => 1,
+                "offer.isdeleted" => 0,
+
+            ])
+            ->all();
+    }
 }

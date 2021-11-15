@@ -549,4 +549,111 @@ class ApplicantModel
         $summary["totalDue"] = "$" . number_format($totalDue, 2);
         return $summary;
     }
+
+
+    public static function getEnrolmentBillingChargesTotal($application)
+    {
+        $total = 0;
+        $cohortEnrollmentCharges =
+            BillingChargeModel::getCohortBillingChargesPayableOnEnrollment(
+                $application
+            );
+        $programmeSpecificEnrollmentCharges =
+            BillingChargeModel::getProgrammeBillingChargesPayableOnEnrollment(
+                $application
+            );
+
+        $allEnrollmentFees =
+            array_merge(
+                $cohortEnrollmentCharges,
+                $programmeSpecificEnrollmentCharges
+            );
+
+        if (!empty($allEnrollmentFees)) {
+            foreach ($allEnrollmentFees as $billingCharge) {
+                $total += $billingCharge->cost;
+            }
+        }
+        return $total;
+    }
+
+    public static function enrolmentBillingChargesPaid($application)
+    {
+        $total = 0;
+        $customer = $application->getPerson()->one();
+
+        $cohortEnrollmentCharges =
+            BillingChargeModel::getCohortBillingChargesPayableOnEnrollment(
+                $application
+            );
+        $programmeSpecificEnrollmentCharges =
+            BillingChargeModel::getProgrammeBillingChargesPayableOnEnrollment(
+                $application
+            );
+
+        $allEnrollmentFees =
+            array_merge(
+                $cohortEnrollmentCharges,
+                $programmeSpecificEnrollmentCharges
+            );
+
+        foreach ($allEnrollmentFees as $billingCharge) {
+            $billings =
+                BillingChargeModel::getCustomerBillingsByCharge(
+                    $billingCharge,
+                    $customer
+                );
+            if (!empty($billings)) {
+                foreach ($billings as $billing) {
+                    $total += $billing->amount_paid;
+                }
+            }
+        }
+        return $total;
+    }
+
+    public static function getOutstandingBillingCharges($application)
+    {
+        $chargesWithBalance = "";
+        $customer = $application->getPerson()->one();
+
+        $cohortEnrollmentCharges =
+            BillingChargeModel::getCohortBillingChargesPayableOnEnrollment(
+                $application
+            );
+        $programmeSpecificEnrollmentCharges =
+            BillingChargeModel::getProgrammeBillingChargesPayableOnEnrollment(
+                $application
+            );
+
+        $allEnrollmentFees =
+            array_merge(
+                $cohortEnrollmentCharges,
+                $programmeSpecificEnrollmentCharges
+            );
+
+        foreach ($allEnrollmentFees as $billingCharge) {
+            $billings =
+                BillingChargeModel::getCustomerBillingsByCharge(
+                    $billingCharge,
+                    $customer
+                );
+
+            $fee =
+                BillingChargeModel::getBillingChargeFeeName($billingCharge);
+
+            if (empty($billings)) {
+                $chargesWithBalance .= "{$fee},  ";
+            } else {
+                $chargeAmountPaid = 0;
+                foreach ($billings as $billing) {
+                    $chargeAmountPaid += $billing->amount_paid;
+                }
+                if ($chargeAmountPaid < $billingCharge->cost) {
+                    $chargesWithBalance .= "{$fee},  ";
+                }
+            }
+        }
+        return $chargesWithBalance;
+    }
 }

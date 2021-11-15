@@ -1119,4 +1119,31 @@ class BillingChargeModel
 
         return $screenedBillingCharges;
     }
+
+
+    public static function getBillingsByCharge($billingCharge)
+    {
+        return Billing::find()
+            ->where([
+                "billing_charge_id" => $billingCharge->id,
+                "is_active" => 1,
+                "is_deleted" => 0
+            ])
+            ->all();
+    }
+
+
+    public static function getCustomerBillingsByCharge(
+        $billingCharge,
+        $customer
+    ) {
+        return Billing::find()
+            ->where([
+                "customer_id" => $customer->personid,
+                "billing_charge_id" => $billingCharge->id,
+                "is_active" => 1,
+                "is_deleted" => 0
+            ])
+            ->all();
+    }
 }

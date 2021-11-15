@@ -3,8 +3,13 @@
 namespace app\subcomponents\bursary\controllers;
 
 use Yii;
+use common\models\AcademicOfferingModel;
+use common\models\ApplicantModel;
+use common\models\ApplicationPeriod;
+use common\models\ApplicationPeriodModel;
 use common\models\BillingsByDateSearchForm;
 use common\models\BillingModel;
+use common\models\EmailModel;
 use common\models\ReceiptModel;
 use common\models\ReceiptsByDateSearchForm;
 use yii\data\ArrayDataProvider;
@@ -114,6 +119,121 @@ class ReportsController extends \yii\web\Controller
         return $this->render(
             "receipts-by-date-search-results",
             ["dataProvider" => $dataProvider]
+        );
+    }
+
+
+    public function actionEnrolmentPaymentsByProgramme(
+        $applicationPeriodId = null,
+        $academicOfferingId = null
+    ) {
+        $dataProvider = null;
+        $data = array();
+        $academicOfferings = array();
+        $applicationPeriodName = null;
+        $academicOfferingName = null;
+
+        $applicationPeriods =
+            ApplicationPeriod::find()
+            ->where([
+                "isactive" => 1,
+                "isdeleted" => 0,
+                "programmes_added" => 1
+            ])
+            ->all();
+
+        if ($applicationPeriodId == true) {
+            $applicationPeriodName =
+                ApplicationPeriodModel::getApplicationPeriodNameByID(
+                    $applicationPeriodId
+                );
+
+            $academicOfferings =
+                ApplicationPeriodModel::generateProgrammeDropdownList(
+                    $applicationPeriodId
+                );
+        }
+
+        if ($academicOfferingId == true) {
+            $academicOffering =
+                AcademicOfferingModel::getAcademicOfferingByID(
+                    $academicOfferingId
+                );
+            $academicOfferingName =
+                AcademicOfferingModel::getProgrammeName($academicOffering);
+
+            $applications =
+                AcademicOfferingModel::getSuccessfulApplications(
+                    $academicOffering
+                );
+
+            if (!empty($applications)) {
+                foreach ($applications as $application) {
+                    $app = array();
+                    $userAccount = $application->getPerson()->one();
+
+                    $applicantAccount =
+                        ApplicantModel::getApplicantByPersonid($application->personid);
+
+                    $app['username'] = $userAccount->username;
+                    $app['firstname'] = $applicantAccount->firstname;
+                    $app['lastname'] = $applicantAccount->lastname;
+
+                    $email = emailModel::getEmailByPersonid($application->personid);
+                    $app["email"] = $email->email;
+
+                    $enrolmentBillingChargesTotal =
+                        ApplicantModel::getEnrolmentBillingChargesTotal($application);
+                    $app['enrolmentBillingChargesTotal'] =
+                        $enrolmentBillingChargesTotal;
+
+                    $enrolmentBillingChargesPaid =
+                        ApplicantModel::enrolmentBillingChargesPaid($application);
+                    $app['enrolmentBillingChargesPaid'] =
+                        $enrolmentBillingChargesPaid;
+
+                    $balance =
+                        $enrolmentBillingChargesTotal - $enrolmentBillingChargesPaid;
+                    $app["outstandingEnrolmentBalance"] = $balance;
+
+
+                    if ($balance == 0) {
+                        $app["outstandingBillingCharges"] = "";
+                    } else {
+                        $app["outstandingBillingCharges"] =
+                            ApplicantModel::getOutstandingBillingCharges($application);
+                    }
+
+                    $data[] = $app;
+                }
+            }
+
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $data,
+                'pagination' => [
+                    'pageSize' => 100,
+                ],
+                'sort' => [
+                    'attributes' => [
+                        'username',
+                        'firstname',
+                        'lastname'
+                    ],
+                ],
+            ]);
+        }
+
+        return $this->render(
+            "enrolment-payments-by-programme",
+            [
+                "applicationPeriods" => $applicationPeriods,
+                "applicationPeriodId" => $applicationPeriodId,
+                "applicationPeriodName" => $applicationPeriodName,
+                "academicOfferingId" => $academicOfferingId,
+                "academicOfferingName" => $academicOfferingName,
+                "academicOfferings" => $academicOfferings,
+                "dataProvider" => $dataProvider
+            ]
         );
     }
 }
