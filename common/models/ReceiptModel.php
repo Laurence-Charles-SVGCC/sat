@@ -203,7 +203,8 @@ class ReceiptModel
                 "total" => $total,
                 "applicantName" => $applicantName,
                 "applicantId" => $applicantId,
-                "operator" => $operator
+                "operator" => $operator,
+                "paymentMethod" => self::getPaymentMethod($receipt),
             ]
         );
     }
@@ -324,7 +325,8 @@ class ReceiptModel
                     "userFullName" => $userFullName,
                     'receipt' => $receipt,
                     'billings' => $billings,
-                    'total' => $total
+                    'total' => $total,
+                    'paymentMethod' => self::getPaymentMethod($receipt),
                 ]
             )
             ->setFrom($senderAddress)
@@ -505,5 +507,24 @@ class ReceiptModel
             $data["username"] = $user->username;
         }
         return $data;
+    }
+
+    public static function getPaymentMethod($receipt)
+    {
+        $paymentMethod =
+            PaymentMethodModel::getPaymentMethodNameByID(
+                $receipt->payment_method_id
+            );
+
+        if ($paymentMethod === null) {
+            return null;
+        } else {
+            if ($paymentMethod === "Cheque") {
+                return "{$paymentMethod} #{$receipt->cheque_number}";
+            } else {
+                return $paymentMethod;
+            }
+        }
+        return null;
     }
 }

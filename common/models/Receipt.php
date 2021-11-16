@@ -7,34 +7,36 @@ use Yii;
 /**
  * This is the model class for table "receipt".
  *
- * @property int $id
- * @property int $payment_method_id
- * @property int $customer_id
- * @property int $student_registration_id
- * @property int $created_by
- * @property int $modified_by
+ * @property integer $id
+ * @property integer $payment_method_id
+ * @property integer $customer_id
+ * @property integer $student_registration_id
+ * @property integer $created_by
+ * @property integer $modified_by
  * @property string $username
  * @property string $full_name
  * @property string $receipt_number
  * @property string $email
  * @property string $notes
- * @property int $publish_count
- * @property int $auto_publish
+ * @property integer $publish_count
+ * @property integer $auto_publish
  * @property string $date_paid
  * @property string $timestamp
- * @property int $is_active
- * @property int $is_deleted
+ * @property integer $is_active
+ * @property integer $is_deleted
+ * @property string $cheque_number
  *
  * @property Billing[] $billings
- * @property Person $createdBy
- * @property Person $modifiedBy
- * @property Person $customer
+ * @property User $createdBy
+ * @property User $modifiedBy
+ * @property User $customer
  * @property PaymentMethod $paymentMethod
+ * @property StudentRegistration $studentRegistration
  */
 class Receipt extends \yii\db\ActiveRecord
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -42,7 +44,7 @@ class Receipt extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function rules()
     {
@@ -51,17 +53,12 @@ class Receipt extends \yii\db\ActiveRecord
             [['payment_method_id', 'customer_id', 'student_registration_id', 'created_by', 'modified_by', 'publish_count', 'auto_publish', 'is_active', 'is_deleted'], 'integer'],
             [['notes'], 'string'],
             [['date_paid', 'timestamp'], 'safe'],
-            [['username', 'full_name', 'receipt_number', 'email'], 'string', 'max' => 255],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'personid']],
-            [['modified_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['modified_by' => 'personid']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'personid']],
-            [['student_registration_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudentRegistration::class, 'targetAttribute' => ['student_registration_id' => 'studentregistrationid']],
-            [['payment_method_id'], 'exist', 'skipOnError' => true, 'targetClass' => PaymentMethod::class, 'targetAttribute' => ['payment_method_id' => 'paymentmethodid']],
+            [['username', 'full_name', 'receipt_number', 'email', 'cheque_number'], 'string', 'max' => 255]
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -77,12 +74,13 @@ class Receipt extends \yii\db\ActiveRecord
             'receipt_number' => 'Receipt Number',
             'email' => 'Email',
             'notes' => 'Notes',
-            'publish_count' => 'Publsh Count',
+            'publish_count' => 'Publish Count',
             'auto_publish' => 'Auto Publish',
             'date_paid' => 'Date Paid',
             'timestamp' => 'Timestamp',
             'is_active' => 'Is Active',
             'is_deleted' => 'Is Deleted',
+            'cheque_number' => 'Cheque Number',
         ];
     }
 
@@ -131,6 +129,6 @@ class Receipt extends \yii\db\ActiveRecord
      */
     public function getStudentRegistration()
     {
-        return $this->hasOne(getStudentRegistration::class, ['studentregistrationid' => 'student_registration_id']);
+        return $this->hasOne(StudentRegistration::class, ['studentregistrationid' => 'student_registration_id']);
     }
 }

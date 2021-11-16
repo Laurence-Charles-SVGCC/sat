@@ -62,6 +62,11 @@ $this->params["breadcrumbs"][] = $this->title;
         ?>
 
         <?=
+            $form->field($applicantAmendmentPaymentForm, "cheque_number")
+                ->textInput(["class" => "form-control"]);
+        ?>
+
+        <?=
             $form->field($applicantAmendmentPaymentForm, "autoPublish")
                 ->inline()
                 ->radioList([0 => "No", 1 => "Yes"]);

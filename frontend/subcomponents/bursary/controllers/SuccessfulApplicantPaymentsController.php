@@ -465,7 +465,6 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
         $applicantId = $customer->username;
         $total = number_format(ReceiptModel::calculateReceiptTotal($receipt), 2);
         $user = UserModel::getUserById($receipt->created_by);
-        $operator = ReceiptModel::getOperatorCode($user);
 
         return $this->render(
             "preview-receipt",
@@ -474,7 +473,9 @@ class SuccessfulApplicantPaymentsController extends \yii\web\Controller
                 "billings" => $billings,
                 "total" => $total,
                 "applicantName" => $applicantName,
-                "applicantId" => $applicantId
+                "applicantId" => $applicantId,
+                "operator" => ReceiptModel::getOperatorCode($user),
+                "paymentMethod" => ReceiptModel::getPaymentMethod($receipt),
             ]
         );
     }

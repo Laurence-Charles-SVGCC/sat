@@ -16,6 +16,7 @@ class ApplicationSubmissionPaymentForm extends Model
     public $customerId;
     public $applicationPeriodId;
     public $billingChargeId;
+    public $cheque_number;
 
     /**
      * @inheritdoc
@@ -39,7 +40,7 @@ class ApplicationSubmissionPaymentForm extends Model
                 "required"
             ],
             [["amount"], "number"],
-            [["username", "fullName"], "string"],
+            [["username", "fullName", "cheque_number"], "string"],
             [
                 [
                     "paymentMethodId",
@@ -67,7 +68,8 @@ class ApplicationSubmissionPaymentForm extends Model
             "paymentMethodId" => "Payment Method",
             "includeAmendmentFee" => "Does applicant wish to pay amendment fee as well?",
             "datePaid" => "Date of payment",
-            "autoPublish" => "Email invoice to applicant"
+            "autoPublish" => "Email invoice to applicant",
+            "cheque_number" => "Cheque Number",
         ];
     }
 
@@ -126,6 +128,7 @@ class ApplicationSubmissionPaymentForm extends Model
         $receipt->date_paid = $this->datePaid;
         $receipt->auto_publish = $this->autoPublish;
         $receipt->timestamp = date("Y-m-d H:i:s");
+        $receipt->cheque_number = $this->cheque_number;
         if ($receipt->save() == true) {
             return $receipt;
         } else {

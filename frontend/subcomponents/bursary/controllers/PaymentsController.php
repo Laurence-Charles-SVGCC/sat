@@ -28,10 +28,7 @@ class PaymentsController extends \yii\web\Controller
                 "username" => $username,
                 "userFullname" => $fullName,
                 "billings" => $billings,
-                "paymentMethod" =>
-                PaymentMethodModel::getPaymentMethodNameByID(
-                    $receipt->payment_method_id
-                ),
+                "paymentMethod" => ReceiptModel::getPaymentMethod($receipt),
                 "applicationPeriod" =>
                 ApplicationPeriodModel::getApplicationPeriodNameByID(
                     $billings[0]->application_period_id

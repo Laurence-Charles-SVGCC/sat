@@ -241,7 +241,8 @@ class StudentPaymentsController extends \yii\web\Controller
                 "applicantName" => $applicantName,
                 "applicantId" => $applicantId,
                 "studentRegistrationId" => $studentRegistrationId,
-                "operator" => $operator
+                "operator" => $operator,
+                "paymentMethod" => ReceiptModel::getPaymentMethod($receipt),
             ]
         );
     }

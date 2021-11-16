@@ -83,6 +83,7 @@ $this->params["breadcrumbs"][] = $this->title;
 
             <div>
                 <strong>Operator:</strong> <?= $operator ?><br />
+                <strong>Payment Method:</strong> <?= $paymentMethod ?><br />
                 <strong>Date:</strong> <?= date_format(new \DateTime($receipt->date_paid), "F j, Y") ?><br />
                 <strong>ApplicantID:</strong> <?= $applicantId ?><br />
                 <strong>Name:</strong> <?= $applicantName ?><br />

@@ -77,7 +77,10 @@ class PaymentMethodModel
     public static function getPaymentMethodNameByID($paymentmethodid)
     {
         $paymentMethod = self::getPaymentMethodByID($paymentmethodid);
-        return $paymentMethod->name;
+        if ($paymentMethod == true) {
+            return $paymentMethod->name;
+        }
+        return null;
     }
 
 
