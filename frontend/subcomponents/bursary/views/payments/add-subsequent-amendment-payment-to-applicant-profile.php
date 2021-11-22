@@ -76,8 +76,34 @@ $this->params["breadcrumbs"][] = $this->title;
         <?=
             $form->field($applicantAmendmentPaymentForm, "paymentMethodId")
                 ->inline()
-                ->radioList($paymentMethods);
+                ->radioList(
+                    $paymentMethods,
+                    ["onClick" => "toggleChequeNumberField()"]
+                );
         ?>
+
+        <?php if ($applicantAmendmentPaymentForm->cheque_number == true) : ?>
+            <div id="cheque-number-field" style="display:block">
+                <?=
+                    $form->field(
+                        $applicantAmendmentPaymentForm,
+                        "cheque_number"
+                    )
+                        ->textInput(["class" => "form-control"]);
+                ?>
+            </div>
+        <?php else : ?>
+            <div id="cheque-number-field" style="display:none">
+                <?=
+                    $form->field(
+                        $applicantAmendmentPaymentForm,
+                        "cheque_number"
+                    )
+                        ->textInput(["class" => "form-control"]);
+                ?>
+            </div>
+        <?php endif; ?>
+
 
         <?=
             $form->field($applicantAmendmentPaymentForm, "autoPublish")
