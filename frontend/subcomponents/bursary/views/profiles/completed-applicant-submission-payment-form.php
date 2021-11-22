@@ -58,8 +58,27 @@ use yii\helpers\Url;
         <?=
             $form->field($applicantSubmissionPaymentForm, "paymentMethodId")
                 ->inline()
-                ->radioList($paymentMethods);
+                ->radioList(
+                    $paymentMethods,
+                    ["onClick" => "toggleChequeNumberField()"]
+                );
         ?>
+
+        <?php if ($applicantSubmissionPaymentForm->cheque_number == true) : ?>
+            <div id="cheque-number-field" style="display:block">
+                <?=
+                    $form->field($applicantSubmissionPaymentForm, "cheque_number")
+                        ->textInput(["class" => "form-control"]);
+                ?>
+            </div>
+        <?php else : ?>
+            <div id="cheque-number-field" style="display:none">
+                <?=
+                    $form->field($applicantSubmissionPaymentForm, "cheque_number")
+                        ->textInput(["class" => "form-control"]);
+                ?>
+            </div>
+        <?php endif; ?>
 
         <?=
             $form->field($applicantSubmissionPaymentForm, "includeAmendmentFee")
@@ -85,3 +104,35 @@ use yii\helpers\Url;
         <?php ActiveForm::end(); ?>
     </div>
 </div>
+
+<script>
+    function toggleChequeNumberField() {
+        const paymentMethodField =
+            document.getElementById("applicationsubmissionpaymentform-paymentmethodid");
+
+        if (paymentMethodField === null) {
+            //do nothing
+        } else {
+            let chequeNumberField =
+                document.getElementById("cheque-number-field");
+            let selectedIndex = paymentMethodField.selectedIndex;
+            var radio = paymentMethodField.getElementsByTagName("input");
+            var label = paymentMethodField.getElementsByTagName("label");
+            let selectedValue = null;
+            for (var i = 0; i < radio.length; i++) {
+                if (radio[i].checked) {
+                    selectedValue = label[i].innerHTML;
+                }
+            }
+
+            if (selectedValue.includes("Cheque")) {
+                chequeNumberField.style.display = "block";
+            } else {
+                chequeNumberField.style.display = "none";
+                document.getElementById(
+                    "applicationsubmissionpaymentform-cheque_number"
+                ).value = null;
+            }
+        }
+    }
+</script>
