@@ -527,4 +527,16 @@ class ReceiptModel
         }
         return null;
     }
+
+
+    public static function getVoidedReceiptsByCustomerId($id)
+    {
+        return Receipt::find()
+            ->where([
+                "customer_id" => $id,
+                "is_active" => 0,
+                "is_deleted" => 1
+            ])
+            ->all();
+    }
 }
