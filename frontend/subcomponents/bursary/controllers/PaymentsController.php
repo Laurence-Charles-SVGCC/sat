@@ -5,7 +5,6 @@ namespace app\subcomponents\bursary\controllers;
 use Yii;
 use common\models\ApplicationPeriodModel;
 use common\models\BillingModel;
-use common\models\PaymentMethodModel;
 use common\models\ReceiptModel;
 use common\models\UserModel;
 
@@ -60,10 +59,11 @@ class PaymentsController extends \yii\web\Controller
     }
 
 
-    public function actionDeleteReceipt($receiptId)
+    public function actionVoidReceipt($receiptId)
     {
         $user = Yii::$app->user->identity;
         $receipt = ReceiptModel::getReceiptById($receiptId);
+        $customer = UserModel::getUserById($receipt->customer_id);
         $billings = ReceiptModel::getBillings($receipt);
 
         if (ReceiptModel::deleteReceipt(
@@ -71,7 +71,10 @@ class PaymentsController extends \yii\web\Controller
             $billings,
             $user->personid
         ) == true) {
-            return $this->redirect(["profiles/search"]);
+            return $this->redirect([
+                "profiles/redirect-to-customer-profile",
+                "username" => $customer->username
+            ]);
         } else {
             Yii::$app->getSession()->setFlash(
                 'warning',
@@ -137,6 +140,34 @@ class PaymentsController extends \yii\web\Controller
             $billings,
             $applicantName,
             $applicantId
+        );
+    }
+
+    public function actionViewVoidedReceipt($id)
+    {
+        $user = Yii::$app->user->identity;
+        $receipt = ReceiptModel::getReceiptById($id);
+        $user  = UserModel::getUserById($receipt->customer_id);
+        $billings = ReceiptModel::getBillings($receipt);
+        $user = UserModel::findUserByUsername($user->username);
+        $fullName = UserModel::getUserFullname($user);
+        $receiptTotal = ReceiptModel::calculateReceiptTotal($receipt);
+
+        return $this->render(
+            "view-voided-receipt",
+            [
+                "receipt" => $receipt,
+                "username" => $user->username,
+                "userFullname" => $fullName,
+                "billings" => $billings,
+                "paymentMethod" => ReceiptModel::getPaymentMethod($receipt),
+                "applicationPeriod" =>
+                ApplicationPeriodModel::getApplicationPeriodNameByID(
+                    $billings[0]->application_period_id
+                ),
+                "registration" => null,
+                "receiptTotal" => $receiptTotal
+            ]
         );
     }
 }
