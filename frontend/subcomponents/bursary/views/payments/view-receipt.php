@@ -53,10 +53,10 @@ $this->params["breadcrumbs"][] = $this->title;
             <li>
                 <?=
                     Html::a(
-                        "Delete",
-                        ["delete-receipt", "receiptId" => $receipt->id],
+                        "Void",
+                        ["void-receipt", "receiptId" => $receipt->id],
                         [
-                            "title" => "Delete Receipt",
+                            "title" => "Void Receipt",
                             "data" => [
                                 "method" => "post",
                                 "confirm" => "Are you sure? This will delete item.",
@@ -136,7 +136,6 @@ $this->params["breadcrumbs"][] = $this->title;
                         <th>Type</th>
                         <th>Cost</th>
                         <th>Amount Paid</th>
-                        <th>Action</th>
                     </tr>
                     <?php foreach ($billings as $billing) : ?>
                         <tr>
@@ -147,30 +146,6 @@ $this->params["breadcrumbs"][] = $this->title;
                             </td>
                             <td><?= $billing->cost ?></td>
                             <td><?= $billing->amount_paid ?></td>
-                            <td>
-                                <?php
-                                $form =
-                                    ActiveForm::begin([
-                                        "id" => "delete-billing-{$billing->id}-form",
-                                        "action" =>
-                                        Url::to([
-                                            "delete-billing",
-                                            "billingId" => $billing->id
-                                        ])
-                                    ]);
-                                ?>
-                                <?=
-                                    Html::submitButton(
-                                        "Delete",
-                                        [
-                                            "id" =>
-                                            "delete-billing-{$billing->id}-form-submit-button",
-                                            "class" => "btn btn-danger"
-                                        ]
-                                    );
-                                ?>
-                                <?php ActiveForm::end(); ?>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
