@@ -11,9 +11,7 @@ class ReceiptModel
     public static function getReceiptById($id)
     {
         return Receipt::find()
-            ->where([
-                "id" => $id, "is_active" => 1, "is_deleted" => 0
-            ])
+            ->where(["id" => $id, "is_deleted" => 0])
             ->one();
     }
 
@@ -33,11 +31,7 @@ class ReceiptModel
     public static function getBillings($receipt)
     {
         return Billing::find()
-            ->where([
-                "receipt_id" => $receipt->id,
-                "is_active" => 1,
-                "is_deleted" => 0
-            ])
+            ->where(["receipt_id" => $receipt->id, "is_deleted" => 0])
             ->all();
     }
 
@@ -146,7 +140,7 @@ class ReceiptModel
     public static function calculateReceiptTotal($receipt)
     {
         $total = 0;
-        $billings = $receipt->getBillings()->all();
+        $billings = self::getBillings($receipt);
         foreach ($billings as $billing) {
             $total += $billing->amount_paid;
         }
@@ -154,16 +148,20 @@ class ReceiptModel
     }
 
 
-    public static function deleteReceipt($receipt, $billings, $userId)
+    public static function deleteReceipt($receipt, $billings, $staffId)
     {
         $receipt->is_active = 0;
-        $receipt->is_deleted = 1;
-        $receipt->modified_by = $userId;
+        $receipt->is_deleted = 0;
+        $receipt->modified_by = $staffId;
+        $receipt->modified_at = date("Y-m-d H:i:s");
+        $staffMember = UserModel::getUserById($staffId);
+        $receipt->notes = self::generateVoidNotes($receipt, $staffMember);
+
         if ($receipt->save() == true) {
             foreach ($billings as $billing) {
                 $billing->is_active = 0;
-                $billing->is_deleted = 1;
-                $billing->modified_by = $userId;
+                $billing->is_deleted = 0;
+                $billing->modified_by = $staffId;
                 if ($billing->save() == false) {
                     return false;
                 }
@@ -535,8 +533,50 @@ class ReceiptModel
             ->where([
                 "customer_id" => $id,
                 "is_active" => 0,
-                "is_deleted" => 1
+                "is_deleted" => 0
             ])
             ->all();
+    }
+
+    public static function generateVoidNotes($receipt, $staffMember)
+    {
+        $staffName = UserModel::getUserFullname($staffMember);
+        $receiptNumber = $receipt->receipt_number;
+        $dateVoided = date_format(new \DateTime($receipt->modified_at), "F j, Y");
+        $totalPaid = self::calculateReceiptTotal($receipt);
+        $datePaid = date_format(new \DateTime($receipt->date_paid), "F j, Y");
+
+        return "Receipt# {$receiptNumber}"
+            . " which had a total of ${$totalPaid}"
+            . " and was paid on {$datePaid}"
+            . " was voided by {$staffName} on {$dateVoided}";
+    }
+
+
+    public static function generateVoidedReceiptListing($receipts)
+    {
+        $data = array();
+        if ($receipts == true) {
+            foreach ($receipts as $receipt) {
+                $data[] =
+                    self::buildVoidedReceiptAssociativeArray($receipt);
+            }
+        }
+        return $data;
+    }
+
+
+    public static function buildVoidedReceiptAssociativeArray(
+        $receipt
+    ) {
+        $data = array();
+        if ($receipt != null) {
+            $data["id"] = $receipt->id;
+            $data["receiptNumber"] = $receipt->receipt_number;
+            $user = UserModel::getUserById($receipt->customer_id);
+            $data["username"] = $user->username;
+            $data["notes"] = $receipt->notes;
+        }
+        return $data;
     }
 }
