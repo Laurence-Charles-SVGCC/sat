@@ -61,7 +61,9 @@ $this->params["breadcrumbs"][] = $this->title;
             "applicantSubmissionPaymentForm" =>  $applicantSubmissionPaymentForm,
             "applicantAmendmentPaymentForm" =>  $applicantAmendmentPaymentForm,
             "paymentMethods" => $paymentMethods,
-            "dataProvider" => $dataProvider
+            "dataProvider" => $dataProvider,
+            "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+            "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
           ]
         );
       ?>

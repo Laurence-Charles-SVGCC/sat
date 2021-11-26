@@ -444,6 +444,28 @@ class ProfilesController extends \yii\web\Controller
                 ]
             );
 
+        $voidedReceipts =
+            ReceiptModel::getVoidedReceiptsByCustomerId($customer->personid);
+
+        $voidedReceiptsDataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    ReceiptModel::generateVoidedReceiptListing($voidedReceipts),
+                    "pagination" => ["pageSize" => 100],
+                    "sort" => [
+                        "defaultOrder" => ["datePaid" => SORT_ASC],
+                        "attributes" => [
+                            "total",
+                            "applicationPeriod",
+                            "datePaid"
+                        ]
+                    ]
+                ]
+            );
+
+        $showVoidedReceiptDisplayButton = $voidedReceipts == true;
+
         $applicationDetails =
             ApplicationModel::getFormattedProgrammeChoices($applicant->personid);
 
@@ -481,6 +503,8 @@ class ProfilesController extends \yii\web\Controller
                 "paymentMethods" => $paymentMethods,
                 "dataProvider" => $receiptsDataProvider,
                 "applicationDetails" => $applicationDetails,
+                "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+                "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
             ]
         );
     }

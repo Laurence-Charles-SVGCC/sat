@@ -7,7 +7,14 @@ use yii\helpers\Url;
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">History</h3>
+        <h3 class="panel-title">
+            <span>History</span>
+            <?php if ($showVoidedReceiptDisplayButton === true) : ?>
+                <button id="show-voided-receipts-button" type="button" class="pull-right btn btn-xs btn-warning" onclick="showVoidedReceiptsAndHideToggleButton()">
+                    Show Voids
+                </button>
+            <?php endif; ?>
+        </h3>
     </div>
     <div class="panel-body">
         <?=
@@ -61,3 +68,20 @@ use yii\helpers\Url;
         ?>
     </div>
 </div>
+
+<script>
+    function showVoidedReceiptsAndHideToggleButton() {
+        const showVoidReceiptsButton =
+            document.getElementById("show-voided-receipts-button");
+
+        const voidedReceiptListing =
+            document.getElementById("voided-receipt-listing");
+
+        if (showVoidReceiptsButton != null &&
+            voidedReceiptListing != null &&
+            voidedReceiptListing.style.display === "none") {
+            voidedReceiptListing.style.display = "block";
+            showVoidReceiptsButton.style.display = "none";
+        }
+    }
+</script>

@@ -55,8 +55,22 @@ use yii\helpers\Html;
           <div class="col-sm-6">
             <?=
               $this->render(
+                "voided-receipts-listing",
+                ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
+              );
+            ?>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <?=
+              $this->render(
                 "completed-applicant-receipt-listing",
-                ["dataProvider" => $dataProvider]
+                [
+                  "dataProvider" => $dataProvider,
+                  "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
+                ]
               );
             ?>
           </div>
@@ -81,11 +95,25 @@ use yii\helpers\Html;
         && $showApplicantAmendmentPaymentForm == true
       ) : ?>
         <div class="row">
+          <div class="col-sm-12">
+            <?=
+              $this->render(
+                "voided-receipts-listing",
+                ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
+              );
+            ?>
+          </div>
+        </div>
+
+        <div class="row">
           <div class="col-sm-7">
             <?=
               $this->render(
                 "completed-applicant-receipt-listing",
-                ["dataProvider" => $dataProvider]
+                [
+                  "dataProvider" => $dataProvider,
+                  "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
+                ]
               );
             ?>
           </div>
@@ -109,10 +137,24 @@ use yii\helpers\Html;
         && $showApplicantSubmissionPaymentForm == false
         && $showApplicantAmendmentPaymentForm == false
       ) : ?>
+        <div class="row">
+          <div class="col-sm-12">
+            <?=
+              $this->render(
+                "voided-receipts-listing",
+                ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
+              );
+            ?>
+          </div>
+        </div>
+
         <?=
           $this->render(
             "completed-applicant-receipt-listing",
-            ["dataProvider" => $dataProvider]
+            [
+              "dataProvider" => $dataProvider,
+              "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
+            ]
           );
         ?>
       <?php endif; ?>
