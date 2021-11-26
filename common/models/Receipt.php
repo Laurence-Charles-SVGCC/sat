@@ -25,6 +25,7 @@ use Yii;
  * @property integer $is_active
  * @property integer $is_deleted
  * @property string $cheque_number
+ * @property string $modified_at
  *
  * @property Billing[] $billings
  * @property User $createdBy
@@ -52,7 +53,7 @@ class Receipt extends \yii\db\ActiveRecord
             [['payment_method_id', 'customer_id', 'created_by', 'username', 'full_name', 'receipt_number', 'email', 'date_paid', 'timestamp'], 'required'],
             [['payment_method_id', 'customer_id', 'student_registration_id', 'created_by', 'modified_by', 'publish_count', 'auto_publish', 'is_active', 'is_deleted'], 'integer'],
             [['notes'], 'string'],
-            [['date_paid', 'timestamp'], 'safe'],
+            [['date_paid', 'timestamp', 'modified_at'], 'safe'],
             [['username', 'full_name', 'receipt_number', 'email', 'cheque_number'], 'string', 'max' => 255]
         ];
     }
@@ -81,6 +82,7 @@ class Receipt extends \yii\db\ActiveRecord
             'is_active' => 'Is Active',
             'is_deleted' => 'Is Deleted',
             'cheque_number' => 'Cheque Number',
+            'modified_at' => 'Modified At',
         ];
     }
 
