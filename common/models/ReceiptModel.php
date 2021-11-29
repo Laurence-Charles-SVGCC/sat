@@ -547,7 +547,7 @@ class ReceiptModel
         $datePaid = date_format(new \DateTime($receipt->date_paid), "F j, Y");
 
         return "Receipt# {$receiptNumber}"
-            . " which had a total of ${$totalPaid}"
+            . " which had a total of $ {$totalPaid}"
             . " and was paid on {$datePaid}"
             . " was voided by {$staffName} on {$dateVoided}";
     }
