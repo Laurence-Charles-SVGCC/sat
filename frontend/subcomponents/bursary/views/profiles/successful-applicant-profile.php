@@ -54,7 +54,9 @@ $this->params["breadcrumbs"][] = $this->title;
           [
             "applicant" => $applicant,
             "username" => $username,
-            "dataProvider" => $dataProvider
+            "dataProvider" => $dataProvider,
+            "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+            "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
           ]
         );
       ?>

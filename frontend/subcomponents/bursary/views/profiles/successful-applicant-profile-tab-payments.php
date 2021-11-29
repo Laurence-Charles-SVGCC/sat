@@ -15,6 +15,13 @@ use yii\helpers\Html;
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
+          <?php if ($showVoidedReceiptDisplayButton === true) : ?>
+            <li id="successful-applicant-voided-receipts-visibility-toggle-button">
+              <button type="button" class="btn btn-default" onclick="showVoidedReceiptsAndHideSuccessfulApplicantButton()" style="width:100%; background-color: transparent; border: none; text-align: left; color: #777; padding-left:20px">
+                Show Voids
+              </button>
+            </li>
+          <?php endif; ?>
           <li>
             <?=
               Html::a(
@@ -46,6 +53,17 @@ use yii\helpers\Html;
         <div class="col-sm-12">
           <?=
             $this->render(
+              "successful-applicant-voided-receipts-listing",
+              ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
+            );
+          ?>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <?=
+            $this->render(
               "successful-applicant-receipt-listing",
               ["dataProvider" => $dataProvider]
             );
@@ -55,3 +73,22 @@ use yii\helpers\Html;
     </div>
   </div>
 </div>
+
+<script>
+  function showVoidedReceiptsAndHideSuccessfulApplicantButton() {
+    const toggleButton =
+      document.getElementById(
+        "successful-applicant-voided-receipts-visibility-toggle-button"
+      );
+
+    const voidedReceiptListing =
+      document.getElementById("successful-applicant-voided-receipt-listing");
+
+    const elementsExist = toggleButton != null && voidedReceiptListing != null;
+
+    if (elementsExist == true) {
+      voidedReceiptListing.style.display = "block";
+      toggleButton.style.display = "none";
+    }
+  }
+</script>

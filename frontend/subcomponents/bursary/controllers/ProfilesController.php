@@ -306,6 +306,28 @@ class ProfilesController extends \yii\web\Controller
                 ]
             );
 
+        $voidedReceipts =
+            ReceiptModel::getVoidedReceiptsByCustomerId($customer->personid);
+
+        $voidedReceiptsDataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    ReceiptModel::generateVoidedReceiptListing($voidedReceipts),
+                    "pagination" => ["pageSize" => 100],
+                    "sort" => [
+                        "defaultOrder" => ["datePaid" => SORT_ASC],
+                        "attributes" => [
+                            "total",
+                            "applicationPeriod",
+                            "datePaid"
+                        ]
+                    ]
+                ]
+            );
+
+        $showVoidedReceiptDisplayButton = $voidedReceipts == true;
+
         return $this->render(
             "successful-applicant-profile",
             [
@@ -320,7 +342,9 @@ class ProfilesController extends \yii\web\Controller
                 "personalEmail" => $personalEmail,
                 "institutionalEmail" => $institutionalEmail,
                 "status" => "Successful Applicant Awaiting Enrollment",
-                "dataProvider" => $receiptsDataProvider
+                "dataProvider" => $receiptsDataProvider,
+                "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+                "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
             ]
         );
     }
