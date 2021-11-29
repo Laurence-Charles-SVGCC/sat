@@ -73,6 +73,8 @@ $this->params["breadcrumbs"][] = $this->title;
             "username" => $username,
             "dataProvider" => $dataProvider,
             "studentRegistrations" => $studentRegistrations,
+            "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+            "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
           ]
         );
       ?>

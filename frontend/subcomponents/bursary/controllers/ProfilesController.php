@@ -239,6 +239,28 @@ class ProfilesController extends \yii\web\Controller
         $studentRegistrations =
             StudentModel::getStudentRegistrations($customer->personid);
 
+        $voidedReceipts =
+            ReceiptModel::getVoidedReceiptsByCustomerId($customer->personid);
+
+        $voidedReceiptsDataProvider =
+            new ArrayDataProvider(
+                [
+                    "allModels" =>
+                    ReceiptModel::generateVoidedReceiptListing($voidedReceipts),
+                    "pagination" => ["pageSize" => 100],
+                    "sort" => [
+                        "defaultOrder" => ["datePaid" => SORT_ASC],
+                        "attributes" => [
+                            "total",
+                            "applicationPeriod",
+                            "datePaid"
+                        ]
+                    ]
+                ]
+            );
+
+        $showVoidedReceiptDisplayButton = $voidedReceipts == true;
+
         return $this->render(
             "student-profile",
             [
@@ -256,6 +278,8 @@ class ProfilesController extends \yii\web\Controller
                 "status" => "Enrolled Student",
                 "dataProvider" => $receiptsDataProvider,
                 "studentRegistrations" => $studentRegistrations,
+                "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+                "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
             ]
         );
     }
