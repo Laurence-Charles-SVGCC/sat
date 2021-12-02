@@ -31,7 +31,19 @@ $this->params["breadcrumbs"][] = $this->title;
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    Receipt Number - <?= $receipt->receipt_number ?>
+                    <span>Receipt Number - <?= $receipt->receipt_number ?></span>
+                    <span>
+                        <?=
+                            Html::a(
+                                "Generate PDF",
+                                Url::to([
+                                    "view-receipt-pdf",
+                                    "receiptId" => $receipt->id
+                                ]),
+                                ["class" => "btn btn-info btn-sm pull-right"]
+                            )
+                        ?>
+                    </span><br /><br />
                 </h3>
             </div>
             <div class="panel-body">
