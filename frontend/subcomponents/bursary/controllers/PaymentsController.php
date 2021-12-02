@@ -129,7 +129,6 @@ class PaymentsController extends \yii\web\Controller
     {
         $receipt = ReceiptModel::getReceiptById($receiptId);
         $billings = ReceiptModel::getBillings($receipt);
-
         $customer = UserModel::getUserById($receipt->customer_id);
         $applicantName = UserModel::getUserFullname($customer);
         $applicantId = $customer->username;
@@ -147,9 +146,8 @@ class PaymentsController extends \yii\web\Controller
     {
         $user = Yii::$app->user->identity;
         $receipt = ReceiptModel::getReceiptById($id);
-        $user  = UserModel::getUserById($receipt->customer_id);
         $billings = ReceiptModel::getBillings($receipt);
-        $user = UserModel::findUserByUsername($user->username);
+        $user = UserModel::findUserByID($id);
         $fullName = UserModel::getUserFullname($user);
         $receiptTotal = ReceiptModel::calculateReceiptTotal($receipt);
 
