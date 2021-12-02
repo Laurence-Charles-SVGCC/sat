@@ -190,11 +190,11 @@ class ReceiptModel
     ) {
         $user = UserModel::getUserById($receipt->created_by);
         $operator = self::getOperatorCode($user);
-
         $total = number_format(self::calculateReceiptTotal($receipt), 2);
+        $receiptTemplate = self::getReceiptTemplate($receipt);
 
         return $controller->renderPartial(
-            "receipt-template",
+            $receiptTemplate,
             [
                 "receipt" => $receipt,
                 "billings" => $billings,
@@ -206,7 +206,6 @@ class ReceiptModel
             ]
         );
     }
-
 
     public static function generateReceiptForDownload(
         $controller,
@@ -578,5 +577,25 @@ class ReceiptModel
             $data["notes"] = $receipt->notes;
         }
         return $data;
+    }
+
+
+    public static function receiptIsVoided($receipt)
+    {
+        if ($receipt->is_active == 0 && $receipt->is_deleted == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function getReceiptTemplate($receipt)
+    {
+        if (self::receiptIsVoided($receipt) == true) {
+            return "voided-receipt-template";
+        } else {
+            return "receipt-template";
+        }
     }
 }
