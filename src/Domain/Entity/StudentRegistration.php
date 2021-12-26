@@ -7,6 +7,7 @@ class StudentRegistration extends AbstractEntity
     protected $academicStatus;
     protected $registrationType;
     protected $idCardStatus;
+    protected $currentLevel;
     protected $creator;
     protected $modifier;
     protected $createdTimestamp;
@@ -47,14 +48,14 @@ class StudentRegistration extends AbstractEntity
         return $this;
     }
 
-    public function getIdCardCollected(): int
+    public function getCurrentLevel(): int
     {
-        return $this->idCardCollected;
+        return $this->currentLevel;
     }
 
-    public function setIdCardCollected(int $idCardCollected): StudentRegistration
+    public function setCurrentLevel(int $currentLevel): StudentRegistration
     {
-        $this->idCardCollected = $idCardCollected;
+        $this->currentLevel = $currentLevel;
         return $this;
     }
 
