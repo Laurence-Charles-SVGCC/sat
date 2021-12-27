@@ -101,14 +101,12 @@ class Billing extends AbstractEntity
         return $this->amountPaid;
     }
 
-    public function setAmoujntPaid(float $amountPaid): Billing
+    public function setAmountPaid(float $amountPaid): Billing
     {
         $this->amountPaid = $amountPaid;
         return $this;
     }
 
-
-    //
     public function getCreator(): User
     {
         return $this->creator;
