@@ -67,7 +67,7 @@ class Billing extends AbstractEntity
         return $this->academicOffering;
     }
 
-    public function setAcademicOffering(AcademicOffering $academicOffering): StudentRegistration
+    public function setAcademicOffering(AcademicOffering $academicOffering): Billing
     {
         $this->academicOffering = $academicOffering;
         return $this;
