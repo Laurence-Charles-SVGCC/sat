@@ -29,7 +29,7 @@ class StudentRegistration extends AbstractEntity
         return $this;
     }
 
-    public function geStudentStatus(): StudentStatus
+    public function getStudentStatus(): StudentStatus
     {
         return $this->studentStatus;
     }
