@@ -2,14 +2,13 @@
 
 namespace src\Domain\Entity;
 
-use common\models\BatchStudentFeePaymentBillingForm;
-
 class Billing extends AbstractEntity
 {
     protected $receipt;
     protected $billingCharge;
     protected $customer;
     protected $studentRegistration;
+    protected $academicOffering;
     protected $cost;
     protected $amountPaid;
     protected $creator;
@@ -60,6 +59,17 @@ class Billing extends AbstractEntity
     public function setStudentRegistration(StudentRegistration $studentRegistration): Billing
     {
         $this->studentRegistration = $studentRegistration;
+        return $this;
+    }
+
+    public function getAcademicOffering(): AcademicOffering
+    {
+        return $this->academicOffering;
+    }
+
+    public function setAcademicOffering(AcademicOffering $academicOffering): StudentRegistration
+    {
+        $this->academicOffering = $academicOffering;
         return $this;
     }
 
