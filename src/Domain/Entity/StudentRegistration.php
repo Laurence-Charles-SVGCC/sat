@@ -4,6 +4,7 @@ namespace src\Domain\Entity;
 
 class StudentRegistration extends AbstractEntity
 {
+    protected $studentStatus;
     protected $academicStatus;
     protected $registrationType;
     protected $idCardStatus;
@@ -14,6 +15,17 @@ class StudentRegistration extends AbstractEntity
     protected $modifiedTimestamp;
     protected $isActive;
     protected $isDeleted;
+
+    public function geStudentStatus(): StudentStatus
+    {
+        return $this->studentStatus;
+    }
+
+    public function setStudentStatus(StudentStatus $studentStatus): StudentRegistration
+    {
+        $this->studentStatus = $studentStatus;
+        return $this;
+    }
 
     public function getAcademicStatus(): AcademicStatus
     {
