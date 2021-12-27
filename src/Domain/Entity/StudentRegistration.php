@@ -7,6 +7,7 @@ class StudentRegistration extends AbstractEntity
     protected $studentStatus;
     protected $academicStatus;
     protected $registrationType;
+    protected $registrationDate;
     protected $idCardStatus;
     protected $currentLevel;
     protected $creator;
@@ -68,6 +69,17 @@ class StudentRegistration extends AbstractEntity
     public function setCurrentLevel(int $currentLevel): StudentRegistration
     {
         $this->currentLevel = $currentLevel;
+        return $this;
+    }
+
+    public function getRegistrationDate(): string
+    {
+        return $this->registrationDate;
+    }
+
+    public function setRegistrationDate(string $registrationDate): StudentRegistration
+    {
+        $this->registrationDate = $registrationDate;
         return $this;
     }
 
