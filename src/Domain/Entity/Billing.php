@@ -9,6 +9,7 @@ class Billing extends AbstractEntity
     protected $customer;
     protected $studentRegistration;
     protected $academicOffering;
+    protected $applicationPeriod;
     protected $cost;
     protected $amountPaid;
     protected $creator;
@@ -70,6 +71,17 @@ class Billing extends AbstractEntity
     public function setAcademicOffering(AcademicOffering $academicOffering): Billing
     {
         $this->academicOffering = $academicOffering;
+        return $this;
+    }
+
+    public function getApplicationPeriod(): ApplicationPeriod
+    {
+        return $this->applicationPeriod;
+    }
+
+    public function setApplicationPeriod(ApplicationPeriod $applicationPeriod): Billing
+    {
+        $this->applicationPeriod = $applicationPeriod;
         return $this;
     }
 
