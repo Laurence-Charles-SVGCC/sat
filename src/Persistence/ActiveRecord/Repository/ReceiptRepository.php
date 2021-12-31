@@ -2,6 +2,7 @@
 
 namespace src\Persistence\ActiveRecord\Repository;
 
-interface ReceiptRepository extends AbstractActiveRecordRepository
+class ReceiptRepository extends AbstractActiveRecordRepository
 {
+    protected $activeRecordClass = "app\common\models\Receipt";
 }
