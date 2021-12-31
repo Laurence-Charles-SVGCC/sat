@@ -2,6 +2,7 @@
 
 namespace src\Persistence\ActiveRecord\Repository;
 
-interface BillingRepository extends AbstractActiveRecordRepository
+class BillingRepository extends AbstractActiveRecordRepository
 {
+    protected $activeRecordClass = "app\common\models\Billing";
 }
