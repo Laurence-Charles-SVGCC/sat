@@ -501,31 +501,12 @@ class ApplicationPeriod extends \yii\db\ActiveRecord
         $divisionid = EmployeeDepartment::getUserDivision();
 
         if ($divisionid == 1) {
-            // $records = ApplicationPeriod::find()
-            //             ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-            //             ->innerJoin('application' , '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-            //             ->where(['application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-            //                     'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-            //                     'application.isactive' => 1, 'application.isdeleted' => 0
-            //                     ])
-            //             ->andWhere(['>=', 'applicationperiodstatusid', 5])
-            //             ->all();
             $records =
                 ApplicationPeriod::find()
                 ->where(["isactive" => 1, "isdeleted" => 0])
                 ->andWhere(['>=', 'applicationperiodstatusid', 5])
                 ->all();
         } else {
-            // $records = ApplicationPeriod::find()
-            //     ->innerJoin('academic_offering', '`academic_offering`.`applicationperiodid` = `application_period`.`applicationperiodid`')
-            //     ->innerJoin('application', '`application`.`academicofferingid` = `academic_offering`.`academicofferingid`')
-            //     ->where([
-            //         'application_period.divisionid' => $divisionid, 'application_period.isactive' => 1, 'application_period.isdeleted' => 0,
-            //         'academic_offering.isactive' => 1, 'academic_offering.isdeleted' => 0,
-            //         'application.isactive' => 1, 'application.isdeleted' => 0
-            //     ])
-            //     ->andWhere(['>=', 'applicationperiodstatusid', 5])
-            //     ->all();
             $records =
                 ApplicationPeriod::find()
                 ->where([
