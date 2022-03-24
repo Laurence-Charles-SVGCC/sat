@@ -66,7 +66,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['persontypeid', 'isactive', 'isdeleted'], 'integer'],
             [['datecreated', 'dateupdated'], 'safe'],
             [['salt', 'resettoken', 'email', "p_word"], 'string', 'max' => 255],
-            [['username', 'pword', 'p_word'], 'string', 'min' => 8],
+            [['pword', 'p_word'], 'string', 'min' => 8],
             [['username'], 'string', 'max' => 45],
         ];
     }
