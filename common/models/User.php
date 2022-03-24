@@ -16,6 +16,7 @@ use yii\db\Expression;
  * @property integer $personid
  * @property string $username
  * @property string $pword
+ * @property string $p_word
  * @property string $email
  *
  * @property string $auth_key
@@ -64,7 +65,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['persontypeid', 'username'], 'required'],
             [['persontypeid', 'isactive', 'isdeleted'], 'integer'],
             [['datecreated', 'dateupdated'], 'safe'],
-            [['salt', 'resettoken', 'email'], 'string', 'max' => 100],
+            [['salt', 'resettoken', 'email', "p_word"], 'string', 'max' => 255],
             [['username', 'pword', 'p_word'], 'string', 'min' => 8],
             [['username'], 'string', 'max' => 45],
         ];
