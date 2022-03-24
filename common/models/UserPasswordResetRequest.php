@@ -7,12 +7,14 @@ use Yii;
 class UserPasswordResetRequest
 {
     private $user;
+    private $randomString;
+    private $timestamp;
 
-    public function __construct($user, $randomString, $timeStamp)
+    public function __construct($user, $randomString, $timestamp)
     {
         $this->user = $user;
         $this->randomString = $randomString;
-        $this->timestamp = $timeStamp;
+        $this->timestamp = $timestamp;
     }
 
     public function generatePasswordResetToken()
@@ -34,17 +36,6 @@ class UserPasswordResetRequest
                 'token' => $this->user->resettoken
             ]
         );
-    }
-    public function resetTokenValid()
-    {
-        if ($this->user->resettoken == null) {
-            return false;
-        }
-
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        $parts = explode('_', $this->user->resettoken);
-        $timestamp = (int) end($parts);
-        return ($timestamp + $expire) >= time();
     }
 
     public function processPasswordResetLinkRequest()
