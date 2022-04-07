@@ -13,14 +13,14 @@ use yii\helpers\Html;
         <?php foreach ($studentRegistrations as $studentRegistrationId => $programme) : ?>
           <li>
             <?=
-              Html::a(
-                "Manage {$programme} Scheduled Fees",
-                [
-                  "student-payments/scheduled-fee-report",
-                  "username" => $username,
-                  "studentRegistrationId" => $studentRegistrationId
-                ]
-              );
+            Html::a(
+              "Manage {$programme} Scheduled Fees",
+              [
+                "student-payments/scheduled-fee-report",
+                "username" => $username,
+                "studentRegistrationId" => $studentRegistrationId
+              ]
+            );
             ?>
           </li>
         <?php endforeach; ?>
@@ -37,10 +37,10 @@ use yii\helpers\Html;
       <div class="row">
         <div class="col-sm-12">
           <?=
-            $this->render(
-              "student-voided-receipts-listing",
-              ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
-            );
+          $this->render(
+            "student-voided-receipts-listing",
+            ["voidedReceiptsDataProvider" => $voidedReceiptsDataProvider]
+          );
           ?>
         </div>
       </div>
@@ -48,14 +48,14 @@ use yii\helpers\Html;
       <div class="row">
         <div class="col-sm-12">
           <?=
-            $this->render(
-              "student-receipt-listing",
-              [
-                "dataProvider" => $dataProvider,
-                "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
-                "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
-              ]
-            );
+          $this->render(
+            "student-receipt-listing",
+            [
+              "dataProvider" => $dataProvider,
+              "voidedReceiptsDataProvider" => $voidedReceiptsDataProvider,
+              "showVoidedReceiptDisplayButton" => $showVoidedReceiptDisplayButton
+            ]
+          );
           ?>
         </div>
       </div>
