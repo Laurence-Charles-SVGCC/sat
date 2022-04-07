@@ -35,35 +35,52 @@ $this->params["breadcrumbs"][] = $this->title;
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <li>
                 <?=
-                    Html::a(
-                        "View PDF",
-                        ["view-receipt-pdf", "receiptId" => $receipt->id],
-                        ["target" => "blank"]
-                    );
+                Html::a(
+                    "View PDF",
+                    ["view-receipt-pdf", "receiptId" => $receipt->id],
+                    ["target" => "blank"]
+                );
                 ?>
             </li>
             <li>
                 <?=
-                    Html::a(
-                        "Publish",
-                        ["publish-receipt", "receiptId" => $receipt->id]
-                    );
+                Html::a(
+                    "Publish",
+                    ["publish-receipt", "receiptId" => $receipt->id]
+                );
                 ?>
             </li>
             <li>
                 <?=
+                Html::a(
+                    "Void",
+                    ["void-receipt", "receiptId" => $receipt->id],
+                    [
+                        "title" => "Void Receipt",
+                        "data" => [
+                            "method" => "post",
+                            "confirm" => "Are you sure? This will delete item.",
+                        ]
+                    ]
+                ); ?>
+            </li>
+            <?php if ($canModifyPayment) : ?>
+                <li>
+                    <?=
                     Html::a(
-                        "Void",
-                        ["void-receipt", "receiptId" => $receipt->id],
+                        "Modify Payment",
+                        ["modify-payment", "receiptId" => $receipt->id],
                         [
-                            "title" => "Void Receipt",
+                            "title" => "Change billings",
                             "data" => [
                                 "method" => "post",
-                                "confirm" => "Are you sure? This will delete item.",
+                                "confirm" => "Are you sure? This will override current payment.",
                             ]
                         ]
-                    ); ?>
-            </li>
+                    );
+                    ?>
+                </li>
+            <?php endif; ?>
         </ul>
     </div><br /><br />
 
