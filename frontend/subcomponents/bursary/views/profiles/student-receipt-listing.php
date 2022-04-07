@@ -20,8 +20,7 @@ use yii\helpers\Url;
                             Url::toRoute([
                                 "payments/view-receipt",
                                 "id" => $row["id"],
-                                "username" => $row["username"],
-                                "from" => "student-profile"
+                                "username" => $row["username"]
                             ]),
                             [
                                 "title" => "View",
