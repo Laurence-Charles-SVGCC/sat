@@ -598,4 +598,39 @@ class ReceiptModel
             return "receipt-template";
         }
     }
+
+
+    public static function getAssociatedApplication($receipt)
+    {
+        if ($receipt->student_registration_id == true) {
+            return Application::find()
+                ->innerJoin(
+                    'offer',
+                    '`application`.`applicationid` = `offer`.`applicationid`'
+                )
+                ->innerJoin(
+                    'student_registration',
+                    '`offer`.`offerid` = `student_registration`.`offerid`'
+                )
+                ->where([
+                    "offer.isactive" => 1,
+                    "offer.isdeleted" => 0,
+                    "applicationstatusid" => 9,
+                    "application.isactive" => 1,
+                    "application.isdeleted" => 0,
+                    "student_registration.studentregistrationid" =>
+                    $receipt->student_registration_id
+                ])
+                ->one();
+        } else {
+            return Application::find()
+                ->where([
+                    "personid" => $receipt->customer_id,
+                    "applicationstatusid" => 9,
+                    "isactive" => 1,
+                    "isdeleted" => 0
+                ])
+                ->one();
+        }
+    }
 }

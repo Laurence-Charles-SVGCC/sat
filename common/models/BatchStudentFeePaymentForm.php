@@ -13,6 +13,7 @@ class BatchStudentFeePaymentForm extends Model
     public $staffId;
     public $applicationPeriodId;
     public $datePaid;
+    public $chequeNumber;
 
     /**
      * @inheritdoc
@@ -32,7 +33,7 @@ class BatchStudentFeePaymentForm extends Model
                 ],
                 "required"
             ],
-            [["username", "fullName"], "string"],
+            [["username", "fullName", "chequeNumber"], "string"],
             [
                 [
                     "paymentMethodId",
@@ -57,7 +58,8 @@ class BatchStudentFeePaymentForm extends Model
             "username" => "ApplicantID",
             "fullName" => "Full Name",
             "paymentMethodId" => "Payment Method",
-            "datePaid" => "Date of payment"
+            "datePaid" => "Date of payment",
+            "chequeNumber" => "Cheque Number"
         ];
     }
 
@@ -65,14 +67,16 @@ class BatchStudentFeePaymentForm extends Model
     public function fillModel(
         $customer,
         $staffId,
-        $userFullname,
-        $applicationPeriodId
+        $userFullName,
+        $applicationPeriodId,
+        $chequeNumber = NULL
     ) {
         $this->username = $customer->username;
-        $this->fullName = $userFullname;
+        $this->fullName = $userFullName;
         $this->customerId = $customer->personid;
         $this->staffId = $staffId;
         $this->applicationPeriodId = $applicationPeriodId;
+        $this->chequeNumber = $chequeNumber;
     }
 
 
@@ -394,5 +398,57 @@ class BatchStudentFeePaymentForm extends Model
         } else {
             return null;
         }
+    }
+
+
+    // public function generateBillingFormsForPaymentModification(
+    //     $receipt,
+    //     $maxNewBillingCount
+    // ) {
+    //     $records = array();
+
+    //     $applicableBillingCharges =
+    //         BillingChargeModel::getOutstandingEnrollmentChargesByApplication(
+    //             $receipt
+    //         );
+
+    //     if (!empty($applicableBillingCharges)) {
+    //         foreach ($applicableBillingCharges as $billingCharge) {
+    //             $record = new BatchStudentFeePaymentBillingForm();
+    //             $record->fillModel($this->customerId, $billingCharge);
+    //             $records[] = $record;
+    //         }
+    //     }
+
+    //     for ($i = 0; $i < $maxNewBillingCount; $i++) {
+    //     }
+
+    //     return $records;
+    // }
+
+    public function generateBillingFormsForPaymentModification(
+        $billings,
+        $maxNewBillingCount
+    ) {
+        $records = array();
+        if (!empty($billings)) {
+            foreach ($billings as $billing) {
+                $billingCharge = $billing->getBillingCharge()->one();
+                $billingChargeName = $billingCharge->getBillingType()->one();
+                $model = new BatchStudentFeePaymentBillingForm();
+                $model->billingChargeId = $billingCharge->id;
+                $model->fee = $billingChargeName->name;
+                $model->balance = $billing->cost;
+                $model->amountPaid = $billing->amount_paid;
+                $model->isActive = 1;
+                $records[] = $model;
+            }
+        }
+
+        for ($i = 0; $i < $maxNewBillingCount; $i++) {
+            continue;
+        }
+
+        return $records;
     }
 }

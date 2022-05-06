@@ -134,10 +134,7 @@ class SingleStudentFeePaymentForm extends Model
         $receipt->created_by = $staffId;
         $receipt->username = $this->username;
         $receipt->full_name = $this->fullName;
-
-        $receipt->receipt_number =
-            $receipt->receipt_number = $this->generateReceiptNumber();
-
+        $receipt->receipt_number = $this->generateReceiptNumber();
         $receipt->email = EmailModel::getEmailByPersonid($customerId)->email;
         $receipt->date_paid = $this->datePaid;
         $receipt->timestamp = date("Y-m-d H:i:s");

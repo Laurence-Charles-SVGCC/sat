@@ -3,10 +3,24 @@
 namespace app\subcomponents\bursary\controllers;
 
 use Yii;
-use common\models\ApplicationPeriodModel;
+use yii\base\Model;
+use common\models\Receipt;
+use common\models\UserModel;
+use yii\helpers\ArrayHelper;
+use common\models\ErrorObject;
 use common\models\BillingModel;
 use common\models\ReceiptModel;
-use common\models\UserModel;
+use common\models\ApplicantModel;
+use common\models\ApplicationModel;
+
+use common\models\PaymentMethodModel;
+use common\models\PaymentReceiptForm;
+use common\models\ApplicationPeriodModel;
+use common\models\StudentRegistrationModel;
+use common\models\BatchStudentFeePaymentForm;
+use common\models\RegisteredStudentPaymentModifier;
+use common\models\StaffProfile;
+
 
 class PaymentsController extends \yii\web\Controller
 {
@@ -19,6 +33,9 @@ class PaymentsController extends \yii\web\Controller
         $user = UserModel::findUserByUsername($username);
         $fullName = UserModel::getUserFullname($user);
         $receiptTotal = ReceiptModel::calculateReceiptTotal($receipt);
+
+        $canModifyPayment =
+            $receipt->student_registration_id == null ? false : true;
 
         return $this->render(
             "view-receipt",
@@ -33,7 +50,8 @@ class PaymentsController extends \yii\web\Controller
                     $billings[0]->application_period_id
                 ),
                 "registration" => null,
-                "receiptTotal" => $receiptTotal
+                "receiptTotal" => $receiptTotal,
+                "canModifyPayment" => $canModifyPayment
             ]
         );
     }
@@ -165,6 +183,83 @@ class PaymentsController extends \yii\web\Controller
                 ),
                 "registration" => null,
                 "receiptTotal" => $receiptTotal
+            ]
+        );
+    }
+
+
+    public function actionModifyPayment($receiptId)
+    {
+        $staff = Yii::$app->user->identity;
+        $staffName = UserModel::getUserFullname($staff);
+        $receipt = ReceiptModel::getReceiptById($receiptId);
+        $billings = ReceiptModel::getBillings($receipt);
+        $paymentReceiptForm = new PaymentReceiptForm();
+        $paymentReceiptForm->loadReceipt($receipt);
+
+        $staffProfile = new
+            StaffProfile($staff->personid, $staff->username, $staffName);
+
+        $paymentMethods =
+            ArrayHelper::map(
+                PaymentMethodModel::getNonWaiverPaymentMethods(),
+                "paymentmethodid",
+                "name"
+            );
+
+        $billingForms =
+            $paymentReceiptForm->generateBatchStudentFeePaymentBillingForms(
+                $receipt,
+                $billings
+            );
+
+        if ($postData = Yii::$app->request->post()) {
+            if (
+                $paymentReceiptForm->load($postData) == true
+                && Model::loadMultiple($billingForms, $postData) == true
+            ) {
+
+                $paymentModifier =
+                    new RegisteredStudentPaymentModifier(
+                        $receipt,
+                        $billings,
+                        $paymentReceiptForm,
+                        $billingForms,
+                        $staffProfile
+                    );
+
+                $newReceipt = $paymentModifier->execute();
+
+                if ($newReceipt instanceof ErrorObject) {
+                    Yii::$app->getSession()->setFlash(
+                        "warning",
+                        $newReceipt->getMessage()
+                    );
+                } else {
+                    return $this->redirect([
+                        "view-receipt",
+                        "id" => $newReceipt->id,
+                        "username" => $newReceipt->username
+                    ]);
+                }
+            } else {
+                Yii::$app->getSession()->setFlash(
+                    "warning",
+                    "Error processing payment modification"
+                );
+            }
+        }
+
+        return $this->render(
+            "modify-payment",
+            [
+                "receiptNumber" => $receipt->receipt_number,
+                "receiptId" => $receiptId,
+                "customerFullName" => $paymentReceiptForm->fullName,
+                "customerUsername" => $paymentReceiptForm->username,
+                "paymentReceiptForm" => $paymentReceiptForm,
+                "billingForms" => $billingForms,
+                "paymentMethods" => $paymentMethods
             ]
         );
     }
