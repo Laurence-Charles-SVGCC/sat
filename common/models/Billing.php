@@ -23,11 +23,11 @@ use Yii;
  *
  * @property Receipt $receipt
  * @property BillingCharge $billingCharge
- * @property Person $customer
+ * @property User $customer
  * @property StudentRegistration $studentRegistration
  * @property AcademicOffering $academicOffering
- * @property Person $createdBy
- * @property Person $modifiedBy
+ * @property User $createdBy
+ * @property User $modifiedBy
  * @property ApplicationPeriod $applicationPeriod
  */
 class Billing extends \yii\db\ActiveRecord
