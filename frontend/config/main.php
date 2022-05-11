@@ -70,6 +70,12 @@ return [
                 'bursary' => [
                     'class' => 'app\subcomponents\bursary\Module',
                 ],
+                // 'applyAdministration' => [
+                //     'class' => 'app\subcomponents\applyAdministration\Module',
+                // ],
+                'reports' => [
+                    'class' => 'app\subcomponents\reports\Module',
+                ],
             ]
         ]
     ]

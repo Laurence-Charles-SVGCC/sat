@@ -226,6 +226,18 @@ $theme = (ApplicationSettings::getApplicationSettings()->is_online == true) ? "s
                         </li>
                         <?php endif; ?>
                         -->
+
+                    <?php if (Yii::$app->user->can('System Administrator')) : ?>
+                        <li>
+                            <?=
+                            Html::a(
+                                "<i class='glyphicon glyphicon-blackboard'></i>Reports",
+                                Url::toRoute(['/subcomponents/reports/site/index']),
+                                ['id' => 'reports-sidebar-anchor']
+                            );
+                            ?>
+                        </li>
+                    <?php endif; ?>
                 </ul>
                 <div style="position: fixed; z-index: 1000; width: 164px; height: 98px; bottom: 30px; left: 15px;">
                     <a href="#" onclick="window.open('https://www.sitelock.com/verify.php?site=svgcc.net','SiteLock','width=600,height=600,left=160,top=170');">
