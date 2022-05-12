@@ -55,6 +55,11 @@ $this->params["breadcrumbs"][] = $this->title;
                         "label" => "Programme"
                     ],
                     [
+                        "attribute" => "subject",
+                        "format" => "text",
+                        "label" => "Subject"
+                    ],
+                    [
                         "attribute" => "courseCode",
                         "format" => "text",
                         "label" => "Code"
@@ -130,6 +135,11 @@ GridView::widget(
                 "attribute" => "programme",
                 "format" => "text",
                 "label" => "Programme"
+            ],
+            [
+                "attribute" => "subject",
+                "format" => "text",
+                "label" => "Subject"
             ],
             [
                 "attribute" => "courseCode",

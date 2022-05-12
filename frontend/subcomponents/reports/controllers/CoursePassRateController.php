@@ -6,6 +6,7 @@ use common\models\AcademicYear;
 use common\models\BatchStudents;
 use common\models\BatchStudentCape;
 use common\models\CapeCourse;
+use common\models\CapeSubject;
 use common\models\CourseCatalog;
 use common\models\CourseOffering;
 use common\models\Division;
@@ -404,6 +405,7 @@ class CoursePassRateController extends \yii\web\Controller
                     $row["academicYear"] = $academicYearTitle;
                     $row["semester"] = $semesterTitle;
 
+                    $row["subject"] = "";
                     $courseCatalog =
                         CourseCatalog::find()
                         ->where(["coursecatalogid" => $courseCatalogId])
@@ -561,6 +563,30 @@ class CoursePassRateController extends \yii\web\Controller
                         $row["courseCode"] = $capeCourse->coursecode;
                         $row["courseName"] = $capeCourse->name;
                         $row["programme"] = "CAPE";
+
+                        $subjects =
+                            CapeSubject::find()
+                            ->innerJoin(
+                                'cape_unit',
+                                '`cape_subject`.`capesubjectid` = `cape_unit`.`capesubjectid`'
+                            )
+                            ->innerJoin(
+                                'cape_course',
+                                '`cape_unit`.`capeunitid` = `cape_course`.`capeunitid`'
+                            )
+                            ->where([
+                                "cape_subject.isactive" => 1,
+                                "cape_subject.isdeleted" => 0,
+                                "cape_unit.isactive" => 1,
+                                "cape_unit.isdeleted" => 0,
+                                "cape_course.isactive" => 1,
+                                "cape_course.isdeleted" => 0,
+                                "cape_course.coursecode" => $courseCode
+                            ])
+                            ->all();
+
+
+                        $row["subject"] = $subjects[0]->subjectname;
 
                         $failingStudent =
                             BatchStudentCape::find()
