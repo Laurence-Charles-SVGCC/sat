@@ -129,6 +129,8 @@ class ApplicationSubmissionPaymentForm extends Model
         $receipt->auto_publish = $this->autoPublish;
         $receipt->timestamp = date("Y-m-d H:i:s");
         $receipt->cheque_number = $this->cheque_number;
+        $receipt->is_active = 1;
+        $receipt->is_deleted = 0;
         if ($receipt->save() == true) {
             return $receipt;
         } else {
